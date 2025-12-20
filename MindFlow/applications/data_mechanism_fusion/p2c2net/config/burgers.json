@@ -1,6 +1,6 @@
 {
   "milestone_num": 10,
-  "epochs": 500,
+  "epochs": 100,
   "learning_rate": 0.005,
   "weight_decay": 0.5,
   "save_every": 25,

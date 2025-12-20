@@ -21,10 +21,10 @@ import pandas as pd
 import mindspore as ms
 from mindspore import ops, Tensor, numpy as mnp
 
-from mindflow.utils import load_yaml_config
-
-from cbs.cbs import CBS
 from src import utils, visual
+
+from mindscience.utils import load_yaml_config
+from mindscience.solvers import CBS
 
 
 def solve_cbs(cbs, velo, slocs, omegas, receivers=None, dxs=None, n_batches=1):
@@ -236,7 +236,7 @@ if __name__ == '__main__':
     parser.add_argument(
         "--dim",
         type=int,
-        default=3,
+        default=2,
         help="Dimension of acoustic equation"
     )
     args = parser.parse_args()

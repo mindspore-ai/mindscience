@@ -1,14 +1,18 @@
+[ENGLISH](https://atomgit.com/mindspore-lab/mindscience/blob/master/MindFlow/applications/cfd/acoustic/README.md) | 简体中文
+
 # 2D/3D 声波方程 CBS 求解
 
-## 概述
+## 背景简介
+
+### 概述
 
 声波方程求解是医疗超声、地质勘探等领域中的核心技术，大规模声波方程求解面临算力和存储的挑战。声波方程求解器一般采用频域求解算法和时域求解算法，时域求解算法的代表是时域有限差分法 (TDFD)，频域求解算法包括频域有限差分法 (FDFD)、有限元法 (FEM) 和 CBS (Convergent Born series) 迭代法。CBS 方法由于不引入频散误差，且求解的内存需求低，因此受到工程和学术界的广泛关注。尤其是 [Osnabrugge et al. (2016)](https://linkinghub.elsevier.com/retrieve/pii/S0021999116302595) 解决了该方法的收敛性问题，使得 CBS 方法的应用具有更广阔的前景。基于 CBS 的计算结构所提出的 AI 模型也是物理与 AI 双驱动范式的典型代表，包括 [Stanziola et al. (2022)](http://arxiv.org/abs/2212.04948)，[Zeng et al. (2023)](http://arxiv.org/abs/2312.15575) 等。
 
 本案例将演示如何调用 MindFlow 提供的 CBS API 实现二维/三维声波方程的求解。
 
-## 理论背景
+### 理论背景
 
-### 问题描述
+#### 问题描述
 
 声波方程求解中，波速场和震源信息是输入参数，求解输出的是时空分布的波场。
 
@@ -20,9 +24,9 @@
 
 其中
 
-- $u(\bold{x},t) \;\; [L]$ 变形位移 (压强除以密度)，标量
-- $c(\bold{x}) \;\; [L/T]$ 波速，标量
-- $f(\bold{x},t) \;\; [L/T^2]$ 震源激励 (体积分布力)，标量
+- $u(\mathbf{x},t) \;\; [L]$ 变形位移 (压强除以密度)，标量
+- $c(\mathbf{x}) \;\; [L/T]$ 波速，标量
+- $f(\mathbf{x},t) \;\; [L/T^2]$ 震源激励 (体积分布力)，标量
 
 实际求解中，为了降低参数维度，一般先将参数无量纲化，然后针对无量纲方程和参数进行求解，最后恢复解的量纲。选取 $\omega$、$\hat{f}$ 和 $d$（网格间距，本案例要求网格在各方向间距相等）对频域方程做无量纲化，可得频域无量纲方程：
 
@@ -37,52 +41,89 @@ $$
 - $\tilde{\Delta}$ 为归一化 Laplace 算子，即网格间距均为 1 时的 Laplace 算子
 - $f^*$ 为标记震源位置的 mask，即在震源作用点为 1，其余位置为 0
 
-### CBS 方法介绍
+#### CBS 方法介绍
 
 此处对 CBS 方法的理论推导作简单介绍，读者可参考 [Osnabrugge et al. (2016)](https://linkinghub.elsevier.com/retrieve/pii/S0021999116302595) 进一步了解。
 
 **原始 Born Series**
 
 首先将频域声波方程表达为以下等价形式
+
 $$
 k^2 \hat{u} + \Delta \hat{u} +S = 0
 $$
+
 其中 $k=\omega/c$，$S=\hat{f}/c^2$。将非均匀波数场 $k$ 拆分为均匀背景势 $k_0$ 和散射势 $V$：$k^2 = V + k_0^2 + i\epsilon$，其中  $\epsilon$ 为保持迭代稳定的小量，方程的最终解与 $k_0, \epsilon$ 的具体取值无关。得到单次迭代求解的方程
+
 $$
 (k_0^2 + i\epsilon) \hat{u} + \Delta \hat{u} = -V \hat{u} - S
 $$
+
 将右端项视为已知量，该方程的解为
+
 $$
 \hat{u} = G (V \hat{u} + S)
 \qquad
-G = \mathcal{F}^{-1} \frac1{|\bold{p}|^2 - k_0^2 - i\epsilon} \mathcal{F}
+G = \mathcal{F}^{-1} \frac1{|\mathbf{p}|^2 - k_0^2 - i\epsilon} \mathcal{F}
 $$
+
 将每轮迭代的求解结果代回右端项，进行下一轮迭代，得迭代表达式
+
 $$
 \hat{u}_{k+1} = GV\hat{u}_k + GS = (1 + GV + GVGV + \cdots)GS
 $$
+
 **收敛 Born Series**
 
-为了保证收敛性，需做一定预处理以及合理选取 $\epsilon$ 的值。定义预处理子 $\gamma = \frac{i}{\epsilon} V$，并取 $\epsilon \ge \max{|k^2 - k_0^2|}$，将迭代的等式两端同乘 $\gamma$ 并整理，可得
+为了保证收敛性，需做一定预处理以及合理选取 $\epsilon$ 的值。定义预处理子 $\gamma = i/\epsilon \cdot V$，并取 $\epsilon \ge \max{|k^2 - k_0^2|}$，将迭代的等式两端同乘 $\gamma$ 并整理，可得
+
 $$
 \hat{u} = (\gamma GV - \gamma + 1) \hat{u} + \gamma GS
 $$
+
 记 $\gamma GV - \gamma + 1 = M$，则迭代式变为
+
 $$
 \hat{u}_{k+1} = M \hat{u}_k + \gamma GS = (1 + M + M^2 + \cdots) \gamma GS
 $$
+
 矩阵形式
+
 $$
 \begin{bmatrix} \hat{u}_k \\ S \end{bmatrix} =
 \begin{bmatrix} M & \gamma G \\ 0 & 1 \end{bmatrix}^k
 \begin{bmatrix} 0 \\ S \end{bmatrix}
 $$
+
 实际程序植入时，为了减少 Fourier 变换的次数，采用以下等价形式的迭代式
+
 $$
 \hat{u}_{k+1} = \hat{u}_k + \gamma [G(V\hat{u}_k + S) - \hat{u}_k]
 $$
 
-## 案例设计
+## 模型实现
+
+### 硬件要求
+
+NPU 显存>32G
+
+### MindSpore和MindScience版本关系
+
+mindspore>=2.4.0
+mindscience==0.8.0
+
+### 安装
+
+1. 确保环境已安装正确版本的mindspore和mindscience；
+2. 克隆mindscience仓或直接获取[MindFlow/applications/cfd/acoustic](https://atomgit.com/mindspore-lab/mindscience/tree/master/MindFlow/applications/cfd/acoustic)目录下的代码；
+
+### 数据集
+
+下载训练与测试数据集：[cfd/acoustic/dataset](https://download-mindspore.osinfra.cn/mindscience/mindflow/dataset/applications/cfd/acoustic)。
+
+### 编码
+
+#### 案例设计
 
 具体包含以下步骤
 
@@ -97,11 +138,13 @@ $$
 
 案例新增可供用户指定的参数 `pml_size` 和 `dxs`，前者用于描述吸收边界厚度（各方向可不同），后者用于描述空间离散步长（各方向可不同）。
 
-## 快速开始
+#### 快速开始
 
 为了方便用户直接验证，本案例在本[链接](https://download-mindspore.osinfra.cn/mindscience/mindflow/dataset/applications/cfd/acoustic)中提供了预置的输入数据，请下载所需要的数据集，并保存在 `./dataset` 目录下。2D数据集包括速度场 `velocity_2d.npy`、震源位置列表 `srclocs_2d.csv`、震源波形 `srcwaves_2d.csv`，3D数据集包括速度场 `velocity_3d.npy`、震源位置列表 `srclocs_3d.csv`、震源波形 `srcwaves_3d.csv`。用户可仿照输入文件格式自行修改输入参数。
 
-### 运行方式一：`solve_acoustic.py` 脚本
+#### 运行方式一：`solve_acoustic.py` 脚本
+
+您可以从这里下载运行脚本[solve_acoustic.py](https://atomgit.com/mindspore-lab/mindscience/blob/master/MindFlow/applications/cfd/acoustic/solve_acoustic.py)。
 
 ```shell
 python solve_acoustic.py --dim 2 --device_id 0 --mode GRAPH
@@ -113,23 +156,23 @@ python solve_acoustic.py --dim 2 --device_id 0 --mode GRAPH
 
 `--device_id`表示使用的计算卡编号，可按照实际情况填写，默认从所有计算卡中自动选取最空闲的一张；
 
-`--mode`表示运行的模式，`GRAPH`表示静态图模式, `PYNATIVE`表示动态图模式。
+`--mode`表示运行的模式，`GRAPH`表示静态图模式，`PYNATIVE`表示动态图模式。
 
-### 运行方式二：运行 Jupyter Notebook
+#### 运行方式二：运行 Jupyter Notebook
 
-您可以使用[中文版](./acoustic_CN.ipynb)和[英文版](./acoustic.ipynb)Jupyter Notebook 逐行运行训练和验证代码。
+您可以使用[中文版](https://atomgit.com/mindspore-lab/mindscience/blob/master/MindFlow/applications/cfd/acoustic/acoustic_CN.ipynb)和[英文版](https://atomgit.com/mindspore-lab/mindscience/blob/master/MindFlow/applications/cfd/acoustic/acoustic.ipynb)Jupyter Notebook 逐行运行训练和验证代码。
 
-## 结果展示
+## 实验结果
 
 ### 二维模型
 
 针对同一个速度模型，不同震源位置激发的波场随时间演化过程如下图所示。
 
-![wave_2d.gif](images/wave_2d.gif)
+![wave_2d.gif](./images/wave_2d.gif)
 
 方程残差的迭代收敛过程如下图所示，每根线代表一个频点。不同频点达到收敛阈值所需的迭代次数不同，同一批次的迭代次数取决于收敛最慢的频点。
 
-![errors_2d.png](images/errors_2d.png)
+![errors_2d.png](./images/errors_2d.png)
 
 ### 三维模型
 
@@ -137,17 +180,17 @@ python solve_acoustic.py --dim 2 --device_id 0 --mode GRAPH
 
 将频点分到5张NPU卡上，每张卡的CBS迭代误差收敛曲线图为
 
-![errors_3d](images/errors_3d.png)
+![errors_3d](./images/errors_3d.png)
 
 如下从左至右分别为波速分布图、X-T声压分布图、Y-T声压分布图。其中X-T声压图描述了Z=0平面上声波随时间（纵坐标向下）沿X轴的传播过程，Y-T声压图描述了Z=0平面上声波随时间（纵坐标向下）沿Y轴的传播过程。
 
-![velocity_pressure_3d](images/velocity_pressure_3d.png)
+![velocity_pressure_3d](./images/velocity_pressure_3d.png)
 
 如下为3D场景 X-Z 截面处的声波随时间演化动图（为看清声波的传播与反射，这里仅对一个震源进行演示），可以从中看到声波在地下的传播以及声波遇到地下介质的反射波。
 
-<img src="images/sound_pressure_3d.gif" alt="sound_pressure_3d" style="zoom:50%;" />
+<img src="./images/sound_pressure_3d.gif" alt="sound_pressure_3d" style="zoom:50%;" />
 
-## 性能
+### 性能
 
 | 空间维数     | 2D              | 3D |
 |:----------------------:|:--------------------------:|:----------------------:|
@@ -159,8 +202,23 @@ python solve_acoustic.py --dim 2 --device_id 0 --mode GRAPH
 | 收敛所需迭代数  | batch 0: 1320, batch 1: 560, batch 2: 620, batch 3: 680| batch 0: 1180, batch 1: 540, batch 2: 460, batch 3: 460 |
 | 求解速度(ms/iteration) | 500                 | 2800 |
 
-## 贡献者
+## 许可证
 
-gitee id: [WhFanatic](https://gitee.com/WhFanatic), [zhaog6](https://gitee.com/zhaog6)
+- 开源协议：`Apache License 2.0`
+- 许可证连接：`https://atomgit.com/mindspore-lab/mindscience/blob/master/LICENSE`
 
-email: hainingwang1995@gmail.com, zhaog6@lsec.cc.ac.cn
+## 致谢
+
+### 贡献者
+
+gitee id：[WhFanatic](https://gitee.com/WhFanatic)，[zhaog6](https://gitee.com/zhaog6)
+
+email：hainingwang1995@gmail.com，zhaog6@lsec.cc.ac.cn
+
+## 联系我们
+
+如果您对MindSpore Mindscience有任何建议，请通过[issue](https://atomgit.com/mindspore-lab/mindscience/issues)与我们联系，我们将及时处理。
+
+## 引用
+
+如果本项目对您的研究有帮助，请引用相关工作。
