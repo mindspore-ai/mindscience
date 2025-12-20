@@ -1,27 +1,21 @@
 ## mindscience.pde
 
-### Introduction
+### 模块介绍
 
-- The PDE module is a scientific computing operator library within the MindSpore Science framework, designed for solving partial differential equations (PDEs) in fields such as fluid dynamics and statics. It provides custom implementations of mathematical operations (`mindspore function`) and can convert symbolic computations from the `sympy`library into corresponding `mindspore function`operations. Additionally, the PDE module currently supports loss function computations for **fluid dynamics and statics equations** under different operator neural network frameworks (e.g., FNO, FFNO, SNO, PDENet, etc.). The PDE module defines mathematical operations such as addition, exponentiation, and differentiation as corresponding Node classes, offering users a concise **formal functional computation interface** through the `sympy_to_mindspore()`method. By integrating with other modules in `MindFlow`, users can more efficiently solve differential equations via neural networks and handle scientific computing tasks.
+- pde 模块是 MindSpore Science 框架中用于求解流体力学、静力学等领域中的偏微分方程 (Partial Differential Equations, PDEs) 的科学计算算子库，给出了自定义的数学运算实现（`mindspore function`），并可将 `sympy`  库中的符号计算转换成相应的 `mindspore function`。此外，pde 模块目前也支持在不同的算子神经网络框架下（如 FNO，FFNO，SNO，PDENet 等）给出一些**流体力学和静力学方程的损失函数计算**。pde 模块将形如加法、幂运算、微分等数学运算定义为相应的 Node 类，通过 `sympy_to_mindspore()` 方法为用户提供简洁的**形式化泛函计算接口**。结合 `MindFlow` 中的其他模块，用户能够更加高效的进行微分方程的神经网络求解和处理科学计算任务。
 
 ### PDEWithLoss
 
-- This module is applied to neural network methods for solving single equations, such as Physics-Informed Neural Networks (PINNs).
+- 此模块被应用于神经网络求解单一方程的方法（如 PINNs）中；
+- **微分方程的定义：**将方程的数学符号串转化成可计算的 mindspore function；
+- 关键模块：`pde.sympy_to_mindspore` ，模块中定义了从特定 sympy 符号到 mindspore function 的接口类 Node（节点），对应于各种数学符号如加法、乘法、幂运算和偏导数等等；通过 `sympy_translation.py`  将符号串转换成节点图，随后翻译成完整可计算的 mindspore function；
+- 方程内部信息定义：`self.pde_nodes`：表示对应于 `pde` 的 mindspore function；`pde(self)`返回一个 sympy 数学符号串，表示了当前 PDE 问题在求解区域内部的方程左端，默认右端项为零；
+- 方程边界条件定义：`bc(self)`：返回一个 `sympy` 数学符号串，表示了当前 PDE 问题的边界条件表达式左端，默认右端项为零；注意此函数并非 `PDEWithLoss` 强制规定；`self.bc_nodes`：表示对应于 `bc` 的 mindspore function；注意此成员并非 `PDEWithLoss` 强制规定；
 
-- **Definition of Differential Equations:** Convert the mathematical symbolic string representation of the equation into a computable mindspore function.
+#### 使用示例
+用户自定义一个 `PDEWithLoss` 子类，并包含以下信息：
 
-- **Key Module: `pde.sympy_to_mindspore`**
-
-  This module defines the interface class `Node`(node) for converting specific `sympy `symbols into mindspore functions, representing various mathematical symbols such as addition, multiplication, exponentiation, partial derivatives, and more. Through `sympy_translation.py`, symbolic strings are transformed into a node graph, which is then translated into a fully computable mindspore function.
-
-- Definition of Equation Internal Information: `self.pde_nodes` represents the mindsporefunction corresponding to the PDE. `pde(self)` returns a sympy mathematical symbolic string representing the left-hand side of the equation for the current PDE problem within the solution domain. The right-hand side defaults to zero.
-
-- Definition of Equation Boundary Conditions: `bc(self)` returns a sympymathematical symbolic string representing the left-hand side of the boundary condition expression for the current PDE problem. The right-hand side defaults to zero. Note that this function is not mandatory for `PDEWithLoss`. `self.bc_nodes` represents the mindsporefunction corresponding to the boundary conditions. Note that this member is not mandatory for `PDEWithLoss`.
-
-#### Numerical Examples
-Users can define a custom subclass of `PDEWithLoss`containing the following information:
-
-- A second-order elliptic equation defined on a two-dimensional domain.
+- 方程：定义在二维区域上的二阶椭圆型方程；
     $$
     \begin{align}
     -\Delta u + u &= f = 4,~x \in \Omega \subset \mathbb{R}^2,\\
@@ -29,11 +23,11 @@ Users can define a custom subclass of `PDEWithLoss`containing the following info
     \end{align}
     $$
 
-- PINN loss function based on a fully connected neural network $u_\theta$ with two hidden layers.
+- 损失函数：基于两隐藏层全连接神经网络 $u_{\theta}$ 的 PINNs 损失函数；
     $$
     L(\theta) = \int_{\Omega} \left( -\Delta u_{\theta}(x) + u_{\theta}(x) -f(x) \right)^2 \mathrm{d}x + \int_{\partial \Omega}  \left( \nabla u_{\theta}(x) \cdot \mathbf{1} - g(x) \right)^2 \mathrm{d} S.
     $$
-    Note that after discretization via Monte Carlo methods (with quadrature weights all set to 1), the integral form of the loss function is equivalent to the Mean Squared Error (MSE) form.
+    注：积分形式的损失函数经过 Monte-Carlo 离散后（数值积分权值均为 1），等价于 MSE 形式。
 
   ```python
   import numpy as np
@@ -94,9 +88,9 @@ Users can define a custom subclass of `PDEWithLoss`containing the following info
   # {'bc_eq': Derivative(u(x, y), x) + Derivative(u(x, y), y) - 2.0}
   ```
 
-The equations currently supported by this module are as follows:
+此模块目前支持的方程如下:
 
-- One-dimensional viscous Burgers' equation
+- 一维有黏性的 Burgers' equation （目前初始条件和边界条件待补充）:
     $$
     \frac{\partial u}{\partial t} + u \frac{\partial u}{\partial x} - \epsilon \frac{\partial^2 u}{\partial x^2} = 0.
     $$
@@ -115,7 +109,7 @@ The equations currently supported by this module are as follows:
               return equations
     ```
 
-- Two-dimensional incompressible Navier-Stokes equations
+- 二维不可压 Navier-Stokes equation（目前初始条件和边界条件待补充）:
     $$
     \text{连续性方程：}\quad\quad  \frac{\partial u}{\partial x} + \frac{\partial u}{\partial y} = 0,\\
     x~\text{方向动量守恒：} \frac{\partial u}{\partial t} + u\frac{\partial u}{\partial x} + v\frac{\partial u}{\partial y} = -\frac{1}{\rho} \frac{\partial p}{\partial x} + \nu \left( \frac{\partial^2 u}{\partial x^2}+\frac{\partial^2 u}{\partial y^2} \right), \\
@@ -147,7 +141,7 @@ class IncompressibleNavierStokes(PDEWithLoss):
           return equations
 ```
 
-- Two-dimensional Poisson's equation
+- 二维 Poisson's equation （目前边界条件待补充）:
     $$
   -\Delta u = f = 1.
   $$
@@ -167,13 +161,10 @@ class IncompressibleNavierStokes(PDEWithLoss):
 
 ### FlowWithLoss
 
-- This base class defines the functions and data structures that a **complete, computable, and trainable** partial differential equation should possess.
-- `get_loss`: Constructs a computable and trainable loss function based on the inputs (which can be sample points in the domain) and labels (which can be source term information of the equation).
-- `step`: Returns a Tensor representing the prediction of the adopted model.
-- This module currently supports steady flow and unsteady flow.
-- It can be integrated with various types of neural networks as well as custom networks. Currently, this module is primarily **applied to operator learning methods**, and therefore does not include specific equation definitions.
+- 该基类规定了一个**完整、可计算且可被训练求解**的偏微分方程应有的函数和数据结构。
+- `get_loss(self, inputs, labels)`：根据输入（可以是区域的 sample 点）和标签（可以是方程的源项信息）来构建可被计算和训练的损失函数。`step(self, inputs)`：返回一个 Tensor 表示所采用模型的预测；
+- 此模块目前支持的流体力学场景包括：稳态流（steady flow），即流场中任意一点的流体属性与时间无关；非稳态流（unsteady flow），即流场中至少存在一点的流体属性与时间相关。
+- 可接入多种类型的神经网络以及自定义网络，目前该模块主要**被应用于算子学习**方法中，因此没有包含具体的方程定义。
 
-#### Numerical Examples
-
-Using FNO to solve the two-dimensional incompressible Navier-Stokes equations. https://atomgit.com/mindspore-lab/mindscience/blob/master/MindFlow/applications/data_driven/navier_stokes/fno2d/FNO2D.ipynb
-
+#### 使用示例
+采用 FNO 求解二维不可压 Navier-Stokes 方程：https://atomgit.com/mindspore-lab/mindscience/blob/master/MindFlow/applications/data_driven/navier_stokes/fno2d/FNO2D.ipynb
