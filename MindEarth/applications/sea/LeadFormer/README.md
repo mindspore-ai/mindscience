@@ -4,13 +4,13 @@
 
 Leads are linear fracture zones formed in sea ice under the influence of waves, wind, and ocean currents. Their morphological
  characteristics reflect the intensity of substance and energy exchange between the ocean and the atmosphere, influencing turbulent heat fluxes on the lead surface.
-  Therefore, accurately characterizing the morphology and spatial distribution of leads is crucial for studying Arctic sea ice changes and predicting navigational routes.  
+  Therefore, accurately characterizing the morphology and spatial distribution of leads is crucial for studying Arctic sea ice changes and predicting navigational routes.
 
-The morphological features of leads include length, width, and orientation (tilt angle).  
+The morphological features of leads include length, width, and orientation (tilt angle).
 
-- Lead width largely determines the intensity of heat and moisture exchange between the atmosphere and ocean  
-- Lead orientation reflects and influences sea ice dynamics  
-- Total lead length serves as an indicator for measuring scale variations, seasonal changes, and interannual variability of leads  
+- Lead width largely determines the intensity of heat and moisture exchange between the atmosphere and ocean
+- Lead orientation reflects and influences sea ice dynamics
+- Total lead length serves as an indicator for measuring scale variations, seasonal changes, and interannual variability of leads
 
 High-resolution sea ice lead forecasting models are key technological tools for addressing the rapid changes in Arctic sea ice under global warming.
  To tackle the complexity of sea ice change mechanisms and the uncertainty in sea ice forecasting, ***LeadFormer*** leverages Arctic high-resolution
@@ -19,7 +19,7 @@ High-resolution sea ice lead forecasting models are key technological tools for 
 
 The model framework is shown in the figure below:
 
-![LeadFormer](images/model.png)
+![LeadFormer](./images/model.png)
 
 The model adopts an encoder-decoder framework:
 
