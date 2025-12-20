@@ -10,9 +10,7 @@
 
 - **Definition of Differential Equations:** Convert the mathematical symbolic string representation of the equation into a computable mindspore function.
 
-- **Key Module:** `pde.sympy_to_mindspore`
-
-  This module defines the interface class `Node`(node) for converting specific `sympy `symbols into mindspore functions, representing various mathematical symbols such as addition, multiplication, exponentiation, partial derivatives, and more. Through `sympy_translation.py`, symbolic strings are transformed into a node graph, which is then translated into a fully computable mindspore function.
+- **Key Module:** `pde.sympy_to_mindspore`. This module defines the interface class `Node`(node) for converting specific `sympy` symbols into mindspore functions, representing various mathematical symbols such as addition, multiplication, exponentiation, partial derivatives, and more. Through `sympy_translation.py`, symbolic strings are transformed into a node graph, which is then translated into a fully computable mindspore function.
 
 - Definition of Equation Internal Information: `self.pde_nodes` represents the mindsporefunction corresponding to the PDE. `pde(self)` returns a sympy mathematical symbolic string representing the left-hand side of the equation for the current PDE problem within the solution domain. The right-hand side defaults to zero.
 
