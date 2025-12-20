@@ -55,7 +55,7 @@ where:
 
 `--device_id` indicates the index of NPU or GPU. Default 0.
 
-`--mode` is the running mode. 'GRAPH' indicates static graph mode. 'PYNATIVE' indicates dynamic graph mode. 
+`--mode` is the running mode. 'GRAPH' indicates static graph mode. 'PYNATIVE' indicates dynamic graph mode.
 
 #### Run Method 2: Run Jupyter Notebook
 
@@ -70,7 +70,7 @@ You can run the training and validation code line by line using the Chinese or E
 | Parameter               | Ascend               |
 |:----------------------:|:--------------------------:|
 | Hardware                | Ascend, 32G            |
-| MindSpore版本           | 2.7.0               |
+| MindSpore Version   | 2.7.0               |
 | Dataset                  | [1D Burgers Equation Resolution Dataset](https://download-mindspore.osinfra.cn/mindscience/mindflow/dataset/applications/data_driven/burgers/)      |
 | Parameters                  | 5.57e5                   |
 | Train Config                | resolution=1024, modes=16, hidden_channels=64, depth=4, batch_size=8, epoch=100 |
