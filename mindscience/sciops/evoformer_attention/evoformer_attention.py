@@ -20,6 +20,47 @@ from mindspore.ops import CustomOpBuilder
 _LOADED_OPS = None
 
 def evo_attention(query, key, value, head_num, bias, attn_mask, scale_value, input_layout):
+    """Performs evoformer attention computation using a custom NPU operator.
+
+    This function implements the attention mechanism used in Evoformer, which is a key component
+    in protein structure prediction models like AlphaFold2. It computes attention scores and
+    applies them to the value tensor to produce the output.
+
+    Args:
+        query (Tensor): Query tensor for attention computation.
+        key (Tensor): Key tensor for attention computation.
+        value (Tensor): Value tensor for attention computation.
+        head_num (int): Number of attention heads.
+        bias (Tensor): Bias tensor to be added to attention scores.
+        attn_mask (Tensor): Attention mask to mask out certain positions.
+        scale_value (float): Scaling factor applied to attention scores.
+        input_layout (str): Layout of the input tensors (e.g., 'BHMK' or 'BMKH').
+
+    Returns:
+        Tensor. Output tensor after applying attention mechanism.
+
+    Raises:
+        RuntimeError: If the custom operator fails to load or execute.
+
+    Examples:
+        >>> import numpy as np
+        >>> import mindspore as ms
+        >>> from mindspore import Tensor
+        >>> from mindscience.sciops import evo_attention
+        >>>
+        >>> # Example with BSND layout
+        >>> b, n, s, d = 2048, 1, 2048, 8
+        >>> query = Tensor(np.random.uniform(-0.1, 0.1, (b, s, n, d)), ms.bfloat16)
+        >>> key = Tensor(np.random.uniform(-0.1, 0.1, (b, s, n, d)), ms.bfloat16)
+        >>> value = Tensor(np.random.uniform(-0.1, 0.1, (b, s, n, d)), ms.bfloat16)
+        >>> bias = Tensor(np.random.uniform(-0.1, 0.1, (1, n, s, s)), ms.bfloat16)
+        >>> mask = np.concatenate((np.ones((b, 1, 1, s - 5)).astype(np.float32),
+        ...                        np.zeros((b, 1, 1, 5)).astype(np.float32)), axis=-1)
+        >>> evo_mask = Tensor(1 - mask.astype(np.uint8))
+        >>> output = evo_attention(query, key, value, n, bias, evo_mask, scale_value=1.0, input_layout="BSND")
+        >>> print(output.shape)
+        (2048, 2048, 1, 8)
+    """
     global _LOADED_OPS
     if _LOADED_OPS is None:
         ops_dir = os.path.dirname(__file__)

@@ -236,79 +236,71 @@ def _update_weight(cacl_info):
 
 
 class Einsum(nn.Cell):
-    """
-    Einsum operation
+    """Einsum operation using Einstein summation convention.
+
+    This operator performs tensor computations using Einstein summation convention (Einsum).
+    Supports diagonalization, reduction, transposition, matrix multiplication, product operations,
+    inner products, etc.
+
+    Args:
+        equation (str): Specifies the computation to be performed. Only accepts:
+
+            - Letters ([a-z][A-Z]): Represent dimensions of input tensors
+            - ...: anonymous dimensions
+            - Commas (','): Separate tensor dimensions
+            - Arrow ('->'): Left side specifies input tensors, right side specifies desired output dimensions
+
+        use_opt (bool, optional): Defaults to ``True``. When set to ``False``, performs contraction path optimization.
+
+    Inputs:
+        - **operands** (List[Tensor]): Variable number of tensor inputs.
+
+    Outputs:
+        - **out_tensor** (Tensor): The result of the einsum operation.
+
+    Supported Platforms:
+        ``Ascend`` ``CPU``
+
+    Examples:
+        >>> import mindspore as ms
+        >>> from mindspore import nn, Tensor, ops
+        >>> import numpy as np
+        >>> import Einsum
+
+        >>> x = Tensor(np.array([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]]), ms.float32)
+        >>> y = Tensor(np.array([[2.0, 3.0], [1.0, 2.0], [4.0, 5.0]]), ms.float32)
+        >>> equation = "ij,jk->ik"
+        >>> einsum = Einsum(equation, use_opt=False)
+        >>> output = einsum(x, y)
+        >>> print(output.shape)
+            (2, 2)
+
+        >>> shapes = [(156, 16, 16), (660, 128, 16), (660, 128, 16)]
+        >>> x, y, z = [ops.randn(tp) for tp in shapes]
+        >>> equation = "ijk,zui,zuj->zuk"
+        >>> einsum = Einsum(equation, use_opt=True)
+        >>> output = einsum(x, y, z)
     """
 
     def __init__(self, equation, use_opt=True):
-        """
+        """Initializes the Einsum operator.
+
         This operator performs tensor computations using Einstein summation convention (Einsum).
         Supports diagonalization, reduction, transposition, matrix multiplication, product operations,
         inner products, etc.
 
         Args:
-            - equation (str)
-                Specifies the computation to be performed. Only accepts:
-                Letters ([a-z][A-Z]): Represent dimensions of input tensors
-                ...: anonymous dimensions
-                Commas (','): Separate tensor dimensions
-                Arrow ('->'): Left side specifies input tensors, right side specifies desired output dimensions
+            equation (str): Specifies the computation to be performed. Only accepts:
 
-            - use_opt (bool), optional
-                Defaults to `True`. When set to `False`, performs contraction path optimization.
+                - Letters ([a-z][A-Z]): Represent dimensions of input tensors
+                - ...: anonymous dimensions
+                - Commas (','): Separate tensor dimensions
+                - Arrow ('->'): Left side specifies input tensors, right side specifies desired output dimensions
 
-        Inputs:
-            - *tensors,  list of tensor inputs of variable length
+            use_opt (bool, optional): Defaults to `True`. When set to `False`, performs contraction path optimization.
 
-        Outputs:
-            - output (Tensor)
-
-        Supported Platforms:
-            ``Ascend`` ``CPU``
-
-        Examples:
-            >>> import mindspore as ms
-            >>> from mindspore import nn, Tensor, ops
-            >>> import numpy as np
-            >>> import Einsum
-
-            >>> x = Tensor(np.array([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]]), ms.float32)
-            >>> y = Tensor(np.array([[2.0, 3.0], [1.0, 2.0], [4.0, 5.0]]), ms.float32)
-            >>> equation = "ij,jk->ik"
-            >>> einsum = Einsum(equation, use_opt=False)
-            >>> output = einsum(x, y)
-            >>> print(output.shape)
-                (2, 2)
-
-            >>> shapes = [(156, 16, 16), (660, 128, 16), (660, 128, 16)]
-            >>> x, y, z = [ops.randn(tp) for tp in shapes]
-            >>> equation = "ijk,zui,zuj->zuk"
-            >>> einsum = Einsum(equation, use_opt=True)
-            >>> output = einsum(x, y, z)
-
-            # example: Linear layer implemented using einsum
-            class EinsumLinear(nn.Cell):
-                def __init__(self, in_features, out_features):
-                    super().__init__()
-                    self.in_features = in_features
-                    self.out_features = out_features
-
-                    self.weight = ms.Parameter(
-                        Tensor(np.random.randn(out_features, in_features).astype(np.float32)),
-                        name='weight'
-                    )
-                    self.bias = ms.Parameter(
-                        Tensor(np.random.randn(out_features).astype(np.float32)),
-                        name='bias'
-                    )
-
-                    # Define einsum operation
-                    self.einsum = Einsum("ij,bj->bi")  # Define matrix multiplication pattern
-
-                def construct(self, x):
-                    # Perform matrix multiplication using einsum: output = x @ weight.T + bias
-                    output = self.einsum(self.weight, x) + self.bias
-                    return output
+        Raises:
+            TypeError: If equation is not a string.
         """
         super().__init__()
         if not isinstance(equation, str):
@@ -364,9 +356,9 @@ class Einsum(nn.Cell):
         bound_shapes = []
         for indices, shape in zip(op_labels, in_shapes):
             if rt_list:
-                bound_shape = [(idx, dim) for idx, dim in zip(indices, shape)]
+                bound_shape = list(zip(indices, shape))
             else:
-                bound_shape = {idx: dim for idx, dim in zip(indices, shape)}
+                bound_shape = dict(zip(indices, shape))
 
             bound_shapes.append(bound_shape)
 
@@ -594,15 +586,15 @@ class Einsum(nn.Cell):
         if not self.ellipsis_idxes:
             return operands, None
 
-        new_operands = mutable(list())
+        new_operands = mutable([])
         elli_shapes = None
-        for i in range(len(operands)):
+        for i, op in enumerate(operands):
             if self.ellipsis_idxes[i]:
-                new_shape, elli_shapes = _get_ellipsis_shape(operands[i].shape,
+                new_shape, elli_shapes = _get_ellipsis_shape(op.shape,
                                                              self.ellipsis_idxes[i], None)
-                new_operands.append(operands[i].reshape(new_shape))
+                new_operands.append(op.reshape(new_shape))
             else:
-                new_operands.append(operands[i])
+                new_operands.append(op)
 
         return new_operands, elli_shapes
 
@@ -660,7 +652,7 @@ class Einsum(nn.Cell):
         - *operands: Variable number of input tensors.
 
         Returns:
-        - Tensor: The final output tensor after applying all the operations.
+        - Tensor. The final output tensor after applying all the operations.
         """
         self._check_inputargs(operands)
         operands, elli_shapes = self._reshape_ellipsis(operands)
@@ -671,8 +663,8 @@ class Einsum(nn.Cell):
 
         data = mutable(list(operands))
 
-        for k in range(len(self.trace)):
-            i, j = self.trace[k]
+        for k, tra in enumerate(self.trace):
+            i, j = tra
             t_type, bmm_info = self.step_ops[k]
 
             # Apply preprocessing to the selected tensors

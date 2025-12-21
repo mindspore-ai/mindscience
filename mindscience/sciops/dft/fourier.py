@@ -280,12 +280,12 @@ class RDFTn(_DFTn):
 
     Args:
         shape (tuple): The shape of the dimensions to be transformed, other dimensions need not be included.
-        dim (tuple): Dimensions to be transformed. Default: None, the trailing dimensions will be transformed.
-        norm (str): Normalization mode, should be one of 'forward', 'backward', 'ortho'. Default: 'backward',
+        dim (tuple): Dimensions to be transformed. Default: ``None``, the trailing dimensions will be transformed.
+        norm (str): Normalization mode, should be one of 'forward', 'backward', 'ortho'. Default: ``'backward'``,
             same as torch.fft.rfftn
-        modes (tuple, int, None): The length of the output transform axis.
-            The `modes` must be no greater than half of the dimension of input 'x'.
-        compute_dtype (mindspore.dtype): The type of input tensor. Default: mindspore.float32.
+        modes (Union[tuple, int, None]): The length of the output transform axis.
+            The `modes` must be no greater than half of the dimension of input 'x'. Default: ``None``.
+        compute_dtype (mindspore.dtype): The type of input tensor. Default: ``mstype.float32``.
 
     Inputs:
         - **ar** (Tensor) - The real tensor to be transformed, with trailing dimensions aligned with `shape`.
@@ -322,12 +322,12 @@ class IRDFTn(_DFTn):
 
     Args:
         shape (tuple): The shape of the dimensions to be transformed, other dimensions need not be included.
-        dim (tuple): Dimensions to be transformed. Default: None, the trailing dimensions will be transformed.
-        norm (str): Normalization mode, should be one of 'forward', 'backward', 'ortho'. Default: 'backward',
+        dim (tuple): Dimensions to be transformed. Default: ``None``, the trailing dimensions will be transformed.
+        norm (str): Normalization mode, should be one of 'forward', 'backward', 'ortho'. Default: ``'backward'``,
             same as torch.fft.irfftn
-        modes (tuple, int, None): The length of the output transform axis.
-            The `modes` must be no greater than half of the dimension of input 'x'.
-        compute_dtype (mindspore.dtype): The type of input tensor. Default: mindspore.float32.
+        modes (Union[tuple, int, None]): The length of the output transform axis.
+            The `modes` must be no greater than half of the dimension of input 'x'. Default: ``None``.
+        compute_dtype (mindspore.dtype): The type of input tensor. Default: ``mstype.float32``.
 
     Inputs:
         - **ar** (Tensor) - Real part of the tensor to be transformed, with trailing dimensions aligned with `shape`,
@@ -375,12 +375,12 @@ class DFTn(_DFTn):
 
     Args:
         shape (tuple): The shape of the dimensions to be transformed, other dimensions need not be included.
-        dim (tuple): Dimensions to be transformed. Default: None, the trailing dimensions will be transformed.
-        norm (str): Normalization mode, should be one of 'forward', 'backward', 'ortho'. Default: 'backward',
+        dim (tuple): Dimensions to be transformed. Default: ``None``, the trailing dimensions will be transformed.
+        norm (str): Normalization mode, should be one of 'forward', 'backward', 'ortho'. Default: ``'backward'``,
             same as torch.fft.irfftn
-        modes (tuple, int, None): The length of the output transform axis.
-            The `modes` must be no greater than half of the dimension of input 'x'.
-        compute_dtype (mindspore.dtype): The type of input tensor. Default: mindspore.float32.
+        modes (Union[tuple, int, None]): The length of the output transform axis.
+            The `modes` must be no greater than half of the dimension of input 'x'. Default: ``None``.
+        compute_dtype (mindspore.dtype): The type of input tensor. Default: ``mstype.float32``.
 
     Inputs:
         - **ar** (Tensor) - Real part of the tensor to be transformed, with trailing dimensions aligned with `shape`.
@@ -426,12 +426,12 @@ class IDFTn(DFTn):
 
     Args:
         shape (tuple): The shape of the dimensions to be transformed, other dimensions need not be included.
-        dim (tuple): Dimensions to be transformed. Default: None, the trailing dimensions will be transformed.
-        norm (str): Normalization mode, should be one of 'forward', 'backward', 'ortho'. Default: 'backward',
+        dim (tuple): Dimensions to be transformed. Default: ``None``, the trailing dimensions will be transformed.
+        norm (str): Normalization mode, should be one of 'forward', 'backward', 'ortho'. Default: ``'backward'``,
             same as torch.fft.irfftn
-        modes (tuple, int, None): The length of the output transform axis.
-            The `modes` must be no greater than half of the dimension of input 'x'.
-        compute_dtype (mindspore.dtype): The type of input tensor. Default: mindspore.float32.
+        modes (Union[tuple, int, None]): The length of the output transform axis.
+            The `modes` must be no greater than half of the dimension of input 'x'. Default: ``None``.
+        compute_dtype (mindspore.dtype): The type of input tensor. Default: ``mstype.float32``.
 
     Inputs:
         - **ar** (Tensor) - Real part of the tensor to be transformed, with trailing dimensions aligned with `shape`.
@@ -474,7 +474,7 @@ class DCT(nn.Cell):
     Args:
         shape (tuple): The shape of the dimensions to be transformed, other dimensions need not be included.
             Must be a length-1 tuple.
-        compute_dtype (mindspore.dtype): The type of input tensor. Default: mindspore.float32.
+        compute_dtype (mindspore.dtype): The type of input tensor. Default: ``mstype.float32``.
 
     Inputs:
         - **a** (Tensor) - The real tensor to be transformed, with trailing dimensions aligned with `shape`.
@@ -526,7 +526,7 @@ class IDCT(nn.Cell):
     Args:
         shape (tuple): The shape of the dimensions to be transformed, other dimensions need not be included.
             Must be a length-1 tuple.
-        compute_dtype (mindspore.dtype): The type of input tensor. Default: mindspore.float32.
+        compute_dtype (mindspore.dtype): The type of input tensor. Default: ``mstype.float32``.
 
     Inputs:
         - **a** (Tensor) - The real tensor to be transformed, with trailing dimensions aligned with `shape`.
@@ -590,7 +590,7 @@ class DST(nn.Cell):
     Args:
         shape (tuple): The shape of the dimensions to be transformed, other dimensions need not be included.
             Must be a length-1 tuple.
-        compute_dtype (mindspore.dtype): The type of input tensor. Default: mindspore.float32.
+        compute_dtype (mindspore.dtype): The type of input tensor. Default: ``mstype.float32``.
 
     Inputs:
         - **a** (Tensor) - The real tensor to be transformed, with trailing dimensions aligned with `shape`.
@@ -634,7 +634,7 @@ class IDST(nn.Cell):
     Args:
         shape (tuple): The shape of the dimensions to be transformed, other dimensions need not be included.
             Must be a length-1 tuple.
-        compute_dtype (mindspore.dtype): The type of input tensor. Default: mindspore.float32.
+        compute_dtype (mindspore.dtype): The type of input tensor. Default: ``mstype.float32``.
 
     Inputs:
         - **a** (Tensor) - The real tensor to be transformed, with trailing dimensions aligned with `shape`.
