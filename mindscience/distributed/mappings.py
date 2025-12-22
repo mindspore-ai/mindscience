@@ -90,8 +90,20 @@ def _alltoall_h2s(x, group):
 
 
 class CopyToAll(_Function):
-    """Forwards the input to all ranks and
-    reduces gradients across the group in backward."""
+    """Forwards the input to all ranks and reduces gradients across the group in backward.
+
+    This operation copies the input tensor to all ranks in the specified group during
+    the forward pass and performs an all-reduce operation on the gradients during
+    the backward pass.
+
+    Args:
+        x (Tensor): Input tensor to be copied to all ranks.
+        group (Union[CommGroup, CommGroupBase]): Communication group for the operation.
+
+    Returns:
+        - Forward pass. The input tensor (copied to all ranks).
+        - Backward pass. Reduced gradients across the group.
+    """
     @staticmethod
     def forward(ctx, x, group):
         ctx.group = group
@@ -103,8 +115,20 @@ class CopyToAll(_Function):
 
 
 class GatherFromHidden(_Function):
-    """Gathers hidden-partitioned tensors along the last dimension
-    in forward and scatters gradients in backward."""
+    """Gathers hidden-partitioned tensors along the last dimension in forward and scatters gradients in backward.
+
+    This operation gathers tensors that are partitioned along the last dimension during
+    the forward pass and scatters the gradients back to the corresponding partitions
+    during the backward pass.
+
+    Args:
+        x (Tensor): Input tensor with hidden partitions along the last dimension.
+        group (Union[CommGroup, CommGroupBase]): Communication group for the operation.
+
+    Returns:
+        - Forward pass. Tensor with all hidden partitions gathered along the last dimension.
+        - Backward pass. Gradients scattered to respective partitions.
+    """
     @staticmethod
     def forward(ctx, x, group):
         ctx.group = group
@@ -116,8 +140,20 @@ class GatherFromHidden(_Function):
 
 
 class ScatterToHidden(_Function):
-    """Scatters tensors into hidden partitions in forward and
-    gathers gradients from partitions in backward."""
+    """Scatters tensors into hidden partitions in forward and gathers gradients from partitions in backward.
+
+    This operation scatters the input tensor into hidden partitions along the last
+    dimension during the forward pass and gathers the gradients from all partitions
+    during the backward pass.
+
+    Args:
+        x (Tensor): Input tensor to be scattered into hidden partitions.
+        group (Union[CommGroup, CommGroupBase]): Communication group for the operation.
+
+    Returns:
+        - Forward pass. Tensor partition corresponding to the current rank.
+        - Backward pass. Gradients gathered from all partitions along the last dimension.
+    """
     @staticmethod
     def forward(ctx, x, group):
         ctx.group = group
@@ -129,8 +165,20 @@ class ScatterToHidden(_Function):
 
 
 class ReduceFromAll(_Function):
-    """Performs an all-reduce on forward;
-    backward returns the upstream gradient unchanged."""
+    """Performs an all-reduce on forward; backward returns the upstream gradient unchanged.
+
+    This operation performs an all-reduce operation across all ranks in the group
+    during the forward pass and returns the upstream gradient unchanged during
+    the backward pass.
+
+    Args:
+        x (Tensor): Input tensor to be reduced across all ranks.
+        group (Union[CommGroup, CommGroupBase]): Communication group for the operation.
+
+    Returns:
+        - Forward pass. Reduced tensor from all ranks.
+        - Backward pass. Unchanged upstream gradient.
+    """
     @staticmethod
     def forward(_, x, group):
         return _reduce(x, group)
@@ -142,7 +190,23 @@ class ReduceFromAll(_Function):
 
 class GatherFromSequence(_Function):
     """Gathers sequence partitions along the first dimension in forward;
-    backward either reduce-scatter or scatter based on a flag."""
+    backward either reduce-scatter or scatter based on a flag.
+
+    This operation gathers sequence partitions along the first dimension during
+    the forward pass and either performs reduce-scatter or scatter operation
+    during the backward pass depending on the tensor_parallel_output_grad flag.
+
+    Args:
+        x (Tensor): Input tensor with sequence partitions along the first dimension.
+        group (Union[CommGroup, CommGroupBase]): Communication group for the operation.
+        tensor_parallel_output_grad (bool, optional): Flag to determine whether
+            to use reduce-scatter (True) or scatter (False) in backward pass.
+            Defaults to True.
+
+    Returns:
+        - Forward pass. Tensor with all sequence partitions gathered along the first dimension.
+        - Backward pass. Either reduce-scattered or scattered gradients based on the flag.
+    """
     @staticmethod
     def forward(ctx, x, group, tensor_parallel_output_grad=True):
         ctx.group = group
@@ -157,7 +221,20 @@ class GatherFromSequence(_Function):
 
 
 class ReduceScatterToSequence(_Function):
-    """Performs reduce-scatter across sequence partitions in forward and gathers in backward."""
+    """Performs reduce-scatter across sequence partitions in forward and gathers in backward.
+
+    This operation performs a reduce-scatter operation across sequence partitions
+    along the first dimension during the forward pass and gathers the results
+    during the backward pass.
+
+    Args:
+        x (Tensor): Input tensor to be reduced and scattered across sequence partitions.
+        group (Union[CommGroup, CommGroupBase]): Communication group for the operation.
+
+    Returns:
+        - Forward pass. Reduced and scattered tensor for the current rank.
+        - Backward pass. Gradients gathered from all sequence partitions.
+    """
     @staticmethod
     def forward(ctx, x, group):
         ctx.group = group
@@ -169,7 +246,20 @@ class ReduceScatterToSequence(_Function):
 
 
 class ScatterToSequence(_Function):
-    """Scatters tensors across the first dimension to form sequence partitions and gathers on backward."""
+    """Scatters tensors across the first dimension to form sequence partitions and gathers on backward.
+
+    This operation scatters the input tensor across the first dimension to form
+    sequence partitions during the forward pass and gathers the gradients from
+    all partitions during the backward pass.
+
+    Args:
+        x (Tensor): Input tensor to be scattered into sequence partitions.
+        group (Union[CommGroup, CommGroupBase]): Communication group for the operation.
+
+    Returns:
+        - Forward pass. Tensor partition corresponding to the current rank along the first dimension.
+        - Backward pass. Gradients gathered from all sequence partitions.
+    """
     @staticmethod
     def forward(ctx, x, group):
         ctx.group = group
@@ -181,7 +271,20 @@ class ScatterToSequence(_Function):
 
 
 class AllToAllFromHiddenToSequence(_Function):
-    """Performs an all-to-all from hidden layout to sequence layout in forward and the inverse on backward."""
+    """Performs an all-to-all from hidden layout to sequence layout in forward and the inverse on backward.
+
+    This operation performs an all-to-all communication to transform from hidden
+    layout to sequence layout during the forward pass and performs the inverse
+    transformation during the backward pass.
+
+    Args:
+        x (Tensor): Input tensor in hidden layout.
+        group (Union[CommGroup, CommGroupBase]): Communication group for the operation.
+
+    Returns:
+        - Forward pass. Tensor transformed from hidden layout to sequence layout.
+        - Backward pass. Gradients transformed from sequence layout back to hidden layout.
+    """
     @staticmethod
     def forward(ctx, x, group):
         ctx.group = group
@@ -193,7 +296,20 @@ class AllToAllFromHiddenToSequence(_Function):
 
 
 class AllToAllFromSequenceToHidden(_Function):
-    """Performs an all-to-all from sequence layout to hidden layout in forward and the inverse on backward."""
+    """Performs an all-to-all from sequence layout to hidden layout in forward and the inverse on backward.
+
+    This operation performs an all-to-all communication to transform from sequence
+    layout to hidden layout during the forward pass and performs the inverse
+    transformation during the backward pass.
+
+    Args:
+        x (Tensor): Input tensor in sequence layout.
+        group (Union[CommGroup, CommGroupBase]): Communication group for the operation.
+
+    Returns:
+        - Forward pass. Tensor transformed from sequence layout to hidden layout.
+        - Backward pass. Gradients transformed from hidden layout back to sequence layout.
+    """
     @staticmethod
     def forward(ctx, x, group):
         ctx.group = group
@@ -202,3 +318,123 @@ class AllToAllFromSequenceToHidden(_Function):
     @staticmethod
     def backward(ctx, grad):
         return _alltoall_h2s(grad, ctx.group), None
+
+
+def copy_to_all(x, group):
+    """Forwards the input to all ranks in the specified group.
+
+    Args:
+        x (Tensor): Input tensor to be copied to all ranks.
+        group (Union[CommGroup, CommGroupBase]): Communication group for the operation.
+
+    Returns:
+        The input tensor (copied to all ranks).
+    """
+    return CopyToAll.apply(x, group)
+
+
+def gather_from_hidden(x, group):
+    """Gathers hidden-partitioned tensors along the last dimension.
+
+    Args:
+        x (Tensor): Input tensor with hidden partitions along the last dimension.
+        group (Union[CommGroup, CommGroupBase]): Communication group for the operation.
+
+    Returns:
+        Tensor with all hidden partitions gathered along the last dimension.
+    """
+    return GatherFromHidden.apply(x, group)
+
+
+def scatter_to_hidden(x, group):
+    """Scatters tensors into hidden partitions along the last dimension.
+
+    Args:
+        x (Tensor): Input tensor to be scattered into hidden partitions.
+        group (Union[CommGroup, CommGroupBase]): Communication group for the operation.
+
+    Returns:
+        Tensor partition corresponding to the current rank.
+    """
+    return ScatterToHidden.apply(x, group)
+
+
+def reduce_from_all(x, group):
+    """Performs an all-reduce operation across all ranks in the group.
+
+    Args:
+        x (Tensor): Input tensor to be reduced across all ranks.
+        group (Union[CommGroup, CommGroupBase]): Communication group for the operation.
+
+    Returns:
+        Reduced tensor from all ranks.
+    """
+    return ReduceFromAll.apply(x, group)
+
+
+def gather_from_sequence(x, group, tensor_parallel_output_grad=True):
+    """Gathers sequence partitions along the first dimension.
+
+    Args:
+        x (Tensor): Input tensor with sequence partitions along the first dimension.
+        group (Union[CommGroup, CommGroupBase]): Communication group for the operation.
+        tensor_parallel_output_grad (bool, optional): Flag to determine whether
+            to use reduce-scatter (True) or scatter (False) in backward pass.
+            Default: ``True``.
+
+    Returns:
+        Tensor with all sequence partitions gathered along the first dimension.
+    """
+    return GatherFromSequence.apply(x, group, tensor_parallel_output_grad)
+
+
+def reduce_scatter_to_sequence(x, group):
+    """Performs reduce-scatter across sequence partitions along the first dimension.
+
+    Args:
+        x (Tensor): Input tensor to be reduced and scattered across sequence partitions.
+        group (Union[CommGroup, CommGroupBase]): Communication group for the operation.
+
+    Returns:
+        Reduced and scattered tensor for the current rank.
+    """
+    return ReduceScatterToSequence.apply(x, group)
+
+
+def scatter_to_sequence(x, group):
+    """Scatters tensors across the first dimension to form sequence partitions.
+
+    Args:
+        x (Tensor): Input tensor to be scattered into sequence partitions.
+        group (Union[CommGroup, CommGroupBase]): Communication group for the operation.
+
+    Returns:
+        Tensor partition corresponding to the current rank along the first dimension.
+    """
+    return ScatterToSequence.apply(x, group)
+
+
+def all_to_all_from_hidden_to_sequence(x, group):
+    """Performs an all-to-all from hidden layout to sequence layout.
+
+    Args:
+        x (Tensor): Input tensor in hidden layout.
+        group (Union[CommGroup, CommGroupBase]): Communication group for the operation.
+
+    Returns:
+        Tensor transformed from hidden layout to sequence layout.
+    """
+    return AllToAllFromHiddenToSequence.apply(x, group)
+
+
+def all_to_all_from_sequence_to_hidden(x, group):
+    """Performs an all-to-all from sequence layout to hidden layout.
+
+    Args:
+        x (Tensor): Input tensor in sequence layout.
+        group (Union[CommGroup, CommGroupBase]): Communication group for the operation.
+
+    Returns:
+        Tensor transformed from sequence layout to hidden layout.
+    """
+    return AllToAllFromSequenceToHidden.apply(x, group)

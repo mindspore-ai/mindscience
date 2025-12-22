@@ -49,7 +49,27 @@ def initialize_affine_weight(
 ):
     """Initialize and (optionally) partition a weight tensor for parallelism.
 
-    Returns the full parameter when tp_world_size==1 or the per-rank partition otherwise.
+    Args:
+        init_shape (Tuple[int]): Shape of the weight tensor to initialize.
+        tp_world_size (int): Tensor parallel world size.
+        partition_dim (int): Dimension along which to partition the weight tensor.
+        init_method (Union[Initializer, str], optional): Initialization method to use.
+            Default: ``"XavierUniform"``.
+        init_dtype (mstype.dtype, optional): Data type for the initialized weight. Default: ``ms.float32``.
+
+    Returns:
+        Parameter, The full parameter when tp_world_size==1 or the per-rank partition otherwise.
+
+    Example:
+        >>> import mindspore as ms
+        >>> from mindspore.communication import init
+        >>> from mindscience.distributed import initialize_parallel
+        >>> from mindscience.distributed.modules import initialize_affine_weight
+        >>> init()
+        >>> initialize_parallel(tensor_parallel_size=2)
+        >>> param = initialize_affine_weight((64, 64), 2, 0)
+        >>> print(param.shape)
+        (32, 64)
     """
     master_weight = Parameter(initializer(init_method, init_shape, init_dtype))
     if tp_world_size == 1:
@@ -63,24 +83,40 @@ def initialize_affine_weight(
 class ColumnParallelLinear(nn.Cell):
     """Column-parallel linear layer that shards the output feature dimension across TP ranks.
 
-    Parameters
-    ----------
-    in_features : int
-        Number of input features.
-    out_features : int
-        Total number of output features across all TP ranks.
-    bias : bool
-        If True, create and partition a bias parameter consistent with the output sharding.
-    gather_output : bool
-        If True, the module will gather the TP-local outputs into a full output via `out_map`.
-    use_sequence_parallel : bool
-        If True, use all gather for input instead of broadcast.
+    Args:
+        in_features (int): Number of input features.
+        out_features (int): Total number of output features across all TP ranks.
+        bias (bool, optional): Whether create and partition a bias parameter consistent with the output sharding.
+                               Default: ``True``.
+        gather_output (bool, optional): Whether gather the TP-local outputs into a full output via.
+                                        Default: ``True``.
+        use_sequence_parallel (bool, optional): Whether use all gather for input instead of broadcast.
+                                                Default: ``False``.
+        weight_init (Union[Initializer, str], optional): Weight initialization method. Default: ``None``.
+        bias_init (Union[Initializer, str], optional): Bias initialization method. Default: ``None``.
+        param_init_dtype (mstype.dtype, optional): Parameter initialization data type. Default: ``ms.float32``.
+        compute_dtype (mstype.dtype, optional): Computation data type. Default: ``ms.bfloat16``.
 
-    Notes
-    -----
-    The class uses `initialize_affine_weight` to create the master weight and
-    extract the local partition. This ensures parameters are created deterministically
-    and shaped correctly for model-parallel training.
+    Inputs:
+        - **x** (Tensor): Input tensor of shape (seq_len // TP, in_features) or (seq_len, in_features),
+          depending on whether `use_sequence_parallel` is True.
+
+    Outputs:
+        - **output** (Tensor): Output tensor of shape (seq_len, out_features) or (seq_len, out_features // TP),
+          depending on whether `gather_output` is True.
+
+    Example:
+        >>> import mindspore as ms
+        >>> from mindspore.communication import init
+        >>> from mindscience.distributed import initialize_parallel
+        >>> from mindscience.distributed.modules import ColumnParallelLinear
+        >>> init()
+        >>> initialize_parallel(tensor_parallel_size=2)
+        >>> linear = ColumnParallelLinear(in_features=512, out_features=1024, bias=True)
+        >>> input_tensor = ms.mint.randn(32, 512)
+        >>> output = linear(input_tensor)
+        >>> print(output.shape)
+        (32, 1024)
     """
     def __init__(
         self,
@@ -131,24 +167,40 @@ class ColumnParallelLinear(nn.Cell):
 class RowParallelLinear(nn.Cell):
     """Row-parallel linear layer that shards the input feature dimension across TP ranks.
 
-    Parameters
-    ----------
-    in_features : int
-        Total number of input features across all TP ranks.
-    out_features : int
-        Number of output features.
-    bias : bool
-        If True, a bias parameter is created (not sharded along input dim).
-    input_is_parallel : bool
-        When True the module expects the input already partitioned across TP ranks.
-    use_sequence_parallel : bool
-        If True, use reduce scatter for output instead of all reduce.
+    Args:
+        in_features (int): Total number of input features across all TP ranks.
+        out_features (int): Number of output features.
+        bias (bool, optional): Whether create a bias parameter (not sharded along input dim).
+                               Default: ``True``.
+        input_is_parallel (bool, optional): Whether expect the input already partitioned
+                                            across TP ranks. Default: ``False``.
+        use_sequence_parallel (bool, optional): Whether use reduce scatter for output instead of all reduce.
+                                                Default: ``False``.
+        weight_init (Union[Initializer, str], optional): Weight initialization method. Default: ``None``.
+        bias_init (Union[Initializer, str], optional): Bias initialization method. Default: ``None``.
+        param_init_dtype (mstype.dtype, optional): Parameter initialization data type. Default: ``ms.float32``.
+        compute_dtype (mstype.dtype, optional): Computation data type. Default: ``ms.bfloat16``.
 
-    Notes
-    -----
-    The class uses `initialize_affine_weight` to create the master weight and
-    extract the local partition. This ensures parameters are created deterministically
-    and shaped correctly for model-parallel training.
+    Inputs:
+        - **x** (Tensor): Input tensor of shape (seq_len, in_features // TP) or (seq_len, in_features),
+          depending on whether `input_is_parallel` is True.
+
+    Outputs:
+        - **output** (Tensor): Output tensor of shape (seq_len // TP, out_features) or (seq_len, out_features),
+          depending on whether `use_sequence_parallel` is True.
+
+    Example:
+        >>> import mindspore as ms
+        >>> from mindspore.communication import init
+        >>> from mindscience.distributed import initialize_parallel
+        >>> from mindscience.distributed.modules import RowParallelLinear
+        >>> init()
+        >>> initialize_parallel(tensor_parallel_size=2)
+        >>> linear = RowParallelLinear(in_features=1024, out_features=512, bias=True)
+        >>> input_tensor = ms.mint.randn(32, 1024)
+        >>> output = linear(input_tensor)
+        >>> print(output.shape)
+        (32, 512)
     """
     def __init__(
         self,

@@ -159,12 +159,11 @@ class CommGroupCreator:
     axes partition the world ranks without overlap. This allows combining axes such
     as "dp-cp" to form bigger groups while keeping other axes orthogonal.
     """
-    def __init__(self, tp, cp, dp, pp, order):
+    def __init__(self, tp, cp, dp, order):
         self.tp = tp
         self.cp = cp
         self.dp = dp
-        self.pp = pp
-        self.world_size = tp * cp * dp * pp
+        self.world_size = tp * cp * dp
         self.rank = get_rank()
 
         self.order = order
@@ -279,56 +278,42 @@ class CommGroupCreator:
 def initialize_parallel(
     tensor_parallel_size=1,
     context_parallel_size=1,
-    pipeline_parallel_size=1,
-    order="tp-cp-dp-pp"
+    order="tp-cp-dp"
 ):
-    """
-    Initialize parallel communication groups for the current distributed world.
+    """Initialize parallel communication groups for distributed training.
 
-    This function validates the communication backend is initialized, computes
-    the data parallel size from the global group size and the provided tensor/
-    context/pipeline sizes, then uses :class:`CommGroupCreator` to build and
-    register communication groups for supported parallelisms into the module
-    registry `_LOCAL_PARALLELISMS_GROUP`.
+    This function creates and initializes orthogonal communication groups used by
+    different model parallelisms (tensor, context, and data) in distributed
+    training. It sets up backend communication groups so that code can query group
+    sizes, ranks and names for each parallelism. The distributed backends required by
+    MindSpore communication services should be initialized before call this function.
 
-    Parameters
-    ----------
-    tensor_parallel_size : int
-        Size of tensor parallelism (tp).
-    context_parallel_size : int
-        Size of context parallelism (cp).
-    pipeline_parallel_size : int
-        Size of pipeline parallelism (pp). Note: pipeline parallelism is
-        currently limited and will be coerced to 1 if >1.
-    order : str
-        Dash-separated ordering of axes used to compose groups (default
-        "tp-cp-dp-pp").
+    Args:
+        tensor_parallel_size (int, optional): Size of tensor parallelism. Default: ``1``.
+        context_parallel_size (int, optional): Size of context parallelism. Default: ``1``.
+        order (str, optional): A dash-separated string specifying the ordering of
+            dimensions when computing orthogonal partitions, e.g. "tp-cp-dp".
+            The order determines how the world ranks are decomposed into
+            multi-dimensional indices used to form groups. Default: ``"tp-cp-dp"``.
 
-    Raises
-    ------
-    RuntimeError
-        If the communication backend is not initialized or the world size is
-        not divisible by the requested parallelism product.
+    Raises:
+        RuntimeError: If world_size is not divisible by the product of parallel sizes.
     """
     if not is_initialized():
         raise RuntimeError("MindSpore communication is not initialized.")
 
-    if pipeline_parallel_size > 1:
-        print("Pipeline parallelism has not yet been implemented, set pipeline_parallel_size = 1.")
-        pipeline_parallel_size = 1
-
     world_size = get_group_size()
-    minimum_world_size = tensor_parallel_size * context_parallel_size * pipeline_parallel_size
+    minimum_world_size = tensor_parallel_size * context_parallel_size
     if world_size % minimum_world_size != 0:
         raise RuntimeError(
             f"world_size {world_size} is not divisible by tensor_parallel_size {tensor_parallel_size} "
-            f"x pipeline_parallel_size {pipeline_parallel_size} x context_parallel_size {context_parallel_size}."
+            f"x context_parallel_size {context_parallel_size}."
         )
 
     data_parallel_size = world_size // minimum_world_size
 
     comm_creator = CommGroupCreator(tp=tensor_parallel_size, cp=context_parallel_size,
-                                    dp=data_parallel_size, pp=pipeline_parallel_size, order=order)
+                                    dp=data_parallel_size, order=order)
 
     _LOCAL_PARALLELISMS_GROUP["dp"] = comm_creator.init_group("dp") if data_parallel_size > 1 \
                                                                     else CommGroupBase("dp")
@@ -341,49 +326,129 @@ def initialize_parallel(
                                                                           else CommGroupBase("dp-cp")
 
 def get_data_parallel_rank():
+    """Get the data parallel rank of the current process.
+
+    Returns:
+        int. The rank of the current process within the data parallel group.
+    """
     return _LOCAL_PARALLELISMS_GROUP["dp"].rank
 
 def get_tensor_parallel_rank():
+    """Get the tensor parallel rank of the current process.
+
+    Returns:
+        int. The rank of the current process within the tensor parallel group.
+    """
     return _LOCAL_PARALLELISMS_GROUP["tp"].rank
 
 def get_context_parallel_rank():
+    """Get the context parallel rank of the current process.
+
+    Returns:
+        int. The rank of the current process within the context parallel group.
+    """
     return _LOCAL_PARALLELISMS_GROUP["cp"].rank
 
 def get_data_context_parallel_rank():
+    """Get the data-context parallel rank of the current process.
+
+    Returns:
+        int. The rank of the current process within the data-context parallel group.
+    """
     return _LOCAL_PARALLELISMS_GROUP["dp-cp"].rank
 
 def get_data_parallel_world_size():
+    """Get the size of the data parallel group.
+
+    Returns:
+        int. The total number of processes in the data parallel group.
+    """
     return _LOCAL_PARALLELISMS_GROUP["dp"].size
 
 def get_tensor_parallel_world_size():
+    """Get the size of the tensor parallel group.
+
+    Returns:
+        int. The total number of processes in the tensor parallel group.
+    """
     return _LOCAL_PARALLELISMS_GROUP["tp"].size
 
 def get_context_parallel_world_size():
+    """Get the size of the context parallel group.
+
+    Returns:
+        int. The total number of processes in the context parallel group.
+    """
     return _LOCAL_PARALLELISMS_GROUP["cp"].size
 
 def get_data_context_parallel_world_size():
+    """Get the size of the data-context parallel group.
+
+    Returns:
+        int. The total number of processes in the data-context parallel group.
+    """
     return _LOCAL_PARALLELISMS_GROUP["dp-cp"].size
 
 def get_data_parallel_group_name():
+    """Get the name of the data parallel group.
+
+    Returns:
+        str. The name of the data parallel group.
+    """
     return _LOCAL_PARALLELISMS_GROUP["dp"].group_name
 
 def get_tensor_parallel_group_name():
+    """Get the name of the tensor parallel group.
+
+    Returns:
+        str. The name of the tensor parallel group.
+    """
     return _LOCAL_PARALLELISMS_GROUP["tp"].group_name
 
 def get_context_parallel_group_name():
+    """Get the name of the context parallel group.
+
+    Returns:
+        str. The name of the context parallel group.
+    """
     return _LOCAL_PARALLELISMS_GROUP["cp"].group_name
 
 def get_data_context_parallel_group_name():
+    """Get the name of the data-context parallel group.
+
+    Returns:
+        str. The name of the data-context parallel group.
+    """
     return _LOCAL_PARALLELISMS_GROUP["dp-cp"].group_name
 
 def get_data_parallel_group():
+    """Get the data parallel group object.
+
+    Returns:
+        CommGroup or CommGroupBase. The data parallel group object.
+    """
     return _LOCAL_PARALLELISMS_GROUP["dp"]
 
 def get_tensor_parallel_group():
+    """Get the tensor parallel group object.
+
+    Returns:
+        CommGroup or CommGroupBase. The tensor parallel group object.
+    """
     return _LOCAL_PARALLELISMS_GROUP["tp"]
 
 def get_context_parallel_group():
+    """Get the context parallel group object.
+
+    Returns:
+        CommGroup or CommGroupBase. The context parallel group object.
+    """
     return _LOCAL_PARALLELISMS_GROUP["cp"]
 
 def get_data_context_parallel_group():
+    """Get the data-context parallel group object.
+
+    Returns:
+        CommGroup or CommGroupBase. The data-context parallel group object.
+    """
     return _LOCAL_PARALLELISMS_GROUP["dp-cp"]
