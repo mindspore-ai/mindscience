@@ -18,8 +18,8 @@ from __future__ import absolute_import
 import math
 import numpy as np
 
-import mindspore.ops as ops
-import mindspore.nn as nn
+from mindspore import ops
+from mindspore import nn
 import mindspore.common.dtype as mstype
 from mindspore import Tensor, Parameter
 from mindspore.ops.primitive import constexpr
@@ -62,12 +62,9 @@ class LinearBlock(nn.Cell):
     Outputs:
         Tensor of shape :math:`(*, out\_channels)`.
 
-    Supported Platforms:
-        ``Ascend`` ``GPU``
-
     Examples:
         >>> import numpy as np
-        >>> from mindflow.cell import LinearBlock
+        >>> from mindscience.models.layers import LinearBlock
         >>> from mindspore import Tensor
         >>> input = Tensor(np.array([[180, 234, 154], [244, 48, 247]], np.float32))
         >>> net = LinearBlock(3, 4)
@@ -84,7 +81,7 @@ class LinearBlock(nn.Cell):
                  bias_init='zeros',
                  has_bias=True,
                  activation=None):
-        super(LinearBlock, self).__init__()
+        super().__init__()
         self.activation = get_activation(activation) if isinstance(
             activation, str) else activation
         self.dense = nn.Dense(in_channels,
@@ -119,18 +116,15 @@ class ResBlock(nn.Cell):
         - **input** (Tensor) - Tensor of shape :math:`(*, in\_channels)`.
 
     Outputs:
-        Tensor of shape :math:`(*, out\_channels)`.
+        - **output** (Tensor) - Tensor of shape :math:`(*, out\_channels)`.
 
     Raises:
         ValueError: If `in_channels` not equal out_channels.
         TypeError: If `activation` is not in str or Cell or Primitive.
 
-    Supported Platforms:
-        ``Ascend`` ``GPU``
-
     Examples:
         >>> import numpy as np
-        >>> from mindflow.cell import ResBlock
+        >>> from mindscience.models.layers import ResBlock
         >>> from mindspore import Tensor
         >>> input = Tensor(np.array([[180, 234, 154], [244, 48, 247]], np.float32))
         >>> net = ResBlock(3, 3)
@@ -148,14 +142,14 @@ class ResBlock(nn.Cell):
                  has_bias=True,
                  activation=None,
                  weight_norm=False):
-        super(ResBlock, self).__init__()
+        super().__init__()
         check_param_type(in_channels, "in_channels",
                          data_type=int, exclude_type=bool)
         check_param_type(out_channels, "out_channels",
                          data_type=int, exclude_type=bool)
         if in_channels != out_channels:
-            raise ValueError("in_channels of ResBlock should be equal of out_channels, but got in_channels: {}, "
-                             "out_channels: {}".format(in_channels, out_channels))
+            raise ValueError(f"in_channels of ResBlock should be equal of out_channels, "
+                             f"but got in_channels: {in_channels}, out_channels: {out_channels}")
         self.dense = LinearBlock(in_channels,
                                  out_channels,
                                  weight_init=weight_init,
@@ -166,9 +160,10 @@ class ResBlock(nn.Cell):
             activation, str) else activation
         if activation is not None and not isinstance(self.activation, (nn.Cell, ops.Primitive)):
             raise TypeError(
-                "The activation must be str or Cell or Primitive,"" but got {}.".format(type(activation)))
+                f"The activation must be str or Cell or Primitive, but got {type(activation)}.")
         if not activation:
             self.activation = ops.Identity()
+        self.weight_norm = weight_norm
 
     def construct(self, x):
         out = self.activation(self.dense(x) + x)
@@ -200,12 +195,9 @@ class InputScale(nn.Cell):
         TypeError: If `input_scale` is not a list.
         TypeError: If `input_center` is not a list or ``None``.
 
-    Supported Platforms:
-        ``Ascend`` ``GPU``
-
     Examples:
         >>> import numpy as np
-        >>> from mindflow.cell import InputScale
+        >>> from mindscience.models.layers import InputScale
         >>> from mindspore import Tensor
         >>> inputs = np.random.uniform(size=(16, 3)) + 3.0
         >>> inputs = Tensor(inputs.astype(np.float32))
@@ -214,12 +206,12 @@ class InputScale(nn.Cell):
         >>> net = InputScale(input_scale, input_center)
         >>> output = net(inputs).asnumpy()
         >>> assert np.all(output[:, 0] <= 0.5) and np.all(output[:, 0] >= -0.5)
-        >>> assert np.all(output[:, 1] <= 1.0) and np.all(output[:, 0] >= -1.0)
-        >>> assert np.all(output[:, 2] <= 2.0) and np.all(output[:, 0] >= -2.0)
+        >>> assert np.all(output[:, 1] <= 1.0) and np.all(output[:, 1] >= -1.0)
+        >>> assert np.all(output[:, 2] <= 2.0) and np.all(output[:, 2] >= -2.0)
     """
 
     def __init__(self, input_scale, input_center=None):
-        super(InputScale, self).__init__()
+        super().__init__()
         check_param_type(input_scale, "input_scale", data_type=list)
         check_param_type(input_center, "input_center",
                          data_type=(type(None), list))
@@ -252,15 +244,15 @@ class FCSequential(nn.Cell):
         out_channels (int): The number of channels in the output space.
         layers (int): The total number of layers, include input/hidden/output layers.
         neurons (int): The number of neurons of hidden layers.
-        residual (bool): full-connected of residual block for the hidden layers. Default: ``True``.
-        act (Union[str, Cell, Primitive, None]): activate function applied to the output of the fully connected layer,
-            eg. ``'ReLU'``.Default: ``"sin"``.
-        weight_init (Union[Tensor, str, Initializer, numbers.Number]): The trainable weight_init parameter. The dtype
-            is same as input x. The values of str refer to the function `initializer`. Default: ``'normal'``.
-        has_bias (bool): Specifies whether the layer uses a bias vector. Default: ``True``.
-        bias_init (Union[Tensor, str, Initializer, numbers.Number]): The trainable bias_init parameter. The dtype
-            is same as input x. The values of str refer to the function `initializer`. Default: ``'default'``.
-        weight_norm (bool): Whether to compute the sum of squares of weight. Default: ``False``.
+        residual (bool, optional): full-connected of residual block for the hidden layers. Default: ``True``.
+        act (Union[str, Cell, Primitive, None], optional): activate function，
+            applied to the output of the fully connected layer, eg. ``'ReLU'``.Default: ``"sin"``.
+        weight_init (Union[Tensor, str, Initializer, numbers.Number], optional): The trainable weight_init parameter. 
+            The dtype is same as input x. The values of str refer to the function `initializer`. Default: ``'normal'``.
+        has_bias (bool, optional): Specifies whether the layer uses a bias vector. Default: ``True``.
+        bias_init (Union[Tensor, str, Initializer, numbers.Number], optional): The trainable bias_init parameter. 
+            The dtype is same as input x. The values of str refer to the function `initializer`. Default: ``'default'``.
+        weight_norm (bool, optional): Whether to compute the sum of squares of weight. Default: ``False``.
 
     Inputs:
         - **input** (Tensor) - Tensor of shape :math:`(*, in\_channels)`.
@@ -274,12 +266,9 @@ class FCSequential(nn.Cell):
         TypeError: If `residual` is not a bool.
         ValueError: If `layers` is less than 3.
 
-    Supported Platforms:
-        ``Ascend`` ``GPU``
-
     Examples:
         >>> import numpy as np
-        >>> from mindflow.cell import FCSequential
+        >>> from mindscience.models.layers import FCSequential
         >>> from mindspore import Tensor
         >>> inputs = np.ones((16, 3))
         >>> inputs = Tensor(inputs.astype(np.float32))
@@ -300,7 +289,7 @@ class FCSequential(nn.Cell):
                  has_bias=True,
                  bias_init='default',
                  weight_norm=False):
-        super(FCSequential, self).__init__()
+        super().__init__()
         self.in_channels = in_channels
         self.out_channels = out_channels
         self.layers = layers
@@ -335,7 +324,7 @@ class FCSequential(nn.Cell):
         check_param_type(self.residual, "residual", data_type=bool)
         if self.layers < 3:
             raise ValueError(
-                "FCSequential have at least 3 layers, but got layers: {}".format(self.layers))
+                f"FCSequential have at least 3 layers, but got layers: {self.layers}")
 
     def _add_linear_block(self, in_channels, out_channels, weight_init, is_out_net=False):
         act = _get_out_net_activation(is_out_net, self.act)
@@ -378,30 +367,30 @@ class MultiScaleFCSequential(nn.Cell):
         out_channels (int): The number of channels in the output space.
         layers (int): The total number of layers, include input/hidden/output layers.
         neurons (int): The number of neurons of hidden layers.
-        residual (bool): full-connected of residual block for the hidden layers. Default: ``True``.
-        act (Union[str, Cell, Primitive, None]): activate function applied to the output of the fully connected layer,
-            eg. ``'ReLU'``.Default: ``"sin"``.
-        weight_init (Union[Tensor, str, Initializer, numbers.Number]): The trainable weight_init parameter. The dtype
-            is same as `input`. The values of str refer to the function `initializer`. Default: ``'normal'``.
-        weight_norm (bool): Whether to compute the sum of squares of weight. Default: ``False``.
-        has_bias (bool): Specifies whether the layer uses a bias vector. Default: ``True``.
-        bias_init (Union[Tensor, str, Initializer, numbers.Number]): The trainable bias_init parameter. The dtype
-            is same as `input`. The values of str refer to the function `initializer`. Default: ``'default'``.
-        num_scales (int): The subnet number of multi-scale network. Default: ``4``.
-        amp_factor (Union[int, float]): The amplification factor of input. Default: ``1.0``.
-        scale_factor (Union[int, float]): The base scale factor. Default: ``2.0``.
-        input_scale (Union[list, None]): The scale factor of input x/y/t. If not ``None``, the inputs will be
+        residual (bool, optional): full-connected of residual block for the hidden layers. Default: ``True``.
+        act (Union[str, Cell, Primitive, None], optional): activate function,
+            applied to the output of the fully connected layer, eg. ``'ReLU'``.Default: ``"sin"``.
+        weight_init (Union[Tensor, str, Initializer, numbers.Number], optional): The trainable weight_init parameter. 
+            The dtype is same as `input`. The values of str refer to the function `initializer`. Default: ``'normal'``.
+        weight_norm (bool, optional): Whether to compute the sum of squares of weight. Default: ``False``.
+        has_bias (bool, optional): Specifies whether the layer uses a bias vector. Default: ``True``.
+        bias_init (Union[Tensor, str, Initializer, numbers.Number], optional): The trainable bias_init parameter. 
+            The dtype is same as `input`. The values of str refer to the function `initializer`. Default: ``'default'``.
+        num_scales (int, optional): The subnet number of multi-scale network. Default: ``4``.
+        amp_factor (Union[int, float], optional): The amplification factor of input. Default: ``1.0``.
+        scale_factor (Union[int, float], optional): The base scale factor. Default: ``2.0``.
+        input_scale (Union[list, None], optional): The scale factor of input x/y/t. If not ``None``, the inputs will be
             scaled before set in the network. Default: ``None``.
-        input_center (Union[list, None]): Center position of coordinate translation. If not ``None``, the inputs will be
-            translated before set in the network. Default: ``None``.
-        latent_vector (Union[Parameter, None]): Trainable papameter which will be concated will the sampling inputs
-            and updated during training. Default: ``None``.
+        input_center (Union[list, None], optional): Center position of coordinate translation. If not ``None``, 
+            the inputs will be translated before set in the network. Default: ``None``.
+        latent_vector (Union[Parameter, None], optional): Trainable papameter which will be concated
+            with the sampling inputs and updated during training. Default: ``None``.
 
     Inputs:
         - **input** (Tensor) - Tensor of shape :math:`(*, in\_channels)`.
 
     Outputs:
-        Tensor of shape :math:`(*, out\_channels)`.
+        - **output** (Tensor) - Tensor of shape :math:`(*, out\_channels)`.
 
     Raises:
         TypeError: If `num_scales` is not an int.
@@ -409,12 +398,9 @@ class MultiScaleFCSequential(nn.Cell):
         TypeError: If `scale_factor` is neither int nor float.
         TypeError: If `latent_vector` is neither a Parameter nor ``None``.
 
-    Supported Platforms:
-        ``Ascend`` ``GPU``
-
     Examples:
         >>> import numpy as np
-        >>> from mindflow.cell import MultiScaleFCSequential
+        >>> from mindscience.models.layers import MultiScaleFCSequential
         >>> from mindspore import Tensor, Parameter
         >>> inputs = np.ones((64,3)) + 3.0
         >>> inputs = Tensor(inputs.astype(np.float32))
@@ -450,7 +436,7 @@ class MultiScaleFCSequential(nn.Cell):
                  input_center=None,
                  latent_vector=None
                  ):
-        super(MultiScaleFCSequential, self).__init__()
+        super().__init__()
         check_param_type(num_scales, "num_scales",
                          data_type=int, exclude_type=bool)
         check_param_type(amp_factor, "amp_factor",
@@ -492,8 +478,10 @@ class MultiScaleFCSequential(nn.Cell):
 
         self.cast = ops.Cast()
         self.concat = ops.Concat(axis=1)
+        self.weight_norm = weight_norm
 
     def construct(self, x):
+        """Forward pass for MultiScaleFCSequential."""
         x = self.input_scale(x)
         if self.latent_vector is not None:
             batch_size = x.shape[0]
@@ -510,9 +498,35 @@ class MultiScaleFCSequential(nn.Cell):
 
 
 class DropPath(nn.Cell):
-    """Drop paths (Stochastic Depth) per sample  (when applied in main path of residual blocks)."""
+    """
+    Drop paths (Stochastic Depth) per sample  (when applied in main path of residual blocks).
 
-    def __init__(self, dropout_rate=0.):
+    Args:
+        dropout_rate (float, optional): The drop rate for the DropPath layer, greater than 0 and less equal than 1. 
+            Default: ``0.0``.
+
+    Inputs:
+        - **x** (Tensor) - The input tensor.
+
+    Outputs:
+        - **output** (Tensor) - The output tensor with drop path applied during training, 
+          or the original input during evaluation.
+
+    Examples:
+        >>> import mindspore as ms
+        >>> from mindspore import Tensor
+        >>> import mindspore.common.dtype as mstype
+        >>> import numpy as np
+        >>> from mindscience.models.layers import DropPath
+        >>> ms.set_context(mode=ms.GRAPH_MODE, save_graphs=False)
+        >>> x = Tensor(np.ones([2, 3, 4]), mstype.float32)
+        >>> droppath = DropPath(dropout_rate=0.1)
+        >>> output = droppath(x)
+        >>> print(output.shape)
+        (2, 3, 4)
+    """
+
+    def __init__(self, dropout_rate=0.0):
         super().__init__()
         self.drop = nn.Dropout(p=dropout_rate)
         self.mask = ops.ones((1,), dtype=mstype.float32)

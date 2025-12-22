@@ -29,3 +29,45 @@ Vision Transformer (ViT)
     :nosignatures:
 
     mindscience.models.transformer.VisionTransformer
+
+Activation Functions
+---------------------
+
+.. autosummary::
+    :toctree: models
+    :nosignatures:
+
+    mindscience.models.layers.get_activation
+    mindscience.models.layers.activation.SReLU
+
+Basic Blocks
+-------------
+
+.. autosummary::
+    :toctree: models
+    :nosignatures:
+
+    mindscience.models.layers.DropPath
+    mindscience.models.layers.FCSequential
+    mindscience.models.layers.InputScale
+    mindscience.models.layers.LinearBlock
+    mindscience.models.layers.MultiScaleFCSequential
+    mindscience.models.layers.ResBlock
+
+UNet2D
+------
+
+.. autosummary::
+    :toctree: models
+    :nosignatures:
+
+    mindscience.models.layers.UNet2D
+
+Mask Layers
+-----------
+
+.. autosummary::
+    :toctree: models
+    :nosignatures:
+
+    mindscience.models.layers.MaskedLayerNorm

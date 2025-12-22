@@ -29,14 +29,40 @@ class LayerNormProcess(nn.Cell):
 
 
 class MaskedLayerNorm(nn.Cell):
-    '''masked_layer_norm'''
+    r"""
+    Masked layer normalization. Applies layer normalization with mask to the input tensor.
+
+    Inputs:
+        - **act** (Tensor) - Tensor of shape :math:`(*, in\_channels)`.
+        - **gamma** (Tensor) - Scale parameter of shape :math:`(in\_channels,)`.
+        - **beta** (Tensor) - Offset parameter of shape :math:`(in\_channels,)`.
+        - **mask** (Tensor, optional) - Mask tensor of shape :math:`(*, 1)`. Default: ``None``.
+
+    Outputs:
+        Tensor of shape :math:`(*, in\_channels)`.
+
+    Examples:
+        >>> import mindspore as ms
+        >>> import mindspore.numpy as mnp
+        >>> from mindspore import Tensor
+        >>> from mindscience.models.layers import MaskedLayerNorm
+        >>> ms.set_context(mode=ms.GRAPH_MODE, device_target="GPU")
+        >>> x = Tensor(mnp.random.randn(2, 3, 4).astype(mnp.float32))
+        >>> gamma = Tensor(mnp.ones((4,)).astype(mnp.float32))
+        >>> beta = Tensor(mnp.zeros((4,)).astype(mnp.float32))
+        >>> mask = Tensor(mnp.ones((2, 3)).astype(mnp.float32))
+        >>> net = MaskedLayerNorm()
+        >>> output = net(x, gamma, beta, mask)
+        >>> print(output.shape)
+        (2, 3, 4)
+    """
 
     def __init__(self):
         super().__init__()
         self.norm = LayerNormProcess()
 
     def construct(self, act, gamma, beta, mask=None):
-        '''construct'''
+        """Forward pass for MaskedLayerNorm."""
         ones = P.Ones()(act.shape[:-1] + (1,), act.dtype)
         if mask is not None:
             mask = F.expand_dims(mask, -1)
