@@ -49,8 +49,8 @@ def check_param_type(param, param_name, data_type=None, exclude_type=None):
         exclude_type (Union[type, tuple[type], list[type], None], optional): The excluded data types. Default: None.
 
     Raises:
-        TypeError: If the data type of the parameter is not in the allowed data types.
-        TypeError: If the data type of the parameter is in the excluded data types.
+        TypeError: If the data type of the `param` is not in the allowed data types.
+        TypeError: If the data type of the `param` is in the excluded data types.
     """
     data_type = _convert_to_tuple(data_type)
     exclude_type = _convert_to_tuple(exclude_type)
@@ -76,7 +76,7 @@ def check_param_value(param, param_name, valid_value):
         valid_value (any | tuple | list, optional): The allowed values. Default: None.
 
     Raises:
-        ValueError: If the value of the parameter is not in the allowed values.
+        ValueError: If the value of the `param` is not in the allowed values.
     """
     valid_value = _convert_to_tuple(valid_value)
     if param not in valid_value:
@@ -97,8 +97,8 @@ def check_param_type_value(param, param_name, valid_value, data_type=None, exclu
         exclude_type (Union[type, tuple[type], list[type], None], optional): The excluded data types. Default: None.
 
     Raises:
-        TypeError: If the data type of the parameter is not in the allowed data types.
-        ValueError: If the value of the parameter is not in the allowed values.
+        TypeError: If the data type of the `param` is not in the allowed data types.
+        ValueError: If the value of the `param` is not in the allowed values.
     """
     check_param_type(param, param_name, data_type=data_type,
                      exclude_type=exclude_type)
@@ -113,6 +113,11 @@ def check_dict_type(param_dict, param_name, key_type=None, value_type=None):
         param_name (str): The name of the parameter.
         key_type (Union[type, tuple[type], list[type], None], optional): The allowed key types. Default: None.
         value_type (Union[type, tuple[type], list[type], None], optional): The allowed value types. Default: None.
+
+    Raises:
+        TypeError: If the type of the `param_dict` is not dict.
+        TypeError: If the type of the key is not in the allowed key types.
+        TypeError: If the type of the value is not in the allowed value types.
     """
     check_param_type(param_dict, param_name, data_type=dict)
 
@@ -140,8 +145,9 @@ def check_dict_value(param_dict, param_name, key_value=None, value_value=None):
         value_value (Union[any, tuple, list, None], optional): The allowed value values. Default: None.
 
     Raises:
-        TypeError: If the type of the parameter is not dict.
-        ValueError: If the value of the parameter is not in the allowed values.
+        TypeError: If the type of the `param_dict` is not dict.
+        ValueError: If the value of the key of `param_dict` is not in the allowed key values.
+        ValueError: If the value of the value of `param_dict` is not in the allowed value values.
     """
     check_param_type(param_dict, param_name, data_type=dict)
 
@@ -172,8 +178,8 @@ def check_dict_type_value(param_dict, param_name, key_type=None, value_type=None
         value_value (Union[any, tuple, list, None], optional): The allowed value values. Default: None.
 
     Raises:
-        TypeError: If the type of the parameter is not dict.
-        ValueError: If the value of the parameter is not in the allowed values.
+        TypeError: If the type of the `param_dict` is not dict.
+        ValueError: If the value of the `param_dict` is not in the allowed values.
     """
     check_dict_type(param_dict, param_name,
                     key_type=key_type, value_type=value_type)

@@ -13,5 +13,5 @@ mindscience.utils.check_dict_value
 
     异常：
         - **TypeError** - 当 `param_dict` 不是 `dict` 类型时抛出。
-        - **ValueError** - 当存在 key 不在 `key_value` 中时抛出。
-        - **ValueError** - 当存在 value 不在 `value_value` 中时抛出。
+        - **ValueError** - 当 `param_dict` 的 key 的值不在 `key_value` 中时抛出。
+        - **ValueError** - 当 `param_dict` 的 value 的值不在 `value_value` 中时抛出。

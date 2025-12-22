@@ -14,8 +14,8 @@ def log_config(log_dir='./logs', model_name="model", permission=0o644):
 
     Args:
         log_dir (str, optional): Directory to save log. Default: './logs'.
-        model_name (str, optional): Project name as prefix of log. Default: "model".
-        permission (int): Permission of the log file. Default: 0o644.
+        model_name (str, optional): Project name as prefix of log file name. Default: "model".
+        permission (int, optional): Permission of the log file. Default: 0o644.
     """
     if not os.path.exists(log_dir):
         os.mkdir(log_dir)
