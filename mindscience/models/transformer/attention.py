@@ -26,7 +26,8 @@ class Attention(nn.Cell):
     Args:
         in_channels (int): The dimension of input vector.
         num_heads (int): The number of attention heads.
-        compute_dtype (mindspore.dtype): Compute dtype. Default: ``mstype.float32``, indicates ``mindspore.float32``.
+        compute_dtype (mindspore.dtype, optional): Compute dtype. 
+            Default: ``mstype.float32``, indicates ``mindspore.float32``.
 
     Inputs:
         - **x** (Tensor) - Tensor with shape :math:`(batch\_size, sequence\_len, in\_channels)`.
@@ -44,7 +45,7 @@ class Attention(nn.Cell):
 
     Examples:
         >>> from mindspore import ops
-        >>> from mindflow.cell import Attention
+        >>> from mindscience.models.transformer.attention import Attention
         >>> model = Attention(in_channels=512, num_heads=4)
         >>> x = ops.rand((2, 32, 512))
         >>> q, k, v = model.get_qkv(x)
@@ -154,7 +155,7 @@ class FlashAttn(nn.Cell):
 
     Examples:
         >>> from mindspore import ops
-        >>> from mindflow.cell import FlashAttn
+        >>> from mindscience.models.transformer.attention import FlashAttn
         >>> model = FlashAttn(num_heads=4, scale=0.25)
         >>> in_shape = (2, 16, 32, 16)
         >>> q, k, v = ops.rand(in_shape), ops.rand(in_shape), ops.rand(in_shape)
@@ -194,14 +195,13 @@ class MultiHeadAttention(Attention):
             Default: ``False``.
         fa_dtype (mindspore.dtype): FlashAttention compute dtype. Choose from `mstype.bfloat16`, `mstype.float16`.
             Default: ``mstype.bfloat16``, indicates ``mindspore.bfloat16``.
-        drop_mode (str): Dropout method, ``dropout`` or ``droppath``.
-        Default: ``dropout``.
+        drop_mode (str): Dropout method, Support ``"dropout"`` or ``"droppath"``. Default: ``"dropout"``.
         dropout_rate (float): The drop rate of dropout layer, greater than 0 and less equal than 1. Default: ``0.0``.
         compute_dtype (mindspore.dtype): Compute dtype. Default: ``mstype.float32``, indicates ``mindspore.float32``.
 
     Inputs:
         - **x** (Tensor) - Tensor with shape :math:`(batch\_size, sequence\_len, in\_channels)`.
-        - **attn_mask (Tensor, optional) - Tensor with shape :math:`(sequence\_len, sequence\_len)` or
+        - **attn_mask** (Tensor, optional) - Tensor with shape :math:`(sequence\_len, sequence\_len)` or
           :math:`(batch\_size, 1, sequence\_len, sequence\_len)`.
           Default: ``None``.
         - **key_padding_mask** (Tensor, optional) - Tensor with shape :math:`(batch\_size, sequence\_len)`.
@@ -215,7 +215,7 @@ class MultiHeadAttention(Attention):
 
     Examples:
         >>> from mindspore import ops
-        >>> from mindflow.cell import MultiHeadAttention
+        >>> from mindscience.models.transformer.attention import MultiHeadAttention
         >>> model = MultiHeadAttention(in_channels=512, num_heads=4)
         >>> x = ops.rand((2, 32, 512))
         >>> mask_shape = (32, 32)
@@ -285,21 +285,24 @@ class FeedForward(nn.Cell):
 
 
 class TransformerBlock(nn.Cell):
-    r""" `TransformerBlock` comprises an `MultiHeadAttention` and an `FeedForward` layer.
+    r""" `TransformerBlock` comprises a `MultiHeadAttention` and a `FeedForward` layer.
 
     Args:
         in_channels (int): The input channels.
         num_heads (int): The number of attention heads.
-        enable_flash_attn (bool): Whether use flash attention. FlashAttention only supports Ascend backend.
+        enable_flash_attn (bool, optional): Whether use flash attention. FlashAttention only supports Ascend backend.
             FlashAttention proposed in
             `FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness
             <https://arxiv.org/abs/2205.14135>`_.
             Default: ``False``.
-        fa_dtype (mindspore.dtype): FlashAttention compute dtype. Choose from `mstype.bfloat16`, `mstype.float16`.
+        fa_dtype (mindspore.dtype, optional): FlashAttention compute dtype. 
+            Choose from `mstype.bfloat16`, `mstype.float16`.
             Default: ``mstype.bfloat16``, indicates ``mindspore.bfloat16``.
-        drop_mode (str): Dropout method. Default: ``dropout``. Support ``dropout`` or ``droppath``.
-        dropout_rate (float): The drop rate of dropout layer, greater than 0 and less equal than 1. Default: ``0.0``.
-        compute_dtype (mindspore.dtype): Compute dtype. Default: ``mstype.float32``, indicates ``mindspore.float32``.
+        drop_mode (str, optional): Dropout method. Support ``"dropout"`` or ``"droppath"``. Default: ``"dropout"``.
+        dropout_rate (float, optional): The drop rate of dropout layer, greater than 0 and less equal than 1. 
+            Default: ``0.0``.
+        compute_dtype (mindspore.dtype, optional): Compute dtype. 
+            Default: ``mstype.float32``, indicates ``mindspore.float32``.
 
     Inputs:
         - **x** (Tensor) - Tensor with shape :math:`(batch\_size, sequence\_len, in\_channels)`.
@@ -314,7 +317,7 @@ class TransformerBlock(nn.Cell):
 
     Examples:
         >>> from mindspore import ops
-        >>> from mindflow.cell import TransformerBlock
+        >>> from mindscience.models.transformer.attention import TransformerBlock
         >>> model = TransformerBlock(in_channels=256, num_heads=4)
         >>> x = ops.rand((4, 100, 256))
         >>> output = model(x)

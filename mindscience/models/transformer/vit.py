@@ -90,19 +90,20 @@ class VisionTransformerEncoder(nn.Cell):
 
     Examples:
         >>> from mindspore import ops
-        >>> from mindflow.cell.vision_transformer import VisionTransformerEncoder
+        >>> from mindscience.models.transformer.vit import VisionTransformerEncoder
         >>> input_tensor = ops.rand(32, 3, 192, 384)
         >>> print(input_tensor.shape)
         (32, 3, 192, 384)
-        >>>encoder = VisionTransformerEncoder(grid_size=(192 // 16, 384 // 16),
-        >>>                     in_channels=3,
-        >>>                     patch_size=16,
-        >>>                     depths=6,
-        >>>                     hidden_channels=768,
-        >>>                     num_heads=12,
-        >>>                     dropout_rate=0.0,
-        >>>                     compute_dtype=mstype.float16)
-        >>>output_tensor = encoder(input_tensor)
+        >>>
+        >>> encoder = VisionTransformerEncoder(grid_size=(192 // 16, 384 // 16),
+        ...                     in_channels=3,
+        ...                     patch_size=16,
+        ...                     depths=6,
+        ...                     hidden_channels=768,
+        ...                     num_heads=12,
+        ...                     dropout_rate=0.0,
+        ...                     compute_dtype=mstype.float16)
+        >>> output_tensor = encoder(input_tensor)
         >>> print("output_tensor:",output_tensor.shape)
         (32, 288, 768)
     """
@@ -176,17 +177,19 @@ class VisionTransformerDecoder(nn.Cell):
 
     Examples:
         >>> from mindspore import ops
-        >>> from mindflow.cell.vision_transformer import VisionTransformerDecoder
+        >>> from mindscience.models.transformer.vit import VisionTransformerDecoder
         >>> input_tensor = ops.rand(32, 288, 512)
         >>> print(input_tensor.shape)
-        (32, 288, 768)
+        (32, 288, 512)
+        >>> grid_size = (12, 24)  # example grid size
+        >>>
         >>> decoder = VisionTransformerDecoder(grid_size=grid_size,
-        >>>                      depths=6,
-        >>>                      hidden_channels=512,
-        >>>                      num_heads=16,
-        >>>                      dropout_rate=0.0,
-        >>>                      compute_dtype=mstype.float16)
-        >>> output_tensor = VisionTransformerDecoder(input_tensor)
+        ...                      depths=6,
+        ...                      hidden_channels=512,
+        ...                      num_heads=16,
+        ...                      dropout_rate=0.0,
+        ...                      compute_dtype=mstype.float16)
+        >>> output_tensor = decoder(input_tensor)
         >>> print("output_tensor:",output_tensor.shape)
         (32, 288, 512)
     """
@@ -235,45 +238,46 @@ class VisionTransformer(nn.Cell):
     decoder and dense layer.
 
     Args:
-        image_size (tuple[int]): The image size of input. Default: ``(192, 384)``.
-        in_channels (int): The input feature size of input. Default: ``7``.
-        out_channels (int): The output feature size of output. Default: ``3``.
-        patch_size (int): The patch size of image. Default: ``16``.
-        encoder_depths (int): The encoder depth of encoder layer. Default: ``12``.
-        encoder_embed_dim (int): The encoder embedding dimension of encoder layer. Default: ``768``.
-        encoder_num_heads (int): The encoder heads' number of encoder layer. Default: ``12``.
-        decoder_depths (int): The decoder depth of decoder layer. Default: ``8``.
-        decoder_embed_dim (int): The decoder embedding dimension of decoder layer. Default: ``512``.
-        decoder_num_heads (int): The decoder heads' number of decoder layer. Default: ``16``.
-        dropout_rate (float): The rate of dropout layer. Default: ``0.0``.
-        compute_dtype (dtype): The data type for encoder, decoding_embedding, decoder and dense layer.
-        Default: ``mstype.float16``.
+        image_size (tuple[int], optional): The image size of input. Default: ``(192, 384)``.
+        in_channels (int, optional): The input feature size of input. Default: ``7``.
+        out_channels (int, optional): The output feature size of output. Default: ``3``.
+        patch_size (int, optional): The patch size of image. Default: ``16``.
+        encoder_depths (int, optional): The encoder depth of encoder layer. Default: ``12``.
+        encoder_embed_dim (int, optional): The encoder embedding dimension of encoder layer. Default: ``768``.
+        encoder_num_heads (int, optional): The encoder heads' number of encoder layer. Default: ``12``.
+        decoder_depths (int, optional): The decoder depth of decoder layer. Default: ``8``.
+        decoder_embed_dim (int, optional): The decoder embedding dimension of decoder layer. Default: ``512``.
+        decoder_num_heads (int, optional): The decoder heads' number of decoder layer. Default: ``16``.
+        dropout_rate (float, optional): The rate of dropout layer. Default: ``0.0``.
+        compute_dtype (mindspore.dtype, optional): The data type for encoder, decoding_embedding, 
+            decoder and dense layer. Default: ``mstype.float16``.
 
     Inputs:
         - **input** (Tensor) - Tensor of shape :math:`(batch\_size, feature\_size, image\_height, image\_width)`.
 
     Outputs:
         - **output** (Tensor) - Tensor of shape :math:`(batch\_size, patchify\_size, embed\_dim)`.
-          where patchify_size = (image_height * image_width) / (patch_size * patch_size)
+          where patchify_size = (image_height * image_width) / (patch_size * patch_size).
 
     Supported Platforms:
         ``Ascend`` ``GPU``
 
     Examples:
         >>> from mindspore import ops
-        >>> from mindflow.cell import VisionTransformer
+        >>> from mindscience.models.transformer.vit import VisionTransformer
         >>> input_tensor = ops.rand(32, 3, 192, 384)
         >>> print(input_tensor.shape)
         (32, 3, 192, 384)
+        >>>
         >>> model = VisionTransformer(in_channels=3,
-        >>>             out_channels=3,
-        >>>             encoder_depths=6,
-        >>>             encoder_embed_dim=768,
-        >>>             encoder_num_heads=12,
-        >>>             decoder_depths=6,
-        >>>             decoder_embed_dim=512,
-        >>>             decoder_num_heads=16,
-        >>>             )
+        ...             out_channels=3,
+        ...             encoder_depths=6,
+        ...             encoder_embed_dim=768,
+        ...             encoder_num_heads=12,
+        ...             decoder_depths=6,
+        ...             decoder_embed_dim=512,
+        ...             decoder_num_heads=16,
+        ...             )
         >>> output_tensor = model(input_tensor)
         >>> print(output_tensor.shape)
         (32, 288, 768)

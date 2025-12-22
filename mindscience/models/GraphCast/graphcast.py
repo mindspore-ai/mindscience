@@ -18,7 +18,7 @@ from __future__ import absolute_import
 import numpy as np
 
 import mindspore as ms
-import mindspore.nn as nn
+from mindspore import nn
 from mindspore import ops, set_seed, Tensor
 
 set_seed(0)
@@ -38,9 +38,10 @@ class MLPNet(nn.Cell):
             if has_layernorm was List, each element corresponds to each layer.
 
     Inputs:
-        - **input** (Tensor) - Tensor of shape :math:`(*, dims[0])
+        - **input** (Tensor) - Tensor of shape :math:`(*, dims[0])`.
+
     Outputs:
-        - **output** (Tensor) - Tensor of shape :math:`(*, dims[-1])
+        - **output** (Tensor) - Tensor of shape :math:`(*, dims[-1])`.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -61,7 +62,7 @@ class MLPNet(nn.Cell):
                  out_channels,
                  latent_dims,
                  has_layernorm=True):
-        super(MLPNet, self).__init__()
+        super().__init__()
         cell_list = [nn.Dense(in_channels,
                               latent_dims,
                               has_bias=False,
@@ -96,7 +97,7 @@ class Embedder(nn.Cell):
                  eg2m_in_channels,
                  em2g_in_channels,
                  latent_dims):
-        super(Embedder, self).__init__()
+        super().__init__()
         self.v_g_embedder = MLPNet(in_channels=vg_in_channels, out_channels=latent_dims, latent_dims=latent_dims)
         self.v_m_embedder = MLPNet(in_channels=vm_in_channels, out_channels=latent_dims, latent_dims=latent_dims)
         self.e_m_embedder = MLPNet(in_channels=em_in_channels, out_channels=latent_dims, latent_dims=latent_dims)
@@ -132,7 +133,7 @@ class G2MGnn(nn.Cell):
                  latent_dims,
                  src_idx,
                  dst_idx):
-        super(G2MGnn, self).__init__()
+        super().__init__()
         self.interaction = InteractionLayer(node_in_channels,
                                             node_out_channels,
                                             edge_in_channels,
@@ -165,7 +166,7 @@ class Encoder(nn.Cell):
                  latent_dims,
                  src_idx,
                  dst_idx):
-        super(Encoder, self).__init__()
+        super().__init__()
         self.feature_embedder = Embedder(vg_in_channels,
                                          vm_in_channels,
                                          em_in_channels,
@@ -209,7 +210,7 @@ class InteractionLayer(nn.Cell):
                  src_idx,
                  dst_idx,
                  is_homo):
-        super(InteractionLayer, self).__init__()
+        super().__init__()
 
         # process node
         self.node_fn = MLPNet(in_channels=node_in_channels + edge_out_channels,
@@ -256,7 +257,7 @@ class Processor(nn.Cell):
                  latent_dims,
                  src_idx,
                  dst_idx):
-        super(Processor, self).__init__()
+        super().__init__()
         self.processing_steps = processing_steps
         self.cell_list = nn.SequentialCell()
         for _ in range(self.processing_steps):
@@ -287,7 +288,7 @@ class M2GGnn(nn.Cell):
                  latent_dims,
                  src_idx,
                  dst_idx):
-        super(M2GGnn, self).__init__()
+        super().__init__()
         self.interaction = InteractionLayer(node_in_channels,
                                             node_out_channels,
                                             edge_in_channels,
@@ -320,7 +321,7 @@ class Decoder(nn.Cell):
                  latent_dims,
                  src_idx,
                  dst_idx):
-        super(Decoder, self).__init__()
+        super().__init__()
 
         self.m2g_gnn = M2GGnn(node_in_channels,
                               node_out_channels,
