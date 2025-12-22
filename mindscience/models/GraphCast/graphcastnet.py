@@ -62,7 +62,7 @@ class GraphCastNet(nn.Cell):
         >>> import numpy as np
         >>> import mindspore as ms
         >>> from mindspore import context, Tensor
-        >>> from mindearth.cell.graphcast.graphcastnet import GraphCastNet
+        >>> from mindscience.models.GraphCast.graphcastnet import GraphCastNet
         >>>
         >>> mesh_node_num = 2562
         >>> grid_node_num = 32768
@@ -88,28 +88,28 @@ class GraphCastNet(nn.Cell):
         >>> per_variable_level_std = Tensor(np.random.rand(feature_num,).astype(np.float32), ms.float32)
         >>> grid_node_feats = Tensor(np.random.rand(grid_node_num, feature_num).astype(np.float32), ms.float32)
         >>> graphcast_model = GraphCastNet(vg_in_channels=feature_num,
-        >>>                                vg_out_channels=feature_num,
-        >>>                                vm_in_channels=vm_in_channels,
-        >>>                                em_in_channels=em_in_channels,
-        >>>                                eg2m_in_channels=eg2m_in_channels,
-        >>>                                em2g_in_channels=em2g_in_channels,
-        >>>                                latent_dims=512,
-        >>>                                processing_steps=4,
-        >>>                                g2m_src_idx=g2m_src_idx,
-        >>>                                g2m_dst_idx=g2m_dst_idx,
-        >>>                                m2m_src_idx=m2m_src_idx,
-        >>>                                m2m_dst_idx=m2m_dst_idx,
-        >>>                                m2g_src_idx=m2g_src_idx,
-        >>>                                m2g_dst_idx=m2g_dst_idx,
-        >>>                                mesh_node_feats=mesh_node_feats,
-        >>>                                mesh_edge_feats=mesh_edge_feats,
-        >>>                                g2m_edge_feats=g2m_edge_feats,
-        >>>                                m2g_edge_feats=m2g_edge_feats,
-        >>>                                per_variable_level_mean=per_variable_level_mean,
-        >>>                                per_variable_level_std=per_variable_level_std)
+        ...                                vg_out_channels=feature_num,
+        ...                                vm_in_channels=vm_in_channels,
+        ...                                em_in_channels=em_in_channels,
+        ...                                eg2m_in_channels=eg2m_in_channels,
+        ...                                em2g_in_channels=em2g_in_channels,
+        ...                                latent_dims=512,
+        ...                                processing_steps=4,
+        ...                                g2m_src_idx=g2m_src_idx,
+        ...                                g2m_dst_idx=g2m_dst_idx,
+        ...                                m2m_src_idx=m2m_src_idx,
+        ...                                m2m_dst_idx=m2m_dst_idx,
+        ...                                m2g_src_idx=m2g_src_idx,
+        ...                                m2g_dst_idx=m2g_dst_idx,
+        ...                                mesh_node_feats=mesh_node_feats,
+        ...                                mesh_edge_feats=mesh_edge_feats,
+        ...                                g2m_edge_feats=g2m_edge_feats,
+        ...                                m2g_edge_feats=m2g_edge_feats,
+        ...                                per_variable_level_mean=per_variable_level_mean,
+        ...                                per_variable_level_std=per_variable_level_std)
         >>> out = graphcast_model(Tensor(grid_node_feats, ms.float32))
         >>> print(out.shape)
-        (32768, 69))
+        (32768, 69)
 
     """
 
@@ -135,7 +135,7 @@ class GraphCastNet(nn.Cell):
                  per_variable_level_mean,
                  per_variable_level_std,
                  recompute=False):
-        super(GraphCastNet, self).__init__()
+        super().__init__()
         self.vg_out_channels = vg_out_channels
         self.mesh_node_feats = mesh_node_feats
         self.mesh_edge_feats = mesh_edge_feats
