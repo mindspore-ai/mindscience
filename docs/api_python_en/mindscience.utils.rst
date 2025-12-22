@@ -1,7 +1,7 @@
 mindscience.utils
 =================
 
-.. mscnplatformautosummary::
+.. msplatformautosummary::
     :toctree: utils
     :nosignatures:
     :template: classtemplate.rst

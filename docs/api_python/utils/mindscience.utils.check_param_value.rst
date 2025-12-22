@@ -8,7 +8,7 @@ mindscience.utils.check_param_value
     参数：
         - **param** (any) - 待检查的参数值。
         - **param_name** (str) - 参数名称（用于错误提示）。
-        - **valid_value** (Union[any, tuple, list, None], optional) - 允许的取值集合，默认 ``None``。
+        - **valid_value** (Union[any, tuple, list]) - 允许的取值集合。
 
     异常：
-        - **ValueError** - 当 `param` 不在 `valid_value` 中时抛出。
+        - **ValueError** - 当 `param` 的取值不在允许的取值中时抛出。
