@@ -18,8 +18,8 @@ mindscience.diffuser.DDPMScheduler
         - **thresholding** (bool) - 是否使用动态阈值方法（不适用于潜空间扩散模型如 Stable Diffusion），默认 ``False``。
         - **sample_max_value** (float) - 动态阈值上限，仅当 ``thresholding=True`` 生效，默认 ``1.0``。
         - **dynamic_thresholding_ratio** (float) - 动态阈值方法的比率，仅当 ``thresholding=True`` 生效，默认 ``0.995``。
-        - **timestep_spacing** (str) - 采样时间步缩放的计算方式。参考 `通用的扩散噪声调度器和采样步骤有缺陷 <https://huggingface.co/papers/2305.08891>`_ 了解更多信息。支持以下类型： ``linspace`` , ``leading`` 和 ``trailing`` 。默认值： ``leading`` 。
-        - **rescale_betas_zero_snr** (bool) - 是否重新缩放 betas 以使其终端 SNR 为零。这使模型能够生成非常明亮和黑暗的样本，而不是将其限制为中等亮度的样本。与 `offset_noise <https://github.com/huggingface/diffusers/blob/74fd735eb073eb1d774b1ab4154a0876eb82f055/examples/dreambooth/train_dreambooth.py#L506>`_ 松散相关。默认值： ``False`` 。
+        - **timestep_spacing** (str) - 采样时间步缩放的计算方式。参考 `通用的扩散噪声调度器和采样步骤有缺陷 <https://huggingface.co/papers/2305.08891>`_ 了解更多信息。支持以下类型： ``linspace`` , ``leading`` 和 ``trailing`` 。默认 ``leading`` 。
+        - **rescale_betas_zero_snr** (bool) - 是否重新缩放 betas 以使其终端 SNR 为零。这使模型能够生成非常明亮和黑暗的样本，而不是将其限制为中等亮度的样本。与 `offset_noise <https://github.com/huggingface/diffusers/blob/74fd735eb073eb1d774b1ab4154a0876eb82f055/examples/dreambooth/train_dreambooth.py#L506>`_ 松散相关。默认 ``False`` 。
         - **compute_dtype** (mindspore.dtype) - 计算数据类型，可为 ``mstype.float32`` 或 ``mstype.float16``，默认 ``mstype.float32``（即 ``mindspore.float32``）。
 
     .. py:method:: add_noise(original_samples: Tensor, noise: Tensor, timesteps: Tensor)

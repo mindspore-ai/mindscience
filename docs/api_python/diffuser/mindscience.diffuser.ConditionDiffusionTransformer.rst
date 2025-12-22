@@ -12,9 +12,9 @@ mindscience.diffuser.ConditionDiffusionTransformer
         - **cond_channels** (int) - 条件特征维度。
         - **layers** (int) - `Transformer` 层数。
         - **heads** (int) - 注意力头数。
-        - **time_token_cond** (bool) - 是否将时间作为条件token。Default: ``True`` 。
-        - **cond_as_token** (bool) - 是否将条件作为token。Default: ``True`` 。
-        - **compute_dtype** (mindspore.dtype) - 计算数据类型。支持 ``mstype.float32`` or ``mstype.float16`` 。默认值: ``mstype.float32`` ，表示 ``mindspore.float32`` 。
+        - **time_token_cond** (bool) - 是否将时间作为条件token。默认 ``True`` 。
+        - **cond_as_token** (bool) - 是否将条件作为token。默认 ``True`` 。
+        - **compute_dtype** (mindspore.dtype) - 计算数据类型。支持 ``mstype.float32`` or ``mstype.float16`` 。默认 ``mstype.float32`` ，表示 ``mindspore.float32`` 。
 
     输入：
         - **x** (Tensor) - 网络输入。shape为 :math:`(batch\_size, sequence\_len, in\_channels)` 的Tensor。

@@ -10,8 +10,8 @@ mindscience.diffuser.DDIMPipeline
         - **scheduler** (DDIMScheduler) - 噪声控制器，用于去噪。
         - **batch_size** (int) - batch大小。
         - **seq_len** (int) - 序列长度。
-        - **num_inference_steps** (int) - 采样的步数。默认值： ``1000`` 。
-        - **compute_dtype** (mindspore.dtype) - 数据类型。默认值： ``mstype.float32`` ，表示 ``mindspore.float32`` 。
+        - **num_inference_steps** (int) - 采样的步数。默认 ``1000`` 。
+        - **compute_dtype** (mindspore.dtype) - 数据类型。默认 ``mstype.float32`` ，表示 ``mindspore.float32`` 。
 
     异常：
         - **TypeError** - 如果 `scheduler` 不是 `DDIMScheduler` 类型。

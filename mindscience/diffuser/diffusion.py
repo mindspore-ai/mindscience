@@ -400,6 +400,10 @@ class DiffusionScheduler:
 
         Returns:
             Tensor, the denoised sample.
+
+        Raises:
+            NotImplementedError: If `num_inference_steps` is not set. You must call `set_timesteps` before invoking this method.
+            NotImplementedError: If `step` function is not implemented for the current class.This method is intended to be overridden by subclasses.
         """
         _ = model_output, sample, timestep
         if not self.num_inference_steps:

@@ -56,5 +56,5 @@ mindscience.diffuser.DiffusionScheduler
             - Tensor - 去噪后的样本。
 
         异常：
-            - **NotImplementedError** - 当未先调用 `set_timesteps` 设置 `num_inference_steps` 时抛出。
-            - **NotImplementedError** - 基类未实现 `step` 逻辑时抛出。
+            - **NotImplementedError** - 当未先调用 `set_timesteps` 设置 `num_inference_steps` 时抛出。 在调用本方法之前，必须先通过 ``set_timesteps`` 等初始化方法设置推理时间步数。
+            - **NotImplementedError** - 当当前类未实现具体的 `step` 逻辑时抛出。该方法作为接口定义，需在子类中重写实现。
