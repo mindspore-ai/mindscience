@@ -41,22 +41,22 @@ Applications
    * - Application Name
      - Description
      - Learning Type
-   * - `diffcsp </MindChem/applications/diffcsp>`__
+   * - `diffcsp <https://atomgit.com/mindspore-lab/mindscience/blob/master/MindChem/applications/diffcsp>`__
      - Crystal Structure Prediction
      - Supervised Learning
-   * - `nequip </MindChem/applications/nequip>`__
+   * - `nequip <https://atomgit.com/mindspore-lab/mindscience/blob/master/MindChem/applications/nequip>`__
      - Molecular Dynamics Modeling
      - Supervised Learning
-   * - `orb </MindChem/applications/orb>`__
+   * - `orb <https://atomgit.com/mindspore-lab/mindscience/blob/master/MindChem/applications/orb>`__
      - Molecular Orbital Analysis
      - Supervised Learning
-   * - `matformer </MindChem/applications/matformer>`__
+   * - `matformer <https://atomgit.com/mindspore-lab/mindscience/blob/master/MindChem/applications/matformer>`__
      - Material Property Prediction
      - Supervised Learning
-   * - `deephe3nn </MindChem/applications/deephe3nn>`__
+   * - `deephe3nn <https://atomgit.com/mindspore-lab/mindscience/blob/master/MindChem/applications/deephe3nn>`__
      - Molecular Simulation
      - Supervised Learning
-   * - `crystalflow </MindChem/applications/crystalflow>`__
+   * - `crystalflow <https://atomgit.com/mindspore-lab/mindscience/blob/master/MindChem/applications/crystalflow>`__
      - Crystal Structure Generation
      - Unsupervised Learning
 
@@ -75,7 +75,7 @@ Applications
    * - Application Name
      - Description
      - Learning Type
-   * - `Leadformer </MindEarth/applications/leadformer>`__
+   * - `Leadformer <https://atomgit.com/mindspore-lab/mindscience/blob/master/MindEarth/applications/leadformer>`__
      - Earth Science Time Series Prediction
      - Supervised Learning
 
@@ -94,13 +94,13 @@ Applications
    * - Application Name
      - Description
      - Learning Type
-   * - `DAE-PINN </MindEnergy/applications/dae_pinn>`__
+   * - `DAE-PINN <https://atomgit.com/mindspore-lab/mindscience/blob/master/MindEnergy/applications/dae_pinn>`__
      - Physics-Informed Neural Networks
      - Supervised + Physics Constraints
-   * - `DeepONet-Grig-UQ </MindEnergy/applications/deeponet_grig_uq>`__
+   * - `DeepONet-Grig-UQ <https://atomgit.com/mindspore-lab/mindscience/blob/master/MindEnergy/applications/deeponet_grig_uq>`__
      - Functional Learning and Uncertainty Quantification
      - Supervised Learning
-   * - `PowerFlowNet </MindEnergy/applications/powerflownet>`__
+   * - `PowerFlowNet <https://atomgit.com/mindspore-lab/mindscience/blob/master/MindEnergy/applications/powerflownet>`__
      - Power Flow Modeling
      - Supervised Learning
 
@@ -119,13 +119,13 @@ Applications
    * - Application Name
      - Description
      - Learning Type
-   * - `acoustic </MindFlow/applications/acoustic>`__
+   * - `acoustic <https://atomgit.com/mindspore-lab/mindscience/blob/master/MindFlow/applications/acoustic>`__
      - Acoustic Simulation
      - Supervised Learning
-   * - `p2c2net </MindFlow/applications/p2c2net>`__
+   * - `p2c2net <https://atomgit.com/mindspore-lab/mindscience/blob/master/MindFlow/applications/p2c2net>`__
      - Physics Modeling
      - Supervised Learning
-   * - `fno2d </MindFlow/applications/fno2d>`__
+   * - `fno2d <https://atomgit.com/mindspore-lab/mindscience/blob/master/MindFlow/applications/fno2d>`__
      - Fourier Neural Operator
      - Supervised Learning
 
@@ -144,16 +144,16 @@ Applications
    * - Application Name
      - Description
      - Learning Type
-   * - `AF3 </MindSPONGE/applications/af3>`__
+   * - `AF3 <https://atomgit.com/mindspore-lab/mindscience/blob/master/MindSPONGE/applications/af3>`__
      - Protein Structure Prediction
      - Supervised Learning
-   * - `proteinmpnn </MindSPONGE/applications/proteinmpnn>`__
+   * - `proteinmpnn <https://atomgit.com/mindspore-lab/mindscience/blob/master/MindSPONGE/applications/proteinmpnn>`__
      - Protein Sequence Design
      - Supervised Learning
-   * - `rfdiffusion </MindSPONGE/applications/rfdiffusion>`__
+   * - `rfdiffusion <https://atomgit.com/mindspore-lab/mindscience/blob/master/MindSPONGE/applications/rfdiffusion>`__
      - Protein Diffusion Generation
      - Diffusion Model/Generative Learning
-   * - `protenix </MindSPONGE/applications/protenix>`__
+   * - `protenix <https://atomgit.com/mindspore-lab/mindscience/blob/master/MindSPONGE/applications/protenix>`__
      - Protein Function Prediction
      - Supervised Learning
 

@@ -41,22 +41,22 @@ Applications：
    * - 应用名称
      - 简介
      - 学习类型
-   * - `diffcsp </MindChem/applications/diffcsp>`__
+   * - `diffcsp <https://atomgit.com/mindspore-lab/mindscience/blob/master/MindChem/applications/diffcsp>`__
      - 晶体结构预测
      - 监督学习
-   * - `nequip </MindChem/applications/nequip>`__
+   * - `nequip <https://atomgit.com/mindspore-lab/mindscience/blob/master/MindChem/applications/nequip>`__
      - 分子动力学建模
      - 监督学习
-   * - `orb </MindChem/applications/orb>`__
+   * - `orb <https://atomgit.com/mindspore-lab/mindscience/blob/master/MindChem/applications/orb>`__
      - 分子轨道分析
      - 监督学习
-   * - `matformer </MindChem/applications/matformer>`__
+   * - `matformer <https://atomgit.com/mindspore-lab/mindscience/blob/master/MindChem/applications/matformer>`__
      - 材料性质预测
      - 监督学习
-   * - `deephe3nn </MindChem/applications/deephe3nn>`__
+   * - `deephe3nn <https://atomgit.com/mindspore-lab/mindscience/blob/master/MindChem/applications/deephe3nn>`__
      - 分子模拟
      - 监督学习
-   * - `crystalflow </MindChem/applications/crystalflow>`__
+   * - `crystalflow <https://atomgit.com/mindspore-lab/mindscience/blob/master/MindChem/applications/crystalflow>`__
      - 晶体结构生成
      - 无监督学习
 
@@ -75,7 +75,7 @@ Applications：
    * - 应用名称
      - 简介
      - 学习类型
-   * - `Leadformer </MindEarth/applications/leadformer>`__
+   * - `Leadformer <https://atomgit.com/mindspore-lab/mindscience/blob/master/MindEarth/applications/leadformer>`__
      - 地球科学时序预测
      - 监督学习
 
@@ -94,13 +94,13 @@ Applications：
    * - 应用名称
      - 简介
      - 学习类型
-   * - `DAE-PINN </MindEnergy/applications/dae_pinn>`__
+   * - `DAE-PINN <https://atomgit.com/mindspore-lab/mindscience/blob/master/MindEnergy/applications/dae_pinn>`__
      - 物理信息神经网络
      - 监督+物理约束
-   * - `DeepONet-Grig-UQ </MindEnergy/applications/deeponet_grig_uq>`__
+   * - `DeepONet-Grig-UQ <https://atomgit.com/mindspore-lab/mindscience/blob/master/MindEnergy/applications/deeponet_grig_uq>`__
      - 泛函学习与不确定性量化
      - 监督学习
-   * - `PowerFlowNet </MindEnergy/applications/powerflownet>`__
+   * - `PowerFlowNet <https://atomgit.com/mindspore-lab/mindscience/blob/master/MindEnergy/applications/powerflownet>`__
      - 电力流建模
      - 监督学习
 
@@ -119,13 +119,13 @@ Applications：
    * - 应用名称
      - 简介
      - 学习类型
-   * - `acoustic </MindFlow/applications/acoustic>`__
+   * - `acoustic <https://atomgit.com/mindspore-lab/mindscience/blob/master/MindFlow/applications/acoustic>`__
      - 声学模拟
      - 监督学习
-   * - `p2c2net </MindFlow/applications/p2c2net>`__
+   * - `p2c2net <https://atomgit.com/mindspore-lab/mindscience/blob/master/MindFlow/applications/p2c2net>`__
      - 物理建模
      - 监督学习
-   * - `fno2d </MindFlow/applications/fno2d>`__
+   * - `fno2d <https://atomgit.com/mindspore-lab/mindscience/blob/master/MindFlow/applications/fno2d>`__
      - 傅里叶神经算子
      - 监督学习
 
@@ -144,16 +144,16 @@ Applications：
    * - 应用名称
      - 简介
      - 学习类型
-   * - `AF3 </MindSPONGE/applications/af3>`__
+   * - `AF3 <https://atomgit.com/mindspore-lab/mindscience/blob/master/MindSPONGE/applications/af3>`__
      - 蛋白质结构预测
      - 监督学习
-   * - `proteinmpnn </MindSPONGE/applications/proteinmpnn>`__
+   * - `proteinmpnn <https://atomgit.com/mindspore-lab/mindscience/blob/master/MindSPONGE/applications/proteinmpnn>`__
      - 蛋白质序列设计
      - 监督学习
-   * - `rfdiffusion </MindSPONGE/applications/rfdiffusion>`__
+   * - `rfdiffusion <https://atomgit.com/mindspore-lab/mindscience/blob/master/MindSPONGE/applications/rfdiffusion>`__
      - 蛋白质扩散生成
      - 扩散模型/生成式学习
-   * - `protenix </MindSPONGE/applications/protenix>`__
+   * - `protenix <https://atomgit.com/mindspore-lab/mindscience/blob/master/MindSPONGE/applications/protenix>`__
      - 蛋白质功能预测
      - 监督学习
 
