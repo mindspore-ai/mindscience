@@ -1,28 +1,28 @@
-# Mindspore Earth
+# MindSpore Earth
 
-English | [简体中文](README_CN.md)
+English | [简体中文](https://atomgit.com/mindspore-lab/mindscience/blob/master/MindEarth/README_CN.md)
 
-- [Mindspore Earth](#mindspore-earth)
-    - [Mindspore Earth Introduction](#mindspore-earth-introduction)
-    - [Latest News](#latest-news)
-    - [Application Cases](#application-cases)
-        - [Ocean](#ocean)
-        - [DEM](#dem)
-        - [El Niño](#el-niño)
-        - [Nowcasting Precipitation](#nowcasting-precipitation)
-        - [Medium-range Weather Forecast](#medium-range-weather-forecast)
-        - [Earthquake Early Warning](#earthquake-early-warning)
-    - [Core Contributors](#core-contributors)
-    - [Contribution Guide](#contribution-guide)
-    - [License](#license)
+## Table of Contents
 
-## Mindspore Earth Introduction
+- [MindSpore Earth](#mindspore-earth)
+- [MindSpore Earth Introduction](#mindspore-earth-introduction)
+- [Latest News](#latest-news)
+- [Application Cases](#application-cases)
+- [Ocean](#ocean)
+- [DEM](#dem)
+- [El Niño](#el-niño)
+- [Nowcasting Precipitation](#nowcasting-precipitation)
+- [Medium-range Weather Forecast](#medium-range-weather-forecast)
+- [Earthquake Early Warning](#earthquake-early-warning)
+- [Core Contributors](#core-contributors)
+- [Contribution Guide](#contribution-guide)
+- [License](#license)
+
+## MindSpore Earth Introduction
 
 Weather phenomena are closely related to human production and life, socioeconomic conditions, military activities, and more. Accurate weather forecasts can mitigate the impact of severe weather events, avoid economic losses, and create ongoing financial revenue in areas such as energy, agriculture, transportation, and entertainment. Currently, weather forecasts mainly use numerical weather prediction models to solve atmospheric dynamic equations that describe weather evolution by processing observational data collected from meteorological satellites, observation stations, radars, etc., thereby providing weather and climate prediction information. The prediction process of numerical models involves massive calculations that require considerable time and computational resources. Compared to numerical models, data-driven deep learning models can effectively reduce computational costs by several orders of magnitude.
 
-Mindspore Earth is an Earth science toolkit developed based on [MindSpore](https://www.mindspore.cn/). It supports AI meteorological predictions for multiple spatiotemporal scales such as nowcasting, medium-term, and long-term forecasts, as well as disaster weather predictions such as precipitation and typhoons. It aims to provide efficient and easy-to-use AI meteorological prediction software for industrial researchers and engineers, university teachers, and students.
-
-## Latest News
+MindSpore Earth is an Earth science toolkit developed based on [MindSpore](https://www.mindspore.cn/). It supports AI meteorological predictions for multiple spatiotemporal scales such as nowcasting, medium-term, and long-term forecasts, as well as disaster weather predictions such as precipitation and typhoons. It aims to provide efficient and easy-to-use AI meteorological prediction software for industrial researchers and engineers, university teachers, and students.
 
 ## Application Cases
 
@@ -30,7 +30,7 @@ Mindspore Earth is an Earth science toolkit developed based on [MindSpore](https
 
 |                   Case                    |                 Description                 | Dataset | Model Architecture | NPU |
 | :---------------------------------------: | :---------------------------------------: | :-----: | :----------------: | :---: |
-| [LeadFormer](applications/sea/LeadFormer) | High-resolution intelligent Arctic sea ice forecasting | Not yet open source | Transformer | ✔️ |
+| [LeadFormer](https://atomgit.com/mindspore-lab/mindscience/tree/master/MindEarth/applications/sea/LeadFormer) | High-resolution intelligent Arctic sea ice forecasting | Not yet open source | Transformer | ✔️ |
 
 ### DEM
 
@@ -70,26 +70,26 @@ Mindspore Earth is an Earth science toolkit developed based on [MindSpore](https
 
 ## Core Contributors
 
-Thanks to the following developers for their contributions to Mindspore Earth:
+Thanks to the following developers for their contributions to MindSpore Earth:
 
 yufan, wangzidong, liuhongsheng, zhouhongye, liulei, libokai, chengqiang, dongyonghan, zhouchuansai, liuruoyan, funfunplus
 
 ## Contribution Guide
 
-Welcome to contribute your code to Mindspore Earth by referring to the [Contribution Guide](../CONTRIBUTION.md)!
+Welcome to contribute your code to MindSpore Earth by referring to the [Contribution Guide](https://atomgit.com/mindspore-lab/mindscience/blob/master/CONTRIBUTION.md)!
 
 ## License
 
 [Apache License 2.0](http://www.apache.org/licenses/LICENSE-2.0)
 
-[ensoforecast-URL]: https://gitee.com/mindspore/mindscience/tree/legacy-master/MindEarth/applications/climate-prediction/ensoforecast
-[dem-super-resolution-URL]: https://gitee.com/mindspore/mindscience/tree/legacy-master/MindEarth/applications/dem-super-resolution
-[dgmr-URL]: https://gitee.com/mindspore/mindscience/tree/legacy-master/MindEarth/applications/nowcasting/dgmr
-[Nowcastnet-URL]: https://gitee.com/mindspore/mindscience/tree/legacy-master/MindEarth/applications/nowcasting/Nowcastnet
-[PreDiff-URL]: https://gitee.com/mindspore/mindscience/tree/legacy-master/MindEarth/applications/nowcasting/PreDiff
-[koopman_vit-URL]: https://gitee.com/mindspore/mindscience/tree/legacy-master/MindEarth/applications/medium-range/koopman_vit
-[graphcast-URL]: https://gitee.com/mindspore/mindscience/tree/legacy-master/MindEarth/applications/medium-range/graphcast
-[fuxi-URL]: https://gitee.com/mindspore/mindscience/tree/legacy-master/MindEarth/applications/medium-range/fuxi
-[fourcastnet-URL]: https://gitee.com/mindspore/mindscience/tree/legacy-master/MindEarth/applications/medium-range/fourcastnet
-[skno-URL]: https://gitee.com/mindspore/mindscience/tree/legacy-master/MindEarth/applications/medium-range/skno
-[G-TEAM-URL]: https://gitee.com/mindspore/mindscience/tree/legacy-master/MindEarth/applications/earthquake/G-TEAM
+[ensoforecast-URL]: https://atomgit.com/mindspore-lab/mindscience/tree/legacy-master/MindEarth/applications/climate-prediction/ensoforecast
+[dem-super-resolution-URL]: https://atomgit.com/mindspore-labe/mindscience/tree/legacy-master/MindEarth/applications/dem-super-resolution
+[dgmr-URL]: https://atomgit.com/mindspore-lab/mindscience/tree/legacy-master/MindEarth/applications/nowcasting/dgmr
+[Nowcastnet-URL]: https://atomgit.com/mindspore-lab/mindscience/tree/legacy-master/MindEarth/applications/nowcasting/Nowcastnet
+[PreDiff-URL]: https://atomgit.com/mindspore-lab/mindscience/tree/legacy-master/MindEarth/applications/nowcasting/PreDiff
+[koopman_vit-URL]: https://atomgit.com/mindspore-lab/mindscience/tree/legacy-master/MindEarth/applications/medium-range/koopman_vit
+[graphcast-URL]: https://atomgit.com/mindspore-lab/mindscience/tree/legacy-master/MindEarth/applications/medium-range/graphcast
+[fuxi-URL]: https://atomgit.com/mindspore-labe/mindscience/tree/legacy-master/MindEarth/applications/medium-range/fuxi
+[fourcastnet-URL]: https://atomgit.com/mindspore-lab/mindscience/tree/legacy-master/MindEarth/applications/medium-range/fourcastnet
+[skno-URL]: https://atomgit.com/mindspore-lab/mindscience/tree/legacy-master/MindEarth/applications/medium-range/skno
+[G-TEAM-URL]: https://atomgit.com/mindspore-lab/mindscience/tree/legacy-master/MindEarth/applications/earthquake/G-TEAM
