@@ -39,6 +39,7 @@ MindSpore SPONGE (Simulation Package tOwards Next GEneration molecular modelling
 ## News
 
 - 🙌`[Pinned]` `[In Progress]` [**2025 MindScience Open-source Internship**](https://atomgit.com/mindspore/community/issues/2027) is now open! Come apply your tasks! [[Link]](https://mp.weixin.qq.com/s/R-t8-u4ak2fN4gxe13m3Gw)
+- 🔥`2025.12.23` Protenix inference & training on MindSPore released, support 2K sequence length! [[Code]](https://atomgit.com/mindspore-lab/mindscience/tree/master/MindSPONGE/applications/protenix)
 - 🔥`2025.12.16` Alphafold3 inference on MindSPore updated，now support 2K sequence length，performance improved over 300%! [[Code]](https://atomgit.com/mindspore-lab/mindscience/tree/master/MindSPONGE/applications/AlphaFold3)
 - 🔥`2025.11.6` RFdiffusion inference on MindSpore released, supports antibody design, performance continuously improving! [[Code]](https://atomgit.com/mindspore-lab/mindscience/tree/master/MindSPONGE/applications/rf_diffusion)
 - 🔥`2025.09.15` The Changping Laboratory, along with Gao Yiqin and Liu Sirui's team from Peking University, published the [**GRASP**](https://www.nature.com/articles/s41592-025-02820-1) model, trained based on MindSpore, in *Nature Methods*. This model integrates multi-source experimental information to enable complex modeling, and its antibody predictions surpass AlphaFold3. [[Link]](https://mp.weixin.qq.com/s/OyqGvoIbtZaOTgEM5UFXJw)
@@ -63,7 +64,7 @@ MindSpore SPONGE (Simulation Package tOwards Next GEneration molecular modelling
 #### End2End
 
 - 🔥AlphaFold3 [[Available]](https://atomgit.com/mindspore-lab/mindscience/tree/master/MindSPONGE/applications/AlphaFold3)
-- 🔥Protenix `In Progress`
+- 🔥Protenix [[Available]](https://atomgit.com/mindspore-lab/mindscience/tree/master/MindSPONGE/applications/protenix)
 - 🔥RFdiffusion [[Available]](https://atomgit.com/mindspore-lab/mindscience/tree/master/MindSPONGE/applications/rf_diffusion)
 - Alphafold-Multimer [[Available]](https://atomgit.com/mindspore-lab/mindscience/blob/legacy-master/MindSPONGE/applications/model_cards/afmultimer.md)
 - MEGAProtein [[Available]](https://atomgit.com/mindspore-lab/mindscience/blob/legacy-master/MindSPONGE/applications/model_cards/MEGAProtein.md)

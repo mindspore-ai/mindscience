@@ -1,0 +1,15 @@
+mindspore==2.7.0
+pyyaml
+ml_collections
+biotite==1.0.1
+pandas
+rdkit==2023.9.6
+optree
+scikit-learn
+scikit-learn-extra
+sympy
+matplotlib==3.9.2
+tqdm
+biopython==1.83
+pandas
+protobuf==3.20.2

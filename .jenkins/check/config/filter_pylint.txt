@@ -553,3 +553,4 @@
 "mindscience/MindSPONGE/applications/proteinmpnn/proteinmpnn_interface_design.py" "invalid-name"
 "mindscience/MindSPONGE/applications/proteinmpnn/proteinmpnn_interface_design.py" "redefined-outer-name"
 "mindscience/MindSPONGE/applications/proteinmpnn/proteinmpnn_run.py" "invalid-name"
+"mindscience/MindSPONGE/applications/protenix/protenix/data/featurizer.py" "protected-access"
