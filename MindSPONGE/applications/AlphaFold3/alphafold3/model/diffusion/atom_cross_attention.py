@@ -23,6 +23,7 @@ from alphafold3.model.components import base_modules as bm
 from alphafold3.model.components import utils
 from alphafold3.model.diffusion import diffusion_transformer
 
+
 @dataclass
 class AtomCrossAttEncoderConfig(base_config.BaseConfig):
     per_token_channels: int = 768
@@ -108,9 +109,11 @@ class _PerAtomConditioning(nn.Cell):
         pair_act += self.linear_pair_act2(1.0 / (1 + sq_dists[:, :, :, None]))
         return act, pair_act
 
+
 @dataclass
 class AtomCrossAttEncoderOutput:
     """Output class for AtomCrossAttEncoder."""
+
     def __init__(
             self,
             token_act,
@@ -136,9 +139,11 @@ class AtomCrossAttEncoder(nn.Cell):
     Args:
         config: Configuration object containing model parameters.
         global_config: Global configuration object with initialization settings.
-        name (str): Name of the module.
-        cond_channels (int): Number of conditioning channels. Default: ``384``.
-        with_cond (bool): Whether to include conditioning layers. Default: ``True``.
+        cond_channels (int): Number of conditioning channels.
+        with_cond (bool): Whether to include conditioning layers.
+        ndim (int): the dimension of the input tensor.
+        single_ndim (int): the dimension of the single input tensor.
+        dtype (ms.type): the type of the input tensor.
 
     Inputs:
         - **token_atoms_act** (ms.Tensor): Tensor representing token atom activations.
@@ -156,7 +161,8 @@ class AtomCrossAttEncoder(nn.Cell):
         - **pair_cond** (ms.Tensor): Pair conditioning tensor.
     """
 
-    def __init__(self, config, global_config, name, cond_channels=384, with_cond=True, dtype=ms.float32):
+    def __init__(self, config, global_config, cond_channels=384, with_cond=True,
+                 ndim=3, single_ndim=3, dtype=ms.float32):
         super().__init__()
         self.c = config
         self.with_cond = with_cond
@@ -167,7 +173,8 @@ class AtomCrossAttEncoder(nn.Cell):
                                                      weight_init=global_config.final_init, has_bias=False, dtype=dtype)
             self._lnorm_trunk_single_cond = bm.LayerNorm((cond_channels,),
                                                          create_beta=False, gamma_init="ones", dtype=dtype)
-            self._atom_positions_to_features = nn.Dense(3, self.c.per_atom_channels, has_bias=False, dtype=dtype)
+            self._atom_positions_to_features = nn.Dense(
+                3, self.c.per_atom_channels, has_bias=False, dtype=dtype)
             self._embed_trunk_pair_cond = nn.Dense(self.c.per_atom_channels, self.c.per_atom_pair_channels,
                                                    weight_init=global_config.final_init, has_bias=False, dtype=dtype)
             self._lnorm_trunk_pair_cond = bm.LayerNorm((self.c.per_atom_channels,), create_beta=False,
@@ -197,7 +204,8 @@ class AtomCrossAttEncoder(nn.Cell):
 
         self._atom_transformer_encoder = diffusion_transformer.CrossAttTransformer(
             self.c.atom_transformer, global_config, in_shape=[
-                self.c.per_atom_channels, self.c.per_atom_pair_channels], dtype=dtype
+                self.c.per_atom_channels, self.c.per_atom_pair_channels],
+            ndim=ndim, single_ndim=single_ndim, dtype=dtype
         )
 
     def construct(
@@ -367,9 +375,16 @@ class AtomCrossAttEncoder(nn.Cell):
             queries_act,
             layout_axes=(-3, -2),
         )
-        token_act = utils.mask_mean(
-            token_atoms_mask[..., None], self.relu(token_atoms_act), axis=-2
-        )
+        if len(token_atoms_act.shape) == 3:
+            token_act = utils.mask_mean(
+                token_atoms_mask.unsqueeze(-1), self.relu(token_atoms_act), axis=-2
+            )
+        elif len(token_atoms_act.shape) == 4:
+            token_act = utils.mask_mean(
+                token_atoms_mask.unsqueeze(0).unsqueeze(-1), self.relu(token_atoms_act), axis=-2
+            )
+        else:
+            raise ValueError(f"Invalid shape of token_atoms_act: {token_atoms_act.shape}")
 
         return AtomCrossAttEncoderOutput(
             token_act=token_act,
@@ -380,6 +395,7 @@ class AtomCrossAttEncoder(nn.Cell):
             keys_single_cond=keys_single_cond,
             pair_cond=pair_act,
         )
+
 
 @dataclass
 class AtomCrossAttDecoderConfig(base_config.BaseConfig):
@@ -408,7 +424,7 @@ class AtomCrossAttDecoder(nn.Cell):
         - **position_update** (Tensor) - Tensor representing the updated positions after processing.
     """
 
-    def __init__(self, config, global_config, name, dtype=ms.float32):
+    def __init__(self, config, global_config, dtype=ms.float32):
         super().__init__()
         self.c = config
         self._project_token_features_for_broadcast = nn.Dense(
@@ -419,7 +435,7 @@ class AtomCrossAttDecoder(nn.Cell):
             self.c.per_atom_channels, 3, weight_init=global_config.final_init, has_bias=False, dtype=dtype)
         self._atom_transformer_decoder = diffusion_transformer.CrossAttTransformer(
             self.c.atom_transformer, global_config, in_shape=[
-                self.c.per_atom_channels, self.c.per_atom_pair_channels], dtype=dtype
+                self.c.per_atom_channels, self.c.per_atom_pair_channels], ndim=4, dtype=dtype
         )
 
     def construct(
@@ -435,8 +451,8 @@ class AtomCrossAttDecoder(nn.Cell):
             batch.atom_cross_att.queries_to_token_atoms.shape
         )
         token_atom_act = ops.broadcast_to(
-            token_act[:, None, :],
-            (num_token, max_atoms_per_token, self.c.per_atom_channels),
+            token_act[:, :, None, :],
+            (-1, num_token, max_atoms_per_token, self.c.per_atom_channels),
         )
         queries_act = atom_layout.convert_ms(
             batch.atom_cross_att.token_atoms_to_queries,

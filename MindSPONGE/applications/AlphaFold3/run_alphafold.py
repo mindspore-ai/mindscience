@@ -45,6 +45,7 @@ from alphafold3.model.components import base_model
 from alphafold3.model.components import utils
 from alphafold3.model.diffusion import model as diffusion_model
 from alphafold3.model.feat_batch import Batch
+from alphafold3.model.model_config import GlobalConfig
 import mindspore as ms
 import numpy as np
 
@@ -87,6 +88,19 @@ _RUN_INFERENCE = flags.DEFINE_bool(
     True,
     'Whether to run inference on the fold inputs.',
 )
+
+_USE_EVO_ATTENTION = flags.DEFINE_bool(
+    'use_evo_attention',
+    False,
+    'Whether to use Evo-Attention for GridSelfAttention.',
+)
+
+_USE_EINSUM = flags.DEFINE_bool(
+    'use_einsum',
+    False,
+    'Whether to use Einsum or Ncon for matrix multiplication.',
+)
+
 
 # Binary paths.
 _JACKHMMER_BINARY_PATH = flags.DEFINE_string(
@@ -204,6 +218,7 @@ _BUCKETS = flags.DEFINE_list(
     ' is created for exactly that number of tokens.',
 )
 
+
 class ConfigurableModel(Protocol):
     """A model with a nested config class."""
 
@@ -226,16 +241,16 @@ class ConfigurableModel(Protocol):
 ModelT = TypeVar('ModelT', bound=ConfigurableModel)
 
 
-def make_model_config():
-    print('not implemented make_model_config')
-    return 'ab'
-
 def make_model_config(
         *,
         model_class: type[ModelT] = diffusion_model.Diffuser,
 ):
     """Make model config"""
-    config = model_class.Config()
+    global_config = GlobalConfig(
+        use_evo_attention=_USE_EVO_ATTENTION.value,
+        use_einsum=_USE_EINSUM.value
+    )
+    config = model_class.Config(global_config=global_config)
     return config
 
 
@@ -253,13 +268,6 @@ class ModelRunner:
         self._model_dir = model_dir
 
     @functools.cached_property
-    def model_params(self):
-        """Loads model parameters from the model directory."""
-        # Load parameters from checkpoint file
-        # param_dict = ms.load_checkpoint(self._model_dir / "test.ckpt")
-        # return param_dict
-
-    @functools.cached_property
     def _model(
             self
     ) -> Callable[[np.ndarray, features.BatchDict], base_model.ModelResult]:
@@ -267,8 +275,21 @@ class ModelRunner:
 
         def forward_fn(batch):
             num_residues = batch.token_features.residue_index.shape[0]
-            model = self._model_class(self._model_config, 447, (256, 447), (num_residues, 256, 128), (256, 256, 128),
-                                      (256, 384), (256, 24, 3), 128, 4, dtype=ms.float32)
+            deafult_channel = 256
+            feature_input = 447
+            pair_channel = 128
+            single_channel = 384
+            out_channel = 128
+            num_templates = 4
+            max_atom_per_res = 24
+            feat_shape = (deafult_channel, feature_input)
+            act_shape = (num_residues, deafult_channel, pair_channel)
+            pair_shape = (deafult_channel, deafult_channel, pair_channel)
+            single_shape = (deafult_channel, single_channel)
+            atom_shape = (deafult_channel, max_atom_per_res, 3)
+            model = self._model_class(self._model_config, feature_input, feat_shape, act_shape,
+                                      pair_shape, single_shape, atom_shape, out_channel, num_templates,
+                                      dtype=ms.float32)
             load_diffuser(model, self._model_dir, dtype=ms.float32)
             res = model(batch, 42)
             return res
@@ -509,12 +530,6 @@ def process_fold_input(
             f' {new_output_dir}.'
         )
         output_dir = new_output_dir
-
-    if model_runner is not None:
-        # If we're running inference, check we can load the model parameters before
-        # (possibly) launching the data pipeline.
-        print('Checking we can load the model parameters...')
-        _ = model_runner.model_params
 
     if data_pipeline_config is None:
         print('Skipping data pipeline...')

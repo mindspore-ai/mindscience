@@ -82,6 +82,7 @@ class ConfidenceHead(nn.Cell):
         self.dtype = dtype
         self.config = config
         self.global_config = global_config
+        use_einsum = self.global_config.use_einsum
         self.left_target_feat_project = nn.Dense(
             feat_in_channel, out_channel, has_bias=False, dtype=dtype)
         self.right_target_feat_project = nn.Dense(
@@ -91,7 +92,8 @@ class ConfidenceHead(nn.Cell):
         self.pairformer_block = ms.nn.CellList(
             [
                 modules.PairFormerIteration(
-                    self.config.pairformer, global_config, pair_shape, single_shape, with_single=True, dtype=dtype
+                    self.config.pairformer, global_config, pair_shape, single_shape,
+                    with_single=True, dtype=dtype
                 )
                 for _ in range(self.config.pairformer.num_layer)
             ]
@@ -103,10 +105,12 @@ class ConfidenceHead(nn.Cell):
             pair_shape[-1], self.config.pae.num_bins, has_bias=False, dtype=ms.float32)
         self.pae_logits_ln = bm.LayerNorm(pair_shape, dtype=ms.float32)
         self.plddt_logits = bm.CustomDense(
-            single_shape[-1], (atom_shape[-2], self.config.num_plddt_bins), ndim=2, dtype=ms.float32)
+            single_shape[-1], (atom_shape[-2], self.config.num_plddt_bins), ndim=2,
+            use_einsum=use_einsum, dtype=ms.float32)
         self.plddt_logits_ln = bm.LayerNorm(single_shape, dtype=ms.float32)
         self.experimentally_resolved_logits = bm.CustomDense(
-            single_shape[-1], (atom_shape[-2], 2), ndim=2, dtype=ms.float32)
+            single_shape[-1], (atom_shape[-2], 2), ndim=2,
+            use_einsum=use_einsum, dtype=ms.float32)
         self.experimentally_resolved_ln = bm.LayerNorm(single_shape, dtype=ms.float32)
 
     def _embed_features(self, dense_atom_positions, token_atoms_to_pseude_beta,

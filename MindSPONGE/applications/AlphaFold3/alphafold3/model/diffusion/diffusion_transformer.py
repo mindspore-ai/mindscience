@@ -35,6 +35,8 @@ class AdaptiveLayernorm(nn.Cell):
             `with_single_cond` is True. Default: ``None``.
         ndim (int, optional): Number of dimensions for the dense layers. Default: ``3``.
         with_single_cond (bool, optional): Whether to include the single condition adaptation. Default: ``True``.
+        use_einsum (bool): Whether to use Einsum or Ncon for matrix multiplication.
+        dtype (ms.type): the type of the input tensor.
 
     Inputs:
         - **x** (Tensor) - Input tensor to be normalized.
@@ -45,7 +47,8 @@ class AdaptiveLayernorm(nn.Cell):
         - **output** (Tensor) - The normalized output tensor.
     """
 
-    def __init__(self, num_channels, single_channel=None, ndim=3, with_single_cond=True, dtype=ms.float32):
+    def __init__(self, num_channels, single_channel=None, with_single_cond=True,
+                 single_ndim=3, use_einsum=False, dtype=ms.float32):
         super().__init__()
         self.with_single_cond = with_single_cond
         if self.with_single_cond:
@@ -56,9 +59,11 @@ class AdaptiveLayernorm(nn.Cell):
                                                        create_beta=False, gamma_init='ones', beta_init='zeros',
                                                        dtype=ms.float32)
             self.single_cond_scale = bm.CustomDense(single_channel, num_channels, weight_init='zeros',
-                                                    use_bias=True, bias_init='ones', ndim=ndim, dtype=dtype)
+                                                    use_bias=True, bias_init='ones', ndim=single_ndim,
+                                                    use_einsum=use_einsum, dtype=dtype)
             self.single_cond_bias = bm.CustomDense(
-                single_channel, num_channels, weight_init='zeros', ndim=ndim, dtype=dtype)
+                single_channel, num_channels, weight_init='zeros', ndim=single_ndim,
+                use_einsum=use_einsum, dtype=dtype)
         else:
             self.layernorm = bm.LayerNorm([num_channels], dtype=ms.float32)
 
@@ -85,6 +90,8 @@ class AdaptiveZeroInit(nn.Cell):
         single_channels (int, optional): Number of single conditional channels. Default: ``None``.
         ndim (int, optional): Number of dimensions for the dense layer input. Default: ``3``.
         with_single_cond (bool, optional): Whether to use single conditional transformation. Default: ``True``.
+        use_einsum (bool): Whether to use Einsum or Ncon for matrix multiplication.
+        dtype (ms.type): the type of the input tensor.
 
     Inputs:
         - **x** (Tensor) - Input tensor to the layer.
@@ -94,17 +101,19 @@ class AdaptiveZeroInit(nn.Cell):
         - **output** (Tensor) - Output tensor after applying the adaptive initialization.
     """
 
-    def __init__(self, in_channels, out_channels, single_channels=None, ndim=3, with_single_cond=True,
-                 dtype=ms.float32):
+    def __init__(self, in_channels, out_channels, single_channels=None, ndim=3,
+                 single_ndim=2, with_single_cond=True, use_einsum=False, dtype=ms.float32):
         super().__init__()
         self.with_single_cond = with_single_cond
         self.cond_linear1 = bm.CustomDense(
-            in_channels, out_channels, weight_init='zeros', ndim=ndim, dtype=dtype)
+            in_channels, out_channels, weight_init='zeros', ndim=ndim,
+            use_einsum=use_einsum, dtype=dtype)
         if self.with_single_cond:
             if single_channels is None:
                 single_channels = in_channels
             self.cond_linear2 = bm.CustomDense(single_channels, out_channels, weight_init='zeros',
-                                               use_bias=True, bias_init='zeros', ndim=ndim, dtype=dtype)
+                                               use_bias=True, bias_init='zeros', ndim=single_ndim,
+                                               use_einsum=use_einsum, dtype=dtype)
             self.cond_linear2.bias = ms.Parameter(
                 self.cond_linear2.bias * (-2))
 
@@ -131,7 +140,8 @@ class TransitionBlock(nn.Cell):
         ndim (int, optional): Number of dimensions for input tensor. Default: ``3``.
         with_single_cond (bool, optional): Whether to use single conditional processing. Default: ``True``.
         use_glu_kernel (bool, optional): Whether to use GLU. Default: ``True``.
-        name (str, optional): Name of the layer. Default: ``''``.
+        use_einsum (bool): Whether to use Einsum or Ncon for matrix multiplication.
+        dtype (ms.type): the type of the input tensor.
 
     Inputs:
         - **x** (Tensor) - Input tensor to the layer.
@@ -141,14 +151,16 @@ class TransitionBlock(nn.Cell):
         - **output** (Tensor) - Output tensor after processing through the TransitionBlock.
     """
 
+
     def __init__(self, in_channels, num_intermediate_factor, single_channels=None, ndim=3,
-                 with_single_cond=True, use_glu_kernel=True, dtype=ms.float32):
+             single_ndim=2, with_single_cond=True, use_glu_kernel=True, use_einsum=False, dtype=ms.float32):
         super().__init__()
         self.num_intermediate = num_intermediate_factor * in_channels
         if single_channels is None:
             single_channels = in_channels
         self.adaptive_layernorm = AdaptiveLayernorm(
-            in_channels, single_channels, ndim=ndim, with_single_cond=with_single_cond, dtype=dtype)
+            in_channels, single_channels, with_single_cond=with_single_cond,
+            single_ndim=single_ndim, use_einsum=False, dtype=dtype)
         self.use_glu_kernel = use_glu_kernel
         if self.use_glu_kernel:
             self.weights = bm.custom_initializer(
@@ -157,11 +169,12 @@ class TransitionBlock(nn.Cell):
                 in_channels, 2, self.num_intermediate))
         else:
             self.linear = bm.CustomDense(
-                in_channels, self.num_intermediate * 2, weight_init='zeros', ndim=3, dtype=dtype)
+                in_channels, self.num_intermediate * 2, weight_init='zeros', ndim=3,
+                use_einsum=use_einsum, dtype=dtype)
         self.adaptive_zero_init = AdaptiveZeroInit(
-            self.num_intermediate, in_channels,
-            single_channels, ndim=ndim,
-            with_single_cond=with_single_cond, dtype=dtype)
+            self.num_intermediate, in_channels, single_channels, ndim=ndim,
+            single_ndim=single_ndim, with_single_cond=with_single_cond,
+            use_einsum=use_einsum, dtype=dtype)
 
     def construct(self, x, single_cond=None):
         """Construct the TransitionBlock."""
@@ -203,6 +216,8 @@ class SelfAttention(nn.Cell):
         in_shape (tuple): Shape of the input tensor.
         ndim (int, optional): Number of dimensions for the dense layers. Default: ``3``.
         with_single_cond (bool, optional): Whether to include single condition adaptation. Default: ``True``.
+        use_einsum (bool): Whether to use Einsum or Ncon for matrix multiplication.
+        dtype (ms.type): the type of the input tensor.
 
     Inputs:
         - **x** (Tensor) - Input tensor to the self-attention layer.
@@ -219,12 +234,15 @@ class SelfAttention(nn.Cell):
         - The attention mechanism supports optional single condition adaptation and pair-wise logits.
     """
 
-    def __init__(self, config, global_config, num_channels, ndim=3, with_single_cond=True, dtype=ms.float32):
+    def __init__(self, config, global_config, num_channels, ndim=3,
+                 single_ndim=3, with_single_cond=True,
+                 use_einsum=False, dtype=ms.float32):
         super().__init__()
         self.config = config
         self.global_config = global_config
         self.adaptive_layernorm = AdaptiveLayernorm(num_channels, int(
-            num_channels//2), ndim=ndim, with_single_cond=with_single_cond, dtype=dtype)
+            num_channels//2), with_single_cond=with_single_cond, single_ndim=single_ndim,
+            use_einsum=use_einsum, dtype=dtype)
         key_dim = self.config.key_dim if self.config.key_dim is not None else num_channels
         value_dim = self.config.value_dim if self.config.value_dim is not None else num_channels
         num_head = self.config.num_head
@@ -233,16 +251,18 @@ class SelfAttention(nn.Cell):
         value_dim = value_dim // num_head
         qk_shape = (num_head, key_dim)
         v_shape = (num_head, value_dim)
-        self.q_linear = bm.CustomDense(
-            num_channels, qk_shape, use_bias=True, dtype=dtype)
-        self.k_linear = bm.CustomDense(
-            num_channels, qk_shape, use_bias=False, dtype=dtype)
-        self.v_linear = bm.CustomDense(
-            num_channels, v_shape, use_bias=False, dtype=dtype)
+        self.q_linear = bm.CustomDense(num_channels, qk_shape, use_bias=True, ndim=ndim,
+                                       use_einsum=use_einsum, dtype=dtype)
+        self.k_linear = bm.CustomDense(num_channels, qk_shape, use_bias=False, ndim=ndim,
+                                       use_einsum=use_einsum, dtype=dtype)
+        self.v_linear = bm.CustomDense(num_channels, v_shape, use_bias=False, ndim=ndim,
+                                       use_einsum=use_einsum, dtype=dtype)
         self.linear = bm.CustomDense(
-            num_channels, num_head * value_dim, weight_init='zeros', dtype=dtype)
-        self.adaptive_zero_init = AdaptiveZeroInit(num_channels, num_channels, int(
-            num_channels//2), 2, with_single_cond=with_single_cond, dtype=dtype)
+            num_channels, num_head * value_dim, weight_init='zeros', ndim=ndim,
+            use_einsum=use_einsum, dtype=dtype)
+        self.adaptive_zero_init = AdaptiveZeroInit(num_channels, num_channels,
+            int(num_channels//2), ndim=ndim, with_single_cond=with_single_cond,
+            single_ndim=single_ndim, use_einsum=use_einsum, dtype=dtype)
         self.ncon1 = Ncon([[-2, -1, 1], [-3, -1, 1]])
         self.ncon2 = Ncon([[-2, -1, 2], [2, -2, -3]])
 
@@ -317,10 +337,11 @@ class Block(nn.Cell):
     def __init__(self, config, global_config, in_shape, dtype=ms.float32):
         super().__init__()
         self.self_attention = SelfAttention(
-            config.attention, global_config, in_shape[-1], ndim=2, dtype=dtype)
+            config.attention, global_config, in_shape[-1], ndim=3, single_ndim=2,
+            use_einsum=False, dtype=dtype)
         self.transition_block = TransitionBlock(in_shape[-1],
-                                                config.num_intermediate_factor,
-                                                int(in_shape[-1]//2), ndim=2, dtype=dtype)
+                                                config.num_intermediate_factor, int(in_shape[-1]//2),
+                                                ndim=3, single_ndim=2, use_einsum=False, dtype=dtype)
 
     def construct(self, act, mask, single_cond, pair_logits):
         act += self.self_attention(act, mask, single_cond, pair_logits)
@@ -348,7 +369,8 @@ class SuperBlock(nn.Cell):
         )
         if self.using_pair_act:
             self.pair_linear = bm.CustomDense(
-                pair_shape[-1], (self.config.super_block_size, self.config.attention.num_head), ndim=3, dtype=dtype)
+                pair_shape[-1], (self.config.super_block_size, self.config.attention.num_head), ndim=3,
+                use_einsum=False, dtype=dtype)
         else:
             self.pair_linear = None
 
@@ -391,29 +413,37 @@ class CrossAttention(nn.Cell):
         - **output** (Tensor) - Output tensor after cross-attention processing.
     """
 
-    def __init__(self, config, global_config, in_channel, dtype=ms.float32):
+    def __init__(self, config, global_config, in_channel, ndim=3, single_ndim=3, dtype=ms.float32):
         super().__init__()
         self.config = config
         self.global_config = global_config
-        self.adaptive_layernorm_q = AdaptiveLayernorm(
-            in_channel, in_channel, dtype=dtype)
-        self.adaptive_layernorm_k = AdaptiveLayernorm(
-            in_channel, in_channel, dtype=dtype)
+        use_einsum = self.global_config.use_einsum
+        self.adaptive_layernorm_q = AdaptiveLayernorm(in_channel, in_channel,
+                                                      single_ndim=single_ndim,
+                                                      use_einsum=use_einsum, dtype=dtype)
+        self.adaptive_layernorm_k = AdaptiveLayernorm(in_channel, in_channel,
+                                                      single_ndim=single_ndim,
+                                                      use_einsum=use_einsum, dtype=dtype)
         self.key_dim = config.key_dim // config.num_head
         self.value_dim = config.value_dim // config.num_head
         self.linear_q = bm.CustomDense(
-            in_channel, (self.config.num_head, self.key_dim), use_bias=True, ndim=3, dtype=dtype)
+            in_channel, (self.config.num_head, self.key_dim), use_bias=True, ndim=ndim,
+            use_einsum=use_einsum, dtype=dtype)
         self.linear_k = bm.CustomDense(
-            in_channel, (self.config.num_head, self.key_dim), use_bias=False, ndim=3, dtype=dtype)
+            in_channel, (self.config.num_head, self.key_dim), use_bias=False, ndim=ndim,
+            use_einsum=use_einsum, dtype=dtype)
         self.linear_v = bm.CustomDense(
-            in_channel, (self.config.num_head, self.value_dim), use_bias=False, ndim=3, dtype=dtype)
+            in_channel, (self.config.num_head, self.value_dim), use_bias=False, ndim=ndim,
+            use_einsum=use_einsum, dtype=dtype)
         self.ncon1 = Ncon([[-1, -3, -2, 1], [-1, -4, -2, 1]])
         self.ncon2 = Ncon([[-1, -3, -2, 1], [-1, 1, -3, -4]])
         self.gating_query = bm.CustomDense(
             in_channel, self.config.num_head * self.value_dim, use_bias=False,
-            weight_init='zeros', bias_init='ones', ndim=3, dtype=dtype)
+            weight_init='zeros', bias_init='ones', ndim=ndim,
+            use_einsum=use_einsum, dtype=dtype)
         self.adaptive_zero_init = AdaptiveZeroInit(
-            in_channel, in_channel, in_channel, dtype=dtype)
+            in_channel, in_channel, in_channel, ndim=ndim,
+            single_ndim=single_ndim, use_einsum=use_einsum, dtype=dtype)
 
     def construct(self, x_q, x_k, mask_q, mask_k, pair_logits, single_cond_q, single_cond_k):
         """Multihead self-attention."""
@@ -470,18 +500,20 @@ class CrossAttTransformer(nn.Cell):
         num_blocks: int
         attention: CrossAttentionConfig = base_config.autocreate()
 
-    def __init__(self, config, global_config, in_shape, dtype=ms.float32):
+    def __init__(self, config, global_config, in_shape, ndim=3, single_ndim=3, dtype=ms.float32):
         super().__init__()
         self.config = config
         self.global_config = global_config
+        use_einsum = self.global_config.use_einsum
         self.pair_input_layer_norm = bm.LayerNorm(
             in_shape, create_beta=False, dtype=ms.float32)
         self.pair_logits_projection = bm.CustomDense(
-            in_shape[-1], (self.config.num_blocks, self.config.attention.num_head), ndim=4, dtype=dtype)
+            in_shape[-1], (self.config.num_blocks, self.config.attention.num_head), ndim=4,
+            use_einsum=use_einsum, dtype=dtype)
         self.block = ms.nn.CellList(
             [
                 CrossAttTransformerBlock(
-                    config, global_config, in_shape[-2], dtype=dtype
+                    config, global_config, in_shape[-2], ndim=ndim, single_ndim=single_ndim, dtype=dtype
                 )
                 for _ in range(self.config.num_blocks)
             ]
@@ -502,12 +534,16 @@ class CrossAttTransformer(nn.Cell):
 class CrossAttTransformerBlock(nn.Cell):
     """Block for CrossAttTransformer."""
 
-    def __init__(self, config, global_config, in_channel, dtype=ms.float32):
+    def __init__(self, config, global_config, in_channel, ndim=3, single_ndim=3,
+                 use_einsum=False, dtype=ms.float32):
         super().__init__()
+        use_einsum = global_config.use_einsum
         self.cross_attention = CrossAttention(
-            config.attention, global_config, in_channel, dtype=dtype)
+            config.attention, global_config, in_channel, ndim=ndim,
+            single_ndim=single_ndim, dtype=dtype)
         self.transition = TransitionBlock(
-            in_channel, config.num_intermediate_factor, dtype=dtype)
+            in_channel, config.num_intermediate_factor, ndim=ndim, single_ndim=single_ndim,
+            use_einsum=use_einsum, dtype=dtype)
 
     def construct(self, queries_act, queries_mask, queries_to_keys, keys_mask, pair_logits,
                   queries_single_cond, keys_single_cond):

@@ -23,6 +23,7 @@ import mindspore as ms
 from mindspore import nn, ops
 from mindspore.common import initializer
 from mindscience.e3nn.utils import Ncon
+from mindscience.sciops.einsum import Einsum
 
 # Useful for mocking in tests.
 DEFAULT_PRECISION = None
@@ -88,16 +89,23 @@ class CustomDense(nn.Cell):
     Args:
         in_shape (Union(int, List, Tuple)): input shape, that need to be multiplied.
         out_shape (Union(int, List, Tuple)): output shape, that need to be multiplied.
+        weight_init (str): the initializer of the weight.
+        use_bias (bool): whether to use bias.
+        bias_init (str): the initializer of the bias.
+        ndim (int): the dimension of the input tensor.
+        mode (str): 'einsum' or 'ncon'.
+        dtype (ms.type): the type of the input tensor.
     Inputs:
         - **x** (Tensor)
     Outputs:
+        - **output** (Tensor) - The output tensor.
 
     Supported Platforms:
         ``Ascend``
     """
 
     def __init__(self, in_shape, out_shape, weight_init="zeros", use_bias=False, \
-                 bias_init="zeros", ndim=None, dtype=ms.float32):
+                 bias_init="zeros", ndim=None, use_einsum=False, dtype=ms.float32):
         super().__init__()
         if isinstance(in_shape, int):
             in_shape = (in_shape,)
@@ -105,6 +113,7 @@ class CustomDense(nn.Cell):
             out_shape = (out_shape,)
         self.num_output_dims = len(out_shape)
         self.num_input_dims = len(in_shape)
+        self.use_einsum = use_einsum
         if ndim is None:
             ndim = len(in_shape) + 1
         if weight_init in ["relu", "linear"]:
@@ -117,21 +126,25 @@ class CustomDense(nn.Cell):
         if self.use_bias:
             self.bias = ms.Parameter(
                 initializer.initializer(bias_init, out_shape, dtype=dtype))
-        ncon_list1 = [-i-1 for i in range(ndim - self.num_input_dims)] + [
-            i+1 for i in range(len(in_shape))]
-        ncon_list2 = (ncon_list1[ndim - self.num_input_dims:]) + \
-            [-i-ndim+self.num_input_dims-1 for i in range(len(out_shape))]
-        self.ncon = Ncon([ncon_list1, ncon_list2])
-
-        in_letters = 'abcde'[: self.num_input_dims]
-        out_letters = 'hijkl'[: self.num_output_dims]
-        self.equation = f'...{in_letters}, {in_letters}{out_letters}->...{out_letters}'
+        if self.use_einsum:
+            in_letters = 'abcde'[: self.num_input_dims]
+            out_letters = 'hijkl'[: self.num_output_dims]
+            self.equation = f'...{in_letters}, {in_letters}{out_letters}->...{out_letters}'
+            self.einsum = Einsum(equation=self.equation)
+        else:
+            ncon_list1 = [-i-1 for i in range(ndim - self.num_input_dims)] + [
+                i+1 for i in range(len(in_shape))]
+            ncon_list2 = (ncon_list1[ndim - self.num_input_dims:]) + \
+                [-i-ndim+self.num_input_dims-1 for i in range(len(out_shape))]
+            self.ncon = Ncon([ncon_list1, ncon_list2])
 
     def construct(self, x):
-        if self.use_bias:
-            output = self.ncon([x, self.weight]) + self.bias
+        if self.use_einsum:
+            output = self.einsum(x, self.weight)
         else:
             output = self.ncon([x, self.weight])
+        if self.use_bias:
+            output = output + self.bias
         return output
 
 

@@ -126,10 +126,12 @@ class TemplateEmbedding(nn.Cell):
         )
         dgram_features: DistogramFeaturesConfig = base_config.autocreate()
 
-    def __init__(self, config, global_config, num_templates, normalized_shape, num_atoms=24, dtype=ms.float32):
+    def __init__(self, config, global_config, num_templates, normalized_shape, num_atoms=24,
+                 dtype=ms.float32):
         super().__init__()
         self.config = config
         self.global_config = global_config
+        use_einsum = self.global_config.use_einsum
         self.num_residues = normalized_shape[0]
         self.num_templates = num_templates
         self.query_num_channels = normalized_shape[2]
@@ -137,7 +139,7 @@ class TemplateEmbedding(nn.Cell):
         self.template_embedder = SingleTemplateEmbedding(
             self.config, self.global_config, normalized_shape, dtype=dtype)
         self.output_linear = bm.CustomDense(
-            self.config.num_channels, self.query_num_channels, ndim=3, dtype=dtype)
+            self.config.num_channels, self.query_num_channels, ndim=3, use_einsum=use_einsum, dtype=dtype)
         self.output_linear.weight = bm.custom_initializer(
             'relu', (self.config.num_channels, self.query_num_channels), dtype=dtype)
 
@@ -212,6 +214,7 @@ class SingleTemplateEmbedding(nn.Cell):
         super().__init__()
         self.config = config
         self.global_config = global_config
+        use_einsum = self.global_config.use_einsum
         num_channels = self.config.num_channels
         self.query_embedding_norm = bm.LayerNorm(
             normalized_shape, dtype=ms.float32)
@@ -223,7 +226,8 @@ class SingleTemplateEmbedding(nn.Cell):
         self.template_pair_embedding = ms.nn.CellList(
             [
                 bm.CustomDense(
-                    in_shape_list[i], num_channels, weight_init="relu", ndim=ndim_list[i], dtype=dtype
+                    in_shape_list[i], num_channels, weight_init="relu", ndim=ndim_list[i],
+                    use_einsum=use_einsum, dtype=dtype
                 )
                 for i in range(num_layers)
             ]
