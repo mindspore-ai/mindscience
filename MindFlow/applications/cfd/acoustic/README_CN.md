@@ -109,13 +109,13 @@ NPU 显存>32G
 
 ### MindSpore和MindScience版本关系
 
-mindspore>=2.4.0
-mindscience==0.8.0
+MindSpore>=2.4.0
+MindScience==0.8.0
 
 ### 安装
 
-1. 确保环境已安装正确版本的mindspore和mindscience；
-2. 克隆mindscience仓或直接获取[MindFlow/applications/cfd/acoustic](https://atomgit.com/mindspore-lab/mindscience/tree/master/MindFlow/applications/cfd/acoustic)目录下的代码；
+1. 确保环境已安装正确版本的MindSpore和MindScience；
+2. 克隆MindScience仓或直接获取[MindFlow/applications/cfd/acoustic](https://atomgit.com/mindspore-lab/mindscience/tree/master/MindFlow/applications/cfd/acoustic)目录下的代码；
 
 ### 数据集
 
@@ -168,11 +168,11 @@ python solve_acoustic.py --dim 2 --device_id 0 --mode GRAPH
 
 针对同一个速度模型，不同震源位置激发的波场随时间演化过程如下图所示。
 
-![wave_2d.gif](./images/wave_2d.gif)
+![wave_2d.gif](https://raw.atomgit.com/mindspore-lab/mindscience/raw/master/MindFlow/applications/cfd/acoustic/images/wave_2d.gif)
 
 方程残差的迭代收敛过程如下图所示，每根线代表一个频点。不同频点达到收敛阈值所需的迭代次数不同，同一批次的迭代次数取决于收敛最慢的频点。
 
-![errors_2d.png](./images/errors_2d.png)
+![errors_2d.png](https://raw.atomgit.com/mindspore-lab/mindscience/raw/master/MindFlow/applications/cfd/acoustic/images/errors_2d.png)
 
 ### 三维模型
 
@@ -180,15 +180,15 @@ python solve_acoustic.py --dim 2 --device_id 0 --mode GRAPH
 
 将频点分到5张NPU卡上，每张卡的CBS迭代误差收敛曲线图为
 
-![errors_3d](./images/errors_3d.png)
+![errors_3d](https://raw.atomgit.com/mindspore-lab/mindscience/raw/master/MindFlow/applications/cfd/acoustic/images/errors_3d.png)
 
 如下从左至右分别为波速分布图、X-T声压分布图、Y-T声压分布图。其中X-T声压图描述了Z=0平面上声波随时间（纵坐标向下）沿X轴的传播过程，Y-T声压图描述了Z=0平面上声波随时间（纵坐标向下）沿Y轴的传播过程。
 
-![velocity_pressure_3d](./images/velocity_pressure_3d.png)
+![velocity_pressure_3d](https://raw.atomgit.com/mindspore-lab/mindscience/raw/master/MindFlow/applications/cfd/acoustic/images/velocity_pressure_3d.png)
 
 如下为3D场景 X-Z 截面处的声波随时间演化动图（为看清声波的传播与反射，这里仅对一个震源进行演示），可以从中看到声波在地下的传播以及声波遇到地下介质的反射波。
 
-<img src="./images/sound_pressure_3d.gif" alt="sound_pressure_3d" style="zoom:50%;" />
+<img src="https://raw.atomgit.com/mindspore-lab/mindscience/raw/master/MindFlow/applications/cfd/acoustic/images/sound_pressure_3d.gif" alt="sound_pressure_3d" style="zoom:50%;" />
 
 ### 性能
 
@@ -217,7 +217,7 @@ email：hainingwang1995@gmail.com，zhaog6@lsec.cc.ac.cn
 
 ## 联系我们
 
-如果您对MindSpore Mindscience有任何建议，请通过[issue](https://atomgit.com/mindspore-lab/mindscience/issues)与我们联系，我们将及时处理。
+如果您对MindSpore MindScience有任何建议，请通过[issue](https://atomgit.com/mindspore-lab/mindscience/issues)与我们联系，我们将及时处理。
 
 ## 引用
 

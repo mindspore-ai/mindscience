@@ -59,8 +59,8 @@ NPU memory>32G
 
 ### MindSpore & MindScience Version
 
-mindspore>=2.7.0
-mindscience==0.8.0
+MindSpore>=2.7.0
+MindScience==0.8.0
 
 ### Installation
 
@@ -135,7 +135,7 @@ email: zhang_yi_1995@163.com,wangwen@isrc.iscas.ac.cn
 
 ## Contact Us
 
-If you have any suggestions for MindScience, please contact us via [issue](https://atomgit.com/mindspore-lab/mindscience/issues), and we will address them promptly.
+If you have any suggestions for MindSpore MindScience, please contact us via [issue](https://atomgit.com/mindspore-lab/mindscience/issues), and we will address them promptly.
 
 ## Quotation
 
