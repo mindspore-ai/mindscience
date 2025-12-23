@@ -7,6 +7,7 @@ GraphCast Models
 .. autosummary::
     :toctree: models
     :nosignatures:
+    :template: classtemplate.rst
 
     mindscience.models.GraphCast.GraphCastNet
 
@@ -16,6 +17,7 @@ Attention Modules
 .. autosummary::
     :toctree: models
     :nosignatures:
+    :template: classtemplate.rst
 
     mindscience.models.transformer.Attention
     mindscience.models.transformer.MultiHeadAttention
@@ -27,6 +29,7 @@ Vision Transformer (ViT)
 .. autosummary::
     :toctree: models
     :nosignatures:
+    :template: classtemplate.rst
 
     mindscience.models.transformer.VisionTransformer
 
@@ -36,6 +39,7 @@ Activation Functions
 .. autosummary::
     :toctree: models
     :nosignatures:
+    :template: classtemplate.rst
 
     mindscience.models.layers.get_activation
     mindscience.models.layers.activation.SReLU
@@ -46,6 +50,7 @@ Basic Blocks
 .. autosummary::
     :toctree: models
     :nosignatures:
+    :template: classtemplate.rst
 
     mindscience.models.layers.DropPath
     mindscience.models.layers.FCSequential
@@ -60,6 +65,7 @@ UNet2D
 .. autosummary::
     :toctree: models
     :nosignatures:
+    :template: classtemplate.rst
 
     mindscience.models.layers.UNet2D
 
@@ -69,5 +75,6 @@ Mask Layers
 .. autosummary::
     :toctree: models
     :nosignatures:
+    :template: classtemplate.rst
 
     mindscience.models.layers.MaskedLayerNorm
