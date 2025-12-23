@@ -15,8 +15,8 @@
 """
 unet2d
 """
-import mindspore.nn as nn
-import mindspore.ops as ops
+from mindspore import nn
+from mindspore import ops
 from mindspore.ops import operations as P
 
 from .activation import get_activation
@@ -56,7 +56,7 @@ class Down(nn.Cell):
         self.maxpool = nn.MaxPool2d(kernel_size=kernel_size, stride=stride)
 
     def construct(self, x):
-        """forward"""
+        """Forward pass for Down."""
         x = self.maxpool(x)
         return self.conv(x)
 
@@ -97,14 +97,15 @@ class UNet2D(nn.Cell):
         in_channels (int): The number of input channels.
         out_channels (int): The number of output channels.
         base_channels (int): The number of base channels of UNet2D.
-        n_layers (int): The number of downsample and upsample convolutions. Default: 4.
-        data_format (str): The format of input data. Default: 'NHWC'
-        kernel_size (int): Specifies the height and width of the 2D convolution kernel. Default: 2.
-        stride (Union[int, tuple[int]]): The distance of kernel moving,
+        n_layers (int, optional): The number of downsample and upsample convolutions. Default: ``4``.
+        data_format (str, optional): The format of input data. Default: ``"NHWC"``
+        kernel_size (int, optional): Specifies the height and width of the 2D convolution kernel. Default: ``2``.
+        stride (Union[int, tuple[int]], optional): The distance of kernel moving,
             an int number that represents the height and width of movement are both stride,
-            or a tuple of two int numbers that represent height and width of movement respectively. Default: 2.
-        activation (Union[str, class]): The activation function, could be either str or class. Default: ``relu``.
-        enable_bn (bool): Specifies whether to use batch norm in convolutions.
+            or a tuple of two int numbers that represent height and width of movement respectively. Default: ``2``.
+        activation (Union[str, class], optional): The activation function, could be either str or class. 
+            Default: ``"relu"``.
+        enable_bn (bool, optional): Specifies whether to use batch norm in convolutions. Default: ``True``.
 
     Inputs:
         - **x** (Tensor) - Tensor of shape :math:`(batch\_size, resolution, resolution, channels)`.
@@ -112,16 +113,17 @@ class UNet2D(nn.Cell):
     Outputs:
         - **output** (Tensor) - Tensor of shape :math:`(batch\_size, resolution, resolution, channels)`.
 
-    Supported Platforms:
-        ``Ascend`` ``GPU``
+    Raises:
+        ValueError: If `data_format` is not ``'NHWC'`` or ``'NCHW'``.
+        ValueError: If `n_layers` is ``0``.
 
     Examples:
         >>> import mindspore as ms
+        >>> import numpy as np
         >>> from mindspore import Tensor
         >>> import mindspore.common.dtype as mstype
-        >>> import mindflow
-        >>> from mindflow.cell import UNet2D
-        >>> ms.set_context(mode=ms.GRAPH_MODE, save_graphs=False, device_target="GPU")
+        >>> from mindscience.models.layers import UNet2D
+        >>> ms.set_context(mode=ms.GRAPH_MODE, save_graphs=False)
         >>> x=Tensor(np.ones([2, 128, 128, 3]), mstype.float32)
         >>> unet = UNet2D(in_channels=3, out_channels=3, base_channels=3)
         >>> output = unet(x)
@@ -154,7 +156,7 @@ class UNet2D(nn.Cell):
 
         if data_format not in ("NHWC", "NCHW"):
             raise ValueError(
-                "data_format must be 'NHWC' or 'NCHW', but got data_format: {}".format(data_format))
+                f"data_format must be 'NHWC' or 'NCHW', but got data_format: {data_format}")
         if n_layers == 0:
             raise ValueError("UNet block should contain at least one downsample convolution")
 

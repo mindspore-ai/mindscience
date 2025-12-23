@@ -16,9 +16,9 @@
 from __future__ import absolute_import
 
 import numpy as np
-import mindspore.ops as ops
-import mindspore.nn.layer.activation as activation
-import mindspore.nn as nn
+from mindspore import ops
+from mindspore import nn
+from mindspore.nn.layer import activation
 
 __all__ = ['get_activation']
 
@@ -30,17 +30,14 @@ class SReLU(nn.Cell):
     Applies the sin rectified linear unit function element-wise.
 
     Inputs:
-        - **input_data** (Tensor) - The input of SReLU.
+        - **input** (Tensor) - The input of SReLU.
 
     Outputs:
-        Tensor, with the same type and shape as the `input_data`.
-
-    Supported Platforms:
-        ``Ascend`` ``GPU``
+        - **output** (Tensor) - Tensor, with the same type and shape as the `input`.
 
     Examples:
         >>> import numpy as np
-        >>> from mindflow.cell.activation import SReLU
+        >>> from mindscience.models.layers.activation import SReLU
         >>> from mindspore import Tensor
         >>> input_x = Tensor(np.array([[1.2, 0.1], [0.2, 3.2]], dtype=np.float32))
         >>> srelu = SReLU()
@@ -50,7 +47,7 @@ class SReLU(nn.Cell):
          [0.15216905 0.        ]]
     """
     def __init__(self):
-        super(SReLU, self).__init__()
+        super().__init__()
         self.relu0 = activation.ReLU()
         self.relu1 = activation.ReLU()
         self.sin = ops.Sin()
@@ -91,12 +88,9 @@ def get_activation(name):
     Returns:
         Function(mindspore.cell), the activation function.
 
-    Supported Platforms:
-        ``Ascend`` ``GPU``
-
     Examples:
         >>> import numpy as np
-        >>> from mindflow.cell import get_activation
+        >>> from mindscience.models.layers import get_activation
         >>> from mindspore import Tensor
         >>> input_x = Tensor(np.array([[1.2, 0.1], [0.2, 3.2]], dtype=np.float32))
         >>> sigmoid = get_activation('sigmoid')
@@ -108,7 +102,7 @@ def get_activation(name):
     if name is None:
         return None
     if not isinstance(name, str):
-        raise TypeError("the type of name should be str, but got {}".format(type(name)))
+        raise TypeError(f"the type of name should be str, but got {type(name)}")
     name = name.lower()
     if name not in _activation:
         return activation.get_activation(name)
