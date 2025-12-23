@@ -44,8 +44,8 @@ NPU memory>32G
 
 ### MindSpore & MindScience Version
 
-mindspore>=2.5.0
-mindscience==0.8.0
+MindSpore>=2.5.0
+MindScience==0.8.0
 
 ### Installation
 
@@ -90,7 +90,7 @@ where
 
 `--experiment` is the the experiment directory. It should include experiment specifications under 'config/';
 
-`--mode` is the running mode. 'GRAPH' indicates static graph mode. 'PYNATIVE' indicates dynamic graph mode. Default 'GRAPH';
+`--mode` is the running mode. 'GRAPH' indicates static graph mode, and 'PYNATIVE' indicates dynamic graph mode. See details in [MindSpore website](https://www.mindspore.cn/docs/zh-CN/r2.0/design/dynamic_graph_and_static_graph.html?highlight=pynative). Default 'GRAPH';
 
 `--device_target` represents the type of computing platform used, which can be selected as 'Ascend' or 'GPU', default 'Ascend';
 
@@ -127,7 +127,7 @@ email: liuguangyuu@outlook.com
 
 ## Contact Us
 
-If you have any suggestions for MindScience, please contact us via [issue](https://atomgit.com/mindspore-lab/mindscience/issues), and we will address them promptly.
+If you have any suggestions for MindSpore MindScience, please contact us via [issue](https://atomgit.com/mindspore-lab/mindscience/issues), and we will address them promptly.
 
 ## Quotation
 

@@ -109,8 +109,8 @@ NPU memory>32G
 
 ### MindSpore & MindScience Version
 
-mindspore>=2.4.0
-mindscience==0.8.0
+MindSpore>=2.4.0
+MindScience==0.8.0
 
 ### Installation
 
@@ -166,11 +166,11 @@ You can use the [Chinese version](https://atomgit.com/mindspore-lab/mindscience/
 
 The evolution of the wave field excited by different source locations for the same velocity model over time is shown in the following figure.
 
-![wave_2d.gif](./images/wave_2d.gif)
+![wave_2d.gif](https://raw.atomgit.com/mindspore-lab/mindscience/raw/master/MindFlow/applications/cfd/acoustic/images/wave_2d.gif)
 
 The iterative convergence process of the equation residual is shown in the following figure, with each line representing a frequency point. The number of iterations required to reach the convergence threshold varies for different frequency points, and the number of iterations in the same batch depends on the slowest converging frequency point.
 
-![errors_2d.png](./images/errors_2d.png)
+![errors_2d.png](https://raw.atomgit.com/mindspore-lab/mindscience/raw/master/MindFlow/applications/cfd/acoustic/images/errors_2d.png)
 
 ### 3D Model
 
@@ -178,15 +178,15 @@ Due to the large scale of the 3D model, we manually partitioned the frequency po
 
 Distribute the frequency points across 5 NPU cards. The CBS iteration error convergence curves for each card are as follows
 
-![errors_3d](./images/errors_3d.png)
+![errors_3d](https://raw.atomgit.com/mindspore-lab/mindscience/raw/master/MindFlow/applications/cfd/acoustic/images/errors_3d.png)
 
 From left to right are the wave speed distribution, X-T acoustic pressure distribution, and Y-T acoustic pressure distribution. The X-T plot depicts the propagation of acoustic waves along the X-axis over time (with the vertical coordinate increasing downward) on the Z=0 plane, while the Y-T plot describes the propagation along the Y-axis under the same conditions.
 
-![velocity_pressure_3d](./images/velocity_pressure_3d.png)
+![velocity_pressure_3d](https://raw.atomgit.com/mindspore-lab/mindscience/raw/master/MindFlow/applications/cfd/acoustic/images/velocity_pressure_3d.png)
 
 Below is an animated visualization of wave propagation over time at the X-Z cross-section of the 3D environment (a single source is shown for clarity of wave propagation and reflection patterns). The animation demonstrates both direct wave propagation through subsurface layers and reflected waves from geological interfaces.
 
-<img src="./images/sound_pressure_3d.gif" alt="sound_pressure_3d" style="zoom:50%;" />
+<img src="https://raw.atomgit.com/mindspore-lab/mindscience/raw/master/MindFlow/applications/cfd/acoustic/images/sound_pressure_3d.gif" alt="sound_pressure_3d" style="zoom:50%;" />
 
 ### Performance
 
@@ -215,7 +215,7 @@ email: hainingwang1995@gmail.com, zhaog6@lsec.cc.ac.cn
 
 ## Contact Us
 
-If you have any suggestions for MindScience, please contact us via [issue](https://atomgit.com/mindspore-lab/mindscience/issues), and we will address them promptly.
+If you have any suggestions for MindSpore MindScience, please contact us via [issue](https://atomgit.com/mindspore-lab/mindscience/issues), and we will address them promptly.
 
 ## Quotation
 

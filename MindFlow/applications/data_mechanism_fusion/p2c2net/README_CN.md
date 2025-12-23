@@ -42,16 +42,16 @@ $$
 
 NPU 显存>32G
 
-### mindspore和mindscience版本关系
+### MindSpore和MindScience版本关系
 
-mindspore>=2.5.0
-mindscience==0.8.0
+MindSpore>=2.5.0
+MindScience==0.8.0
 
 ### 安装
 
-1. 确保环境已安装正确版本的mindspore和mindscience；
+1. 确保环境已安装正确版本的MindSpore和MindScience；
 2. 可能需要安装numpy、pandas、sympy、matplotlib的python包
-3. 克隆mindscience仓或直接获取[MindFlow/applications/data_mechanism_fusion/p2c2net](https://atomgit.com/mindspore-lab/mindscience/tree/master/MindFlow/applications/data_mechanism_fusion/p2c2net)目录下的代码；
+3. 克隆MindScience仓或直接获取[MindFlow/applications/data_mechanism_fusion/p2c2net](https://atomgit.com/mindspore-lab/mindscience/tree/master/MindFlow/applications/data_mechanism_fusion/p2c2net)目录下的代码；
 
 ### 数据集
 
@@ -90,19 +90,19 @@ python p2c2net/train_burgers.py --experiment p2c2net
 
 `--experiment` 是实验目录，应包含位于'config/'下的实验配置文件；
 
-`--mode` 是运行模式. 'GRAPH' 表示静态图模式. 'PYNATIVE' 表示动态图模式. 详见[MindSpore官网](https://www.mindspore.cn/docs/zh-CN/r2.0/design/dynamic_graph_and_static_graph.html?highlight=pynative)，默认值'GRAPH'；
+`--mode` 是运行模式。'GRAPH' 表示静态图模式。'PYNATIVE' 表示动态图模式。详见[MindSpore官网](https://www.mindspore.cn/docs/zh-CN/r2.0/design/dynamic_graph_and_static_graph.html?highlight=pynative)。默认值'GRAPH'；
 
 `--device_target` 表示所使用的计算平台类型，可选 'Ascend' 或 'GPU'，默认值为 'Ascend'；
 
-`--device_id` 表示所使用的计算卡编号，默认值为 0;
+`--device_id` 表示所使用的计算卡编号，默认值为 0；
 
-`--continue` 表示是否从已有的检查点恢复训练，默认值为 False;
+`--continue` 表示是否从已有的检查点恢复训练，默认值为 False；
 
-`--config_filename` 是配置文件的文件名 (位于 `configs/` 目录下) ，其中定义了实验设置，如模型参数、训练参数等，默认值为 'burgers.json';
+`--config_filename` 是配置文件的文件名 (位于 `configs/` 目录下) ，其中定义了实验设置，如模型参数、训练参数等，默认值为 'burgers.json'；
 
-`--train_stage` 表示是否开启训练模式，默认值为 True;
+`--train_stage` 表示是否开启训练模式，默认值为 True；
 
-`--test_stage` 表示是否开启测试模式，默认值为 True;
+`--test_stage` 表示是否开启测试模式，默认值为 True；
 
 #### 3. 检查结果
 
@@ -127,7 +127,7 @@ email：liuguangyuu@outlook.com
 
 ## 联系我们
 
-如果您对MindSpore Mindscience有任何建议，请通过[issue](https://atomgit.com/mindspore-lab/mindscience/issues)与我们联系，我们将及时处理。
+如果您对MindSpore MindScience有任何建议，请通过[issue](https://atomgit.com/mindspore-lab/mindscience/issues)与我们联系，我们将及时处理。
 
 ## 引用
 
