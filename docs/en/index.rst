@@ -180,17 +180,17 @@ Applications
    :caption: API Reference
    :hidden:
 
-   mindscience.common
-   mindscience.data
-   mindscience.diffuser
-   mindscience.distributed
-   mindscience.e3nn
-   mindscience.gnn
-   mindscience.models
-   mindscience.pde
-   mindscience.sciops
-   mindscience.solvers
-   mindscience.utils
+   api/mindscience.common
+   api/mindscience.data
+   api/mindscience.diffuser
+   api/mindscience.distributed
+   api/mindscience.e3nn
+   api/mindscience.gnn
+   api/mindscience.models
+   api/mindscience.pde
+   api/mindscience.sciops
+   api/mindscience.solvers
+   api/mindscience.utils
 
 .. toctree::
    :maxdepth: 1
