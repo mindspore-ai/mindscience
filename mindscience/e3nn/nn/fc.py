@@ -51,13 +51,16 @@ class _Layer(nn.Cell):
 class FullyConnectedNet(nn.SequentialCell):
     r"""
     Fully-connected Neural Network with normalized activation on scalars.
-
+    It stacks multiple dense layers and automatically normalizes the activation
+    function to maintain stable signal magnitudes during forward/backward passes.
+    
     Args:
-        h_list (List[int]): a list of input, internal and output dimensions for dense layers.
-        act (Func): activation function which will be automatically normalized. Default: ``None``.
-        out_act (bool): whether apply the activation function on the output. Default: ``False``.
-        init_method (Union[str, mindspore.common.initializer]): initialize parameters. Default: ``'normal'``.
-        dtype (mindspore.dtype): The type of input tensor. Default: ``mindspore.float32``.
+        h_list (list[int]): A list of input, internal and output dimensions for dense layers.
+        act (Func, optional): Activation function which will be automatically normalized. Default: ``None``.
+        out_act (bool, optional): Whether to apply the activation function on the output. Default: ``False``.
+        init_method (Union[str, mindspore.common.initializer], optional):
+            Method to initialize parameters. Default: ``'normal'``.
+        dtype (mindspore.dtype, optional): The data type of the input tensor. Default: ``mindspore.float32``.
 
     Inputs:
         - **input** (Tensor) - The shape of Tensor is :math:`(h\_list[0])`.
@@ -68,12 +71,9 @@ class FullyConnectedNet(nn.SequentialCell):
     Raises:
         TypeError: If the elements `h_list` are not `int`.
 
-    Supported Platforms:
-        ``Ascend``
-
     Examples:
         >>> import mindspore as ms
-        >>> from mindchemistry.e3.nn import FullyConnectedNet
+        >>> from mindscience.e3nn.nn import FullyConnectedNet
         >>> fc = FullyConnectedNet([4,10,20,12,6], ops.tanh)
         FullyConnectedNet [4, 10, 20, 12, 6]
         >>> v = ms.Tensor([.1,.2,.3,.4])
@@ -94,7 +94,7 @@ class FullyConnectedNet(nn.SequentialCell):
 
         for i, (h1, h2) in enumerate(zip(self.h_list, self.h_list[1:])):
             if not isinstance(h1, int) or not isinstance(h2, int):
-                raise TypeError
+                raise TypeError(f"h_list[{i}] and h_list[{i+1}] must be int, but got {h1} and {h2}")
 
             if i == len(self.h_list) - 2 and (not out_act):
                 a = identity
@@ -104,7 +104,7 @@ class FullyConnectedNet(nn.SequentialCell):
             self.layer_list.append(layer)
 
         super().__init__(self.layer_list)
-        self.weight_numel = sum([lay.weight_numel for lay in self.layer_list])
+        self.weight_numel = sum(lay.weight_numel for lay in self.layer_list)
 
     def __repr__(self):
         return f"{self.__class__.__name__} ({self.h_list} | {self.weight_numel} weights)"

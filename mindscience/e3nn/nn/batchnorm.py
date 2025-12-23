@@ -21,20 +21,28 @@ from ..o3.irreps import Irreps
 
 class BatchNorm(nn.Cell):
     r"""
-    Batch normalization for orthonormal representations.
-    It normalizes by the norm of the representations.
-    Note that the norm is invariant only for orthonormal representations.
-    Irreducible representations `wigner_D` are orthonormal.
+    Batch normalization tailored for orthonormal group representations.
+    
+    Unlike conventional BatchNorm, this layer normalizes each irreducible
+    representation block by its **invariant norm**, ensuring equivariance is
+    preserved under group actions such as rotations. Statistics are computed
+    independently per multiplicity block, keeping the tensor structure intact.
+    
+    The norm is invariant only for orthonormal representations. Irreducible
+    representations `wigner_D` (and any real basis derived from them) satisfy
+    this requirement, making the layer safe for standard `e3nn` irreps.
 
     Args:
-        irreps (Union[str, Irrep, Irreps]): the input irreps.
-        eps (float): avoid division by zero when we normalize by the variance. Default: ``1e-5``.
-        momentum (float): momentum of the running average. Default: ``0.1``.
-        affine (bool): do we have weight and bias parameters. Default: ``True``.
-        reduce (str): {'mean', 'max'}, method used to reduce. Default: ``'mean'``.
-        instance (bool): apply instance norm instead of batch norm. Default: ``Flase``.
-        normalization (str): {'component', 'norm'}, normalization method. Default: ``'component'``.
-        dtype (mindspore.dtype): The type of input tensor. Default: ``mindspore.float32``.
+        irreps (Union[str, Irrep, Irreps]): Input irreps.
+        eps (float, optional): Small constant to avoid division by zero when normalizing by variance. Default: ``1e-5``.
+        momentum (float, optional): Momentum for the running average. Default: ``0.1``.
+        affine (bool, optional): Whether to include learnable weight and bias parameters. Default: ``True``.
+        reduce (str, optional): Reduction method, either ``'mean'`` or ``'max'``. Default: ``'mean'``.
+        instance (bool, optional): If ``True``, apply instance normalization instead of batch normalization.
+            Default: ``False``.
+        normalization (str, optional): Normalization method, either ``'component'`` or ``'norm'``.
+            Default: ``'component'``.
+        dtype (mindspore.dtype, optional): Data type of the input tensor. Default: ``mindspore.float32``.
 
     Inputs:
         - **input** (Tensor) - The shape of Tensor is :math:`(batch, ..., irreps.dim)`.
@@ -46,11 +54,8 @@ class BatchNorm(nn.Cell):
         ValueError: If `reduce` is not in ['mean', 'max'].
         ValueError: If `normalization` is not in ['component', 'norm'].
 
-    Supported Platforms:
-        ``Ascend``
-
     Examples:
-        >>> from mindchemistry.e3.nn import BatchNorm
+        >>> from mindscience.e3nn.nn import BatchNorm
         >>> from mindspore import ops, Tensor
         >>> bn = BatchNorm('3x0o+2x0e+1x0o')
         >>> print(bn)
