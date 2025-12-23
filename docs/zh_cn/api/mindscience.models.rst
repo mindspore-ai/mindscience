@@ -71,3 +71,28 @@ UNet2D
     :nosignatures:
 
     mindscience.models.layers.MaskedLayerNorm
+
+傅里叶神经算子 (FNO)
+------------------------------
+
+.. mscnautosummary::
+    :toctree: models
+    :nosignatures:
+
+    mindscience.models.neural_operator.FNO1D
+    mindscience.models.neural_operator.FNO2D
+    mindscience.models.neural_operator.FNO3D
+    mindscience.models.neural_operator.FNOBlocks
+
+快速傅里叶神经算子 (FFNO)
+------------------------------------
+
+.. mscnautosummary::
+    :toctree: models
+    :nosignatures:
+
+    mindscience.models.neural_operator.FFNO
+    mindscience.models.neural_operator.FFNO1D
+    mindscience.models.neural_operator.FFNO2D
+    mindscience.models.neural_operator.FFNO3D
+    mindscience.models.neural_operator.FFNOBlocks

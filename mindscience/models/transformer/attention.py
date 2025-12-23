@@ -40,9 +40,6 @@ class Attention(nn.Cell):
     Outputs:
         - **output** (Tensor) - Tensor with shape :math:`(batch\_size, sequence\_len, in\_channels)`.
 
-    Supported Platforms:
-        ``Ascend`` ``CPU``
-
     Examples:
         >>> from mindspore import ops
         >>> from mindscience.models.transformer.attention import Attention
@@ -150,9 +147,6 @@ class FlashAttn(nn.Cell):
     Outputs:
         - **output** (Tensor) - Tensor with shape :math:`(batch\_size, sequence\_len, in\_channels)`.
 
-    Supported Platforms:
-        ``Ascend``
-
     Examples:
         >>> from mindspore import ops
         >>> from mindscience.models.transformer.attention import FlashAttn
@@ -209,9 +203,6 @@ class MultiHeadAttention(Attention):
 
     Outputs:
         - **output** (Tensor) - Tensor with shape :math:`(batch\_size, sequence\_len, in\_channels)`.
-
-    Supported Platforms:
-        ``Ascend`` ``CPU``
 
     Examples:
         >>> from mindspore import ops
@@ -311,9 +302,6 @@ class TransformerBlock(nn.Cell):
 
     Outputs:
         - **output** (Tensor) - Tensor with shape :math:`(batch\_size, sequence\_len, in\_channels)`.
-
-    Supported Platforms:
-        ``Ascend`` ``CPU``
 
     Examples:
         >>> from mindspore import ops

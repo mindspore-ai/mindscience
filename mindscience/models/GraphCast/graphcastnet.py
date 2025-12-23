@@ -55,9 +55,6 @@ class GraphCastNet(nn.Cell):
     Outputs:
         - **output** (Tensor) - Tensor of shape :math:`(height\_size * width\_size, feature\_size)` .
 
-    Supported Platforms:
-        ``Ascend`` ``GPU``
-
     Examples:
         >>> import numpy as np
         >>> import mindspore as ms

@@ -43,9 +43,6 @@ class MLPNet(nn.Cell):
     Outputs:
         - **output** (Tensor) - Tensor of shape :math:`(*, dims[-1])`.
 
-    Supported Platforms:
-        ``Ascend`` ``GPU``
-
     Examples:
         >>> import numpy as np
         >>> from mindspore import Tensor
