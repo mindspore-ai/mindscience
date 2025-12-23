@@ -1,11 +1,20 @@
-mindscience.models.transformer
-================================
+mindscience.models
+===================
+
+GraphCast 模型
+-----------------
+
+.. mscnautosummary::
+    :toctree: models
+    :nosignatures:
+
+    mindscience.models.GraphCast.GraphCastNet
 
 注意力模块
 -----------------
 
 .. mscnautosummary::
-    :toctree: transformer
+    :toctree: models
     :nosignatures:
 
     mindscience.models.transformer.Attention
@@ -16,7 +25,7 @@ mindscience.models.transformer
 -------------------------
 
 .. mscnautosummary::
-    :toctree: transformer
+    :toctree: models
     :nosignatures:
 
     mindscience.models.transformer.VisionTransformer

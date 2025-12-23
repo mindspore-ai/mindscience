@@ -1,11 +1,20 @@
-mindscience.models.transformer
-================================
+mindscience.models
+===================
+
+GraphCast Models
+-----------------
+
+.. autosummary::
+    :toctree: models
+    :nosignatures:
+
+    mindscience.models.GraphCast.GraphCastNet
 
 Attention Modules
 -----------------
 
 .. autosummary::
-    :toctree: transformer
+    :toctree: models
     :nosignatures:
 
     mindscience.models.transformer.Attention
@@ -16,7 +25,7 @@ Vision Transformer (ViT)
 -------------------------
 
 .. autosummary::
-    :toctree: transformer
+    :toctree: models
     :nosignatures:
 
     mindscience.models.transformer.VisionTransformer
