@@ -34,11 +34,11 @@
 - 通过右上角的Fork按钮Fork一个mindscience主仓，为后续贡献代码做准备
 
 <div align=center>
-<img src="./docs/contribution_guide/star.png" alt="star" width="600"/>
+<img src="https://raw.atomgit.com/mindspore-lab/mindscience/raw/master/docs/contribution_guide/star.png" alt="star" width="600"/>
 </div>
 
 <div align=center>
-<img src="./docs/contribution_guide/fork.png" alt="fork" width="600"/>
+<img src="https://raw.atomgit.com/mindspore-lab/mindscience/raw/master/docs/contribution_guide/fork.png" alt="fork" width="600"/>
 </div>
 
 ### **一、提交合并请求，为mindscience仓贡献自己的力量**
@@ -46,7 +46,7 @@
 - 本地修改的代码如果需要合并到主仓，可以通过曾经Fork过mindscience的远端仓，进行新建代码合并请求操作
 
 <div align=center>
-<img src="./docs/contribution_guide/new_pr.png" alt="new pr" width="600"/>
+<img src="https://raw.atomgit.com/mindspore-lab/mindscience/raw/master/docs/contribution_guide/new_pr.png" alt="new pr" width="600"/>
 </div>
 
 - 点击新建合并请求后，需要进行源分支名的选择，目标分支名的选择，标题输入，以及简要说明修改点等操作（**注意：合并标题格式为[SPONG]+内容**）
@@ -54,29 +54,29 @@
 - 在新建合并请求的右下角需进行关联Issue操作，每个合并请求的合入都要有对应的Issue，如果没有相关的Issue，可以自行创建，请记得关联完Issue后将（合并后关闭提到的Issue）前面勾勾取消，然后点击创建合并请求操作
 
 <div align=center>
-<img src="./docs/contribution_guide/pr_introduction.png" alt="pr_introduction" width="600"/>
+<img src="https://raw.atomgit.com/mindspore-lab/mindscience/raw/master/docs/contribution_guide/pr_introduction.png" alt="pr_introduction" width="600"/>
 </div>
 
 - 关联Issue处如果没有可选择的Issue关联，可以在主仓新建一个Issue，如果有则直接忽略此步。在主仓中点击新建Issue，根据合并请求的类型选择对应Issue类型，输入标题后，点击创建即可，这样在新建合并请求的关联Issue操作中就可以选择刚刚创建的Issue（**注意：Issue标题格式为[SPONGE]+内容**）
 
 <div align=center>
-<img src="./docs/contribution_guide/new_issue.png" alt="new_issue" width="600"/>
+<img src="https://raw.atomgit.com/mindspore-lab/mindscience/raw/master/docs/contribution_guide/new_issue.png" alt="new_issue" width="600"/>
 </div>
 
 <div align=center>
-<img src="./docs/contribution_guide/issue_introduction.png" alt="issue_introduction" width="600"/>
+<img src="https://raw.atomgit.com/mindspore-lab/mindscience/raw/master/docs/contribution_guide/issue_introduction.png" alt="issue_introduction" width="600"/>
 </div>
 
 - 新用户如果未注册过CLA，新建的合并请求会打上（mindspore-cla/no）标签，需要通过i-robot给出的链接注册，注册完成后在评论区输入（/check-cla）重新校验，已注册用户请忽略此步
 
 <div align=center>
-<img src="./docs/contribution_guide/cla.png" alt="cla" width="600"/>
+<img src="https://raw.atomgit.com/mindspore-lab/mindscience/raw/master/docs/contribution_guide/cla.png" alt="cla" width="600"/>
 </div>
 
 - 合并请求创建完成后，需要在评论区输入（/retest）启动门禁任务，进行静态检查以及冒烟用例测试，确保合入的代码不会影响主仓上面已有功能。如果全部通过会出现SUCCESS字样，即可以找相关审核人员合入代码；反之，如果出现FAILURE字样，需要点进失败链接，进行相关报错修复，修复完成后重新执行（/retest）操作，直至静态检查和冒烟用例全部通过才可合入
 
 <div align=center>
-<img src="./docs/contribution_guide/retest.png" alt="retest" width="600"/>
+<img src="https://raw.atomgit.com/mindspore-lab/mindscience/raw/master/docs/contribution_guide/retest.png" alt="retest" width="600"/>
 </div>
 
 ### **二、新增测试用例，看护代码功能**
@@ -86,7 +86,7 @@
 - 系统级测试用例，此阶段的用例是在whl包安装完成后启动，因此可以调用whl包中的任何函数，需要注意，系统级测试用例中需要添加（import pytest），并且在函数入口处新增pytest的标识，该标识可以使门禁任务识别到函数入口
 
 <div align=center>
-<img src="./docs/contribution_guide/st.png" alt="st" width="600"/>
+<img src="https://raw.atomgit.com/mindspore-lab/mindscience/raw/master/docs/contribution_guide/st.png" alt="st" width="600"/>
 </div>
 
 - 测试用例代码完成后，需按照第一点进行代码上库操作，上库之后，新增的用例便会在门禁中体现
@@ -100,17 +100,17 @@
 - windows系统：可以在任意目录下直接右键Git Bush Here进行git相关操作
 
 <div align=center>
-<img src="./docs/contribution_guide/windows_git_bash_here.png" alt="windows_git_bash_here" width="600"/>
+<img src="https://raw.atomgit.com/mindspore-lab/mindscience/raw/master/docs/contribution_guide/windows_git_bash_here.png" alt="windows_git_bash_here" width="600"/>
 </div>
 
 <div align=center>
-<img src="./docs/contribution_guide/windows_git_interface.png" alt="Windows_interface" width="600"/>
+<img src="https://raw.atomgit.com/mindspore-lab/mindscience/raw/master/docs/contribution_guide/windows_git_interface.png" alt="Windows_interface" width="600"/>
 </div>
 
 - Linux系统: 通过终端进入所要存放代码的目录下直接进行git操作
 
 <div align=center>
-<img src="./docs/contribution_guide/linux_git_bash.png" alt="linux_git_bash" width="600"/>
+<img src="https://raw.atomgit.com/mindspore-lab/mindscience/raw/master/docs/contribution_guide/linux_git_bash.png" alt="linux_git_bash" width="600"/>
 </div>
 
 ### **一、信息配置**
@@ -123,7 +123,7 @@ git config --global user.email abc@tbs.com
 ```
 
 <div align=center>
-<img src="./docs/contribution_guide/git_user_config.png" alt="git_user_config" width="600"/>
+<img src="https://raw.atomgit.com/mindspore-lab/mindscience/raw/master/docs/contribution_guide/git_user_config.png" alt="git_user_config" width="600"/>
 </div>
 
 ### **二、拉取目标仓代码**
@@ -141,7 +141,7 @@ git clone -b 分支名 代码仓链接
 - 代码拉取完成后，进入代码目录内部便可以使用git操作（ **注意：拉取代码时的目录是无法使用类似git pull/push/remote/log等命令，必须进入其下一级目录才可以使用git pull/push等命令** ）
 
 <div align=center>
-<img src="./docs/contribution_guide/git_clone.png" alt="git_clone" width="600"/>
+<img src="https://raw.atomgit.com/mindspore-lab/mindscience/raw/master/docs/contribution_guide/git_clone.png" alt="git_clone" width="600"/>
 </div>
 
 ### **三、查看仓及分支信息**
@@ -161,7 +161,7 @@ git remote add 仓名 仓地址
 ```
 
 <div align=center>
-<img src="./docs/contribution_guide/remote.png" alt="remote" width="600"/>
+<img src="https://raw.atomgit.com/mindspore-lab/mindscience/raw/master/docs/contribution_guide/remote.png" alt="remote" width="600"/>
 </div>
 
 分支信息查询
@@ -179,7 +179,7 @@ git checkout 本地分支名
 ```
 
 <div align=center>
-<img src="./docs/contribution_guide/branch.png" alt="branch" width="600"/>
+<img src="https://raw.atomgit.com/mindspore-lab/mindscience/raw/master/docs/contribution_guide/branch.png" alt="branch" width="600"/>
 </div>
 
 ### **四、修改代码后提交commit以及多个commit合并**
@@ -197,25 +197,25 @@ git rebase -i commit_id
 ```
 
 <div align=center>
-<img src="./docs/contribution_guide/add.png" alt="add" width="600"/>
+<img src="https://raw.atomgit.com/mindspore-lab/mindscience/raw/master/docs/contribution_guide/add.png" alt="add" width="600"/>
 </div>
 
 <div align=center>
-<img src="./docs/contribution_guide/commit_s.png" alt="commit_s" width="600"/>
+<img src="https://raw.atomgit.com/mindspore-lab/mindscience/raw/master/docs/contribution_guide/commit_s.png" alt="commit_s" width="600"/>
 </div>
 
 - 合并commit操作：有些时候可能由于修改点和时间原因，保存了多个commit，但是上库只允许有一个commit，怎么办呢？这个时候可以使用git rebase -i + 需要合并的所有commit_id之前的一个id号，然后将多余commit id前面的pick标识修改成f，再进行保存，这样多个commit_id就会自动合并到标识为pick的commit_id上
 
 <div align=center>
-<img src="./docs/contribution_guide/rebase_commit.png" alt="rebase_commit" width="600"/>
+<img src="https://raw.atomgit.com/mindspore-lab/mindscience/raw/master/docs/contribution_guide/rebase_commit.png" alt="rebase_commit" width="600"/>
 </div>
 
 <div align=center>
-<img src="./docs/contribution_guide/rebase_i.png" alt="rebase_i" width="600"/>
+<img src="https://raw.atomgit.com/mindspore-lab/mindscience/raw/master/docs/contribution_guide/rebase_i.png" alt="rebase_i" width="600"/>
 </div>
 
 <div align=center>
-<img src="./docs/contribution_guide/commit_result.png" alt="commit_result" width="600"/>
+<img src="https://raw.atomgit.com/mindspore-lab/mindscience/raw/master/docs/contribution_guide/commit_result.png" alt="commit_result" width="600"/>
 </div>
 
 ### **五、更新本地代码，同步仓代码——冲突解决**
@@ -260,22 +260,22 @@ git rebase --abort放弃同步
 此时如果B用户只是clone过主仓代码但是没有任何修改点，没有添加任何commit，可直接使用git pull操作
 
 <div align=center>
-<img src="./docs/contribution_guide/A_push_master.png" alt="A_push_master" width="600"/>
+<img src="https://raw.atomgit.com/mindspore-lab/mindscience/raw/master/docs/contribution_guide/A_push_master.png" alt="A_push_master" width="600"/>
 </div>
 
 <div align=center>
-<img src="./docs/contribution_guide/B_pull_master.png" alt="B_pull_master" width="600"/>
+<img src="https://raw.atomgit.com/mindspore-lab/mindscience/raw/master/docs/contribution_guide/B_pull_master.png" alt="B_pull_master" width="600"/>
 </div>
 
 2、A用户修改了部分文件并且提交主仓
 此时B用户本地也修改了同一个文件，并且提交PR时显示有冲突，那么此时需要使用git pull --rebase 仓 分支名进行手动解决冲突后，git add .保存修改，并使用git rebase --continue继续操作
 
 <div align=center>
-<img src="./docs/contribution_guide/pull_conflict.png" alt="pull_conflict" width="600"/>
+<img src="https://raw.atomgit.com/mindspore-lab/mindscience/raw/master/docs/contribution_guide/pull_conflict.png" alt="pull_conflict" width="600"/>
 </div>
 
 <div align=center>
-<img src="./docs/contribution_guide/conflict.png" alt="conflict" width="600"/>
+<img src="https://raw.atomgit.com/mindspore-lab/mindscience/raw/master/docs/contribution_guide/conflict.png" alt="conflict" width="600"/>
 </div>
 
 ### **六、将本地修改代码推到远端仓，提起向主仓合并请求的PR**
