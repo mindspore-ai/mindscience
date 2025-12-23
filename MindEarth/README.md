@@ -2,6 +2,8 @@
 
 English | [简体中文](https://atomgit.com/mindspore-lab/mindscience/blob/master/MindEarth/README_CN.md)
 
+## Table of Contents
+
 - [MindSpore Earth](#mindspore-earth)
 - [MindSpore Earth Introduction](#mindspore-earth-introduction)
 - [Latest News](#latest-news)
@@ -21,8 +23,6 @@ English | [简体中文](https://atomgit.com/mindspore-lab/mindscience/blob/mast
 Weather phenomena are closely related to human production and life, socioeconomic conditions, military activities, and more. Accurate weather forecasts can mitigate the impact of severe weather events, avoid economic losses, and create ongoing financial revenue in areas such as energy, agriculture, transportation, and entertainment. Currently, weather forecasts mainly use numerical weather prediction models to solve atmospheric dynamic equations that describe weather evolution by processing observational data collected from meteorological satellites, observation stations, radars, etc., thereby providing weather and climate prediction information. The prediction process of numerical models involves massive calculations that require considerable time and computational resources. Compared to numerical models, data-driven deep learning models can effectively reduce computational costs by several orders of magnitude.
 
 MindSpore Earth is an Earth science toolkit developed based on [MindSpore](https://www.mindspore.cn/). It supports AI meteorological predictions for multiple spatiotemporal scales such as nowcasting, medium-term, and long-term forecasts, as well as disaster weather predictions such as precipitation and typhoons. It aims to provide efficient and easy-to-use AI meteorological prediction software for industrial researchers and engineers, university teachers, and students.
-
-## Latest News
 
 ## Application Cases
 
