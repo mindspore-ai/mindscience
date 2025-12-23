@@ -163,6 +163,17 @@ Applications
 
 .. toctree::
    :maxdepth: 1
+   :caption: Component Introduction
+   :hidden:
+
+   MindChem
+   MindEarth
+   MindEnergy
+   MindFlow
+   MindSPONGE
+
+.. toctree::
+   :maxdepth: 1
    :caption: Installation Guide
    :hidden:
 
