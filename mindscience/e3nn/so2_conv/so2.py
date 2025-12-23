@@ -17,28 +17,12 @@ so2 file
 """
 import mindspore as ms
 from mindspore import ops, nn
-from mindscience.e3nn.o3 import Irreps
+from ..o3 import Irreps
 
 
-class Silu(nn.Cell):
-    """
-    silu activation class
-    """
-
-    def __init__(self):
-        super().__init__()
-        self.sigmoid = nn.Sigmoid()
-
-    def construct(self, x):
-        """
-        silu activation class construct process
-        """
-        return ops.mul(x, self.sigmoid(x))
-
-
-class SO2MConvolution(nn.Cell):
-    """
-    SO2 Convolution subnetwork
+class _SO2MConvolution(nn.Cell):
+    r"""
+    SO2 Convolution subnetwork for processing complex-valued features on the circle group SO(2).
     """
 
     def __init__(self, in_channels, out_channels):
@@ -66,8 +50,45 @@ class SO2MConvolution(nn.Cell):
 
 
 class SO2Convolution(nn.Cell):
-    """
-    SO2 Convolution network
+    r"""
+    SO(2)-equivariant convolution layer for complex-valued features on the circle group.
+
+    This layer maps between two `Irreps` spaces that describe how the inputs/outputs
+    transform under planar rotations.  It keeps the m-quantum number (the index that
+    labels the SO(2) irreducible representations) diagonal, so that each m-block is
+    processed independently.  For :math:`m = 0` (scalar part) a real dense layer is used;
+    for :math:`m > 0` a complex-valued :math:`1\times 1` convolution (implemented as a real :math:`2\times 2` weight
+    matrix acting on the real/imaginary parts) is applied.
+
+    Args:
+        irreps_in (Union[str, Irreps]):
+            Input irreps, e.g. ``"3x0e + 2x1o"`` (3 scalars + 2 vectors).
+        irreps_out (Union[str, Irreps]):
+            Output irreps, e.g. ``"5x0e + 1x1o"``.
+
+    Inputs:
+        - **x** (list[Tensor]): list of real tensors, each of shape ``(batch, mul, 2l+1)`` representing the
+          complex-valued SO(2) features for each irrep of order ``l``.  
+          The last dimension indexes the magnetic quantum number ``m = -l ... +l``.
+        - **x_edge** (Tensor): real tensor of shape ``(edges, features)`` containing edge (radial) attributes
+          that are broadcast and combined with the SO(2) features during convolution.
+    
+    Outputs:
+        - **tuple** (Tensor): A tuple of real tensors, one for each irrep in ``irreps_out``.  
+          Each tensor has shape ``(batch, mul, 2l+1)`` and contains the complex-valued  
+          SO(2) features for the corresponding irrep of order ``l``.  The last dimension  
+          indexes the magnetic quantum number ``m = -l ... +l``.
+
+    Examples:
+        >>> import mindspore as ms
+        >>> from mindscience.e3nn.so2_conv import SO2Convolution
+        >>> conv = SO2Convolution("2x0e + 1x1o", "2x0e + 1x1o")
+        >>> x = [ms.ops.randn(4, 2, 1),
+        ...      ms.ops.randn(4, 1, 3)]
+        >>> x_edge = ms.ops.randn(4, 10)
+        >>> out = conv(x, x_edge)
+        >>> len(out), out[0].shape, out[1].shape
+        (2, (4, 2, 1), (4, 1, 3))
     """
 
     def __init__(self, irreps_in, irreps_out):
@@ -83,9 +104,9 @@ class SO2Convolution(nn.Cell):
         for mulir in self.irreps_out:
             self.max_order_out = max(self.max_order_out, mulir.ir.l)
 
-        self.m_shape_dict_in, self.irreps_in1_length = self.get_m_info(
+        self.m_shape_dict_in, self.irreps_in1_length = self._get_m_info(
             self.irreps_in1, self.max_order_in)
-        self.m_shape_dict_out, self.irreps_out_length = self.get_m_info(
+        self.m_shape_dict_out, self.irreps_out_length = self._get_m_info(
             self.irreps_out, self.max_order_out)
 
         self.fc_m0 = nn.Dense(self.m_shape_dict_in.get(0, None),
@@ -98,7 +119,7 @@ class SO2Convolution(nn.Cell):
         for i in range(self.global_max_order):
             if i == 0:
                 continue
-            so2_m_convolution = SO2MConvolution(self.m_shape_dict_in.get(i, None),
+            so2_m_convolution = _SO2MConvolution(self.m_shape_dict_in.get(i, None),
                                                 self.m_shape_dict_out.get(i, None))
             self.so2_m_conv.append(so2_m_convolution)
 
@@ -110,7 +131,7 @@ class SO2Convolution(nn.Cell):
             value = mulir.mul
             self.irreps_out_data.append((key, value))
 
-    def get_m_info(self, irreps, max_order):
+    def _get_m_info(self, irreps, max_order):
         """
         helper function to get m_info
         """
@@ -134,7 +155,7 @@ class SO2Convolution(nn.Cell):
 
         return m_shape_dict, len(irreps)
 
-    def get_m_list_merge(self, x):
+    def _get_m_list_merge(self, x):
         """
         helper function to get m_list_merge
         """
@@ -165,7 +186,7 @@ class SO2Convolution(nn.Cell):
         """
         ##################### _m_primary #########################
         num_edges = ops.shape(x_edge)[0]
-        m_list_merge = self.get_m_list_merge(x)
+        m_list_merge = self._get_m_list_merge(x)
         # ##################### finish _m_primary #########################
         # radial function
         out = []

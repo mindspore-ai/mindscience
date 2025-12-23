@@ -33,7 +33,7 @@ The synergy between AI and chemistry offers unprecedented opportunities to overc
 
 **MindSpore Chemistry**(MindChemistry) is a toolkit built on MindSpore endeavoring to integrate AI with conventional chemistry research. It supports multi-scale tasks including molecular generation, property prediction and synthesis optimization on multiple chemistry systems such as organic, inorganic and composites chemistry systems. MindChemistry dedicates to enabling the joint research of AI and chemistry with high efficiency, and seek to facilitate an innovative paradigm of joint research between AI and chemistry, providing experts with novel perspectives and efficient tools.
 
-<div align=center><img src="./docs/mindchem_archi_en.png" alt="MindChemistry Architecture" width="85%"/></div>
+<div align=center><img src="https://raw.atomgit.com/mindspore-lab/mindscience/raw/master/MindChem/docs/mindchem_archi_en.png" alt="MindChemistry Architecture" width="85%"/></div>
 
 ## Latest News
 

@@ -32,7 +32,7 @@
 
 **MindSpore Chemistry**（MindChemistry）是基于 MindSpore 与 MindScience 构建的化学领域套件，支持多体系（有机/无机/复合材料化学）、多尺度任务（微观分子生成/预测、宏观反应优化）的AI+化学仿真，致力于高效使能AI与化学的融合研究，践行和牵引AI与化学联合多研究范式跃迁，为化学领域专家的研究提供全新视角与高效的工具。
 
-<div align="center"><img src="./docs/mindchem_archi_cn.png" alt="MindChemistry Architecture" width="85%" /></div>
+<div align="center"><img src="https://raw.atomgit.com/mindspore-lab/mindscience/raw/master/MindChem/docs/mindchem_archi_cn.png" alt="MindChemistry Architecture" width="85%" /></div>
 
 ---
 

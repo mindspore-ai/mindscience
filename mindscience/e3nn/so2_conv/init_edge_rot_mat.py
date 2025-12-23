@@ -20,8 +20,25 @@ import mindspore.numpy as ms_np
 
 
 def init_edge_rot_mat(edge_distance_vec):
-    """
-    get rotating matrix from edge distance vector
+    r"""
+    Initialize the rotation matrix from the edge distance vector.
+
+    Args:
+        edge_distance_vec (Tensor): Edge distance vector with shape (batch_size, 3).
+
+    Returns:
+        Tensor, Rotation matrix with shape (batch_size, 3, 3).
+
+    Examples:
+        >>> import mindspore as ms
+        >>> from mindspore import Tensor
+        >>> from mindscience.e3nn.so2_conv import init_edge_rot_mat
+        >>> edge_vec = ms.Tensor([[1.0, 0.0, 0.0],
+        ...                       [0.0, 1.0, 0.0],
+        ...                       [0.0, 0.0, 1.0]])
+        >>> rot_mat = init_edge_rot_mat(edge_vec)
+        >>> print(rot_mat.shape)
+        (3, 3, 3)
     """
     epsilon = 0.00000001
     edge_vec_0 = edge_distance_vec

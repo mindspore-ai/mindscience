@@ -33,7 +33,7 @@ from mindscience.e3nn.o3.spherical_harmonics import SphericalHarmonics
 from mindscience.e3nn.o3.sub import (FullyConnectedTensorProduct, Linear,
                                      LinearBias)
 from mindscience.e3nn.so2_conv import SO2Convolution, SO3Rotation
-from mindscience.e3nn.so2_conv.init_edge_rot_mat import init_edge_rot_mat
+from mindscience.e3nn.so2_conv import init_edge_rot_mat
 
 from .e3modules import (E3ElementWise, E3LayerNorm, SelfTp,
                         SeparateWeightTensorProduct, SkipConnection,
