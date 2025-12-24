@@ -41,24 +41,24 @@ Applications
    * - Application Name
      - Description
      - Learning Type
-   * - `diffcsp <https://atomgit.com/mindspore-lab/mindscience/blob/master/MindChem/applications/diffcsp>`__
-     - Crystal Structure Prediction
+   * - `DiffCSP <https://atomgit.com/mindspore-lab/mindscience/blob/master/MindChem/applications/diffcsp>`__
+     - Crystal Structure Generation
+     - Diffusion Model/Generative Learning
+   * - `NequIP <https://atomgit.com/mindspore-lab/mindscience/blob/master/MindChem/applications/nequip>`__
+     - Molecular Force Field
      - Supervised Learning
-   * - `nequip <https://atomgit.com/mindspore-lab/mindscience/blob/master/MindChem/applications/nequip>`__
-     - Molecular Dynamics Modeling
+   * - `Orb <https://atomgit.com/mindspore-lab/mindscience/blob/master/MindChem/applications/orb>`__
+     - Molecular Force Field
      - Supervised Learning
-   * - `orb <https://atomgit.com/mindspore-lab/mindscience/blob/master/MindChem/applications/orb>`__
-     - Molecular Orbital Analysis
-     - Supervised Learning
-   * - `matformer <https://atomgit.com/mindspore-lab/mindscience/blob/master/MindChem/applications/matformer>`__
+   * - `MatFormer <https://atomgit.com/mindspore-lab/mindscience/blob/master/MindChem/applications/matformer>`__
      - Material Property Prediction
      - Supervised Learning
-   * - `deephe3nn <https://atomgit.com/mindspore-lab/mindscience/blob/master/MindChem/applications/deephe3nn>`__
-     - Molecular Simulation
+   * - `DeepHE3nn <https://atomgit.com/mindspore-lab/mindscience/blob/master/MindChem/applications/deephe3nn>`__
+     - Hamiltonian Prediction
      - Supervised Learning
-   * - `crystalflow <https://atomgit.com/mindspore-lab/mindscience/blob/master/MindChem/applications/crystalflow>`__
+   * - `CrystalFlow <https://atomgit.com/mindspore-lab/mindscience/blob/master/MindChem/applications/crystalflow>`__
      - Crystal Structure Generation
-     - Unsupervised Learning
+     - Diffusion Model/Generative Learning
 
 .. raw:: html
 
@@ -75,8 +75,8 @@ Applications
    * - Application Name
      - Description
      - Learning Type
-   * - `Leadformer <https://atomgit.com/mindspore-lab/mindscience/blob/master/MindEarth/applications/leadformer>`__
-     - Earth Science Time Series Prediction
+   * - `LeadFormer <https://atomgit.com/mindspore-lab/mindscience/blob/master/MindEarth/applications/leadformer>`__
+     - Arctic Sea Ice Lead Prediction
      - Supervised Learning
 
 .. raw:: html
@@ -98,10 +98,10 @@ Applications
      - Physics-Informed Neural Networks
      - Supervised + Physics Constraints
    * - `DeepONet-Grig-UQ <https://atomgit.com/mindspore-lab/mindscience/blob/master/MindEnergy/applications/deeponet_grig_uq>`__
-     - Functional Learning and Uncertainty Quantification
+     - Post-Fault Trajectory Prediction in Power Grid
      - Supervised Learning
    * - `PowerFlowNet <https://atomgit.com/mindspore-lab/mindscience/blob/master/MindEnergy/applications/powerflownet>`__
-     - Power Flow Modeling
+     - Power Flow Calculation
      - Supervised Learning
 
 .. raw:: html
@@ -119,14 +119,14 @@ Applications
    * - Application Name
      - Description
      - Learning Type
-   * - `acoustic <https://atomgit.com/mindspore-lab/mindscience/blob/master/MindFlow/applications/acoustic>`__
+   * - `Acoustic <https://atomgit.com/mindspore-lab/mindscience/blob/master/MindFlow/applications/acoustic>`__
      - Acoustic Simulation
+     - Auto-Iterative Learning
+   * - `P2C2Net <https://atomgit.com/mindspore-lab/mindscience/blob/master/MindFlow/applications/p2c2net>`__
+     - Physics Modeling for Solving 2D Burgers Equations
      - Supervised Learning
-   * - `p2c2net <https://atomgit.com/mindspore-lab/mindscience/blob/master/MindFlow/applications/p2c2net>`__
-     - Physics Modeling
-     - Supervised Learning
-   * - `fno2d <https://atomgit.com/mindspore-lab/mindscience/blob/master/MindFlow/applications/fno2d>`__
-     - Fourier Neural Operator
+   * - `FNO2D <https://atomgit.com/mindspore-lab/mindscience/blob/master/MindFlow/applications/fno2d>`__
+     - Fourier Neural Operator for Solving 2D Navier-Stokes Equations
      - Supervised Learning
 
 .. raw:: html
@@ -144,16 +144,16 @@ Applications
    * - Application Name
      - Description
      - Learning Type
-   * - `AF3 <https://atomgit.com/mindspore-lab/mindscience/blob/master/MindSPONGE/applications/af3>`__
+   * - `AlphaFold3 <https://atomgit.com/mindspore-lab/mindscience/blob/master/MindSPONGE/applications/af3>`__
      - Protein Structure Prediction
      - Supervised Learning
-   * - `proteinmpnn <https://atomgit.com/mindspore-lab/mindscience/blob/master/MindSPONGE/applications/proteinmpnn>`__
+   * - `ProteinMPNN <https://atomgit.com/mindspore-lab/mindscience/blob/master/MindSPONGE/applications/proteinmpnn>`__
      - Protein Sequence Design
      - Supervised Learning
-   * - `rfdiffusion <https://atomgit.com/mindspore-lab/mindscience/blob/master/MindSPONGE/applications/rfdiffusion>`__
+   * - `RFdiffusion <https://atomgit.com/mindspore-lab/mindscience/blob/master/MindSPONGE/applications/rfdiffusion>`__
      - Protein Diffusion Generation
      - Diffusion Model/Generative Learning
-   * - `protenix <https://atomgit.com/mindspore-lab/mindscience/blob/master/MindSPONGE/applications/protenix>`__
+   * - `Protenix <https://atomgit.com/mindspore-lab/mindscience/blob/master/MindSPONGE/applications/protenix>`__
      - Protein Function Prediction
      - Supervised Learning
 
