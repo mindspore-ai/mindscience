@@ -42,7 +42,7 @@ class Crysloader(DataLoaderBase):
                  shuffle_dataset=True,
                  max_node=None,
                  max_edge=None):
-        super().__init__(batch_size, node_attr, edge_attr, edge_index)
+        super().__init__(batch_size, edge_index, label, node_attr, edge_attr)
         self.batch_size = batch_size
         self.edge_index = edge_index
         self.index = 0
