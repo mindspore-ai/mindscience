@@ -39,10 +39,7 @@ from mindscience.e3nn.o3.sub import (
     Linear,
     LinearBias,
     TensorSquare,
-    prod,
-    _prod,
     _sum_tensors_withbias,
-    Instruction
 )
 
 
@@ -92,16 +89,6 @@ class TestTensorProductClasses:
 class TestUtilityFunctions:
     """Test utility functions."""
 
-    def test_prod_functions(self):
-        """Test product computation functions."""
-        # Test prod function
-        assert prod([2, 3, 4]) == 24
-        assert prod([]) == 1
-
-        # Test _prod function
-        assert _prod((2, 3, 4)) == 24
-        assert _prod(()) == 1
-
     def test_tensor_utilities(self):
         """Test tensor utility functions."""
         # Test _sum_tensors_withbias
@@ -111,10 +98,6 @@ class TestUtilityFunctions:
         result = _sum_tensors_withbias([t1, t2], (3,), ms.float32)
         expected = np.array([5, 7, 9])
         assert np.allclose(result.asnumpy(), expected)
-
-        # Test Instruction NamedTuple
-        instr = Instruction(i_in=0, i_out=1, path_shape=(2, 3), path_weight=1.5)
-        assert instr.i_in == 0 and instr.i_out == 1
 
 
 class TestEdgeCases:

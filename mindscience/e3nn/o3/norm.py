@@ -21,14 +21,19 @@ from .tensor_product import TensorProduct
 
 class Norm(nn.Cell):
     r"""
-    Norm of each irrep in a direct sum of irreps.
+    Compute the norm (length) of each irreducible representation (irrep) contained in a direct-sum tensor.
+
+    Given a tensor that transforms under a direct sum of irreps, this module returns a tensor whose
+    entries are the norms of the individual irreps. For example, if the input contains three
+    vectors (3x1o irreps), the output will be a 3-component tensor where each entry is the
+    Euclidean norm of the corresponding vector.
 
     Args:
         irreps_in (Union[str, Irrep, Irreps]): Irreps for the input.
-        squared (bool): whether to return the squared norm. Default: False.
-        dtype (mindspore.dtype): The type of input tensor. Default: ``mindspore.float32`` .
-        ncon_dtype (mindspore.dtype): The type of input tensors of ncon computation module.
-            Default: ``mindspore.float32`` .
+        squared (bool, optional): Whether to return the squared norm. Default: ``False``.
+        dtype (mindspore.dtype, optional): The type of input tensor. Default: ``mindspore.float32``.
+        ncon_dtype (mindspore.dtype, optional): The type of input tensors of ncon
+            computation module. Default: ``mindspore.float32``.
 
     Inputs:
         - **v** (Tensor) - The shape of Tensor is :math:`(..., irreps\_in.dim)` .
@@ -36,13 +41,10 @@ class Norm(nn.Cell):
     Outputs:
         - **output** (Tensor) - The shape of Tensor is :math:`(..., irreps\_out.dim)` .
 
-    Supported Platforms:
-        ``Ascend``
-
     Examples:
         >>> import mindspore as ms
         >>> import numpy as np
-        >>> from mindchemistry.e3.o3 import Norm
+        >>> from mindscience.e3nn.o3 import Norm
         >>> n = Norm('3x1o')
         >>> v = ms.Tensor(np.linspace(1., 2., n.irreps_in.dim), dtype=ms.float32)
         >>> n(v).shape
