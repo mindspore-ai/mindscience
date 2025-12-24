@@ -1,30 +1,31 @@
-简体中文 | [English](README_EN.md)
+[简体中文](README_CN.md) | English
 
-# MindEnergy
+# MindSpore Energy
 
-## MindEnergy介绍
+## Introduction
 
-传统电力系统仿真严重依赖基于物理定律的精确数学模型（如微分-代数方程组）。尽管这些模型具有严格的数学理论支撑，但在面对现代电力系统的不确定性和超高维度时，则显得计算昂贵且适应性不足。随着人工智能的发展AI赋能科学计算在电力系统故障分析、潮流计算和暂态稳定评估等领域已经成为不可或缺的研发和设计工具，AI模型具有强大的处理高维和非线性问题的能力，且相比传统数学模型具有更高的计算效率和更好的泛化性，它极大地加速了电力系统仿真等能源领域的技术创新，并且带来更高的效率和安全性。
+Traditional power system simulation heavily relies on precise mathematical models based on physical laws, such as differential algebraic equation systems. Although these models are very rigorous, they appear computationally expensive and lack adaptability when faced with the uncertainty and ultra-high dimensions of modern power systems. With the development of artificial intelligence, AI for science has become an indispensable research and design tool in fields such as power system fault analysis, power flow calculation, and transient stability assessment. AI models have strong ability to handle high-dimensional and nonlinear problems, and have higher computational efficiency and better generalization compared to traditional mathematical models. It greatly accelerates technological innovation in energy fields such as power system simulation, and brings higher efficiency and safety.
 
-MindEnergy是基于[昇思MindSpore](https://mindspore.cn)AI框架开发的能源领域套件，该套件集成了电力系统等能源场景的经典AI案例，利用业界主流模型解决电力系统中的潮流计算和暂态分析等问题。MindEnergy提供了主流模型的实现代码及多样化场景下的训练脚本，旨在助力广大科研人员、工程师、高校师生等开发者群体及时掌握人工智能在电力系统等能源领域科学计算中的前沿应用与发展动态，同时也便于对现有模型进行直接部署或二次开发。
+MindSpore Energy is an energy domain suite developed based on the [MindSpore](https://mindspore.cn) AI framework, which integrates classic AI cases of energy scenarios such as power systems, and uses mainstream models in the industry to solve problems such as power flow calculation and transient analysis in power systems. MindSpore Energy provides implementation code for mainstream models and training scripts for diverse scenarios, aiming to help developers such as researchers, engineers, university teachers and students timely grasp the cutting-edge applications and development trends of artificial intelligence in scientific computing in energy fields such as power systems. It also facilitates direct deployment or secondary development of existing models.
 
-## 应用案例
+## Applications
 
-|    案例   |  模型架构   |    硬件    |
+|    Application   |  Architecture   |    Hardware    |
 |-----------|------------|------------|
-|[电力网络动态安全评估](applications/DAE-PINN/README.md)|DAE-PINN|NPU|
-|[电力系统故障后预测](applications/DeepONet-Grid-UQ/README.md)|DeepONet-Grid-UQ|NPU|
+|[dynamic security assessment in power grid](https://atomgit.com/mindspore-lab/mindscience/blob/master/MindEnergy/applications/DAE-PINN/README.md)|DAE-PINN|NPU|
+|[post-fault trajectory prediction in power grid](https://atomgit.com/mindspore-lab/mindscience/blob/master/MindEnergy/applications/DeepONet-Grid-UQ/README.md)|DeepONet-Grid-UQ|NPU|
+|[power flow analysis](https://atomgit.com/mindspore-lab/mindscience/blob/master/MindEnergy/applications/PowerFlowNet/README_CN.md)|PowerFlowNet|NPU|
 
-## 核心贡献者
+## Contributors
 
-感谢以下开发者对MindEnergy的贡献：
+Thanks go to these wonderful contributors:
 
-[@b_rookie](https://gitee.com/b_rookie)，[@congw729](https://gitee.com/congw729)，[@wuzhf9](https://gitee.com/wuzhf9)
+[@b_rookie](https://gitee.com/b_rookie), [@congw729](https://gitee.com/congw729), [@wuzhf9](https://atomgit.com/wuzhf9), [@wushuo2025](https://atomgit.com/wushuo2025)
 
-## 贡献指南
+## Contribution Guide
 
-欢迎参考[贡献指南](https://gitee.com/mindspore/mindscience/blob/br_refactor/CONTRIBUTION.md)为MindEnergy贡献您的代码！
+Welcome to follow the [contribution guide](https://atomgit.com/mindspore-lab/mindscience/blob/master/CONTRIBUTION.md) to contribute your code for MindSpore Energy!
 
-## 许可证
+## License
 
 [Apache License 2.0](http://www.apache.org/licenses/LICENSE-2.0)

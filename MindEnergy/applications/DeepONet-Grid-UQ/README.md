@@ -1,205 +1,208 @@
 # DeepONet-Grid-UQ
 
-用于电力系统故障后进行预测的DeepONet-Grid网络
+DeepONet-Grid network for power system fault prediction
 
-## 背景介绍
+## Background Introduction
 
-### 需求来源及价值概述
+### Source of Requirements and Value Overview
 
-本工作构建了一个高效的网络DeepONet-Grid，用于对故障后的电力系统进行动态安全分析，该网络
+This work build an efficient DeepONet that
 
-(i) 接收故障前和故障期间收集的轨迹作为输入，并且
-(ii) 输出预测的故障后轨迹。
+(i) takes as inputs the trajectories collected before and during the fault and
+(ii) outputs the predicted post-fault trajectories.
 
-此外，本网络还通过不确定性量化（Uncertainty Quantification）为其方法赋予了在效率与可靠/可信预测之间取得平衡的能力。
+In addition, they also endow their method with the much-needed ability to balance efficiency with reliable/trustworthy predictions via Ucertainty Quantification.
 
-原始论文：[DeepONet-grid-UQ: A trustworthy deep operator framework for predicting the power grid's post-fault trajectories](https://arxiv.org/pdf/2202.07176)
+<div align="center">
+    <img src="images/arch.png" width=60%>
+</div>
 
-原始代码仓：[Github Link](https://github.com/cmoyacal/DeepONet-Grid-UQ)
+Original Paper : [DeepONet-grid-UQ: A trustworthy deep operator framework for predicting the power grid’s post-fault trajectories](https://arxiv.org/pdf/2202.07176)
 
-### 研究背景与动机
+Original Code on torch: [Github](https://github.com/cmoyacal/DeepONet-Grid-UQ)
 
-电力系统作为关键基础设施，其稳定性和可靠性对现代社会至关重要。然而，电网经常面临罕见但严重的故障和扰动，这些事件可能导致系统不稳定，甚至引发大规模停电。
+### Research Background and Motivation
 
-传统的动态安全分析需要求解复杂的非线性微分代数方程组，计算成本极高，难以实现实时分析。随着电网的转型，电力公司迫切需要能够进行近实时的动态安全评估。
+Power systems, as critical infrastructure, are essential for the stability and reliability of modern society. However, power grids frequently face rare but severe faults and disturbances, which can lead to system instability and even trigger large-scale blackouts.
 
-现有的机器学习方法主要关注二分类问题（稳定/不稳定），缺乏对故障后轨迹的定量预测能力。系统运营商和规划者需要了解故障后各种状态变量的轨迹，以评估电压或频率是否会违反预定义限制并触发负荷切除等保护措施。
+Traditional dynamic security analysis requires solving complex nonlinear differential-algebraic equations, with extremely high computational costs, making real-time analysis difficult to achieve. With the transformation of power grids, power companies urgently need the capability to perform near real-time dynamic security assessment.
 
-## 项目结构
+Existing machine learning methods mainly focus on binary classification problems (stable/unstable), lacking quantitative prediction capabilities for post-fault trajectories. System operators and planners need to understand the trajectories of various state variables after faults to assess whether voltage or frequency will violate predefined limits and trigger protection measures such as load shedding.
+
+## Project Structure
 
 ```bash
 deeponet-grid/
 ├── configs/
-│   └── config.yaml          # 配置文件
+│   └── config.yaml          # Configuration file
 ├── src/
-│   ├── model.py             # DeepONet模型定义
-│   ├── data.py              # 数据加载和预处理
-│   ├── utils.py             # 一些有用的函数
-│   ├── trainer.py           # 训练器实现
-│   └── metrics.py           # 评估指标
-├── train.py                 # 训练脚本
-├── inference.py             # 推理脚本
-├── requirements.txt         # 依赖包列表
-├── README.md                # 本文件
-├── README_en.md             # 英文版本
-└── outputs/                 # 输出目录（自动创建）
+│   ├── model.py             # DeepONet model definition
+│   ├── data.py              # Data loading and preprocessing
+│   ├── utils.py             # Utility functions
+│   ├── trainer.py           # Trainer implementation
+│   └── metrics.py           # Evaluation metrics
+├── train.py                 # Training script
+├── inference.py             # Inference script
+├── requirements.txt         # Dependency list
+├── README_en.md             # This file
+├── README.md                # Chinese version
+└── outputs/                 # Output directory (auto-created)
 ```
 
-## 安装与配置
+## Installation & Configuration
 
-### 安装MindSpore
+### Install MindSpore
 
-安装MindSpore框架：
+ Install MindSpore framework:
 
 ```bash
 pip install mindspore
 ```
 
-### 配置文件
+### Configuration File
 
-编辑 `configs/config.yaml` 文件来配置模型参数：
+Edit the `configs/config.yaml` file to configure model parameters:
 
-#### 模型配置
+#### Model Configuration
 
-- `branch`: 分支网络配置（处理输入函数）
-- `trunk`: 主干网络配置（处理评估点）
-- `use_bias`: 是否使用偏置项
+- `branch`: Branch network configuration (processes input functions)
+- `trunk`: Trunk network configuration (processes evaluation points)
+- `use_bias`: Whether to use bias terms
 
-#### 训练配置
+#### Training Configuration
 
-- `learning_rate`: 学习率
-- `batch_size`: 批次大小
-- `epochs`: 训练轮数
-- `optimizer`: 优化器类型（adam）
-- `loss_type`: 损失函数类型（nll, mse）
+- `learning_rate`: Learning rate
+- `batch_size`: Batch size
+- `epochs`: Number of training epochs
+- `optimizer`: Optimizer type (adam, sgd, adamw)
+- `loss_type`: Loss function type (nll, mse)
 
-#### 数据配置
+#### Data Configuration
 
-- `data_path`: 数据文件路径
+- `use_synthetic`: Whether to use synthetic data
+- `data_path`: Data file path
 
-## 使用方法
+## Usage
 
-### 1. 使用真实数据训练
+### 1. Training with Real Data
 
-可以使用数据集: [dataset](https://download.mindspore.cn/mindscience/mindenergy/dataset/applications/DeepONet-grid/). 感谢数据集提供者: lzh9673@163.com.
+You can use the data we provided: [dataset](https://download.mindspore.cn/mindscience/mindenergy/dataset/applications/DeepONet-grid/). Thanks to the provider: lzh9673@163.com.
 
-首先确保`confis/config.yaml`文件中的`data_path`参数指向训练数据的地址。
+Make sure the `data_path` in `confis/config.yaml` is set correctly.
 
 ```bash
 python train.py
 ```
 
-多卡：
-
 ```bash
 msrun --worker_num 8 --local_worker_num 8 --log_dir msrun_log python train.py --distributed 1
 ```
 
-#### 输出文件
+#### Output Files
 
-训练完成后，在输出目录中会生成：
+After training, the following files are generated in the output directory:
 
-- `best_model.ckpt`: 最佳模型检查点
-- `final_model.ckpt`: 最终模型检查点
-- `training_history.json`: 训练历史记录
-- `test_results.json`: 测试集评估结果
-- `training.log`: 训练日志
+- `best_model.ckpt`: Best model checkpoint
+- `final_model.ckpt`: Final model checkpoint
+- `training_history.json`: Training history
+- `test_results.json`: Test set evaluation results
+- `training.log`: Training log
 
-#### 评估指标
+#### Evaluation Metrics
 
-- **MSE**: 均方误差
-- **MAE**: 平均绝对误差
-- **R²**: 决定系数
-- **Calibration Error**: 校准误差
+- **MSE**: Mean squared error
+- **MAE**: Mean absolute error
+- **R²**: Coefficient of determination
+- **Calibration Error**: Calibration error
 
-### 2. 从检查点恢复训练
+### 2. Resume Training from Checkpoint
 
 ```bash
 python train.py --resume outputs/best_model.ckpt
 ```
 
-### 3. 仅运行评估
+### 3. Run Evaluation Only
 
 ```bash
 python train.py --eval --resume outputs/best_model.ckpt
 ```
 
-### 4. 打印loss log曲线
+### 4. Show loss log curve
 
-执行`src/utils.py`中的`extract_log`函数，并将记录训练信息和评估信息的地址传入。
+Call the function `extract_log` in `src/utils.py` with input parameters (log file path and evaluation json file path.)
 
-### 5. 仅运行推理
+### 5. Run Inference Only
 
 ```bash
-# 指定数据推理
+# Single data point inference
 python inference.py --checkpoint outputs/best_model.ckpt \
-                   --data_path data/test-data-voltage-m-33-mix.npz \
+                   --data_path data/test-data.npz \
                    --trajectory_prediction \
                    --data_index 0
 
-# 数据集推理
+# Dataset inference
 python inference.py --checkpoint outputs/best_model.ckpt \
-                   --data_path data/test-data-voltage-m-33-mix.npz \
+                   --data_path data/test-data.npz \
                    --output_dir inference_results
 ```
 
-### 6. 调试模式
+### 6. Debug Mode
 
-设置环境变量启用详细日志：
+Set environment variable to enable detailed logging:
 
 ```bash
 export MINDSPORE_LOG_LEVEL=DEBUG
 python train.py
 ```
 
-## 扩展内容
+## More Information
 
-### 模型架构
+### Model Architecture
 
-DeepONet由两个主要组件组成：
+DeepONet consists of two main components:
 
-1. **分支网络 (Branch Network)**: 处理输入函数 `u(x)`
-2. **主干网络 (Trunk Network)**: 处理评估点 `y`
+1. **Branch Network**: Processes input function `u(x)`
+2. **Trunk Network**: Processes evaluation points `y`
 
-输出通过点积计算：
+Output is calculated through dot product:
 
 G(u)(y) = Σᵢ bᵢ(u) tᵢ(y)
 
-其中 `bᵢ(u)` 是分支网络的输出，`tᵢ(y)` 是主干网络的输出。
+Where `bᵢ(u)` is the branch network output and `tᵢ(y)` is the trunk network output.
 
-### 不确定性量化
+### Uncertainty Quantification
 
-模型提供不确定性量化功能：
+The model provides uncertainty quantification capabilities:
 
-- **均值预测**: 模型预测的期望值
-- **标准差预测**: 预测的不确定性度量
+- **Mean Prediction**: Expected value predicted by the model
+- **Standard Deviation Prediction**: Uncertainty measure of predictions
 
-损失函数支持：
+Supported loss functions:
 
-- **负对数似然 (NLL)**: 用于不确定性量化
-- **均方误差 (MSE)**: 标准回归损失
+- **Negative Log Likelihood (NLL)**: For uncertainty quantification
+- **Mean Squared Error (MSE)**: Standard regression loss
 
-### 数据格式
+### Data Format
 
-数据文件为 `.npz` 格式，包含以下字段：
+Data files should be in `.npz` format with the following fields:
 
-- `u`: 输入函数值，形状为 `(n_samples, n_sensors)`
-- `y`: 评估点，形状为 `(n_samples, n_points, n_dim)`
-- `s`: 真实解值，形状为 `(n_samples, n_points, n_output)`
+- `u`: Input function values, shape `(n_samples, n_sensors)`
+- `y`: Evaluation points, shape `(n_samples, n_points, n_dim)`
+- `s`: True solution values, shape `(n_samples, n_points, n_output)`
 
-## 训练结果
+## Training results
 
-|     参数      |     指标      |
-| :-----------: | :-----------: |
-|   硬件资源    | Atlas 800T A2 |
-| MindSpore版本 |    >=2.5.0    |
-|    数据量     |     80000     |
-|   训练步数    |     1000      |
-|   Scheduler   |    Cosine     |
-|  Batch Size   |     1024      |
-|  最小学习率   |     1e-7      |
-|  最大学习率   |     5e-5      |
-|      MSE      |   0.003331    |
-|      MAE      |   0.024189    |
-|      L1       |   0.024222    |
-|      L2       |   0.057664    |
+|       Name        |    Results    |
+| :---------------: | :-----------: |
+|     Hardware      | Atlas 800T A2 |
+| MindSpore version |    >=2.5.0    |
+|      Samples      |     80000     |
+|  Training Steps   |     1000      |
+|     Scheduler     |    Cosine     |
+|    Batch Size     |     1024      |
+|      Min LR       |     1e-7      |
+|      Max LR       |     5e-5      |
+|        MSE        |   0.003331    |
+|        MAE        |   0.024189    |
+|        L1         |   0.024222    |
+|        L2         |   0.057664    |
