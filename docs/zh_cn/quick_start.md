@@ -43,7 +43,7 @@ Fourier Layer网络结构如下图所示。图中V表示输入向量，上框表
 
 #### 关键接口导入
 
-工作目录选择为 `mindscience/MindFlow/applications/data_driven/burgers/fno1d`，在工作目录下创建 `train.py`：
+工作目录选择为 `mindscience/MindFlow/applications/data_driven/burgers/fno1d`，在工作目录下创建 `train.py`，导入如下关键接口：
 
 ```python
 from mindspore.amp import DynamicLossScaler, auto_mixed_precision, all_finite
@@ -60,6 +60,7 @@ $$
 u_0 \sim \mathcal{N}\left(0,625(-\Delta + 25I)^{-2}\right).
 $$
 
+该分布已在 `create_training_dataset` 中实现，只需按如下格式调用：
 ```python
 from src import create_training_dataset, visual
 # create training dataset
@@ -74,7 +75,7 @@ test_label = Tensor(np.expand_dims(test_label, -2), mstype.float32)
 
 #### 构建模型
 
-网络由 1 层 Lifting layer、1 层 Decoding layer 以及多层 Fourier Layer 叠加组成：
+网络由 1 层 Lifting layer、1 层 Decoding layer 以及多层 Fourier Layer 叠加组成，定义如下：
 
 ```python
 model = FNO1D(in_channels=model_params["in_channels"],
@@ -97,7 +98,9 @@ model_name = "_".join(model_params_list)
 
 ```python
 steps_per_epoch = train_dataset.get_dataset_size()
-lr = get_warmup_cosine_annealing_lr(lr_init=optimizer_params["learning_rate"], 												last_epoch=optimizer_params["epochs"],     															 steps_per_epoch=steps_per_epoch,warmup_epochs=1)
+lr = get_warmup_cosine_annealing_lr(lr_init=optimizer_params["learning_rate"],
+last_epoch=optimizer_params["epochs"],
+steps_per_epoch=steps_per_epoch,warmup_epochs=1)
 optimizer = nn.Adam(model.trainable_params(), learning_rate=Tensor(lr))
 
 if use_ascend:
@@ -179,10 +182,10 @@ python train.py --config_file_path ./configs/fno1d.yaml --device_target Ascend -
 
 | 接口名称           | 简介             |
 |:----------------------:|:--------------------------:|
-| `FNO1D` | 来自 `mindscience.models`，定义一维 FNO 算子神经网络； |
-| `RelativeRMSELoss` | 来自 `mindscience.common`，相对 MSE 误差函数； |
-| `get_warmup_cosine_annealing_lr` | 来自 `mindscience.common`，带热重启的余弦退火，一种应用广泛的学习率的调整策略； |
-| `UnsteadyFlowWithLoss` | 来自 `mindscience.pde`，定义非稳态流问题的损失函数； |
+| `FNO1D` | 来自 `mindscience.models`，定义一维 FNO 算子神经网络。 |
+| `RelativeRMSELoss` | 来自 `mindscience.common`，相对 MSE 误差函数。 |
+| `get_warmup_cosine_annealing_lr` | 来自 `mindscience.common`，带热重启的余弦退火，一种应用广泛的学习率的调整策略。 |
+| `UnsteadyFlowWithLoss` | 来自 `mindscience.pde`，定义非稳态流问题的损失函数。 |
 
 ## 核心贡献者
 
