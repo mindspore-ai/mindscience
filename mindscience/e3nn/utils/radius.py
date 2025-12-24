@@ -38,26 +38,24 @@ def radius(x, y, r, batch_x=None, batch_y=None, max_num_neighbors=32):
     Args:
         x (ndarray): node feature matrix of x.
         y (ndarray): node feature matrix of y.
-        r (ndarray, float): the radius.
-        batch_x (ndarray): batch vector of x. If it is none, then calculate based on x and return. Default: ``None``.
-        batch_y (ndarray): batch vector of y. If it is none, then calculate based on y and return. Default: ``None``.
-        max_num_neighbors (int): The maximum number of neighbors to return for each element in `y`. Dufault: ``32``.
+        r (Union[ndarray, float]): the radius.
+        batch_x (ndarray, optional): batch vector of x. If it is none, then calculate based on x and return.
+            Default: ``None``.
+        batch_y (ndarray, optional): batch vector of y. If it is none, then calculate based on y and return.
+            Default: ``None``.
+        max_num_neighbors (int, optional): The maximum number of neighbors to return for each element in `y`.
+            Default: ``32``.
 
     Returns:
-        edge_index (numpy.ndarray) - including edges of source and destination.
-
-        batch_x (numpy.ndarray) - batch vector of x.
-
-        batch_y (numpy.ndarray) - batch vector of y.
+        - edge_index (numpy.ndarray) - including edges of source and destination.
+        - batch_x (numpy.ndarray) - batch vector of x.
+        - batch_y (numpy.ndarray) - batch vector of y.
 
     Raises:
         ValueError: If the last dimension of `x` and `y` do not match.
 
-    Supported Platforms:
-        ``Ascend``
-
     Examples:
-        >>> from mindchemistry.e3.utils import radius
+        >>> from mindscience.e3nn.utils import radius
         >>> import numpy as np
         >>> np.random.seed(1)
         >>> x = np.random.random((5, 12, 3))
@@ -72,7 +70,7 @@ def radius(x, y, r, batch_x=None, batch_y=None, max_num_neighbors=32):
 
     """
     if not x.shape[-1] == y.shape[-1]:
-        raise ValueError(f"Feature size do not match.")
+        raise ValueError("Feature size do not match.")
     if max_num_neighbors < 1:
         raise Warning(f'max_num_neighbors: {max_num_neighbors}')
 
@@ -100,26 +98,23 @@ def radius_graph(x, r, batch=None, loop=False, max_num_neighbors=32, flow='sourc
 
     Args:
         x (ndarray): node feature matrix.
-        r (ndarray, float): the radius.
-        batch (Tensor): batch vector. If it is none, then calculate and return. Default: ``None``.
-        loop (bool): whether contain self-loops in the graph. Dufault: ``False``.
-        max_num_neighbors (int): The maximum number of neighbors to return for each element in `y`. Dufault: ``32``.
-        flow (str): {'source_to_target', 'target_to_source'}, the flow direction when using in combination with
-            message passing. Dufault: ``'source_to_target'``.
+        r (Union[ndarray, float]): the radius.
+        batch (ndarray, optional): batch vector. If it is none, then calculate and return. Default: ``None``.
+        loop (bool, optional): whether contain self-loops in the graph. Default: ``False``.
+        max_num_neighbors (int, optional): The maximum number of neighbors to return for each element in `y`.
+            Default: ``32``.
+        flow (str, optional): {'source_to_target', 'target_to_source'}, the flow direction when using
+            in combination with message passing. Default: ``'source_to_target'``.
 
     Returns:
-        edge_index (ndarray) - including edges of source and destination.
-
-        batch (ndarray) - batch vector.
+        - edge_index (numpy.ndarray) - including edges of source and destination.
+        - batch (numpy.ndarray) - batch vector.
 
     Raises:
         ValueError: If `flow` is not in {'source_to_target', 'target_to_source'}.
 
-    Supported Platforms:
-        ``Ascend``
-
     Examples:
-        >>> from mindchemistry.e3.utils import radius_graph
+        >>> from mindscience.e3nn.utils import radius_graph
         >>> import numpy as np
         >>> np.random.seed(1)
         >>> x = np.random.random((5, 12, 3))
@@ -132,7 +127,7 @@ def radius_graph(x, r, batch=None, loop=False, max_num_neighbors=32, flow='sourc
     """
 
     if flow not in ['source_to_target', 'target_to_source']:
-        raise ValueError(f'`flow` should be in ["source_to_target", "target_to_source"].')
+        raise ValueError('`flow` should be in ["source_to_target", "target_to_source"].')
     (row, col), batch, _ = radius(x, x, r, batch, batch, max_num_neighbors + 1)
     row, col = (col, row) if flow == 'source_to_target' else (row, col)
     if not loop:
@@ -148,24 +143,22 @@ def radius_full(x, y, batch_x=None, batch_y=None):
     Args:
         x (Tensor): node feature matrix.
         y (Tensor): node feature matrix.
-        batch_x (ndarray): batch vector of x. If it is none, then calculate based on x and return. Default: ``None``.
-        batch_y (ndarray): batch vector of y. If it is none, then calculate based on y and return. Default: ``None``.
+        batch_x (ndarray, optional): batch vector of x. If it is none, then calculate based on x and return.
+            Default: ``None``.
+        batch_y (ndarray, optional): batch vector of y. If it is none, then calculate based on y and return.
+            Default: ``None``.
 
     Returns:
-        edge_index (numpy.ndarray) - including edges of source and destination.
-
-        batch_x (numpy.ndarray) - batch vector of x.
-
-        batch_y (numpy.ndarray) - batch vector of y.
+        - edge_index (numpy.ndarray) - including edges of source and destination.
+        - batch_x (numpy.ndarray) - batch vector of x.
+        - batch_y (numpy.ndarray) - batch vector of y.
 
     Raises:
         ValueError: If the last dimension of `x` and `y` do not match.
 
-    Supported Platforms:
-        ``Ascend``
 
     Examples:
-        >>> from mindchemistry.e3.utils import radius_full
+        >>> from mindscience.e3nn.utils import radius_full
         >>> from mindspore import ops, Tensor
         >>> x = Tensor(ops.ones((5, 12, 3)))
         >>> edge_index, batch_x, batch_y = radius_full(x, x)
@@ -178,7 +171,7 @@ def radius_full(x, y, batch_x=None, batch_y=None):
 
     """
     if not x.shape[-1] == y.shape[-1]:
-        raise ValueError(f"Feature size do not match.")
+        raise ValueError("Feature size do not match.")
 
     if x.ndim > 2 and y.ndim > 2:
         b_x, b_y = x.shape[0], y.shape[0]
@@ -209,24 +202,20 @@ def radius_graph_full(x, batch=None, loop=False, flow='source_to_target'):
 
     Args:
         x (Tensor): node feature matrix.
-        batch (Tensor): batch vector. If it is none, then calculate and return. Default: ``None``.
-        loop (bool): whether contain self-loops in the graph. Dufault: ``False``.
-        flow (str): {'source_to_target', 'target_to_source'}, the flow direction when using in combination with
-            message passing. Dufault: ``'source_to_target'``.
+        batch (ndarray, optional): batch vector. If it is none, then calculate and return. Default: ``None``.
+        loop (bool, optional): whether contain self-loops in the graph. Default: ``False``.
+        flow (str, optional): {'source_to_target', 'target_to_source'}, the flow direction when using
+            in combination with message passing. Default: ``'source_to_target'``.
 
     Returns:
-        edge_index (ndarray) - including edges of source and destination.
-
-        batch (ndarray) - batch vector.
+        - edge_index (numpy.ndarray) - including edges of source and destination.
+        - batch (numpy.ndarray) - batch vector.
 
     Raises:
         ValueError: If `flow` is not in {'source_to_target', 'target_to_source'}.
 
-    Supported Platforms:
-        ``Ascend``
-
     Examples:
-        >>> from mindchemistry.e3.utils import radius_graph_full
+        >>> from mindscience.e3nn.utils import radius_graph_full
         >>> from mindspore import ops, Tensor
         >>> x = Tensor(ops.ones((5, 12, 3)))
         >>> edge_index, batch = radius_graph_full(x)
@@ -237,7 +226,7 @@ def radius_graph_full(x, batch=None, loop=False, flow='source_to_target'):
 
     """
     if flow not in ['source_to_target', 'target_to_source']:
-        raise ValueError(f'`flow` should be in ["source_to_target", "target_to_source"].')
+        raise ValueError('`flow` should be in ["source_to_target", "target_to_source"].')
 
     (row, col), batch, _ = radius_full(x, x, batch, batch)
     row, col = (col, row) if flow == 'source_to_target' else (row, col)

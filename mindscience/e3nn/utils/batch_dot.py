@@ -113,7 +113,7 @@ def batch_dot(x1, x2, axes=None):
             If None, defaults to the last axis of x1 and second-to-last axis of x2.
 
     Returns:
-        Tensor: The batch dot product result.
+        Tensor, The batch dot product result.
 
     Raises:
         ValueError: If batch sizes of x1 and x2 don't match.
