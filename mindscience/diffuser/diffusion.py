@@ -443,9 +443,6 @@ class DDPMScheduler(DiffusionScheduler):
             `offset_noise <https://github.com/huggingface/diffusers/blob/74fd735eb073eb1d774b1ab4154a0876eb82f055/examples/dreambooth/train_dreambooth.py#L506>`_. Default: ``False``.
         compute_dtype (mindspore.dtype): the dtype of compute, it can be `mstype.float32` or `mstype.float16`. Default: ``mstype.float32``, indicates ``mindspore.float32``.
 
-    Supported Platforms:
-        ``Ascend``
-
     Examples:
         >>> from mindspore import ops, dtype as mstype
         >>> from mindscience.diffuser import DDPMScheduler
@@ -628,9 +625,6 @@ class DDIMScheduler(DiffusionScheduler):
             dark samples instead of limiting it to samples with medium brightness. Loosely related to
             `offset_noise <https://github.com/huggingface/diffusers/blob/74fd735eb073eb1d774b1ab4154a0876eb82f055/examples/dreambooth/train_dreambooth.py#L506>`_. Default: ``False``.
         compute_dtype (mindspore.dtype): the dtype of compute, it can be `mstype.float32` or `mstype.float16`. Default: ``mstype.float32``, indicates ``mindspore.float32``.
-
-    Supported Platforms:
-        ``Ascend``
 
     Examples:
         >>> from mindspore import ops, dtype as mstype
@@ -836,9 +830,6 @@ class DiffusionPipeline:
         TypeError: If `scheduler` is not `DiffusionScheduler` type.
         ValueError: If `num_inference_steps` is greater than `scheduler.num_train_timesteps`.
 
-    Supported Platforms:
-        ``Ascend``
-
     Examples:
         >>> from mindspore import ops, dtype as mstype
         >>> from mindscience.diffuser import DiffusionPipeline, DDPMScheduler, ConditionDiffusionTransformer
@@ -953,9 +944,6 @@ class DDPMPipeline(DiffusionPipeline):
         TypeError: If `scheduler` is not `DDIMScheduler` type.
         ValueError: If `num_inference_steps` is not equal to `scheduler.num_train_timesteps`.
 
-    Supported Platforms:
-        ``Ascend``
-
     Examples:
         >>> from mindspore import ops, dtype as mstype
         >>> from mindscience.diffuser import DDPMPipeline, DDPMScheduler, ConditionDiffusionTransformer
@@ -1026,9 +1014,6 @@ class DDIMPipeline(DiffusionPipeline):
     Raises:
         TypeError: If `scheduler` is not `DDIMScheduler` type.
         ValueError: If `num_inference_steps` is greater than `scheduler.num_train_timesteps` .
-
-    Supported Platforms:
-        ``Ascend``
 
     Examples:
         >>> from mindspore import ops, dtype as mstype
@@ -1161,9 +1146,6 @@ class DiffusionTrainer:
 
     Raises:
         TypeError: If `scheduler` is not `DiffusionScheduler` type.
-
-    Supported Platforms:
-        ``Ascend``
 
     Examples:
         >>> from mindspore import ops, dtype as mstype

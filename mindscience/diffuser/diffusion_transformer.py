@@ -103,9 +103,6 @@ class DiffusionTransformer(nn.Cell):
     Outputs:
         - **output** (Tensor) - The output has a shape of :math:`(batch\_size, sequence\_len, out\_channels)`.
 
-    Supported Platforms:
-        ``Ascend``
-
     Examples:
         >>> from mindspore import ops
         >>> from mindscience.diffuser import DiffusionTransformer
@@ -212,9 +209,6 @@ class ConditionDiffusionTransformer(DiffusionTransformer):
 
     Outputs:
         - **output** (Tensor) - The output has a shape of :math:`(batch\_size, sequence\_len, out\_channels)`.
-
-    Supported Platforms:
-        ``Ascend``
 
     Examples:
         >>> from mindspore import ops

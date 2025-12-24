@@ -4,7 +4,6 @@ mindscience.diffuser
 .. mscnplatformautosummary::
     :toctree: diffuser
     :nosignatures:
-    :template: classtemplate.rst
 
     mindscience.diffuser.ConditionDiffusionTransformer
     mindscience.diffuser.DDIMPipeline
