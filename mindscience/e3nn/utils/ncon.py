@@ -20,16 +20,16 @@ from mindspore import ops, nn, vmap
 from mindspore.numpy import tensordot, trace, expand_dims
 
 
-def list_to_tuple(lst):
-    """list_to_tuple"""
-    return tuple(list_to_tuple(item) if isinstance(item, list) else item for item in lst)
+def _list_to_tuple(lst):
+    """list to tuple"""
+    return tuple(_list_to_tuple(item) if isinstance(item, list) else item for item in lst)
 
 
-def nest_vmap(fn, in_list, out_list, pt):
+def _nest_vmap(fn, in_list, out_list, pt):
     """nest vmap function"""
     if pt == len(in_list) - 1:
         return vmap(fn, in_list[pt], out_list[pt])
-    return vmap(nest_vmap(fn, in_list, out_list, pt + 1), in_list[pt], out_list[pt])
+    return vmap(_nest_vmap(fn, in_list, out_list, pt + 1), in_list[pt], out_list[pt])
 
 
 def _create_order(con_list):
@@ -76,7 +76,7 @@ def _find_trace(con_list):
         legs_list
     """
     legs_list = []
-    for i in range(len(con_list)):
+    for i, _ in enumerate(con_list):
         tr_num = len(con_list[i]) - len(np.unique(con_list[i]))
         legs = []
         if tr_num:
@@ -225,10 +225,10 @@ def _process_commands(con_list):
     if not con_list[0]:
         return conmmands, operators
 
-    do_ndot(con_list, conmmands, operators, order, batch_legs)
+    _do_ndot(con_list, conmmands, operators, order, batch_legs)
 
     # do Hadamard(alike) product
-    do_hadamard(con_list, conmmands, operators)
+    _do_hadamard(con_list, conmmands, operators)
 
     # do outer product
     for i, con in enumerate(con_list):
@@ -263,7 +263,7 @@ def _process_commands(con_list):
     return conmmands, operators
 
 
-def do_ndot(con_list, conmmands, operators, order, batch_legs):
+def _do_ndot(con_list, conmmands, operators, order, batch_legs):
     """do_ndot
 
     Args:
@@ -325,9 +325,9 @@ def do_ndot(con_list, conmmands, operators, order, batch_legs):
 
             ndot_leg_inds = ndot_leg_inds[0] if len(ndot_leg_inds) == 1 else np.array(
                 ndot_leg_inds).transpose().tolist()
-            conmmands.append(_make_dict('ndot', inds, list_to_tuple(ndot_leg_inds), batch_leg_inds))
+            conmmands.append(_make_dict('ndot', inds, _list_to_tuple(ndot_leg_inds), batch_leg_inds))
             operators.append(
-                nest_vmap(tensordot, batch_leg_inds, [0] * len(batch_leg_inds), 0) if batch_leg_inds else tensordot)
+                _nest_vmap(tensordot, batch_leg_inds, [0] * len(batch_leg_inds), 0) if batch_leg_inds else tensordot)
 
             # merge two con_list
             for leg in con_list[inds[1]]:
@@ -339,7 +339,7 @@ def do_ndot(con_list, conmmands, operators, order, batch_legs):
         order = order[:-1]
 
 
-def do_hadamard(con_list, conmmands, operators):
+def _do_hadamard(con_list, conmmands, operators):
     """do_hadamard
 
     Args:
@@ -353,7 +353,7 @@ def do_hadamard(con_list, conmmands, operators):
         for con in con_list:
             con_list_all.extend(con)
         con_min_leg = min(con_list_all)
-        out_list = [i for i in range(-1, con_min_leg - 1, -1)]
+        out_list = list(range(-1, con_min_leg - 1, -1))
 
         res_legs = []
         for ind in out_list:
@@ -364,7 +364,7 @@ def do_hadamard(con_list, conmmands, operators):
 
         hadamard_legs = [[], []]
         con_raw = deepcopy(con_list)
-        handle_inds(con_list, out_list, hadamard_legs)
+        _handle_inds(con_list, out_list, hadamard_legs)
 
         expand_axis = deepcopy(hadamard_legs)
         for i, axis in enumerate(expand_axis):
@@ -388,7 +388,7 @@ def do_hadamard(con_list, conmmands, operators):
         operators.append([ops.permute, ops.tile, ops.mul, expand_dims])
 
 
-def handle_inds(con_list, out_list, hadamard_legs):
+def _handle_inds(con_list, out_list, hadamard_legs):
     """handle_inds"""
     for i, con in enumerate(con_list):
         if con:
@@ -406,26 +406,23 @@ class Ncon(nn.Cell):
     Multiple-tensor contraction operator which has similar function to Einsum.
 
     Args:
-        con_list (List[List[int]]): lists of indices for each tensor.
+        con_list (list[list[int]]): lists of indices for each tensor.
             The number of each list in `con_list` should coincide with the corresponding tensor's dimensions.
             The positive indices indicate the dimensions to be contracted or summed.
             The negative indices indicate the dimensions to be keeped (as batch dimensions).
 
     Inputs:
-        - **input** (List[Tensor]) - Tensor List.
+        - **ten_list** (list[Tensor]) - Tensor List.
 
     Outputs:
-        - **output** (Tensor) - The shape of tensor depends on the input and the computation process.
+        - **ten_list[0]** (Tensor) - The shape of tensor depends on the input and the computation process.
 
     Raises:
         ValueError: If the number of commands is not match the number of operations.
 
-    Supported Platforms:
-        ``Ascend``
-
     Examples:
         >>> from mindspore import ops
-        >>> from mindchemistry.e3.utils import Ncon
+        >>> from mindscience.e3nn.utils import Ncon
         Trace of a matrix:
         >>> a = ops.ones((3, 3))
         >>> Ncon([[1, 1]])([a])
@@ -511,189 +508,3 @@ class Ncon(nn.Cell):
         for d in self.commands:
             s += str(d) + '\n'
         return s
-
-
-def test_other():
-    """test_other"""
-    ncon = Ncon([[5, -1, 1, 4, 3, -2], [3, -2, -1, 4, 2], [2, -3], [-3, -4]])
-    v1 = ops.ones((3, 1, 3, 4, 5, 2))
-    v2 = ops.ones((5, 2, 1, 4, 6))
-    v3 = ops.ones((6, 3))
-    v4 = ops.ones((3, 4))
-    print(ncon)
-    out = ncon([v1, v2, v3, v4])
-    print(out.shape)
-
-    ncon = Ncon([[-1, 2], [-1, 1], [2, 1, -2]])
-    v1 = ops.ones((20, 50))
-    v2 = ops.ones((20, 2))
-    v3 = ops.ones((50, 2, 7))
-    print(ncon)
-    out = ncon([v1, v2, v3])
-    print(out.shape)
-
-    ncon = Ncon([[-1, -2, 1], [-1, 1]])
-    v1 = ops.ones((3, 4, 5))
-    v2 = ops.ones((3, 5))
-    print(ncon)
-    out = ncon([v1, v2])
-    print(out.shape)
-
-
-def test_diagonal():
-    """test_diagonal"""
-    ncon = Ncon([[-1, -1]])
-    v1 = ops.ones((3, 3))
-    print(ncon)
-    out = ncon([v1])
-    print(out.shape)
-    print(out)
-
-
-def test_outer():
-    """test_other"""
-    ncon = Ncon([[-1], [-2]])
-    v1 = ops.ones((2))
-    v2 = ops.ones((3))
-    print(ncon)
-    out = ncon([v1, v2])
-    print(out.shape)
-    print(out)
-
-
-def test_outer_multi_input():
-    """test_other"""
-    ncon = Ncon([[-1], [-2], [-3]])
-    v1 = ops.ones((2))
-    v2 = ops.ones((3))
-    v3 = ops.ones((4))
-    print(ncon)
-    out = ncon([v1, v2, v3])
-    print(out.shape)
-    print(out)
-
-
-def test_ndot():
-    """test_other"""
-    ncon = Ncon([[-1, -2, 1], [-1, 1]])
-    v1 = ops.ones((3, 4, 5))
-    v2 = ops.ones((3, 5))
-    print(ncon)
-    out = ncon([v1, v2])
-    print(out.shape)
-    print(out)
-
-
-def test_ndot_2():
-    """test_other"""
-    ncon = Ncon([[-1, -2, 1, 2], [-1, 1, 2]])
-    v1 = ops.ones((3, 4, 5, 6))
-    v2 = ops.ones((3, 5, 6))
-    print(ncon)
-    out = ncon([v1, v2])
-    print(out.shape)
-    print(out)
-
-
-def test_hadamard():
-    """test_hadamard"""
-    a = np.arange(6).reshape((2, 3))
-    b = np.arange(6).reshape((2, 3))
-    print(a)
-    print(b)
-    einstr = f"zu,zu->zu"
-    d = np.einsum(einstr, a, b)
-    print(d)
-    print(d.shape)
-
-    ma = ms.Tensor(a, dtype=ms.float32)
-    mb = ms.Tensor(b, dtype=ms.float32)
-    ncon = Ncon([[-1, -2], [-1, -2]])
-    print(ncon)
-    md = ncon([ma, mb])
-    print(md.shape)
-    print(np.allclose(md.asnumpy(), d))
-
-
-def test_hadamard_alike():
-    """test_hadamard_alike"""
-    a = np.arange(8).reshape((2, 4))
-    b = np.arange(24).reshape((2, 3, 4))
-    print(a)
-    print(b)
-    einstr = f"zi,zui->zui"
-    d = np.einsum(einstr, a, b)
-    print(d)
-    print(d.shape)
-
-    ma = ms.Tensor(a, dtype=ms.float32)
-    mb = ms.Tensor(b, dtype=ms.float32)
-    ncon = Ncon([[-1, -3], [-1, -2, -3]])
-    print(ncon)
-    md = ncon([ma, mb])
-    print(md.shape)
-    print(np.allclose(md.asnumpy(), d))
-
-
-def test_hadamard_with_outer():
-    """test_hadamard_with_outer"""
-    a = np.arange(24).reshape((2, 3, 4))
-    b = np.arange(30).reshape((2, 3, 5))
-    print(f"a:\n {a}")
-    print(f"b:\n {b}")
-
-    einstr = f"zui,zuj->zuij"
-
-    d = np.einsum(einstr, a, b)
-    print(f"d:\n {d}")
-    print(f"d.shape:\n {d.shape}")
-
-    ma = ms.Tensor(a, dtype=ms.float32)
-    mb = ms.Tensor(b, dtype=ms.float32)
-
-    ncon = Ncon([[-1, -2, -3], [-1, -2, -4]])
-    print(ncon)
-    md = ncon([ma, mb])
-    print(md.shape)
-    print(np.allclose(md.asnumpy(), d))
-
-
-def test_hadamard_outer_nosequential():
-    """test_hadamard_outer_nosequential"""
-    a = np.arange(8).reshape((2, 4))
-    b = np.arange(30).reshape((2, 5, 3))
-    print(f"a:\n {a}")
-    print(f"b:\n {b}")
-
-    einstr = f"ac,adb->abcd"
-
-    d = np.einsum(einstr, a, b)
-    print(f"d:\n {d}")
-    print(f"d.shape:\n {d.shape}")
-    ma = ms.Tensor(a, dtype=ms.float32)
-    mb = ms.Tensor(b, dtype=ms.float32)
-
-    ncon = Ncon([[-1, -3], [-1, -4, -2]])
-    print(ncon)
-    md = ncon([ma, mb])
-    print(md.shape)
-    print(np.allclose(md.asnumpy(), d))
-
-
-def test_sum():
-    """test_other"""
-    ncon = Ncon([[1, 2]])
-    v1 = ops.ones((2, 3))
-    print(ncon)
-    out = ncon([v1])
-    print(out.shape)
-    print(out)
-
-
-if __name__ == '__main__':
-    import mindspore as ms
-
-    ms.set_context(device_target="GPU", device_id=4, mode=ms.GRAPH_MODE, save_graphs=False)
-    np.random.seed(123)
-
-    test_hadamard_outer_nosequential()

@@ -31,8 +31,7 @@ class Uniform(Initializer):
     to initialize a tensor.
 
     Args:
-        scale (float): The bound of the Uniform distribution. Default: 1.0.
-
+        scale (float, optional): The bound of the Uniform distribution. Default: 1.0.
 
     Examples:
         >>> import mindspore
@@ -42,7 +41,7 @@ class Uniform(Initializer):
     """
 
     def __init__(self, scale=1.):
-        super(Uniform, self).__init__(scale=scale)
+        super().__init__(scale=scale)
         self.scale = scale
 
     def _initialize(self, arr):
@@ -61,7 +60,7 @@ def renormal_initializer(init_method):
             'he_uniform', 'he_normal', 'xavier_uniform'.
 
     Returns:
-        Initializer: The corresponding initializer instance.
+        Initializer, The corresponding initializer instance.
 
     Raises:
         ValueError: If the initialization method is not supported.

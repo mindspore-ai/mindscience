@@ -52,7 +52,7 @@ def _to_tensor(arg):
 
 def broadcast_shapes(*shapes):
     r"""
-    Return the broadcast shape of the shapes of input tensors.
+    Return the broadcasted shape of the shapes of input tensors.
 
     Args:
         shapes (tuple): Any number of shapes of tensors to be broadcasted.
@@ -63,12 +63,10 @@ def broadcast_shapes(*shapes):
     max_len = 0
     for shape in shapes:
         if isinstance(shape, int):
-            if max_len < 1:
-                max_len = 1
+            max_len = max(max_len, 1)
         elif isinstance(shape, (list, tuple)):
             s = len(shape)
-            if max_len < s:
-                max_len = s
+            max_len = max(max_len, s)
     result = [1] * max_len
     for shape in shapes:
         if isinstance(shape, int):
@@ -76,8 +74,7 @@ def broadcast_shapes(*shapes):
         if isinstance(shape, (list, tuple)):
             for i in range(-1, -1 - len(shape), -1):
                 if shape[i] < 0:
-                    raise RuntimeError("Trying to create tensor with negative dimension ({}): ({})"
-                                       .format(shape[i], shape[i]))
+                    raise RuntimeError(f"Trying to create tensor with negative dimension ({shape[i]}): ({shape[i]})")
                 if shape[i] == 1 or shape[i] == result[i]:
                     continue
                 if result[i] != 1:
@@ -92,7 +89,7 @@ def broadcast_shapes(*shapes):
 
 def broadcast_tensors(*tensors):
     r"""
-    Broadcasts the given tensors.
+    Broadcasts the given tensors to a common shape.
 
     Args:
         tensors (Tensor): Any number of tensors of the same type.
@@ -158,9 +155,20 @@ def _expand_last_dims(x):
 
 
 def narrow(inputs, axis, start, length):
-    """tmp narrow API"""
+    """
+    Narrow (slice) a tensor along a specified axis.
+
+    Args:
+        inputs (Tensor): The tensor to be sliced.
+        axis (int): The axis along which to perform the slice.
+        start (int): The starting index of the slice.
+        length (int): The number of elements to include in the slice.
+
+    Returns:
+        Tensor, The sliced tensor.
+    """
     begins = [0] * inputs.ndim
     begins[axis] = start
-    sizes = [i for i in inputs.shape]
+    sizes = list(inputs.shape)
     sizes[axis] = length
     return P.Slice()(inputs, begins, sizes)
