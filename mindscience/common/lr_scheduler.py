@@ -41,9 +41,6 @@ def get_poly_lr(global_step, lr_init, lr_end, lr_max, warmup_steps, total_steps,
     Returns:
         Numpy.array, learning rate array.
 
-    Supported Platforms:
-        ``Ascend`` ``GPU``
-
     Examples:
         >>> from mindscience.common import get_poly_lr
         >>> learning_rate = get_poly_lr(100, 0.001, 0.1, 0.0001, 1000, 10000, 0.5)
@@ -107,9 +104,6 @@ def get_multi_step_lr(lr_init, milestones, gamma, steps_per_epoch, last_epoch):
         TypeError: If `lr_init` or `gamma` is not a float.
         TypeError: If `steps_per_epoch` or `last_epoch` is not an int.
         TypeError: If `milestones` is neither a tuple nor a list.
-
-    Supported Platforms:
-        ``Ascend`` ``GPU`` ``CPU``
 
     Examples:
         >>> from mindscience.common import get_multi_step_lr
@@ -199,9 +193,6 @@ def get_warmup_cosine_annealing_lr(lr_init, steps_per_epoch, last_epoch,
     Raises:
         TypeError: If `lr_init` or `warmup_lr_init` or `eta_min` is not a float.
         TypeError: If `steps_per_epoch` or `warmup_epochs` or `last_epoch` is not an int.
-
-    Supported Platforms:
-        ``Ascend`` ``GPU`` ``CPU``
 
     Examples:
         >>> from mindscience.common import get_warmup_cosine_annealing_lr

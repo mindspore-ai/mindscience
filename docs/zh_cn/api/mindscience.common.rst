@@ -1,10 +1,9 @@
 mindscience.common
 ==================
 
-.. mscnplatformautosummary::
+.. mscnautosummary::
     :toctree: common
     :nosignatures:
-    :template: classtemplate.rst
 
     mindscience.common.AdaHessian
     mindscience.common.batched_hessian

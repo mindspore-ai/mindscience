@@ -9,7 +9,7 @@ mindscience.common.unpatchify
         - **labels** - 每个位置的输出维度。
         - **img_size** - 输入图像尺寸，默认 ``(192, 384)``。
         - **patch_size** - 图像的 patch 大小，默认 ``16``。
-        - **nchw** - 若为 True，则输出形状为 NCHW。
+        - **nchw** - 若为 ``True``，则输出形状为 ``NCHW``。
 
     返回：
-        张量，形状为 :math:`(N, H, W, C)`。
+        Tensor。形状为 :math:`(N, H, W, C)`。

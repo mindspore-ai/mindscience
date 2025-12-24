@@ -21,7 +21,8 @@ TRUNCATED_NORMAL_STDDEV_FACTOR = np.asarray(.87962566103423978, dtype=np.float32
 
 
 def lecun_init(fan_in, initializer_name='linear'):
-    r"""lecun init
+    r"""
+    Lecun init.
     
     Args:
         fan_in (int): The number of input features.
@@ -38,7 +39,8 @@ def lecun_init(fan_in, initializer_name='linear'):
 
 
 def glorot_uniform(fan_in, fan_out, weight_shape):
-    r"""glorot uniform
+    r"""
+    Glorot uniform.
     
     Args:
         fan_in (int): The number of input features.

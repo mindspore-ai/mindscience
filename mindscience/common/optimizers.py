@@ -32,9 +32,6 @@ class AdaHessian(nn.Adam):
 
     Args see `mindspore.nn.Adam <https://www.mindspore.cn/docs/en/master/api_python/nn/mindspore.nn.Adam.html>`_ .
 
-    Supported Platforms:
-        ``Ascend``
-
     Examples:
         >>> import numpy as np
         >>> import mindspore as ms

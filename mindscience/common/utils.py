@@ -71,7 +71,7 @@ def get_2d_sin_cos_pos_embed(embed_dim, grid_size):
 
 def get_2d_sin_cos_pos_embed_from_grid(embed_dim, grid):
     r"""
-    use half of dimensions to encode grid_height
+    Use half of dimensions to encode grid_height.
 
     Args:
         embed_dim (int): output dimension for each position.
@@ -289,9 +289,6 @@ def pixel_shuffle(x, upscale_factor):
         ValueError: If `upscale_factor` is not a positive integer.
         ValueError: If the length of third to last dimension is not divisible by `upscale_factor` squared.
         TypeError: If the dimension of `x` is less than 3.
-
-    Supported Platforms:
-        ``Ascend`` ``GPU`` ``CPU``
     """
     idx = x.shape
     length = len(idx)
@@ -339,9 +336,6 @@ class PixelShuffle(nn.Cell):
         ValueError: If `upscale_factor` is not a positive integer.
         ValueError: If the length of third to last dimension of `x` is not divisible by `upscale_factor` squared.
         TypeError: If the dimension of `x` is less than 3.
-
-    Supported Platforms:
-        ``Ascend`` ``GPU`` ``CPU``
     """
     def __init__(self, upscale_factor):
         super().__init__()
@@ -372,9 +366,6 @@ def pixel_unshuffle(x, downscale_factor):
         ValueError: If `downscale_factor` is not a positive integer.
         ValueError: If the length of second to last dimension or last dimension is not divisible by `downscale_factor` .
         TypeError: If the dimension of `x` is less than 3.
-
-    Supported Platforms:
-        ``Ascend`` ``GPU`` ``CPU``
     """
     idx = x.shape
     length = len(idx)
@@ -422,9 +413,6 @@ class PixelUnshuffle(nn.Cell):
         ValueError: If `downscale_factor` is not a positive integer.
         ValueError: If the length of second to last dimension or last dimension is not divisible by `downscale_factor` .
         TypeError: If the dimension of `x` is less than 3.
-
-    Supported Platforms:
-        ``Ascend`` ``GPU`` ``CPU``
     """
     def __init__(self, downscale_factor):
         super().__init__()

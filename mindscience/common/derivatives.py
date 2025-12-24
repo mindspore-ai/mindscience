@@ -51,9 +51,6 @@ def batched_jacobian(model):
     Note:
         The version of MindSpore should be >= 2.0.0 for using `mindspore.jacrev`.
 
-    Supported Platforms:
-        ``Ascend`` ``GPU`` ``CPU``
-
     Examples:
         >>> import numpy as np
         >>> from mindspore import nn, ops, Tensor
@@ -98,9 +95,6 @@ def batched_hessian(model):
 
     Note:
         The version of MindSpore should be >= 2.0.0 for using `mindspore.jacrev`.
-
-    Supported Platforms:
-        ``Ascend`` ``GPU`` ``CPU``
 
     Examples:
         >>> import numpy as np

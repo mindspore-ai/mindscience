@@ -48,9 +48,9 @@ def unpatchify(labels, img_size=(192, 384), patch_size=16, nchw=False):
     """
     Args:
         labels (Union[int, float]): output dimension for each position.
-        img_size (tuple(int)): Input image size. Default (192, 384).
-        patch_size (int): The patch size of image. Default: 16.
-        nchw (bool): If True, the unpatchify shape contains N, C, H, W.
+        img_size (tuple(int)): Input image size. Default ``(192, 384)``.
+        patch_size (int): The patch size of image. Default: ``16``.
+        nchw (bool): If ``True``, the unpatchify shape contains ``N, C, H, W``.
 
     Returns:
         The tensor with shape of :math:`(N, H, W, C)`.
@@ -83,9 +83,6 @@ def get_loss_metric(name):
 
     Returns:
         Function, the loss function.
-
-    Supported Platforms:
-        ``Ascend`` ``GPU``
 
     Examples:
         >>> import numpy as np
@@ -121,9 +118,6 @@ class RegularizedLossCell(nn.Cell):
 
     Outputs:
         Tensor. a scalar tensor with shape :math:`()`.
-
-    Supported Platforms:
-        ``Ascend`` ``GPU``
 
     Examples:
         >>> import numpy as np
@@ -165,7 +159,7 @@ class RegularizedLossCell(nn.Cell):
 
 class WeightedLossCell(nn.Cell):
     r"""
-    Base class of weighting multi-task losses automatically based on the multitasks learning strategy .
+    Base class of weighting multi-task losses automatically based on the multitasks learning strategy.
     """
 
     def __init__(self):
@@ -198,9 +192,6 @@ class MTLWeightedLoss(WeightedLossCell):
 
     Outputs:
         Tensor. Losses for MTL weighted strategy.
-
-    Supported Platforms:
-        ``Ascend`` ``GPU``
 
     Examples:
         >>> import numpy as np
@@ -260,9 +251,6 @@ class WaveletTransformLoss(nn.LossBase):
 
     Outputs:
         Tensor. Losses for multi-level wavelet transformation.
-
-    Supported Platforms:
-        ``Ascend`` ``GPU``
 
     Examples:
         >>> import numpy as np
@@ -384,9 +372,6 @@ class RelativeRMSELoss(nn.LossBase):
 
     Outputs:
         Tensor, weighted loss.
-
-    Supported Platforms:
-        ``Ascend`` ``GPU`` ``CPU``
 
     Examples:
         >>> import numpy as np

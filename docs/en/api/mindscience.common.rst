@@ -1,7 +1,7 @@
 mindscience.common
 ==================
 
-.. mscnplatformautosummary::
+.. autosummary::
     :toctree: common
     :nosignatures:
     :template: classtemplate.rst
