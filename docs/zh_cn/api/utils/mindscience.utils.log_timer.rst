@@ -1,5 +1,5 @@
 mindscience.utils.log_timer
-==========================
+=============================
 
 .. py:function:: mindscience.utils.log_timer(func)
 

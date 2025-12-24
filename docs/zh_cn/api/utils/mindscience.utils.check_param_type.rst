@@ -1,5 +1,5 @@
 mindscience.utils.check_param_type
-=================================
+====================================
 
 .. py:function:: mindscience.utils.check_param_type(param, param_name, data_type=None, exclude_type=None)
 

@@ -34,7 +34,7 @@ def print_log(*msg, level=logging.INFO, enable_log=True):
     Print in the standard output stream as well as into the log file.
     Args:
         *msg (any): Message(s) to print and log.
-        level (int, optional): Log level. Default: logging.INFO.
+        level (int, optional): Log level. Default: ``logging.INFO``.
         enable_log (bool, optional): Whether to log the message. In some cases, like before logging
             configuration, this flag would be set as False. Default: ``True``.
     """

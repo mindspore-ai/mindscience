@@ -1,7 +1,7 @@
 mindscience.utils
-=================
+==================
 
-.. mscnplatformautosummary::
+.. mscnautosummary::
     :toctree: utils
     :nosignatures:
 

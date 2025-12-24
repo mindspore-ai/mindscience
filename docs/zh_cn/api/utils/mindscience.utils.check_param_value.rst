@@ -1,5 +1,5 @@
 mindscience.utils.check_param_value
-==================================
+=====================================
 
 .. py:function:: mindscience.utils.check_param_value(param, param_name, valid_value)
 

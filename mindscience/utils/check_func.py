@@ -40,7 +40,8 @@ def _convert_to_tuple(params):
 
 
 def check_param_type(param, param_name, data_type=None, exclude_type=None):
-    r"""Check parameter's data type.
+    r"""
+    Check parameter's data type.
     
     Args:
         param (any): The parameter to check.
@@ -68,7 +69,8 @@ def check_param_type(param, param_name, data_type=None, exclude_type=None):
 
 
 def check_param_value(param, param_name, valid_value):
-    r"""check parameter's value.
+    r"""
+    Check parameter's value.
     
     Args:
         param (any): The parameter to check.
@@ -87,7 +89,7 @@ def check_param_value(param, param_name, valid_value):
 
 def check_param_type_value(param, param_name, valid_value, data_type=None, exclude_type=None):
     r"""
-    check both data type and value.
+    Check both data type and value.
     
     Args:
         param (any): The parameter to check.
@@ -106,7 +108,8 @@ def check_param_type_value(param, param_name, valid_value, data_type=None, exclu
 
 
 def check_dict_type(param_dict, param_name, key_type=None, value_type=None):
-    r"""check data type for key and value of the specified dict.
+    r"""
+    Check data type for key and value of the specified dict.
     
     Args:
         param_dict (dict): The dictionary to check.
@@ -132,7 +135,8 @@ def check_dict_type(param_dict, param_name, key_type=None, value_type=None):
 
 
 def check_dict_value(param_dict, param_name, key_value=None, value_value=None):
-    r"""check values for key and value of specified dict.
+    r"""
+    Check values for key and value of specified dict.
     
     Args:
         param_dict (dict): The dictionary to check.

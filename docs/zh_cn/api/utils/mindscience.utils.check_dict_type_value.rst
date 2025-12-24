@@ -1,5 +1,5 @@
 mindscience.utils.check_dict_type_value
-======================================
+=========================================
 
 .. py:function:: mindscience.utils.check_dict_type_value(param_dict, param_name, key_type=None, value_type=None, key_value=None, value_value=None)
 
