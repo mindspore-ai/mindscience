@@ -2,7 +2,7 @@
 
 ### Introduction
 
-- The PDE module is a scientific computing operator library within the MindSpore Science framework, designed for solving partial differential equations (PDEs) in fields such as fluid dynamics and statics. It provides custom implementations of mathematical operations (`mindspore function`) and can convert symbolic computations from the `sympy`library into corresponding `mindspore function`operations. Additionally, the PDE module currently supports loss function computations for **fluid dynamics and statics equations** under different operator neural network frameworks (e.g., FNO, FFNO, SNO, PDENet, etc.). The PDE module defines mathematical operations such as addition, exponentiation, and differentiation as corresponding Node classes, offering users a concise **formal functional computation interface** through the `sympy_to_mindspore()`method. By integrating with other modules in `MindFlow`, users can more efficiently solve differential equations via neural networks and handle scientific computing tasks.
+The PDE module is a scientific computing operator library within the MindSpore Science framework, designed for solving partial differential equations (PDEs) in fields such as fluid dynamics and statics. It provides custom implementations of mathematical operations (`mindspore function`) and can convert symbolic computations from the `sympy`library into corresponding `mindspore function`operations. Additionally, the PDE module currently supports loss function computations for **fluid dynamics and statics equations** under different operator neural network frameworks (e.g., FNO, FFNO, SNO, PDENet, etc.). The PDE module defines mathematical operations such as addition, exponentiation, and differentiation as corresponding Node classes, offering users a concise **formal functional computation interface** through the `sympy_to_mindspore()`method. By integrating with other modules in `MindFlow`, users can more efficiently solve differential equations via neural networks and handle scientific computing tasks.
 
 ### PDEWithLoss
 
@@ -23,10 +23,8 @@ Users can define a custom subclass of `PDEWithLoss`containing the following info
 - A second-order elliptic equation defined on a two-dimensional domain.
 
   $$
-  \begin{align}
-  -\Delta u + u &= f = 4,~x \in \Omega \subset \mathbb{R}^2,\\
-  \nabla u \cdot \mathbf{1} &= g = 2,~x\in \partial \Omega.
-  \end{align}
+  -\Delta u + u = f = 4,~x \in \Omega \subset \mathbb{R}^2,\\
+  \nabla u \cdot \mathbf{1} = g = 2,~x\in \partial \Omega.
   $$
 
 - PINN loss function based on a fully connected neural network $u_\theta$ with two hidden layers.
@@ -119,9 +117,9 @@ The equations currently supported by this module are as follows:
 
 - Two-dimensional incompressible Navier-Stokes equations
   $$
-  \text{连续性方程：}\quad\quad  \frac{\partial u}{\partial x} + \frac{\partial u}{\partial y} = 0,\\
-  x~\text{方向动量守恒：} \frac{\partial u}{\partial t} + u\frac{\partial u}{\partial x} + v\frac{\partial u}{\partial y} = -\frac{1}{\rho} \frac{\partial p}{\partial x} + \nu \left( \frac{\partial^2 u}{\partial x^2}+\frac{\partial^2 u}{\partial y^2} \right), \\
-  y~\text{方向动量守恒：} \frac{\partial v}{\partial t} + u\frac{\partial v}{\partial x} + v\frac{\partial v}{\partial y} = -\frac{1}{\rho}\frac{\partial p}{\partial y} + \nu \left( \frac{\partial^2 v}{\partial x^2}+\frac{\partial^2 v}{\partial y^2} \right).
+  \text{Continuity,}\quad\quad  \frac{\partial u}{\partial x} + \frac{\partial u}{\partial y} = 0,\\
+  \text{Momentum}_x, \quad\quad \frac{\partial u}{\partial t} + u\frac{\partial u}{\partial x} + v\frac{\partial u}{\partial y} = -\frac{1}{\rho} \frac{\partial p}{\partial x} + \nu \left( \frac{\partial^2 u}{\partial x^2}+\frac{\partial^2 u}{\partial y^2} \right), \\
+  \text{Momentum}_y, \quad\quad \frac{\partial v}{\partial t} + u\frac{\partial v}{\partial x} + v\frac{\partial v}{\partial y} = -\frac{1}{\rho}\frac{\partial p}{\partial y} + \nu \left( \frac{\partial^2 v}{\partial x^2}+\frac{\partial^2 v}{\partial y^2} \right).
   $$
 
 ```python

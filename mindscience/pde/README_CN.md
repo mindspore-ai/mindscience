@@ -2,7 +2,7 @@
 
 ### 模块介绍
 
-- pde 模块是 MindSpore Science 框架中用于求解流体力学、静力学等领域中的偏微分方程 (Partial Differential Equations, PDEs) 的科学计算算子库，给出了自定义的数学运算实现（`mindspore function`），并可将 `sympy`  库中的符号计算转换成相应的 `mindspore function`。此外，pde 模块目前也支持在不同的算子神经网络框架下（如 FNO，FFNO，SNO，PDENet 等）给出一些**流体力学和静力学方程的损失函数计算**。pde 模块将形如加法、幂运算、微分等数学运算定义为相应的 Node 类，通过 `sympy_to_mindspore()` 方法为用户提供简洁的**形式化泛函计算接口**。结合 `MindFlow` 中的其他模块，用户能够更加高效的进行微分方程的神经网络求解和处理科学计算任务。
+pde 模块是 MindSpore Science 框架中用于求解流体力学、静力学等领域中的偏微分方程 (Partial Differential Equations, PDEs) 的科学计算算子库，给出了自定义的数学运算实现（`mindspore function`），并可将 `sympy`  库中的符号计算转换成相应的 `mindspore function`。此外，pde 模块目前也支持在不同的算子神经网络框架下（如 FNO，FFNO，SNO，PDENet 等）给出一些**流体力学和静力学方程的损失函数计算**。pde 模块将形如加法、幂运算、微分等数学运算定义为相应的 Node 类，通过 `sympy_to_mindspore()` 方法为用户提供简洁的**形式化泛函计算接口**。结合 `MindFlow` 中的其他模块，用户能够更加高效的进行微分方程的神经网络求解和处理科学计算任务。
 
 ### PDEWithLoss
 
@@ -19,10 +19,8 @@
 - 方程：定义在二维区域上的二阶椭圆型方程；
 
     $$
-    \begin{align}
-    -\Delta u + u &= f = 4,~x \in \Omega \subset \mathbb{R}^2,\\
-    \nabla u \cdot \mathbf{1} &= g = 2,~x\in \partial \Omega.
-    \end{align}
+    -\Delta u + u =f=4,~x \in \Omega \subset \mathbb{R}^2,\\
+    \nabla u \cdot \mathbf{1} =g=2,~x\in \partial \Omega.
     $$
 
 - 损失函数：基于两隐藏层全连接神经网络 $u_{\theta}$ 的 PINNs 损失函数；
