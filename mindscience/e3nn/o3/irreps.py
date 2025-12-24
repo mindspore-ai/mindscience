@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
+"""Irreducible representations and their direct sums for O(3)."""
 
 import itertools
 import collections
@@ -33,12 +34,21 @@ from ..utils.linalg import _direct_sum
 @dataclasses.dataclass(init=False, frozen=True)
 class Irrep:
     r"""
-    Irreducible representation of O(3). This class does not contain any data, it is a structure that describe the representation.
-    It is typically used as argument of other classes of the library to define the input and output representations of functions.
+    Irreducible representation of O(3).
+    This class does not contain any data, it is a structure that
+    describe the representation.
+    It is typically used as argument of other classes of the library to
+    define the input and output representations of functions.
+    The irrep is labeled by a non-negative integer `l` (the degree) and
+    a parity `p` (1 for even, -1 for odd).
+    Common aliases: "e" for even parity, "o" for odd parity, "y" for
+    parity (-1)^l.
 
     Args:
-        l (Union[int, str]): non-negative integer, the degree of the representation, :math:`l = 0, 1, \dots`. Or string to indicate the degree and parity.
-        p (int): {1, -1}, the parity of the representation.  Default: ``None``.
+        l (Union[int, str]): non-negative integer, the degree of the representation, :math:`l = 0, 1, \dots`.
+            Alternatively, a string such as ``"1o"`` or ``"2e"`` encoding both degree and parity.
+        p (int, optional): the parity of the representation, :math:`p \in \{1, -1\}`.
+            Ignored when ``l`` is a string. Default: ``None``.
 
     Raises:
         NotImplementedError: If method is not implemented.
@@ -46,11 +56,8 @@ class Irrep:
         ValueError: If `l` cannot be converted to an `Irrep`.
         TypeError: If `l` is not int or str.
 
-    Supported Platforms:
-        ``Ascend``
-
     Examples:
-        >>> from mindchemistry.e3.o3 import Irrep
+        >>> from mindscience.e3nn.o3 import Irrep
         >>> Irrep(0, 1)
         0e
         >>> Irrep("1y")
@@ -80,23 +87,23 @@ class Irrep:
                     name = l.strip()
                     l = int(name[:-1])
                     if l < 0:
-                        raise ValueError
+                        raise ValueError("Irrep degree must be non-negative.")
                     p = {
                         'e': 1,
                         'o': -1,
                         'y': (-1) ** l,
                     }[name[-1]]
-                except Exception:
-                    raise ValueError
+                except Exception as exc:
+                    raise ValueError(f"Cannot convert string {l} to Irrep.") from exc
             elif isinstance(l, tuple):
                 l, p = l
 
         if not isinstance(l, int):
-            raise TypeError
-        elif l < 0:
-            raise ValueError
+            raise TypeError("Irrep degree must be int.")
+        if l < 0:
+            raise ValueError("Irrep degree must be non-negative.")
         if p not in [-1, 1]:
-            raise ValueError
+            raise ValueError("Irrep parity must be 1 or -1.")
         object.__setattr__(self, "l", l)
         object.__setattr__(self, "p", p)
 
@@ -116,13 +123,26 @@ class Irrep:
 
     def wigD_from_angles(self, alpha, beta, gamma, k=None):
         r"""
-        Representation wigner D matrices of O(3) from Euler angles.
+        Compute the Wigner-D matrix representation of O(3) from the three Euler angles
+        :math:`(\alpha, \beta, \gamma)` that describe the rotation sequence:
+
+        1. Rotate by :math:`\gamma` around the original Y axis.
+        2. Rotate by :math:`\beta` around the new X axis.
+        3. Rotate by :math:`\alpha` around the newest Y axis.
 
         Args:
-            alpha (Union[Tensor[float32], List[float], Tuple[float], ndarray[np.float32], float]): rotation :math:`\alpha` around Y axis, applied third.
-            beta (Union[Tensor[float32], List[float], Tuple[float], ndarray[np.float32], float]): rotation :math:`\beta` around X axis, applied second.
-            gamma (Union[Tensor[float32], List[float], Tuple[float], ndarray[np.float32], float]): rotation :math:`\gamma` around Y axis, applied first.
-            k (Union[None, Tensor[float32], List[float], Tuple[float], ndarray[np.float32], float]): How many times the parity is applied. Default: ``None`` .
+            alpha (Union[Tensor[float32], list[float], tuple[float],
+                         ndarray[np.float32], float]):
+                Rotation :math:`\alpha` around Y axis, applied third.
+            beta (Union[Tensor[float32], list[float], tuple[float],
+                        ndarray[np.float32], float]):
+                Rotation :math:`\beta` around X axis, applied second.
+            gamma (Union[Tensor[float32], list[float], tuple[float],
+                         ndarray[np.float32], float]):
+                Rotation :math:`\gamma` around Y axis, applied first.
+            k (Union[None, Tensor[float32], list[float], tuple[float],
+                     ndarray[np.float32], float], optional):
+                How many times the parity is applied. Default: ``None`` .
 
         Returns:
             Tensor, representation wigner D matrix of O(3). The shape of Tensor is :math:`(..., 2l+1, 2l+1)` .
@@ -142,7 +162,7 @@ class Irrep:
 
     def wigD_from_matrix(self, R):
         r"""
-        Representation wigner D matrices of O(3) from rotation matrices.
+        Compute the Wigner-D matrix representation of O(3) from rotation matrices.
 
         Args:
             R (Tensor): Rotation matrices. The shape of Tensor is :math:`(..., 3, 3)`.
@@ -162,7 +182,7 @@ class Irrep:
             [ 0,  0, -1]]
         """
         if not isinstance(R, Tensor):
-            raise TypeError
+            raise TypeError("R must be a Tensor.")
         d = Tensor(np.sign(np.linalg.det(R.asnumpy())))
         R = _expand_last_dims(d) * R
         k = (1. - d) / 2
@@ -173,6 +193,12 @@ class Irrep:
         return 2 * self.l + 1
 
     def is_scalar(self) -> bool:
+        r"""
+        Check whether this irrep is the trivial (scalar) representation.
+
+        Returns:
+            bool, True if `l = 0` and parity `p = 1`, False otherwise.
+        """
         return self.l == 0 and self.p == 1
 
     def __mul__(self, other):
@@ -197,7 +223,7 @@ class Irrep:
             other (int): multiple number of the `Irrep`.
 
         Returns:
-            `Irreps` - corresponding multiple `Irrep`.
+            `Irreps`, corresponding multiple `Irrep`.
 
         Raises:
             TypeError: If `other` is not int.
@@ -271,22 +297,28 @@ class _MulIr:
 @dataclasses.dataclass(init=False, frozen=False)
 class Irreps:
     r"""
-    Direct sum of irreducible representations of O(3). This class does not contain any data, it is a structure that describe the representation.
-    It is typically used as argument of other classes of the library to define the input and output representations of functions.
+    Direct sum of irreducible representations of O(3).
+    This class does not contain any data, it is a structure that
+    describe the representation.
+    It is typically used as argument of other classes of the library to
+    define the input and output representations of functions.
+    The irreps are stored as a tuple of (_MulIr) objects, each
+    containing a multiplicity and an Irrep.
+    This allows for easy manipulation, such as addition, multiplication,
+    and filtering of representations.
 
     Args:
-        irreps (Union[str, Irrep, Irreps, List[Tuple[int]]]): a string to represent the direct sum of irreducible representations.
+        irreps (Union[str, Irrep, Irreps, list[tuple[int]]], optional):
+            A string to represent the direct sum of irreducible
+            representations. Default: ``None``.
 
     Raises:
         ValueError: If `irreps` cannot be converted to an `Irreps`.
         ValueError: If the mul part of `irreps` part is negative.
         TypeError: If the mul part of `irreps` part is not int.
 
-    Supported Platforms:
-        ``Ascend``
-
     Examples:
-        >>> from mindchemistry.e3.o3 import Irreps
+        >>> from mindscience.e3nn.o3 import Irreps
         >>> x = Irreps([(100, (0, 1)), (50, (1, 1))])
         100x0e+50x1e
         >>> x.dim
@@ -310,41 +342,45 @@ class Irreps:
             self.dim = irreps.dim
             self.slice = irreps.slice
             self.slice_tuples = irreps.slice_tuples
-        else:
+            return
+
+        out = ()
+        if isinstance(irreps, Irrep):
+            out += (_MulIr(1, Irrep(irreps)),)
+        elif isinstance(irreps, _MulIr):
+            out += (irreps,)
+        elif isinstance(irreps, str):
+            try:
+                if irreps.strip() != "":
+                    for mir in irreps.split('+'):
+                        if 'x' in mir:
+                            mul, ir = mir.split('x')
+                            mul = int(mul)
+                            ir = Irrep(ir)
+                        else:
+                            mul = 1
+                            ir = Irrep(mir)
+
+                        if not isinstance(mul, int):
+                            raise TypeError("Irrep multiplicity must be int.")
+                        if mul < 0:
+                            raise ValueError(
+                                "Irrep multiplicity must be non-negative."
+                            )
+                        out += (_MulIr(mul, ir),)
+            except Exception as exc:
+                raise ValueError("Irreps string format is invalid.") from exc
+        elif irreps is None:
             out = ()
-            if isinstance(irreps, Irrep):
-                out += (_MulIr(1, Irrep(irreps)),)
-            elif isinstance(irreps, _MulIr):
-                out += (irreps,)
-            elif isinstance(irreps, str):
-                try:
-                    if irreps.strip() != "":
-                        for mir in irreps.split('+'):
-                            if 'x' in mir:
-                                mul, ir = mir.split('x')
-                                mul = int(mul)
-                                ir = Irrep(ir)
-                            else:
-                                mul = 1
-                                ir = Irrep(mir)
+        else:
+            out = self._handle_irreps(irreps, out)
 
-                            if not isinstance(mul, int):
-                                raise TypeError
-                            elif mul < 0:
-                                raise ValueError
-                            out += (_MulIr(mul, ir),)
-                except Exception:
-                    raise ValueError
-            elif irreps is None:
-                pass
-            else:
-                out = self.handle_irreps(irreps, out)
-            self.data = out
-            self.dim = self._dim()
-            self.slice = self._slices()
-            self.slice_tuples = [(s.start, s.stop - s.start) for s in self.slice]
+        self.data = out
+        self.dim = self._dim()
+        self.slice = self._slices()
+        self.slice_tuples = [(s.start, s.stop - s.start) for s in self.slice]
 
-    def handle_irreps(self, irreps, out):
+    def _handle_irreps(self, irreps, out):
         for mir in irreps:
 
             if isinstance(mir, str):
@@ -367,7 +403,7 @@ class Irreps:
                 ir = Irrep(ir)
 
             if not (isinstance(mul, int) and mul >= 0 and ir is not None):
-                raise ValueError
+                raise ValueError("Irreps format is invalid.")
 
             out += (_MulIr(mul, ir),)
         return out
@@ -400,25 +436,28 @@ class Irreps:
         try:
             ir = Irrep(ir)
             return ir in (irrep for _, irrep in self.data)
-        except:
+        except TypeError:
             irreps = Irreps(ir)
-            m, n = len(irreps), len(self)
-            mask = [False] * n
+        except ValueError:
+            irreps = Irreps(ir)
 
-            def dfs(i):
-                if i == m:
-                    return True
-                for j in range(n):
-                    if not mask[j]:
-                        if irreps.data[i].mul <= self.data[j].mul and irreps.data[i].ir == self.data[j].ir:
-                            mask[j] = True
-                            found = dfs(i + 1)
-                            if found:
-                                return True
-                            mask[j] = False
-                return False
+        m, n = len(irreps), len(self)
+        mask = [False] * n
 
-            return dfs(0)
+        def dfs(i):
+            if i == m:
+                return True
+            for j in range(n):
+                if not mask[j]:
+                    if irreps.data[i].mul <= self.data[j].mul and irreps.data[i].ir == self.data[j].ir:
+                        mask[j] = True
+                        found = dfs(i + 1)
+                        if found:
+                            return True
+                        mask[j] = False
+            return False
+
+        return dfs(0)
 
     def __add__(self, irreps):
         irreps = Irreps(irreps)
@@ -432,7 +471,7 @@ class Irreps:
             other (int): multiple number of the `Irreps`.
 
         Returns:
-            `Irreps` - corresponding multiple `Irreps`.
+            `Irreps`, corresponding multiple `Irreps`.
 
         Raises:
             NotImplementedError: If `other` is `Irreps`, please use `o3.TensorProduct`.
@@ -444,7 +483,7 @@ class Irreps:
                     out_ir = mir_1.ir * mir_2.ir
                     for ir in out_ir:
                         res += mir_1.mul * mir_2.mul * ir
-            res, p, _ = res.simplify().sort()
+            res, _, _ = res.simplify().sort()
             return res
         return Irreps([(mul * other, ir) for mul, ir in self.data])
 
@@ -456,7 +495,7 @@ class Irreps:
             other (int): multiple number of the `Irreps`.
 
         Returns:
-            `Irreps` - repeated multiple `Irreps`.
+            `Irreps`, repeated multiple `Irreps`.
         """
         return self * other
 
@@ -507,7 +546,7 @@ class Irreps:
         Simplify the representations.
 
         Returns:
-            `Irreps`
+            `Irreps`, simplified `Irreps`.
 
         Examples:
             >>> Irreps("1e + 1e + 0e").simplify()
@@ -528,7 +567,7 @@ class Irreps:
         Remove any irreps with multiplicities of zero.
 
         Returns:
-            `Irreps`
+            `Irreps`, irreps with multiplicities of zero removed.
 
         Examples:
             >>> Irreps("4x0e + 0x1o + 2x3e").remove_zero_multiplicities()
@@ -557,11 +596,9 @@ class Irreps:
         Sort the representations by increasing degree. 
 
         Returns:
-            irreps (`Irreps`) - sorted `Irreps`
-
-            p (tuple[int]) - permute orders. `p[old_index] = new_index`
-
-            inv (tuple[int]) - inversed permute orders. `p[new_index] = old_index`
+            - `Irreps`, sorted `Irreps`.
+            - `p (tuple[int])`, permute orders, `p[old_index] = new_index`.
+            - `inv (tuple[int])`, inversed permute orders, `p[new_index] = old_index`.
 
         Examples:
             >>> Irreps("1e + 0e + 1e").sort().irreps
@@ -584,8 +621,10 @@ class Irreps:
         Filter the `Irreps` by either `keep` or `drop`.
 
         Args:
-            keep (Union[str, Irrep, Irreps, List[str, Irrep]]): list of irrep to keep. Default: None.
-            drop (Union[str, Irrep, Irreps, List[str, Irrep]]): list of irrep to drop. Default: None.
+            keep (Union[str, Irrep, Irreps, list[str, Irrep]], optional): 
+                list of irrep to keep. Default: ``None``.
+            drop (Union[str, Irrep, Irreps, list[str, Irrep]], optional): 
+                list of irrep to drop. Default: ``None``.
 
         Returns:
             `Irreps`, filtered irreps.
@@ -615,11 +654,17 @@ class Irreps:
 
     def decompose(self, v, batch=False):
         r"""
-        Decompose a vector by `Irreps`.
+        Decompose a vector into irreducible components according to the current `Irreps` structure.
+
+        This method reshapes the last axis of the input tensor `v` such that each slice
+        corresponds to one of the irreducible representations listed in `self`. The
+        resulting list contains one tensor per irrep, with shape
+        `(..., multiplicity, irrep_dimension)`.
 
         Args:
             v (Tensor): the vector to be decomposed.
-            batch (bool): whether reshape the result such that there is at least a batch dimension. Default: `False`.
+            batch (bool, optional): 
+                whether reshape the result such that there is at least a batch dimension. Default: ``False``.
 
         Returns:
             List of Tensors, the decomposed vectors by `Irreps`.
@@ -664,7 +709,7 @@ class Irreps:
 
         Args:
             lmax (int): maximum of `l`.
-            p (int): {1, -1}, the parity of the representation.
+            p (int, optional): {1, -1}, the parity of the representation. Default: ``-1``.
 
         Returns:
             `Irreps`, representation of :math:`(Y^0, Y^1, \dots, Y^{\mathrm{lmax}})`.
@@ -679,14 +724,20 @@ class Irreps:
 
     def randn(self, *size, normalization='component'):
         r"""
-        Random tensor.
+        Generate a random tensor whose last dimension matches the total dimension of these irreps.
+        The irreps structure is used to split the last axis into individual irrep blocks,
+        each of which can be normalized either per-component or per-irrep norm.
 
         Args:
-            *size (List[int]): size of the output tensor, needs to contains a `-1`.
-            normalization (str): {'component', 'norm'}, type of normalization method.
+            \*size (list[int]): size of the output tensor, needs to contains a `-1`.
+            normalization (str, optional): {'component', 'norm'},
+                type of normalization method. Default: ``'component'``.
 
         Returns:
             Tensor, the shape is `size` where `-1` is replaced by `self.dim`.
+
+        Raises:
+            ValueError: If `normalization` is not 'component' or 'norm'.
 
         Examples:
             >>> Irreps("5x0e + 10x1o").randn(5, -1, 5, normalization='norm').shape
@@ -698,9 +749,9 @@ class Irreps:
 
         if normalization == 'component':
             return ops.standard_normal((*lsize, self.dim, *rsize))
-        elif normalization == 'norm':
+        if normalization == 'norm':
             x_list = []
-            for s, (mul, ir) in zip(self.slice, self.data):
+            for _, (mul, ir) in zip(self.slice, self.data):
                 if mul < 1:
                     continue
                 r = ops.standard_normal((*lsize, mul, ir.dim, *rsize))
@@ -708,18 +759,34 @@ class Irreps:
 
                 x_list.append(r.reshape((*lsize, -1, *rsize)))
             return ops.concat(x_list, axis=di)
-        else:
-            raise ValueError("Normalization needs to be 'norm' or 'component'")
+        raise ValueError("Normalization needs to be 'norm' or 'component'")
 
     def wigD_from_angles(self, alpha, beta, gamma, k=None):
         r"""
-        Representation wigner D matrices of O(3) from Euler angles.
+        Compute the Wigner-D matrix representation of O(3) from the three Euler angles
+        :math:`(\alpha, \beta, \gamma)` that describe the rotation sequence:
+
+        1. Rotate by :math:`\gamma` around the original Y axis.
+        2. Rotate by :math:`\beta` around the new X axis.
+        3. Rotate by :math:`\alpha` around the newest Y axis.
+
+        The result is the direct sum of the Wigner-D matrices for each
+        irrep contained in this `Irreps` object, repeated according to
+        multiplicity.
 
         Args:
-            alpha (Union[Tensor[float32], List[float], Tuple[float], ndarray[np.float32], float]): rotation :math:`\alpha` around Y axis, applied third.
-            beta (Union[Tensor[float32], List[float], Tuple[float], ndarray[np.float32], float]): rotation :math:`\beta` around X axis, applied second.
-            gamma (Union[Tensor[float32], List[float], Tuple[float], ndarray[np.float32], float]): rotation :math:`\gamma` around Y axis, applied first.
-            k (Union[None, Tensor[float32], List[float], Tuple[float], ndarray[np.float32], float]): How many times the parity is applied. Default: None.
+            alpha (Union[Tensor[float32], list[float], tuple[float],
+                         ndarray[np.float32], float]):
+                rotation :math:`\alpha` around Y axis, applied third.
+            beta (Union[Tensor[float32], list[float], tuple[float],
+                        ndarray[np.float32], float]):
+                rotation :math:`\beta` around X axis, applied second.
+            gamma (Union[Tensor[float32], list[float], tuple[float],
+                         ndarray[np.float32], float]):
+                rotation :math:`\gamma` around Y axis, applied first.
+            k (Union[None, Tensor[float32], list[float], tuple[float],
+                     ndarray[np.float32], float], optional):
+                How many times the parity is applied. Default: ``None``.
 
         Returns:
             Tensor, representation wigner D matrix of O(3). The shape of Tensor is :math:`(..., 2l+1, 2l+1)`
@@ -731,11 +798,17 @@ class Irreps:
             [ 0, -1,  0],
             [ 0,  0, -1]]
         """
-        return _direct_sum(*[ir.wigD_from_angles(alpha, beta, gamma, k) for mul, ir in self for _ in range(mul)])
+        return _direct_sum(
+            *[
+                ir.wigD_from_angles(alpha, beta, gamma, k)
+                for mul, ir in self
+                for _ in range(mul)
+            ]
+        )
 
     def wigD_from_matrix(self, R):
         r"""
-        Representation wigner D matrices of O(3) from rotation matrices.
+        Compute Wigner-D matrices of O(3) from rotation matrices.
 
         Args:
             R (Tensor): Rotation matrices. The shape of Tensor is :math:`(..., 3, 3)`.
@@ -754,7 +827,7 @@ class Irreps:
             [ 0,  0, -1]]
         """
         if not isinstance(R, Tensor):
-            raise TypeError
+            raise TypeError("R needs to be a Tensor")
         d = Tensor(np.sign(np.linalg.det(R.asnumpy())))
         R = _expand_last_dims(d) * R
         k = (1 - d) / 2

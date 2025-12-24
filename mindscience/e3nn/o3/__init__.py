@@ -46,6 +46,7 @@ __all__ = [
     "FullTensorProduct",
     "ElementwiseTensorProduct",
     "Linear",
+    "LinearBias",
     "TensorSquare",
     "Norm",
 ]

@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
+"""Wigner matrices and Clebsch-Gordan coefficients."""
 import functools
 import math
 from fractions import Fraction
@@ -28,20 +29,25 @@ PI = Tensor(math.pi)
 
 def change_basis_real_to_complex(l, dtype=float32):
     r"""
-    Convert a real basis of spherical harmonics in term of complex.
+    Transform a real-valued spherical-harmonic basis into its complex-valued counterpart.
+    The routine constructs the unitary matrix Q that maps the real basis functions
+    (often denoted :math:`y_{l,m}^{real}`) to the standard complex basis :math:`Y_{l,m}` via
+
+    .. math::
+        Y = Q \cdot y.
+
+    Columns of :math:`Q` are ordered by :math:`m = -l,\ldots,+l`; the resulting complex basis
+    satisfies the usual phase and normalization conventions of quantum mechanics.
 
     Args:
         l (int): degree of spherical harmonics.
-        dtype (dtype): {float32, float64} data type of the real basis. Default: float32.
+        dtype (dtype, optional): {float32, float64} data type of the real basis. Default: ``float32``.
 
     Returns:
         Tensor, the complex basis with dtype complex64 for `dtype` = float32 and complex128 for `dtype` = float64.
 
-    Supported Platforms:
-        ``Ascend``
-
     Examples:
-        >>> from mindchemistry.e3.o3 import change_basis_real_to_complex
+        >>> from mindscience.e3nn.o3 import change_basis_real_to_complex
         >>> m = change_basis_real_to_complex(1)
         >>> print(m)
         [[-0.70710677+0.j          0.        +0.j          0.        -0.70710677j]
@@ -73,7 +79,7 @@ def su2_generators(j, dtype=complex64):
 
     Args:
         j (int): degree of generators.
-        dtype (dtype): {complex64, complex128} data type of generators. Default: complex64.
+        dtype (dtype, optional): {complex64, complex128} data type of generators. Default: ``complex64``.
 
     Returns:
         Tensor, su(2) generators with the dtype is `dtype`.
@@ -81,11 +87,8 @@ def su2_generators(j, dtype=complex64):
     Raise:
         TypeError: If `j` is not int.
 
-    Supported Platforms:
-        ``Ascend``
-
     Examples:
-        >>> from mindchemistry.e3.o3 import su2_generators
+        >>> from mindscience.e3nn.o3 import su2_generators
         >>> m = su2_generators(1)
         >>> print(m)
         [[[ 0.        +0.j          0.70710677+0.j
@@ -130,7 +133,7 @@ def so3_generators(l, dtype=float32):
 
     Args:
         l (int): degree of generators.
-        dtype (dtype): {float32, float64} data type of generators. Default: float32.
+        dtype (dtype, optional): {float32, float64} data type of generators. Default: ``float32``.
 
     Returns:
         Tensor, so(3) generators with the dtype is `dtype`.
@@ -139,11 +142,8 @@ def so3_generators(l, dtype=float32):
         TypeError: If `l` is not int.
         ValueError: If matrices data are inconsistent.
 
-    Supported Platforms:
-        ``Ascend``
-
     Examples:
-        >>> from mindchemistry.e3.o3 import so3_generators
+        >>> from mindscience.e3nn.o3 import so3_generators
         >>> m = so3_generators(1)
         >>> print(m)
         [[[ 0.          0.          0.        ]
@@ -176,25 +176,36 @@ def wigner_D(l, alpha, beta, gamma):
     r"""
     Wigner D matrix representation of SO(3).
 
+    These matrices describe how quantum-mechanical states with angular-momentum l
+    rotate under a sequence of three Euler angles (Z-Y-Z convention):
+
+    1. Rotate by :math:`\gamma` around the original Z axis
+    2. Rotate by :math:`\beta` around the new Y axis  
+    3. Rotate by :math:`\alpha` around the newest Z axis
+
+    The resulting :math:`D^l(\alpha,\beta,\gamma)` is a :math:`(2l+1) \times (2l+1)` unitary matrix whose entries
+    are the famous Wigner D-functions.
+
     It satisfies the following properties:
+
     * :math:`D(\text{identity rotation}) = \text{identity matrix}`
     * :math:`D(R_1 \circ R_2) = D(R_1) \circ D(R_2)`
     * :math:`D(R^{-1}) = D(R)^{-1} = D(R)^T`
 
     Args:
         l (int): degree of representation.
-        alpha (Union[Tensor[float32], List[float], Tuple[float], ndarray[np.float32], float]): rotation :math:`\alpha` around Y axis, applied third.
-        beta (Union[Tensor[float32], List[float], Tuple[float], ndarray[np.float32], float]): rotation :math:`\beta` around X axis, applied second.
-        gamma (Union[Tensor[float32], List[float], Tuple[float], ndarray[np.float32], float]): rotation :math:`\gamma` around Y axis, applied first.
+        alpha (Union[Tensor[float32], list[float], tuple[float], ndarray[np.float32], float]):
+            rotation :math:`\alpha` around Y axis, applied third.
+        beta (Union[Tensor[float32], list[float], tuple[float], ndarray[np.float32], float]):
+            rotation :math:`\beta` around X axis, applied second.
+        gamma (Union[Tensor[float32], list[float], tuple[float], ndarray[np.float32], float]):
+            rotation :math:`\gamma` around Y axis, applied first.
 
     Returns:
         Tensor, Wigner D matrix :math:`D^l(\alpha, \beta, \gamma)`. The shape of Tensor is :math:`(2l+1, 2l+1)`.
 
-    Supported Platforms:
-        ``Ascend``
-
     Examples:
-        >>> from mindchemistry.e3.o3 import wigner_D
+        >>> from mindscience.e3nn.o3 import wigner_D
         >>> m = wigner_D(1,1,1,1)
         >>> print(m)
         [[-0.09064701  0.7080733   0.70029646]
@@ -229,7 +240,7 @@ def wigner_3j(l1, l2, l3, dtype=float32):
         l1 (int): :math:`l_1` parameter of ``wigner_3j``.
         l2 (int): :math:`l_2` parameter of ``wigner_3j``.
         l3 (int): :math:`l_3` parameter of ``wigner_3j``.
-        dtype (mindspore.dtype): The type of input tensor. Default: ``mindspore.float32`` .
+        dtype (mindspore.dtype, optional): The type of input tensor. Default: ``mindspore.float32`` .
 
     Returns:
         Tensor, Wigner 3j symbols :math:`C_{lmn}`. The shape of Tensor is :math:`(2l_1+1, 2l_2+1, 2l_3+1)`.
@@ -238,11 +249,8 @@ def wigner_3j(l1, l2, l3, dtype=float32):
         TypeError: If `l1`, `l2` or `l3` are not int.
         ValueError: If `l1`, `l2` and `l3` do not satisfy abs(l2 - l3) <= l1 <= l2 + l3.
 
-    Supported Platforms:
-        ``Ascend``
-
     Examples:
-        >>> from mindchemistry.e3.o3 import wigner_3j
+        >>> from mindscience.e3nn.o3 import wigner_3j
         >>> m = wigner_3j(1,1,1)
         >>> print(m)
         [[[ 0.         0.         0.       ]
@@ -259,7 +267,8 @@ def wigner_3j(l1, l2, l3, dtype=float32):
         raise TypeError
     if not abs(l2 - l3) <= l1 and l1 <= l2 + l3:
         raise ValueError(
-            f"The inputs degree \"{l1}\" and \"{l2}\" do not match to output degree \"{l3}\". \nThe degrees should be |{l1} - {l2}| <= {l3} <= |{l1} + {l2}|.")
+            f"The inputs degree \"{l1}\" and \"{l2}\" do not match to output degree \"{l3}\". \n"
+            f"The degrees should be |{l1} - {l2}| <= {l3} <= |{l1} + {l2}|.")
     C = _so3_clebsch_gordan(l1, l2, l3)
 
     return Tensor(C, dtype=dtype)

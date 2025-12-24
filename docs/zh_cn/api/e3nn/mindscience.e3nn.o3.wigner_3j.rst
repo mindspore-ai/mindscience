@@ -18,10 +18,10 @@ mindscience.e3nn.o3.wigner_3j
         - **l1** (int) - ``wigner_3j`` 的 :math:`l_1` 参数。
         - **l2** (int) - ``wigner_3j`` 的 :math:`l_2` 参数。
         - **l3** (int) - ``wigner_3j`` 的 :math:`l_3` 参数。
-        - **dtype** (mindspore.dtype) - 输入张量的类型。默认值：``mindspore.float32`` 。
+        - **dtype** (mindspore.dtype, 可选) - 输入张量的类型。默认值：``mindspore.float32`` 。
 
     返回：
-        - **output** (Tensor) - 张量，Wigner 3j符号 :math:`C_{lmn}`。形状为 :math:`(2l_1+1, 2l_2+1, 2l_3+1)` 的张量。
+        Tensor，Wigner 3j 符号 :math:`C_{lmn}`。张量形状为 :math:`(2l_1+1, 2l_2+1, 2l_3+1)`。
 
     异常：
         - **TypeError** - 如果 `l1`、 `l2` 或 `l3` 不是整型。

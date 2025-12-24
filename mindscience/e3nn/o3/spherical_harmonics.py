@@ -24,17 +24,20 @@ def _sqrt(x, dtype=float32):
 
 class SphericalHarmonics(nn.Cell):
     r"""
-    Return Spherical harmonics layer.
+    Spherical-harmonics cell: maps 3-D Cartesian vectors (x, y, z) to the
+    corresponding complex-valued spherical-harmonic basis functions :math:`Y_l^m(\hat{x})`.
+    The layer can return any requested degree(s) l and automatically handles
+    parity (even/odd) selection rules.
 
     Args:
-        irreps_out (Union[str, `Irreps`]): irreducible representations of output for spherical harmonics.
+        irreps_out (Union[str, `Irrep`, `Irreps`]): irreducible representations of output for spherical harmonics.
         normalize (bool): whether to normalize the input Tensor to unit vectors that lie on the sphere before
             projecting onto the spherical harmonics.
-        normalization (str): {'integral', 'component', 'norm'}, normalization method of the output tensors.
+        normalization (str, optional): {'integral', 'component', 'norm'}, normalization method of the output tensors.
             Default: ``'integral'``.
-        irreps_in (Union[str, `Irreps`, None]): irreducible representations of input for spherical harmonics.
+        irreps_in (Union[str, `Irreps`, None], optional): irreducible representations of input for spherical harmonics.
             Default: ``None``.
-        dtype (mindspore.dtype): The type of input tensor. Default: ``mindspore.float32`` .
+        dtype (mindspore.dtype, optional): The type of input tensor. Default: ``mindspore.float32`` .
 
     Inputs:
         - **x** (Tensor) - Tensor for construct spherical harmonics. The shape of Tensor is :math:`(..., 3)`.
@@ -49,11 +52,8 @@ class SphericalHarmonics(nn.Cell):
             The output parity should have been p = {input_p**l}.
         NotImplementedError: If `l` is larger than 11.
 
-    Supported Platforms:
-        ``Ascend``
-
     Examples:
-        >>> from mindchemistry.e3.o3 import SphericalHarmonics
+        >>> from mindscience.e3nn.o3 import SphericalHarmonics
         >>> from mindspore import ops
         >>> sh = SphericalHarmonics(0, False, normalization='component')
         >>> x = ops.rand(2,3)
@@ -67,7 +67,8 @@ class SphericalHarmonics(nn.Cell):
         self.normalize = normalize
         self.normalization = normalization
         if normalization not in ['integral', 'component', 'norm']:
-            raise ValueError
+            raise ValueError(f"SphericalHarmonics only supports normalization methods 'integral', 'component', 'norm'. "
+                             f"But got normalization={normalization}.")
 
         if isinstance(irreps_out, str):
             irreps_out = Irreps(irreps_out)
@@ -80,7 +81,7 @@ class SphericalHarmonics(nn.Cell):
 
         irreps_in = Irreps(irreps_in)
         if irreps_in not in (Irreps("1x1o"), Irreps("1x1e")):
-            raise ValueError
+            raise ValueError("SphericalHarmonics only supports input irreps of '1x1o' or '1x1e'.")
         self.irreps_in = irreps_in
         input_p = irreps_in.data[0].ir.p
 
@@ -88,12 +89,16 @@ class SphericalHarmonics(nn.Cell):
             ls = []
             for mul, (l, p) in irreps_out:
                 if p != input_p ** l:
-                    raise ValueError
+                    raise ValueError(f"SphericalHarmonics only supports output irreps of '1x1o' or '1x1e'. "
+                                     f"But got irreps_out={irreps_out}.")
                 ls.extend([l] * mul)
         elif isinstance(irreps_out, int):
             ls = [irreps_out]
         else:
             ls = list(irreps_out)
+
+        if max(ls) > 11:
+            raise NotImplementedError("SphericalHarmonics only supports up to l=11.")
 
         irreps_out = Irreps([(1, (l, input_p ** l)) for l in ls]).simplify()
         self.irreps_out = irreps_out
@@ -163,33 +168,42 @@ def spherical_harmonics(l, x, normalize=True, normalization='integral'):
     r"""
     Compute spherical harmonics.
 
-    Spherical harmonics are polynomials defined on the 3d space :
-        math:`Y^l: \mathbb{R}^3 \longrightarrow \mathbb{R}^{2l+1}`
+    Spherical harmonics are polynomials defined on the 3d space:
+
+    .. math::
+        Y^l: \mathbb{R}^3 \longrightarrow \mathbb{R}^{2l+1}
+
     Usually restricted on the sphere (with ``normalize=True``) :
-        math:`Y^l: S^2 \longrightarrow \mathbb{R}^{2l+1}`
+
+    .. math::
+        Y^l: S^2 \longrightarrow \mathbb{R}^{2l+1}
+
     who satisfies the following properties:
-        - are polynomials of the cartesian coordinates ``x, y, z``
-        - is equivariant :math:`Y^l(R x) = D^l(R) Y^l(x)`
-        - are orthogonal :math:`\int_{S^2} Y^l_m(x) Y^j_n(x) dx = \text{cste} \; \delta_{lj} \delta_{mn}`
+
+    - are polynomials of the cartesian coordinates ``x, y, z``
+    - is equivariant :math:`Y^l(R x) = D^l(R) Y^l(x)`
+    - are orthogonal :math:`\int_{S^2} Y^l_m(x) Y^j_n(x) dx = \text{cste} \; \delta_{lj} \delta_{mn}`
+    
     The value of the constant depends on the choice of normalization.
 
     It obeys the following property:
     .. math::
         Y^{l+1}_i(x) &= \text{cste}(l) \; & C_{ijk} Y^l_j(x) x_k
         \partial_k Y^{l+1}_i(x) &= \text{cste}(l) \; (l+1) & C_{ijk} Y^l_j(x)
-    Where :math:`C` are the `wigner_3j`.
+    where :math:`C` are the `wigner_3j`.
 
     Args:
-        l (Union[int, List[int]]): degree of the spherical harmonics.
+        l (Union[int, list[int]]): degree of the spherical harmonics.
         x (Tensor): tensor for construct spherical harmonics.
             The shape of Tensor is :math:`x` of shape ``(..., 3)``
-        normalize (bool): whether to normalize the ``x`` to unit vectors that lie on the sphere before projecting onto
-            the spherical harmonics.
-        normalization (str): {'integral', 'component', 'norm'}, normalization method of the output tensors.
-            Default: 'intergral'.
-            'component': :math:`\|Y^l(x)\|^2 = 2l+1, x \in S^2`
-            'norm': :math:`\|Y^l(x)\| = 1, x \in S^2`, ``component / sqrt(2l+1)``
-            'integral': :math:`\int_{S^2} Y^l_m(x)^2 dx = 1`, ``component / sqrt(4pi)``
+        normalize (bool, optional): whether to normalize the ``x`` to unit vectors that lie on the
+            sphere before projecting onto the spherical harmonics. Default: ``True``.
+        normalization (str, optional): {'integral', 'component', 'norm'}, normalization method of the output tensors.
+            Default: ``'intergral'``.
+            
+            - 'component': :math:`\|Y^l(x)\|^2 = 2l+1, x \in S^2`
+            - 'norm': :math:`\|Y^l(x)\| = 1, x \in S^2`, ``component / sqrt(2l+1)``
+            - 'integral': :math:`\int_{S^2} Y^l_m(x)^2 dx = 1`, ``component / sqrt(4pi)``
 
     Returns:
         Tensor, the spherical harmonics :math:`Y^l(x)`. The shape of Tensor is ``(..., 2l+1)``.
@@ -721,5 +735,5 @@ def _spherical_harmonics(lmax: int, x, y, z):
     if lmax == 11:
         return ops.stack(results, axis=-1)
 
-    # 默认返回最高阶 (l=11)
+    # by default (l=11)
     return ops.stack(results, axis=-1)

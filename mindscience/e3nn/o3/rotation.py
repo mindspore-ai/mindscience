@@ -31,73 +31,63 @@ rand = ops.UniformReal(seed=seed)
 
 def identity_angles(*shape, dtype=float32):
     r"""
-    Give the identity set of Euler angles.
+    Return the identity set of Euler angles :math:`(\alpha, \beta, \gamma)` that corresponds to "no rotation".
+    Whatever shape is requested, the three returned tensors are filled with zeros.
 
     Args:
-        shape (Tuple[int]): The shape of additional dimensions.
-        dtype (mindspore.dtype): The type of input tensor. Default: ``mindspore.float32`` .
+        shape (tuple[int]): The shape of additional dimensions.
+        dtype (mindspore.dtype, optional): The type of input tensor. Default: ``mindspore.float32`` .
 
     Returns:
-        alpha (Tensor) - The alpha Euler angles.
-
-        beta (Tensor) - The beta Euler angles.
-
-        gamma (Tensor) - The gamma Euler angles.
+        tuple[Tensor]. A tuple of :math:`alpha` Tensors, each of shape `shape`.
 
     Raises:
         TypeError: If dtype of 'shape' is not tuple.
         TypeError: If dtype of the element of 'shape' is not int.
 
-    Supported Platforms:
-        ``Ascend``
-
     Examples:
-        >>> from mindchemistry.e3.o3 import identity_angles
+        >>> from mindscience.e3nn.o3 import identity_angles
         >>> m = identity_angles((1))
         >>> print(m)
         (Tensor(shape=[1], dtype=Float32, value= [ 0.00000000e+00]), Tensor(shape=[1], dtype=Float32,
         value= [ 0.00000000e+00]), Tensor(shape=[1], dtype=Float32, value= [ 0.00000000e+00]))
     """
     if not isinstance(shape, tuple):
-        raise TypeError
+        raise TypeError("shape needs to be a tuple")
     if not all(map(lambda x: isinstance(x, int), shape)):
-        raise TypeError
+        raise TypeError("the element of shape needs to be int")
     abc = zeros((3,) + shape, dtype)
     return abc[0], abc[1], abc[2]
 
 
 def rand_angles(*shape):
     r"""
-    Give a random set of Euler angles.
+    Return a uniformly-random set of Euler angles :math:`(\alpha, \beta, \gamma)` that represents
+    a random rotation in 3-D space. :math:`\alpha` and :math:`\gamma` are sampled uniformly from [0, 2π),
+    while :math:`\beta` is sampled from [0, π] with probability density proportional to sin(:math:`\beta`),
+    ensuring uniform distribution over the rotation group SO(3).
 
     Args:
-        shape (Tuple[int]): The shape of additional dimensions.
+        shape (tuple[int]): The shape of additional dimensions.
 
     Returns:
-        alpha (Tensor) - The alpha Euler angles.
-
-        beta (Tensor) - The beta Euler angles.
-
-        gamma (Tensor) - The gamma Euler angles.
+        tuple[Tensor]. A tuple of :math:`alpha` Tensors, each of shape `shape`.
 
     Raises:
         TypeError: If dtype of 'shape' is not tuple.
         TypeError: If dtype of the element of 'shape' is not int.
 
-    Supported Platforms:
-        ``Ascend``
-
     Examples:
-        >>> from mindchemistry.e3.o3 import rand_angles
+        >>> from mindscience.e3nn.o3 import rand_angles
         >>> m = rand_angles((1))
         >>> print(m)
         (Tensor(shape=[1], dtype=Float32, value= [ 4.00494671e+00]), Tensor(shape=[1], dtype=Float32,
         value= [ 1.29240000e+00]), Tensor(shape=[1], dtype=Float32, value= [ 5.71690750e+00]))
     """
     if not isinstance(shape, tuple):
-        raise TypeError
+        raise TypeError("shape needs to be a tuple")
     if not all(map(lambda x: isinstance(x, int), shape)):
-        raise TypeError
+        raise TypeError("the element of shape needs to be int")
     alpha, gamma = 2 * math.pi * rand((2,) + shape)
     beta = ops.acos(2 * rand(shape) - 1)
     return alpha, beta, gamma
@@ -105,7 +95,10 @@ def rand_angles(*shape):
 
 def compose_angles(a1, b1, c1, a2, b2, c2):
     r"""
-    Computes the composed Euler angles of two sets of Euler angles.
+    Compute the Euler angles that result from composing two rotations.
+
+    Given two rotations represented by Euler angles (a1, b1, c1) and (a2, b2, c2),
+    this function returns the Euler angles (a, b, c) of the combined rotation
 
     .. math::
 
@@ -117,29 +110,24 @@ def compose_angles(a1, b1, c1, a2, b2, c2):
         The elements of Euler angles should be one of the following types: float, float32, np.float32.
 
     Args:
-        a1 (Union[Tensor[float32], List[float], Tuple[float], ndarray[np.float32], float]):
+        a1 (Union[Tensor[float32], list[float], tuple[float], ndarray[np.float32], float]):
             The second applied alpha Euler angles.
-        b1 (Union[Tensor[float32], List[float], Tuple[float], ndarray[np.float32], float]):
+        b1 (Union[Tensor[float32], list[float], tuple[float], ndarray[np.float32], float]):
             The second applied beta Euler angles.
-        c1 (Union[Tensor[float32], List[float], Tuple[float], ndarray[np.float32], float]):
+        c1 (Union[Tensor[float32], list[float], tuple[float], ndarray[np.float32], float]):
             The second applied gamma Euler angles.
-        a2 (Union[Tensor[float32], List[float], Tuple[float], ndarray[np.float32], float]):
+        a2 (Union[Tensor[float32], list[float], tuple[float], ndarray[np.float32], float]):
             The first applied alpha Euler angles.
-        b2 (Union[Tensor[float32], List[float], Tuple[float], ndarray[np.float32], float]):
+        b2 (Union[Tensor[float32], list[float], tuple[float], ndarray[np.float32], float]):
             The first applied beta Euler angles.
-        c2 (Union[Tensor[float32], List[float], Tuple[float], ndarray[np.float32], float]):
+        c2 (Union[Tensor[float32], list[float], tuple[float], ndarray[np.float32], float]):
             The first applied gamma Euler angles.
 
     Returns:
-        - alpha (Tensor), The composed alpha Euler angles.
-        - beta (Tensor), The composed beta Euler angles.
-        - gamma (Tensor), The composed gamma Euler angles.
-
-    Supported Platforms:
-        ``Ascend``
+        tuple[Tensor]. A tuple of :math:`alpha`, :math:`beta`, :math:`gamma` Tensors.
 
     Examples:
-        >>> from mindchemistry.e3.o3 import compose_angles
+        >>> from mindscience.e3nn.o3 import compose_angles
         >>> m = compose_angles(0.4, 0.5, 0.6, 0.7, 0.8, 0.9)
         >>> print(m)
         (Tensor(shape=[], dtype=Float32, value= 1.34227), Tensor(shape=[], dtype=Float32, value= 1.02462),
@@ -153,21 +141,18 @@ def compose_angles(a1, b1, c1, a2, b2, c2):
 
 def matrix_x(angle):
     r"""
-    Give the rotation matrices around x axis for given angle.
+    Return the :math:`3 \times 3` rotation matrix for a rotation about the x-axis by the given angle.
 
     Args:
-        angle (Union[Tensor[float32], List[float], Tuple[float], ndarray[np.float32], float]):
+        angle (Union[Tensor[float32], list[float], tuple[float], ndarray[np.float32], float]):
             The rotation angles around x axis.
             The shape of 'angle' is :math:`(...)`.
 
     Returns:
         Tensor, the rotation matrices around x axis. The shape of output is :math:`(..., 3, 3)`
 
-    Supported Platforms:
-        ``Ascend``
-
     Examples:
-        >>> from mindchemistry.e3.o3 import matrix_x
+        >>> from mindscience.e3nn.o3 import matrix_x
         >>> m = matrix_x(0.4)
         >>> print(m)
         [[ 1.          0.          0.        ]
@@ -187,20 +172,18 @@ def matrix_x(angle):
 
 def matrix_y(angle):
     r"""
-    Give the rotation matrices around y axis for given angle.
+    Return the :math:`3 \times 3` rotation matrix for a rotation about the y-axis by the given angle.
 
     Args:
-        angle (Union[Tensor[float32], List[float], Tuple[float], ndarray[np.float32], float]):
+        angle (Union[Tensor[float32], list[float], tuple[float], ndarray[np.float32], float]):
             The rotation angles around y axis.
+            The shape of 'angle' is :math:`(...)`.
 
     Returns:
         Tensor, the rotation matrices around y axis. The shape of output is :math:`(..., 3, 3)`
 
-    Supported Platforms:
-        ``Ascend``
-
     Examples:
-        >>> from mindchemistry.e3.o3 import matrix_y
+        >>> from mindscience.e3nn.o3 import matrix_y
         >>> m = matrix_y(0.5)
         >>> print(m)
         [[ 0.87758255  0.          0.47942555]
@@ -220,21 +203,18 @@ def matrix_y(angle):
 
 def matrix_z(angle):
     r"""
-    Give the rotation matrices around z axis for given angle.
+    Return the :math:`3 \times 3` rotation matrix for a rotation about the z-axis by the given angle.
 
     Args:
-        angle (Union[Tensor[float32], List[float], Tuple[float], ndarray[np.float32], float]):
+        angle (Union[Tensor[float32], list[float], tuple[float], ndarray[np.float32], float]):
             The rotation angles around z axis.
             The shape of 'angle' is :math:`(...)`.
 
     Returns:
         Tensor, the rotation matrices around z axis. The shape of output is :math:`(..., 3, 3)`.
 
-    Supported Platforms:
-        ``Ascend``
-
     Examples:
-        >>> from mindchemistry.e3.o3 import matrix_z
+        >>> from mindscience.e3nn.o3 import matrix_z
         >>> m = matrix_z(0.6)
         >>> print(m)
         [[ 0.8253357 -0.5646425  0.       ]
@@ -254,24 +234,26 @@ def matrix_z(angle):
 
 def angles_to_matrix(alpha, beta, gamma):
     r"""
-    Conversion from angles to matrix.
+    Convert Euler angles (:math:`\alpha`, :math:`\beta`, :math:`\gamma`)
+    into the corresponding :math:`3 \times 3` rotation matrix.
+    The resulting matrix represents the rotation
+
+    .. math::
+        R = Ry(\alpha) * Rx(\beta) * Ry(\gamma).
 
     Args:
-        alpha (Union[Tensor[float32], List[float], Tuple[float], ndarray[np.float32], float]):
+        alpha (Union[Tensor[float32], list[float], tuple[float], ndarray[np.float32], float]):
             The alpha Euler angles. The shape of Tensor is :math:`(...)`.
-        beta (Union[Tensor[float32], List[float], Tuple[float], ndarray[np.float32], float]):
+        beta (Union[Tensor[float32], list[float], tuple[float], ndarray[np.float32], float]):
             The beta Euler angles. The shape of Tensor is :math:`(...)`.
-        gamma (Union[Tensor[float32], List[float], Tuple[float], ndarray[np.float32], float]):
+        gamma (Union[Tensor[float32], list[float], tuple[float], ndarray[np.float32], float]):
             The gamma Euler angles. The shape of Tensor is :math:`(...)`.
 
     Returns:
         Tensor, the rotation matrices. Matrices of shape :math:`(..., 3, 3)`.
 
-    Supported Platforms:
-        ``Ascend``
-
     Examples:
-        >>> from mindchemistry.e3.o3 import angles_to_matrix
+        >>> from mindscience.e3nn.o3 import angles_to_matrix
         >>> m = angles_to_matrix(0.4, 0.5, 0.6)
         >>> print(m)
         [[ 0.5672197   0.1866971   0.8021259 ]
@@ -279,31 +261,28 @@ def angles_to_matrix(alpha, beta, gamma):
         [-0.77780527  0.44158012  0.4472424 ]]
     """
     alpha, beta, gamma = broadcast_args(alpha, beta, gamma)
-    return ops.matmul(ops.matmul(matrix_y(alpha), matrix_x(beta)),
-                      matrix_y(gamma))
+    return ops.matmul(
+        ops.matmul(matrix_y(alpha), matrix_x(beta)),
+        matrix_y(gamma),
+    )
 
 
 def matrix_to_angles(r_param):
     r"""
-    Conversion from matrix to angles.
+    Convert :math:`3 \times 3` rotation matrix into Euler angles (:math:`(\alpha, \beta, \gamma)`).
 
     Args:
         r_param (Tensor): The rotation matrices. Matrices of shape :math:`(..., 3, 3)`.
 
     Returns:
-        - alpha (Tensor), The alpha Euler angles. The shape of Tensor is :math:`(...)`.
-        - beta (Tensor), The beta Euler angles. The shape of Tensor is :math:`(...)`.
-        - gamma (Tensor), The gamma Euler angles. The shape of Tensor is :math:`(...)`.
+        tuple[Tensor]. A tuple of :math:`alpha`, :math:`beta`, :math:`gamma` Tensors.
 
     Raise:
         ValueError: If the det(R) is not equal to 1.
 
-    Supported Platforms:
-        ``Ascend``
-
     Examples:
         >>> import mindspore as ms
-        >>> from mindchemistry.e3.o3 import matrix_to_angles
+        >>> from mindscience.e3nn.o3 import matrix_to_angles
         >>> input = ms.Tensor([[0.5672197, 0.1866971, 0.8021259], [0.27070403, 0.87758255, -0.395687],
         ...                    [-0.77780527, 0.44158012,0.4472424]])
         >>> m = matrix_to_angles(input)
@@ -312,7 +291,7 @@ def matrix_to_angles(r_param):
         Tensor(shape=[], dtype=Float32, value= 0.6))
     """
     if not np.allclose(np.linalg.det(r_param.asnumpy()), 1., 1e-3, 1e-5):
-        raise ValueError
+        raise ValueError("The det(R) is not equal to 1.")
 
     x = ops.matmul(r_param, Tensor([0.0, 1.0, 0.0]))
     a, b = xyz_to_angles(x)
@@ -327,23 +306,21 @@ def matrix_to_angles(r_param):
 
 def angles_to_xyz(alpha, beta):
     r"""
-    Convert :math:`(\alpha, \beta)` into a point :math:`(x, y, z)` on the sphere.
+    Convert the two spherical angles (:math:`(\alpha, \beta)`) into
+    Cartesian coordinates :math:`(x, y, z)` on the unit sphere.
 
     Args:
-        alpha (Union[Tensor[float32], List[float], Tuple[float], ndarray[np.float32], float]):
+        alpha (Union[Tensor[float32], list[float], tuple[float], ndarray[np.float32], float]):
             The alpha Euler angles. The shape of Tensor is :math:`(...)`.
-        beta (Union[Tensor[float32], List[float], Tuple[float], ndarray[np.float32], float]):
+        beta (Union[Tensor[float32], list[float], tuple[float], ndarray[np.float32], float]):
             The beta Euler angles. The shape of Tensor is :math:`(...)`.
 
     Returns:
         Tensor, the point :math:`(x, y, z)` on the sphere. The shape of Tensor is :math:`(..., 3)`
 
-    Supported Platforms:
-        ``Ascend``
-
     Examples
         >>> import mindspore as ms
-        >>> from mindchemistry.e3.o3 import angles_to_xyz
+        >>> from mindscience.e3nn.o3 import angles_to_xyz
         >>> print(angles_to_xyz(ms.Tensor(1.7), ms.Tensor(0.0)).abs())
         [0., 1., 0.]
     """
@@ -365,15 +342,11 @@ def xyz_to_angles(xyz):
         xyz (Tensor): The point :math:`(x, y, z)` on the sphere. The shape of Tensor is :math:`(..., 3)`.
 
     Returns:
-        alpha (Tensor) - The alpha Euler angles. The shape of Tensor is :math:`(...)`.
-        beta (Tensor) - The beta Euler angles. The shape of Tensor is :math:`(...)`.
-
-    Supported Platforms:
-        ``Ascend``
+        tuple[Tensor]. A tuple of :math:`alpha`, :math:`beta` Tensors.
 
     Examples:
         >>> import mindspore as ms
-        >>> from mindchemistry.e3.o3 import xyz_to_angles
+        >>> from mindscience.e3nn.o3 import xyz_to_angles
         >>> input = ms.Tensor([3, 3, 3])
         >>> m = xyz_to_angles(input)
         >>> print(m)
