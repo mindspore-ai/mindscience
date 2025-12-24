@@ -4,7 +4,6 @@ mindscience.utils
 .. mscnplatformautosummary::
     :toctree: utils
     :nosignatures:
-    :template: classtemplate.rst
 
     mindscience.utils.check_dict_type_value
     mindscience.utils.check_dict_type
