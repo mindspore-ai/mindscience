@@ -43,9 +43,6 @@ class CustomReal(nn.Cell):
     Outputs:
         - **output** (Tensor): Real part of the input tensor with data type float32.
 
-    Supported Platforms:
-        ``Ascend`` ``Pynative``
-
     Examples:
         >>> import mindspore as ms
         >>> from mindscience.sciops.fft import CustomReal
@@ -56,7 +53,7 @@ class CustomReal(nn.Cell):
         [1. 3.]
     """
     def __init__(self):
-        super(CustomReal, self).__init__()
+        super().__init__()
         aclnn_ref_info = CustomRegOp("aclnnReal") \
             .input(0, "x", "required") \
             .output(0, "z", "required") \
@@ -85,9 +82,6 @@ class CustomComplex(nn.Cell):
 
     Outputs:
         - **output** (Tensor): Complex tensor with data type complex64.
-
-    Supported Platforms:
-        ``Ascend`` ``Pynative``
 
     Examples:
         >>> import mindspore as ms
@@ -126,15 +120,6 @@ def set_fft_cache_size(cache_size):
 
     Args:
         cache_size (int): Cache number of ASD FFT operators.
-
-    Inputs:
-        None
-
-    Outputs:
-        None
-
-    Supported Platforms:
-        ``Ascend`` ``Pynative``
 
     Examples:
         >>> from mindscience.sciops.fft import set_cache_size
@@ -192,9 +177,6 @@ class ASD_FFT(nn.Cell): # pylint: disable=invalid-name
     This operator performs 1D Fast Fourier Transform on complex input tensors,
     optimized for Ascend NPU hardware acceleration.
 
-    Args:
-        None
-
     Inputs:
         - **xr** (Tensor): Real part of input complex tensor with data type float32.
         - **xi** (Tensor): Imaginary part of input complex tensor with data type float32.
@@ -205,9 +187,6 @@ class ASD_FFT(nn.Cell): # pylint: disable=invalid-name
 
     Raises:
         ValueError: If input tensor data type is not float32.
-
-    Supported Platforms:
-        ``Ascend`` ``Pynative``
 
     Examples:
         >>> import mindspore as ms
@@ -222,7 +201,7 @@ class ASD_FFT(nn.Cell): # pylint: disable=invalid-name
         (1, 4)
     """
     def __init__(self):
-        super(ASD_FFT, self).__init__()
+        super().__init__()
         self.asd_fft_op = _get_asd_fft_op().asd_fft_1d
         self.make_complex = CustomComplex()
         self.used_bprop_inputs = []
@@ -277,9 +256,6 @@ class ASD_IFFT(ASD_FFT): # pylint: disable=invalid-name
     This operator performs 1D Inverse Fast Fourier Transform on complex input tensors,
     optimized for Ascend NPU hardware acceleration.
 
-    Args:
-        None
-
     Inputs:
         - **xr** (Tensor): Real part of input complex tensor with data type float32.
         - **xi** (Tensor): Imaginary part of input complex tensor with data type float32.
@@ -290,9 +266,6 @@ class ASD_IFFT(ASD_FFT): # pylint: disable=invalid-name
 
     Raises:
         ValueError: If input tensor data type is not float32.
-
-    Supported Platforms:
-        ``Ascend`` ``Pynative``
 
     Examples:
         >>> import mindspore as ms
@@ -307,7 +280,7 @@ class ASD_IFFT(ASD_FFT): # pylint: disable=invalid-name
         (1, 4)
     """
     def __init__(self):
-        super(ASD_IFFT, self).__init__()
+        super().__init__()
         self.asd_fft_op = _get_asd_fft_op().asd_ifft_1d
         self.used_bprop_inputs = []
 
@@ -330,9 +303,6 @@ class ASD_RFFT(ASD_FFT): # pylint: disable=invalid-name
     This operator performs 1D Real Fast Fourier Transform on real input tensors,
     optimized for Ascend NPU hardware acceleration.
 
-    Args:
-        None
-
     Inputs:
         - **xr** (Tensor): Input real tensor with data type float32.
 
@@ -342,9 +312,6 @@ class ASD_RFFT(ASD_FFT): # pylint: disable=invalid-name
 
     Raises:
         ValueError: If input tensor data type is not float32.
-
-    Supported Platforms:
-        ``Ascend`` ``Pynative``
 
     Examples:
         >>> import mindspore as ms
@@ -358,7 +325,7 @@ class ASD_RFFT(ASD_FFT): # pylint: disable=invalid-name
         (1, 3)
     """
     def __init__(self):
-        super(ASD_RFFT, self).__init__()
+        super().__init__()
         self.asd_fft_op = _get_asd_fft_op().asd_rfft_1d
         self.used_bprop_inputs = [0]
 
@@ -379,9 +346,6 @@ class ASD_IRFFT(ASD_FFT): # pylint: disable=invalid-name
     This operator performs 1D Inverse Real Fast Fourier Transform on complex input tensors,
     optimized for Ascend NPU hardware acceleration.
 
-    Args:
-        None
-
     Inputs:
         - **xr** (Tensor): Real part of input complex tensor with data type float32.
         - **xi** (Tensor): Imaginary part of input complex tensor with data type float32.
@@ -391,9 +355,6 @@ class ASD_IRFFT(ASD_FFT): # pylint: disable=invalid-name
 
     Raises:
         ValueError: If input tensor data type is not float32.
-
-    Supported Platforms:
-        ``Ascend`` ``Pynative``
 
     Examples:
         >>> import mindspore as ms
@@ -406,7 +367,7 @@ class ASD_IRFFT(ASD_FFT): # pylint: disable=invalid-name
         (1, 4)
     """
     def __init__(self):
-        super(ASD_IRFFT, self).__init__()
+        super().__init__()
         self.asd_fft_op = _get_asd_fft_op().asd_irfft_1d
         self.n = None
         self.used_bprop_inputs = [0]
@@ -438,9 +399,6 @@ class ASD_FFT2D(nn.Cell): # pylint: disable=invalid-name
     This operator performs 2D Fast Fourier Transform on complex input tensors,
     optimized for Ascend NPU hardware acceleration.
 
-    Args:
-        None
-
     Inputs:
         - **xr** (Tensor): Real part of input complex tensor with data type float32, at least 2D.
         - **xi** (Tensor): Imaginary part of input complex tensor with data type float32.
@@ -451,9 +409,6 @@ class ASD_FFT2D(nn.Cell): # pylint: disable=invalid-name
 
     Raises:
         ValueError: If input tensor data type is not float32 or tensor has less than 2 dimensions.
-
-    Supported Platforms:
-        ``Ascend`` ``Pynative``
 
     Examples:
         >>> import mindspore as ms
@@ -468,7 +423,7 @@ class ASD_FFT2D(nn.Cell): # pylint: disable=invalid-name
         (1, 2, 2)
     """
     def __init__(self):
-        super(ASD_FFT2D, self).__init__()
+        super().__init__()
         self.asd_fft_op = _get_asd_fft_op().asd_fft_2d
         self.make_complex = CustomComplex()
         self.used_bprop_inputs = []
@@ -514,7 +469,7 @@ class ASD_FFT2D(nn.Cell): # pylint: disable=invalid-name
 
     def bprop(self, xr, xi, out, dout): # pylint: disable=unused-argument
         dreal, dimag = dout
-        dxr, dxi = asd_ifft2(dreal, dimag)
+        dxr, dxi = asd_ifft2d(dreal, dimag)
         n = dreal.shape[-1] * dreal.shape[-2]
         return dxr.mul_(n), dxi.mul_(n)
 
@@ -526,9 +481,6 @@ class ASD_IFFT2D(ASD_FFT2D): # pylint: disable=invalid-name
     This operator performs 2D Inverse Fast Fourier Transform on complex input tensors,
     optimized for Ascend NPU hardware acceleration.
 
-    Args:
-        None
-
     Inputs:
         - **xr** (Tensor): Real part of input complex tensor with data type float32, at least 2D.
         - **xi** (Tensor): Imaginary part of input complex tensor with data type float32.
@@ -539,9 +491,6 @@ class ASD_IFFT2D(ASD_FFT2D): # pylint: disable=invalid-name
 
     Raises:
         ValueError: If input tensor data type is not float32 or tensor has less than 2 dimensions.
-
-    Supported Platforms:
-        ``Ascend`` ``Pynative``
 
     Examples:
         >>> import mindspore as ms
@@ -556,18 +505,18 @@ class ASD_IFFT2D(ASD_FFT2D): # pylint: disable=invalid-name
         (1, 2, 2)
     """
     def __init__(self):
-        super(ASD_IFFT2D, self).__init__()
+        super().__init__()
         self.asd_fft_op = _get_asd_fft_op().asd_ifft_2d
         self.used_bprop_inputs = []
 
     def get_fft_size_and_scale(self, xr):
-        batch_size, x_size, y_size, scale_factor = super(ASD_IFFT2D, self).get_fft_size_and_scale(xr)
+        batch_size, x_size, y_size, scale_factor = super().get_fft_size_and_scale(xr)
         scale_factor = 1.0 / (x_size * y_size)
         return batch_size, x_size, y_size, scale_factor
 
     def bprop(self, xr, xi, out, dout): # pylint: disable=unused-argument
         dreal, dimag = dout
-        dxr, dxi = asd_fft2(dreal, dimag)
+        dxr, dxi = asd_fft2d(dreal, dimag)
         scale_factor = 1.0 / (dreal.shape[-1] * dreal.shape[-2])
         return dxr.mul_(scale_factor), dxi.mul_(scale_factor)
 
@@ -579,9 +528,6 @@ class ASD_RFFT2D(ASD_FFT2D): # pylint: disable=invalid-name
     This operator performs 2D Real Fast Fourier Transform on real input tensors,
     optimized for Ascend NPU hardware acceleration.
 
-    Args:
-        None
-
     Inputs:
         - **xr** (Tensor): Input real tensor with data type float32, at least 2D.
 
@@ -591,9 +537,6 @@ class ASD_RFFT2D(ASD_FFT2D): # pylint: disable=invalid-name
 
     Raises:
         ValueError: If input tensor data type is not float32 or tensor has less than 2 dimensions.
-
-    Supported Platforms:
-        ``Ascend`` ``Pynative``
 
     Examples:
         >>> import mindspore as ms
@@ -607,7 +550,7 @@ class ASD_RFFT2D(ASD_FFT2D): # pylint: disable=invalid-name
         (1, 2, 2)
     """
     def __init__(self):
-        super(ASD_RFFT2D, self).__init__()
+        super().__init__()
         self.asd_fft_op = _get_asd_fft_op().asd_rfft_2d
         self.used_bprop_inputs = [0]
 
@@ -631,9 +574,6 @@ class ASD_IRFFT2D(ASD_FFT2D): # pylint: disable=invalid-name
     This operator performs 2D Inverse Real Fast Fourier Transform on complex input tensors,
     optimized for Ascend NPU hardware acceleration.
 
-    Args:
-        None
-
     Inputs:
         - **xr** (Tensor): Real part of input complex tensor with data type float32, at least 2D.
         - **xi** (Tensor): Imaginary part of input complex tensor with data type float32.
@@ -643,9 +583,6 @@ class ASD_IRFFT2D(ASD_FFT2D): # pylint: disable=invalid-name
 
     Raises:
         ValueError: If input tensor data type is not float32 or tensor has less than 2 dimensions.
-
-    Supported Platforms:
-        ``Ascend`` ``Pynative``
 
     Examples:
         >>> import mindspore as ms
@@ -658,7 +595,7 @@ class ASD_IRFFT2D(ASD_FFT2D): # pylint: disable=invalid-name
         (1, 2, 4)
     """
     def __init__(self):
-        super(ASD_IRFFT2D, self).__init__()
+        super().__init__()
         self.asd_fft_op = _get_asd_fft_op().asd_irfft_2d
         self.n = None
         self.used_bprop_inputs = [0]
@@ -679,7 +616,7 @@ class ASD_IRFFT2D(ASD_FFT2D): # pylint: disable=invalid-name
 
     def bprop(self, xr, xi, out, dout): # pylint: disable=unused-argument
         dreal = dout
-        dxr, dxi = asd_rfft2(dreal)
+        dxr, dxi = asd_rfft2d(dreal)
         x_size = xr.shape[-2]
         y_size = xr.shape[-1]
         if self.n is not None and (self.n // 2 + 1) == y_size:
@@ -702,56 +639,298 @@ _asd_irfft2_instance = None
 
 # 延迟初始化的FFT操作符函数
 def asd_fft(*args, **kwargs):
-    """延迟初始化的ASD_FFT调用"""
+    r"""1D complex-to-complex forward FFT transform using Ascend NPU acceleration.
+
+    This function performs 1D Fast Fourier Transform on complex input tensors,
+    optimized for Ascend NPU hardware acceleration.
+
+    Args:
+        \*args: Variable length argument list. Typically includes:
+
+            - xr (Tensor): Real part of input complex tensor with data type float32.
+            - xi (Tensor): Imaginary part of input complex tensor with data type float32.
+
+        \*\*kwargs: Arbitrary keyword arguments.
+
+    Returns:
+        Tuple[Tensor, Tensor]. A tuple containing,
+
+        - yr (Tensor). Real part of output complex tensor with data type float32.
+        - yi (Tensor). Imaginary part of output complex tensor with data type float32.
+
+    Raises:
+        ValueError: If input tensor data type is not float32.
+
+    Examples:
+        >>> import mindspore as ms
+        >>> from mindscience.sciops.fft import asd_fft
+        >>> xr = ms.Tensor([[1.0, 2.0, 3.0, 4.0]], ms.float32)
+        >>> xi = ms.Tensor([[0.0, 0.0, 0.0, 0.0]], ms.float32)
+        >>> yr, yi = asd_fft(xr, xi)
+        >>> print(yr.shape)
+        (1, 4)
+        >>> print(yi.shape)
+        (1, 4)
+    """
     global _asd_fft_instance
     if _asd_fft_instance is None:
         _asd_fft_instance = ASD_FFT()
     return _asd_fft_instance(*args, **kwargs)
 
 def asd_ifft(*args, **kwargs):
-    """延迟初始化的ASD_IFFT调用"""
+    r"""1D complex-to-complex inverse FFT transform using Ascend NPU acceleration.
+
+    This function performs 1D Inverse Fast Fourier Transform on complex input tensors,
+    optimized for Ascend NPU hardware acceleration.
+
+    Args:
+        \*args: Variable length argument list. Typically includes:
+
+            - xr (Tensor): Real part of input complex tensor with data type float32.
+            - xi (Tensor): Imaginary part of input complex tensor with data type float32.
+
+        \*\*kwargs: Arbitrary keyword arguments.
+
+    Returns:
+        Tuple[Tensor, Tensor]. A tuple containing,
+
+        - yr (Tensor). Real part of output complex tensor with data type float32.
+        - yi (Tensor). Imaginary part of output complex tensor with data type float32.
+
+    Raises:
+        ValueError: If input tensor data type is not float32.
+
+    Examples:
+        >>> import mindspore as ms
+        >>> from mindscience.sciops.fft import asd_ifft
+        >>> xr = ms.Tensor([[1.0, 2.0, 3.0, 4.0]], ms.float32)
+        >>> xi = ms.Tensor([[0.0, 0.0, 0.0, 0.0]], ms.float32)
+        >>> yr, yi = asd_ifft(xr, xi)
+        >>> print(yr.shape)
+        (1, 4)
+        >>> print(yi.shape)
+        (1, 4)
+    """
     global _asd_ifft_instance
     if _asd_ifft_instance is None:
         _asd_ifft_instance = ASD_IFFT()
     return _asd_ifft_instance(*args, **kwargs)
 
 def asd_rfft(*args, **kwargs):
-    """延迟初始化的ASD_RFFT调用"""
+    r"""1D real-to-complex FFT transform using Ascend NPU acceleration.
+
+    This function performs 1D Real Fast Fourier Transform on real input tensors,
+    optimized for Ascend NPU hardware acceleration.
+
+    Args:
+        \*args: Variable length argument list. Typically includes:
+
+            - xr (Tensor): Input real tensor with data type float32.
+
+        \*\*kwargs: Arbitrary keyword arguments.
+
+    Returns:
+        Tuple[Tensor, Tensor]. A tuple containing,
+
+        - yr (Tensor). Real part of output complex tensor with data type float32.
+        - yi (Tensor). Imaginary part of output complex tensor with data type float32.
+
+    Raises:
+        ValueError: If input tensor data type is not float32.
+
+    Examples:
+        >>> import mindspore as ms
+        >>> from mindscience.sciops.fft import asd_rfft
+        >>> xr = ms.Tensor([[1.0, 2.0, 3.0, 4.0]], ms.float32)
+        >>> yr, yi = asd_rfft(xr)
+        >>> print(yr.shape)
+        (1, 3)
+        >>> print(yi.shape)
+        (1, 3)
+    """
     global _asd_rfft_instance
     if _asd_rfft_instance is None:
         _asd_rfft_instance = ASD_RFFT()
     return _asd_rfft_instance(*args, **kwargs)
 
 def asd_irfft(*args, **kwargs):
-    """延迟初始化的ASD_IRFFT调用"""
+    r"""1D complex-to-real inverse FFT transform using Ascend NPU acceleration.
+
+    This function performs 1D Inverse Real Fast Fourier Transform on complex input tensors,
+    optimized for Ascend NPU hardware acceleration.
+
+    Args:
+        \*args: Variable length argument list. Typically includes:
+
+            - xr (Tensor): Real part of input complex tensor with data type float32.
+            - xi (Tensor): Imaginary part of input complex tensor with data type float32.
+
+        \*\*kwargs: Arbitrary keyword arguments.
+
+    Returns:
+        Tensor. Output real tensor with data type float32.
+
+    Raises:
+        ValueError: If input tensor data type is not float32.
+
+    Examples:
+        >>> import mindspore as ms
+        >>> from mindscience.sciops.fft import asd_irfft
+        >>> xr = ms.Tensor([[1.0, 2.0, 3.0]], ms.float32)
+        >>> xi = ms.Tensor([[0.0, 0.0, 0.0]], ms.float32)
+        >>> yr = asd_irfft(xr, xi)
+        >>> print(yr.shape)
+        (1, 4)
+    """
     global _asd_irfft_instance
     if _asd_irfft_instance is None:
         _asd_irfft_instance = ASD_IRFFT()
     return _asd_irfft_instance(*args, **kwargs)
 
-def asd_fft2(*args, **kwargs):
-    """延迟初始化的ASD_FFT2D调用"""
+def asd_fft2d(*args, **kwargs):
+    r"""2D complex-to-complex forward FFT transform using Ascend NPU acceleration.
+
+    This function performs 2D Fast Fourier Transform on complex input tensors,
+    optimized for Ascend NPU hardware acceleration.
+
+    Args:
+        \*args: Variable length argument list. Typically includes:
+
+            - xr (Tensor): Real part of input complex tensor with data type float32, at least 2D.
+            - xi (Tensor): Imaginary part of input complex tensor with data type float32.
+
+        \*\*kwargs: Arbitrary keyword arguments.
+
+    Returns:
+        Tuple[Tensor, Tensor]. A tuple containing,
+
+        - yr (Tensor). Real part of output complex tensor with data type float32.
+        - yi (Tensor). Imaginary part of output complex tensor with data type float32.
+
+    Raises:
+        ValueError: If input tensor data type is not float32 or tensor has less than 2 dimensions.
+
+    Examples:
+        >>> import mindspore as ms
+        >>> from mindscience.sciops.fft import asd_fft2d
+        >>> xr = ms.Tensor([[[1.0, 2.0], [3.0, 4.0]]], ms.float32)
+        >>> xi = ms.Tensor([[[0.0, 0.0], [0.0, 0.0]]], ms.float32)
+        >>> yr, yi = asd_fft2d(xr, xi)
+        >>> print(yr.shape)
+        (1, 2, 2)
+        >>> print(yi.shape)
+        (1, 2, 2)
+    """
     global _asd_fft2_instance
     if _asd_fft2_instance is None:
         _asd_fft2_instance = ASD_FFT2D()
     return _asd_fft2_instance(*args, **kwargs)
 
-def asd_ifft2(*args, **kwargs):
-    """延迟初始化的ASD_IFFT2D调用"""
+def asd_ifft2d(*args, **kwargs):
+    r"""2D complex-to-complex inverse FFT transform using Ascend NPU acceleration.
+
+    This function performs 2D Inverse Fast Fourier Transform on complex input tensors,
+    optimized for Ascend NPU hardware acceleration.
+
+    Args:
+        \*args: Variable length argument list. Typically includes:
+
+            - xr (Tensor): Real part of input complex tensor with data type float32, at least 2D.
+            - xi (Tensor): Imaginary part of input complex tensor with data type float32.
+
+        \*\*kwargs: Arbitrary keyword arguments.
+
+    Returns:
+        Tuple[Tensor, Tensor]. A tuple containing,
+
+        - yr (Tensor). Real part of output complex tensor with data type float32.
+        - yi (Tensor). Imaginary part of output complex tensor with data type float32.
+
+    Raises:
+        ValueError: If input tensor data type is not float32 or tensor has less than 2 dimensions.
+
+    Examples:
+        >>> import mindspore as ms
+        >>> from mindscience.sciops.fft import asd_ifft2d
+        >>> xr = ms.Tensor([[[1.0, 2.0], [3.0, 4.0]]], ms.float32)
+        >>> xi = ms.Tensor([[[0.0, 0.0], [0.0, 0.0]]], ms.float32)
+        >>> yr, yi = asd_ifft2d(xr, xi)
+        >>> print(yr.shape)
+        (1, 2, 2)
+        >>> print(yi.shape)
+        (1, 2, 2)
+    """
     global _asd_ifft2_instance
     if _asd_ifft2_instance is None:
         _asd_ifft2_instance = ASD_IFFT2D()
     return _asd_ifft2_instance(*args, **kwargs)
 
-def asd_rfft2(*args, **kwargs):
-    """延迟初始化的ASD_RFFT2D调用"""
+def asd_rfft2d(*args, **kwargs):
+    r"""2D real-to-complex FFT transform using Ascend NPU acceleration.
+
+    This function performs 2D Real Fast Fourier Transform on real input tensors,
+    optimized for Ascend NPU hardware acceleration.
+
+    Args:
+        \*args: Variable length argument list. Typically includes:
+
+            - xr (Tensor): Input real tensor with data type float32, at least 2D.
+
+        \*\*kwargs: Arbitrary keyword arguments.
+
+    Returns:
+        Tuple[Tensor, Tensor]. A tuple containing,
+
+        - yr (Tensor). Real part of output complex tensor with data type float32.
+        - yi (Tensor). Imaginary part of output complex tensor with data type float32.
+
+    Raises:
+        ValueError: If input tensor data type is not float32 or tensor has less than 2 dimensions.
+
+    Examples:
+        >>> import mindspore as ms
+        >>> from mindscience.sciops.fft import asd_rfft2d
+        >>> xr = ms.Tensor([[[1.0, 2.0], [3.0, 4.0]]], ms.float32)
+        >>> yr, yi = asd_rfft2d(xr)
+        >>> print(yr.shape)
+        (1, 2, 2)
+        >>> print(yi.shape)
+        (1, 2, 2)
+    """
     global _asd_rfft2_instance
     if _asd_rfft2_instance is None:
         _asd_rfft2_instance = ASD_RFFT2D()
     return _asd_rfft2_instance(*args, **kwargs)
 
-def asd_irfft2(*args, **kwargs):
-    """延迟初始化的ASD_IRFFT2D调用"""
+def asd_irfft2d(*args, **kwargs):
+    r"""2D complex-to-real inverse FFT transform using Ascend NPU acceleration.
+
+    This function performs 2D Inverse Real Fast Fourier Transform on complex input tensors,
+    optimized for Ascend NPU hardware acceleration.
+
+    Args:
+        \*args: Variable length argument list. Typically includes:
+
+            - xr (Tensor): Real part of input complex tensor with data type float32, at least 2D.
+            - xi (Tensor): Imaginary part of input complex tensor with data type float32.
+
+        \*\*kwargs: Arbitrary keyword arguments.
+
+    Returns:
+        Tensor. Output real tensor with data type float32.
+
+    Raises:
+        ValueError: If input tensor data type is not float32 or tensor has less than 2 dimensions.
+
+    Examples:
+        >>> import mindspore as ms
+        >>> from mindscience.sciops.fft import asd_irfft2d
+        >>> xr = ms.Tensor([[[1.0, 2.0], [3.0, 4.0]]], ms.float32)
+        >>> xi = ms.Tensor([[[0.0, 0.0], [0.0, 0.0]]], ms.float32)
+        >>> yr = asd_irfft2d(xr, xi)
+        >>> print(yr.shape)
+        (1, 2, 4)
+    """
     global _asd_irfft2_instance
     if _asd_irfft2_instance is None:
         _asd_irfft2_instance = ASD_IRFFT2D()
@@ -767,22 +946,13 @@ def asd_fftn(xr, xi, ndim=1):
     Args:
         xr (Tensor): Real part of input complex tensor with data type float32.
         xi (Tensor): Imaginary part of input complex tensor with data type float32.
-        ndim (int): Number of dimensions to transform. Default: 1. Only support 1 and 2.
+        ndim (int, optional): Number of dimensions to transform. Only support ``1`` and ``2``. Default: ``1``.
 
-    Inputs:
-        - **xr** (Tensor): Real part of input complex tensor with data type float32.
-        - **xi** (Tensor): Imaginary part of input complex tensor with data type float32.
-        - **ndim** (int): Number of dimensions to transform. Default: 1.
+    Returns:
+        Tuple[Tensor, Tensor]. A tuple containing,
 
-    Outputs:
-        - **yr** (Tensor): Real part of output complex tensor with data type float32.
-        - **yi** (Tensor): Imaginary part of output complex tensor with data type float32.
-
-    Raises:
-        ValueError: If ndim is not 1 or 2.
-
-    Supported Platforms:
-        ``Ascend`` ``Pynative``
+        - yr (Tensor). Real part of output complex tensor with data type float32.
+        - yi (Tensor). Imaginary part of output complex tensor with data type float32.
 
     Examples:
         >>> import mindspore as ms
@@ -798,7 +968,7 @@ def asd_fftn(xr, xi, ndim=1):
     if ndim == 1:
         return asd_fft(xr, xi)
     if ndim == 2:
-        return asd_fft2(xr, xi)
+        return asd_fft2d(xr, xi)
     raise ValueError(f"asd_fftn Unsupported dimension: {ndim}, only support 1D and 2D")
 
 def asd_ifftn(xr, xi, ndim=1):
@@ -811,22 +981,13 @@ def asd_ifftn(xr, xi, ndim=1):
     Args:
         xr (Tensor): Real part of input complex tensor with data type float32.
         xi (Tensor): Imaginary part of input complex tensor with data type float32.
-        ndim (int): Number of dimensions to transform. Default: 1. Only support 1 and 2.
+        ndim (int, optional): Number of dimensions to transform. Only support ``1`` and ``2``. Default: ``1``.
 
-    Inputs:
-        - **xr** (Tensor): Real part of input complex tensor with data type float32.
-        - **xi** (Tensor): Imaginary part of input complex tensor with data type float32.
-        - **ndim** (int): Number of dimensions to transform. Default: 1.
+    Returns:
+        Tuple[Tensor, Tensor]. A tuple containing,
 
-    Outputs:
-        - **yr** (Tensor): Real part of output complex tensor with data type float32.
-        - **yi** (Tensor): Imaginary part of output complex tensor with data type float32.
-
-    Raises:
-        ValueError: If ndim is not 1 or 2.
-
-    Supported Platforms:
-        ``Ascend`` ``Pynative``
+        - yr (Tensor). Real part of output complex tensor with data type float32.
+        - yi (Tensor). Imaginary part of output complex tensor with data type float32.
 
     Examples:
         >>> import mindspore as ms
@@ -842,7 +1003,7 @@ def asd_ifftn(xr, xi, ndim=1):
     if ndim == 1:
         return asd_ifft(xr, xi)
     if ndim == 2:
-        return asd_ifft2(xr, xi)
+        return asd_ifft2d(xr, xi)
     raise ValueError(f"asd_ifftn Unsupported dimension: {ndim}, only support 1D and 2D")
 
 def asd_rfftn(xr, ndim=1):
@@ -854,21 +1015,13 @@ def asd_rfftn(xr, ndim=1):
 
     Args:
         xr (Tensor): Input real tensor with data type float32.
-        ndim (int): Number of dimensions to transform. Default: 1. Only support 1 and 2.
+        ndim (int, optional): Number of dimensions to transform. Only support ``1`` and ``2``. Default: ``1``.
 
-    Inputs:
-        - **xr** (Tensor): Input real tensor with data type float32.
-        - **ndim** (int): Number of dimensions to transform. Default: 1.
+    Returns:
+        Tuple[Tensor, Tensor]. A tuple containing,
 
-    Outputs:
-        - **yr** (Tensor): Real part of output complex tensor with data type float32.
-        - **yi** (Tensor): Imaginary part of output complex tensor with data type float32.
-
-    Raises:
-        ValueError: If ndim is not 1 or 2.
-
-    Supported Platforms:
-        ``Ascend`` ``Pynative``
+        - yr (Tensor). Real part of output complex tensor with data type float32.
+        - yi (Tensor). Imaginary part of output complex tensor with data type float32.
 
     Examples:
         >>> import mindspore as ms
@@ -883,7 +1036,7 @@ def asd_rfftn(xr, ndim=1):
     if ndim == 1:
         return asd_rfft(xr)
     if ndim == 2:
-        return asd_rfft2(xr)
+        return asd_rfft2d(xr)
     raise ValueError(f"asd_rfftn Unsupported dimension: {ndim}, only support 1D and 2D")
 
 def asd_irfftn(xr, xi, n=None, ndim=1):
@@ -896,23 +1049,11 @@ def asd_irfftn(xr, xi, n=None, ndim=1):
     Args:
         xr (Tensor): Real part of input complex tensor with data type float32.
         xi (Tensor): Imaginary part of input complex tensor with data type float32.
-        n (int, optional): Length of the output tensor. Default: None.
-        ndim (int): Number of dimensions to transform. Default: 1. Only support 1 and 2.
+        n (int, optional): Length of the output tensor. Default: ``None``.
+        ndim (int, optional): Number of dimensions to transform. Only support ``1`` and ``2``. Default: ``1``.
 
-    Inputs:
-        - **xr** (Tensor): Real part of input complex tensor with data type float32.
-        - **xi** (Tensor): Imaginary part of input complex tensor with data type float32.
-        - **n** (int, optional): Length of the output tensor. Default: None.
-        - **ndim** (int): Number of dimensions to transform. Default: 1.
-
-    Outputs:
-        - **yr** (Tensor): Output real tensor with data type float32.
-
-    Raises:
-        ValueError: If ndim is not 1 or 2.
-
-    Supported Platforms:
-        ``Ascend`` ``Pynative``
+    Returns:
+        yr (Tensor). Output real tensor with data type float32.
 
     Examples:
         >>> import mindspore as ms
