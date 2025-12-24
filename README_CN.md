@@ -22,7 +22,7 @@ MindScience是基于MindSpore融合架构打造的高性能科学计算行业套
 ## 架构图
 
 <div align=center>
-<img src="docs/images/architecture.png" alt="MindScience Architecture" width="600"/>
+  <img src="docs/images/architecture.png" alt="MindScience Architecture" width="600"/>
 </div>
 
 ## MindScience-Core
@@ -42,7 +42,6 @@ MindScience-Core是MindScience的核心组件，为开发者提供易用性强�
 [科学计算算子](mindscience/sciops/)：科学计算算子是支撑 AI4Science 模型构建的核心基础组件，算子经过与 Ascend 结合的深度优化，实现复杂科学计算任务的高效执行。
 
 [分布式并行](mindscience/distributed)：分布式并行是应对 AI4Science 大规模任务的核心高效计算方案，通过将海量数据、复杂模型或计算任务拆分到多节点、多设备集群中协同处理，突破单设备的算力与内存瓶颈，为 AI4Science 向更复杂、更精细的研究方向拓展提供了关键算力保障。
-
 
 ## MindScience-Toolkit
 
@@ -97,7 +96,158 @@ MindElec支持CSG模式的几何构建，如矩形、圆形等结构的交集、
 
 AI4Science高频模型套件SciAI，内置60+高频模型，覆盖物理感知（如PINNs、DeepRitz以及PFNN）和神经算子（如FNO、DeepONet）等主流模型，覆盖度全球第一；提供了高阶API，开发者和用户开箱即用。
 
+## 典型模型支持
 
+<details>
+<summary><strong>化学领域</strong></summary>
+
+| 应用名称 | 简介 | 学习类型 |
+| --- | --- | --- |
+| [DiffCSP](https://atomgit.com/mindspore-lab/mindscience/blob/master/MindChem/applications/diffcsp) | 晶体结构生成 | 扩散模型/生成式学习 |
+| [NequIP](https://atomgit.com/mindspore-lab/mindscience/blob/master/MindChem/applications/nequip) | 分子力场 | 监督学习 |
+| [Orb](https://atomgit.com/mindspore-lab/mindscience/blob/master/MindChem/applications/orb) | 分子力场 | 监督学习 |
+| [MatFormer](https://atomgit.com/mindspore-lab/mindscience/blob/master/MindChem/applications/matformer) | 材料性质预测 | 监督学习 |
+| [DeepHE3nn](https://atomgit.com/mindspore-lab/mindscience/blob/master/MindChem/applications/deephe3nn) | 哈密顿量预测 | 监督学习 |
+| [CrystalFlow](https://atomgit.com/mindspore-lab/mindscience/blob/master/MindChem/applications/crystalflow) | 晶体结构生成 | 扩散模型/生成式学习 |
+
+</details>
+
+<p></p>
+<details>
+<summary><strong>地球科学领域</strong></summary>
+
+| 应用名称 | 简介 | 学习类型 |
+| --- | --- | --- |
+| [LeadFormer](https://atomgit.com/mindspore-lab/mindscience/blob/master/MindEarth/applications/leadformer) | 北极海冰冰间水道预测 | 监督学习 |
+
+</details>
+
+<p></p>
+<details>
+<summary><strong>能源领域</strong></summary>
+
+| 应用名称 | 简介 | 学习类型 |
+| --- | --- | --- |
+| [DAE-PINN](https://atomgit.com/mindspore-lab/mindscience/tree/master/MindEnergy/applications/DAE-PINN) | 物理信息神经网络 | 监督+物理约束 |
+| [DeepONet-Grid-UQ](https://atomgit.com/mindspore-lab/mindscience/tree/master/MindEnergy/applications/DeepONet-Grid-UQ) | 电网故障后轨迹预测 | 监督学习 |
+| [PowerFlowNet](https://atomgit.com/mindspore-lab/mindscience/tree/master/MindEnergy/applications/PowerFlowNet) | 潮流计算 | 监督学习 |
+
+</details>
+
+<p></p>
+<details>
+<summary><strong>流体领域</strong></summary>
+
+| 应用名称 | 简介 | 学习类型 |
+| --- | --- | --- |
+| [Acoustic](https://atomgit.com/mindspore-lab/mindscience/blob/master/MindFlow/applications/acoustic) | 声学模拟 | 自动迭代学习 |
+| [P2C2Net](https://atomgit.com/mindspore-lab/mindscience/blob/master/MindFlow/applications/p2c2net) | 物理建模求解二维Burgers方程组 | 监督学习 |
+| [FNO2D](https://atomgit.com/mindspore-lab/mindscience/blob/master/MindFlow/applications/fno2d) | 傅里叶神经算子求解二维Navier-Stokes方程组 | 监督学习 |
+
+</details>
+
+<p></p>
+<details>
+<summary><strong>生物领域</strong></summary>
+
+| 应用名称 | 简介 | 学习类型 |
+| --- | --- | --- |
+| [AlphaFold3](https://atomgit.com/mindspore-lab/mindscience/blob/master/MindSPONGE/applications/af3) | 蛋白质结构预测 | 监督学习 |
+| [ProteinMPNN](https://atomgit.com/mindspore-lab/mindscience/blob/master/MindSPONGE/applications/proteinmpnn) | 蛋白质序列设计 | 监督学习 |
+| [RFdiffusion](https://atomgit.com/mindspore-lab/mindscience/blob/master/MindSPONGE/applications/rfdiffusion) | 蛋白质扩散生成 | 扩散模型/生成式学习 |
+| [Protenix](https://atomgit.com/mindspore-lab/mindscience/blob/master/MindSPONGE/applications/protenix) | 蛋白质功能预测 | 监督学习 |
+
+</details>
+
+## 安装
+
+### 硬件和操作系统支持情况
+
+| 硬件平台   | 操作系统            | 状态  |
+| ------ | --------------- | --- |
+| Ascend | EulerOS-aarch64 | √   |
+|        | Ubuntu-aarch64  | √   |
+|        | Ubuntu-x86_64   | √   |
+|        | CentOS-aarch64  | √   |
+|        | CentOS-x86_64   | √   |
+| CPU    | Windows-aarch64 | √   |
+
+### 前置依赖
+
+- Python $\ge$ 3.7, $\lt$ 3.12
+- MindSpore == 2.7.0
+- CANN $\ge$ 8.2.rc1
+
+MindSpore安装教程请参考[MindSpore官网](https://www.mindspore.cn/install)，CANN安装请参考[Ascend官网](https://www.hiascend.com/document)。
+
+### 安装步骤概览
+
+1. 准备 Python 虚拟环境（推荐）：
+
+   ```bash
+   python -m venv venv
+   source venv/bin/activate
+   ```
+
+2. 按需安装 MindSpore（Ascend/CPU/GPU 版本）与匹配的 CANN。
+
+3. 克隆仓库并安装依赖：
+
+   ```bash
+   git clone https://gitcode.com/mindspore-lab/mindscience.git
+   cd mindscience
+   pip install -r requirements.txt
+   ```
+
+4. 编译生成安装包：
+
+   ```bash
+   bash build.sh
+   ```
+
+5. 安装 MindScience：
+
+   ```bash
+   pip install output/mindscience-*.whl
+   ```
+
+6. 验证安装：
+
+   ```bash
+   python - <<'PY'
+   import mindspore as ms
+   import mindscience
+   print("MindSpore:", ms.__version__)
+   print("MindScience:", mindscience.__version__)
+   PY
+   ```
+
+### 源码安装
+
+- 代码仓下载源码
+
+```bash
+git clone https://gitcode.com/mindspore-lab/mindscience.git
+cd mindscience
+```
+
+- 安装依赖项
+
+```bash
+pip install -r requirements.txt
+```
+
+- 源码编译
+
+```bash
+bash build.sh
+```
+
+- mindscience安装
+
+```bash
+pip install output/mindscience-*.whl
+```
 
 ## 合作伙伴
 
