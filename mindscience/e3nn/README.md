@@ -147,7 +147,7 @@ mindscience.e3nn/
 
 ```python
 from mindscience.e3nn.so2_conv import SO2Convolution, SO3Rotation
-from mindscience.e3nn.so2_conv.init_edge_rot_mat import init_edge_rot_mat
+from mindscience.e3nn.so2_conv import init_edge_rot_mat
 
 irreps_in = "2x0e + 1x1o"
 irreps_out = "1x0e + 1x1o"

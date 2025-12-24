@@ -16,44 +16,29 @@
 so3 file
 """
 import mindspore as ms
-from mindspore import nn, ops, vmap, jit_class
+from mindspore import ops, vmap, jit_class
 from mindspore.numpy import tensordot
-from mindscience.e3nn import o3
-from mindscience.e3nn.o3 import Irreps
+from .. import o3
+from ..o3 import Irreps
 
 from .wigner import wigner_D
-
-
-class SO3Embedding(nn.Cell):
-    """
-    SO3Embedding class
-    """
-
-    def __init__(self):
-        self.embedding = None
-
-    def _rotate(self, so3rotation, lmax_list, max_list):
-        """
-        SO3Embedding rotate
-        """
-        embedding_rotate = so3rotation[0].rotate(self.embedding, lmax_list[0],
-                                                 max_list[0])
-        self.embedding = embedding_rotate
-
-    def _rotate_inv(self, so3rotation):
-        """
-        SO3Embedding rotate inverse
-        """
-        embedding_rotate = so3rotation[0].rotate_inv(self.embedding,
-                                                     self.lmax_list[0],
-                                                     self.mmax_list[0])
-        self.embedding = embedding_rotate
 
 
 @jit_class
 class SO3Rotation:
     """
-    SO3_Rotation class
+    Class for handling SO(3) rotations of spherical-harmonic irreps.
+
+    Args:
+        lmax (int): Maximum angular momentum to be considered.
+        irreps_in (Union[Irreps, str]): Input irreps specification.
+        irreps_out (Union[Irreps, str]): Output irreps specification.
+
+    Examples:
+        >>> from mindscience.e3nn.so2_conv import SO3Rotation
+        >>> rot = SO3Rotation(lmax=2, irreps_in="1x0e + 1x1o", irreps_out="1x1o")
+        >>> wigner, wigner_inv = rot.set_wigner(rot_mat3x3)
+        >>> rotated = rot.rotate(embedding, wigner)
     """
 
     def __init__(self, lmax, irreps_in, irreps_out):
@@ -65,7 +50,16 @@ class SO3Rotation:
     @staticmethod
     def narrow(inputs, axis, start, length):
         """
-        SO3_Rotation narrow class
+        Narrow (slice) a tensor along a specified axis.
+
+        Args:
+            inputs (Tensor): The tensor to be sliced.
+            axis (int): The axis along which to perform the slice.
+            start (int): The starting index of the slice.
+            length (int): The number of elements to include in the slice.
+
+        Returns
+            Tensor, The sliced tensor.
         """
         begins = [0] * inputs.ndim
         begins[axis] = start
@@ -79,7 +73,16 @@ class SO3Rotation:
     @staticmethod
     def rotation_to_wigner_d_matrix(edge_rot_mat, start_lmax, end_lmax):
         """
-        SO3_Rotation rotation_to_wigner_d_matrix
+        Convert a batch of :math:`3 \times 3` rotation matrices into Wigner-D matrices for the
+        specified range of angular momenta.
+
+        Args:
+            edge_rot_mat (Tensor): Batch of SO(3) rotation matrices of shape (..., 3, 3).
+            start_lmax (int): Minimum angular momentum to include.
+            end_lmax (int): Maximum angular momentum to include.
+
+        Returns:
+            list[Tensor], List of Wigner-D matrices for l = start_lmax … end_lmax, each of shape (..., 2l+1, 2l+1).
         """
         x = edge_rot_mat @ ms.Tensor([0.0, 1.0, 0.0])
         alpha, beta = o3.xyz_to_angles(x)
@@ -96,7 +99,16 @@ class SO3Rotation:
 
     def set_wigner(self, rot_mat3x3):
         """
-        SO3_Rotation set_wigner
+        Compute Wigner-D matrices and their inverses from a batch of :math:`3 \times 3` rotation matrices.
+
+        Args:
+            rot_mat3x3 (Tensor): Batch of SO(3) rotation matrices of shape (..., 3, 3).
+
+        Returns:
+            tuple[list[Tensor], list[Tensor]], A tuple containing two lists.
+
+            - wigner: List of Wigner-D matrices for l = 0 … lmax, each of shape (..., 2l+1, 2l+1).
+            - wigner_inv: List of transposed (inverse) Wigner-D matrices for l = 0 … lmax, same shapes.
         """
         wigner = self.rotation_to_wigner_d_matrix(rot_mat3x3, 0, self.lmax)
         wigner_inv = []
@@ -107,7 +119,15 @@ class SO3Rotation:
 
     def rotate(self, embedding, wigner):
         """
-        SO3_Rotation rotate
+        Rotate an embedding tensor according to the provided Wigner-D matrices.
+
+        Args:
+            embedding (Tensor): Input tensor of shape (..., irreps_in.dim) containing the spherical-harmonic
+                coefficients to be rotated.
+            wigner (tuple[Tensor]): Tuple of Wigner-D matrices for l = 0 … lmax, each of shape (..., 2l+1, 2l+1).
+
+        Returns:
+            tuple[Tensor], Tuple of rotated tensors, one per irrep in irreps_in, each of shape (..., mul, 2l+1).
         """
         res = []
         batch_shape = embedding.shape[:-1]
@@ -133,7 +153,16 @@ class SO3Rotation:
 
     def rotate_inv(self, embedding, wigner_inv):
         """
-        SO3_Rotation rotate_inv
+        Apply the inverse SO(3) rotation to an embedding tensor using the provided inverse Wigner-D matrices.
+
+        Args:
+            embedding (tuple[Tensor]): Tuple of tensors, one per irrep in irreps_out, each of shape (..., mul, 2l+1).
+            wigner_inv (tuple[Tensor]): Tuple of inverse (transposed) Wigner-D matrices for l = 0 … lmax,
+                each of shape (..., 2l+1, 2l+1).
+
+        Returns:
+            Tensor, The rotated-back tensor of shape (..., irreps_out.dim) obtained by concatenating the
+            inverse-rotated irreps.
         """
         res = []
         batch_shape = embedding[0].shape[0:1]

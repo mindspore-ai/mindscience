@@ -17,5 +17,6 @@ init file
 """
 from .so3 import SO3Rotation
 from .so2 import SO2Convolution
+from .init_edge_rot_mat import init_edge_rot_mat
 
-__all__ = ["SO3Rotation", "SO2Convolution"]
+__all__ = ["SO3Rotation", "SO2Convolution", "init_edge_rot_mat"]

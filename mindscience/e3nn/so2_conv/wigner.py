@@ -21,7 +21,7 @@ import os
 import pickle
 from mindspore import ops
 import mindspore as ms
-from mindscience.e3nn.utils.func import broadcast_args
+from ..utils.func import broadcast_args
 
 jd = None
 file_dir = os.path.dirname(os.path.abspath(__file__))
@@ -32,7 +32,20 @@ with open(pkl_path, 'rb') as f:
 
 def wigner_D(lv, alpha, beta, gamma):
     """
-    wigner_D function that complies with mindspore.jit compilation
+    Compute the Wigner D-matrix for the given angular momentum level and Euler angles.
+    This implementation reads from the precomputed data and is compatible with ms.jit compilations
+
+    Args:
+        lv (int): Angular momentum level (l value).
+        alpha (Tensor): First Euler angle (rotation around z-axis).
+        beta (Tensor): Second Euler angle (rotation around y-axis).
+        gamma (Tensor): Third Euler angle (rotation around z-axis).
+
+    Returns:
+        Tensor, The Wigner D-matrix of shape (..., 2*lv+1, 2*lv+1).
+
+    Raises:
+        NotImplementedError: If the requested l value exceeds the maximum supported level.
     """
     if not lv < len(jd):
         raise NotImplementedError(
