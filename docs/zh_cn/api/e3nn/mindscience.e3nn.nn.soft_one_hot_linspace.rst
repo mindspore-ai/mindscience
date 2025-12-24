@@ -21,11 +21,11 @@ mindscience.e3nn.nn.soft_one_hot_linspace
         - **start** (float) - 基函数区间最小值。
         - **end** (float) - 基函数区间最大值。
         - **number** (int) - 基函数的数量 :math:`N`。
-        - **basis** (str) - {'gaussian', 'cosine', 'smooth_finite', 'fourier', 'bessel'}，基函数的种类。默认值：``'smooth_finite'`` 。
-        - **cutoff** (bool) - 是否要求 :math:`y_i(x)` 在域 (`start`, `end`) 外取值为零。默认值：``True`` 。
+        - **basis** (str，可选) - {'gaussian', 'cosine', 'smooth_finite', 'fourier', 'bessel'}，基函数的种类。默认值：``'smooth_finite'`` 。
+        - **cutoff** (bool，可选) - 是否要求 :math:`y_i(x)` 在域 (`start`, `end`) 外取值为零。默认值：``True`` 。
 
     返回：
-        shape为 :math:`(..., N)` 的Tensor。
+        Tensor，形状为 :math:`(..., N)`。
 
     异常：
         - **ValueError** - 如果 `basis` 不是 {'gaussian', 'cosine', 'smooth_finite', 'fourier', 'bessel'} 之一。

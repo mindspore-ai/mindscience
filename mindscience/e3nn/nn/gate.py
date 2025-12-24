@@ -77,32 +77,50 @@ class _Sortcut(nn.Cell):
 
 class Gate(nn.Cell):
     r"""
-    Gate activation function. The input contain three parts: the first part `irreps_scalars` are scalars that only be
-    affected by activation functions `acts`;
-    the second part `irreps_gates` are scalars that be affected by activation functions `act_gates` and be multiplied
-    on the third part.
+    Gate activation function.
+
+    The input tensor is conceptually split into three disjoint subsets:
+
+    1. **Scalars for activation** (`irreps_scalars`):
+       These scalars are transformed element-wise by the corresponding
+       activation functions in `acts`, without affecting any other part.
+
+    2. **Scalars for gating** (`irreps_gates`):
+       These scalars are transformed element-wise by the corresponding
+       activation functions in `act_gates`, and then used as *gates* to
+       modulate the third subset.
+
+    3. **Gated irreps** (`irreps_gated`):
+       These irreps (of any angular momentum) are multiplied
+       channel-wise by the gated scalars produced in step 2.
+
+    Mathematically, the operation is expressed as
 
     .. math::
-        \left(\bigoplus_i \phi_i(x_i) \right) \oplus \left(\bigoplus_j \phi_j(g_j) y_j \right)
+        \left( \bigoplus_i \phi_i(x_i) \right)
+        \oplus
+        \left( \bigoplus_j \phi_j(g_j)\, y_j \right),
 
-    where :math:`x_i` and :math:`\phi_i` are from `irreps_scalars` and `acts`, and :math:`g_j`, :math:`\phi_j`,
-    and :math:`y_j` are from `irreps_gates`, `act_gates`, and `irreps_gated`.
+    where
+
+    * :math:`x_i` and :math:`\phi_i` correspond to the `irreps_scalars` and `acts`,
+    * :math:`g_j`, :math:`\phi_j`, and :math:`y_j` correspond to the `irreps_gates`,
+      `act_gates`, and `irreps_gated`, respectively.
+
+    The output irreps are the concatenation of the transformed scalars and the
+    gated irreps, preserving the overall equivariance properties.
 
     Args:
-        irreps_scalars (Union[str, Irrep, Irreps]): the input scalar irreps that will be passed through the
-            activation functions `acts`.
-        acts (List[Func]): a list of activation functions for each part of `irreps_scalars`.
-            The length of the `acts` will be clipped or filled by identity functions to match the length of
-            `irreps_scalars`.
-        irreps_gates (Union[str, Irrep, Irreps]): the input scalar irreps that will be passed through the
-            activation functions `act_gates` and multiplied by `irreps_gated`.
-        act_gates (List[Func]): a list of activation functions for each part of `irreps_gates`.
-            The length of the `acts` will be clipped or filled by identity functions to match the length of
-            `irreps_gates`.
-        irreps_gated (Union[str, Irrep, Irreps]): the input irreps that will be gated.
-        dtype (mindspore.dtype): The type of input tensor. Default: ``mindspore.float32``.
-        ncon_dtype (mindspore.dtype): The type of input tensors of ncon computation module.
-            Default: ``mindspore.float32``.
+        irreps_scalars (Union[str, Irrep, Irreps]): Scalar irreps to be activated by `acts`.
+        acts (list[Func]): Activation functions for each part of `irreps_scalars`.
+            Length is auto-padded/clipped with identity functions to match `irreps_scalars`.
+        irreps_gates (Union[str, Irrep, Irreps]): Scalar irreps to be activated by `act_gates`
+            and used as gates for `irreps_gated`.
+        act_gates (list[Func]): Activation functions for each part of `irreps_gates`.
+            Length is auto-padded/clipped with identity functions to match `irreps_gates`.
+        irreps_gated (Union[str, Irrep, Irreps]): Irreps to be gated.
+        dtype (mindspore.dtype, optional): Input tensor dtype. Default: ``mindspore.float32``.
+        ncon_dtype (mindspore.dtype, optional): Dtype for ncom computation. Default: ``mindspore.float32``.
 
     Inputs:
         - **input** (Tensor) - The shape of Tensor is :math:`(..., irreps\_in.dim)`.
@@ -111,16 +129,13 @@ class Gate(nn.Cell):
         - **output** (Tensor) - The shape of Tensor is :math:`(..., irreps\_out.dim)`.
 
     Raises:
-        ValueError: If `irreps_scalars` or `irreps_gates` contain non-scalar irrep.
-        ValueError: If the total multiplication of `irreps_gates` do not match the total multiplication of
+        ValueError: If `irreps_scalars` or `irreps_gates` contains non-scalar irrep.
+        ValueError: If the total multiplication of `irreps_gates` does not match the total multiplication of
             `irreps_gated`.
-
-    Supported Platforms:
-        ``Ascend``
 
     Examples:
         >>> from mindspore import ops
-        >>> from mindchemistry.e3.nn import Gate
+        >>> from mindscience.e3nn.nn import Gate
         >>> Gate('2x0e', [ops.tanh], '1x0o+2x0e', [ops.abs], '2x1o+1x2e')
         Gate (2x0e+1x0o+2x0e+2x1o+1x2e -> 2x0e+2x1o+1x2e)
     """

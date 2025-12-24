@@ -22,23 +22,25 @@ from ..o3.norm import Norm
 
 
 class NormActivation(nn.Cell):
-    r"""Activation function for the norm of irreps.
+    r"""
+    Activation function for the norm of irreps.
     Applies a scalar activation to the norm of each irrep and outputs a (normalized) version of that irrep multiplied
-    by the scalar output of the scalar activation.
+    by the scalar output of the scalar activation. Optionally, a learnable bias can be added to the norms before
+    the activation, and the resulting features can be normalized by their original norm to preserve angular
+    information while only modulating their magnitude.
 
     Args:
-        irreps_in (Union[str, Irrep, Irreps]): the input irreps.
-        act (Func): an activation function for each part of the norm of `irreps_in`.
-        normalize (bool): whether to normalize the input features before multiplying them by the scalars from the
-            nonlinearity. Default: True.
-        epsilon (float): when ``normalize``, norms smaller than ``epsilon`` will be clamped up to ``epsilon``
-            to avoid division by zero. Not allowed when `normalize` is False. Default: None.
-        bias (bool): whether to apply a learnable additive bias to the inputs of the `act`. Default: False.
-        init_method (Union[str, float, mindspore.common.initializer]): initialize parameters.
-            Default: ``'normal'``.
-        dtype (mindspore.dtype): The type of input tensor. Default: ``mindspore.float32``.
-        ncon_dtype (mindspore.dtype): The type of input tensors of ncon computation module.
-            Default: ``mindspore.float32``.
+        irreps_in (Union[str, Irrep, Irreps]): Input irreps.
+        act (Func): Activation function applied to the norm of each irrep.
+        normalize (bool, optional): Whether to normalize input features before multiplying by the scalars from the
+            nonlinearity. Default: ``True``.
+        epsilon (float, optional): When ``normalize``, norms smaller than ``epsilon`` are clamped to ``epsilon``
+            to prevent division by zero. Ignored if ``normalize`` is ``False``. Default: ``None``.
+        bias (bool, optional): Whether to apply a learnable additive bias to the inputs of ``act``. Default: ``False``.
+        init_method (Union[str, float, mindspore.common.initializer], optional): Parameter initialization method.
+            Default: ``'zeros'``.
+        dtype (mindspore.dtype, optional): Data type of input tensors. Default: ``mindspore.float32``.
+        ncon_dtype (mindspore.dtype, optional): Data type for ncon computation. Default: ``mindspore.float32``.
 
     Inputs:
         - **input** (Tensor) - The shape of Tensor is :math:`(..., irreps\_in.dim)`.
@@ -50,13 +52,9 @@ class NormActivation(nn.Cell):
         ValueError: If `epsilon` is not None and `normalize` is False.
         ValueError: If `epsilon` is not positive.
 
-    Supported Platforms:
-        ``Ascend``
-
     Examples:
-        >>> from mindchemistry.e3.nn import NormActivation
+        >>> from mindscience.e3nn.nn import NormActivation
         >>> from mindspore import ops, Tensor
-        >>> set_context(device_id=6)
         >>> norm_activation = NormActivation("2x1e", ops.sigmoid, bias=True)
         >>> print(norm_activation)
         NormActivation [sigmoid] (2x1e -> 2x1e)

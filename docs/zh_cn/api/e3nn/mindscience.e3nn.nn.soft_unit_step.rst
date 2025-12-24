@@ -12,7 +12,7 @@ mindscience.e3nn.nn.soft_unit_step
         - **x** (Tensor) - 输入张量。
 
     返回：
-        张量，单位阶跃函数的输出。
+        Tensor，单位阶跃函数的输出。
 
 
 

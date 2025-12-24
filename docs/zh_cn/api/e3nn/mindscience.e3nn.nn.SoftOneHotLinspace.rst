@@ -1,7 +1,7 @@
 mindscience.e3nn.nn.SoftOneHotLinspace
 ==========================================
 
-.. py:class:: mindscience.e3nn.nn.SoftOneHotLinspace(start, end, number, basis='smooth_finite', cutoff=True, dtype=float32)
+.. py:class:: mindscience.e3nn.nn.SoftOneHotLinspace(start, end, number, basis='smooth_finite', cutoff=True, dtype=mindspore.float32)
 
     投影到函数基上。返回一组 :math:`\{y_i(x)\}_{i=1}^N`，
 
@@ -15,14 +15,15 @@ mindscience.e3nn.nn.SoftOneHotLinspace
         \langle \sum_{i=1}^N y_i(x)^2 \rangle_x \approx 1
 
     注意 `bessel` 基函数不能被归一化。
+    所得特征被设计为在平移与旋转下不变，适用于在三维几何模型中编码径向或标量信息。
 
     参数：
         - **start** (float) - 基函数区间最小值。
         - **end** (float) - 基函数区间最大值。
         - **number** (int) - 基函数的数量 :math:`N`。
-        - **basis** (str) - {'gaussian', 'cosine', 'smooth_finite', 'fourier', 'bessel'}，基函数的种类。默认值：``'smooth_finite'`` 。
-        - **cutoff** (bool) - 是否要求 :math:`y_i(x)` 在域 (`start`, `end`) 外取值为零。默认值：``True`` 。
-        - **dtype** (mindspore.dtype) - 输入张量的类型。默认值：``mindspore.float32`` 。
+        - **basis** (str，可选) - {'gaussian', 'cosine', 'smooth_finite', 'fourier', 'bessel'}，基函数的种类。默认值：``'smooth_finite'`` 。
+        - **cutoff** (bool，可选) - 是否要求 :math:`y_i(x)` 在域 (`start`, `end`) 外取值为零。默认值：``True`` 。
+        - **dtype** (mindspore.dtype，可选) - 输入张量的类型。默认值：``mindspore.float32`` 。
 
     输入：
         - **x** (Tensor) - 形状为 :math:`(...)` 的张量。

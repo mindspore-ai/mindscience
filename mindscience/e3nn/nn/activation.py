@@ -59,15 +59,15 @@ class _Normalize(nn.Cell):
 
 class Activation(nn.Cell):
     r"""
-    Activation function for scalar-tensors. The parities of irreps may be changed according to the parity of each
-    activation functions.
-    Odd scalars require the corresponding activation functions to be odd or even.
+    Activation function for scalar irreps (:math:`l = 0`). The parity of each irrep may change depending on whether the
+    corresponding activation function is even or odd. Even scalars (`0e`) keep their parity; odd scalars (`0o`) flip
+    to even (`0e`) when an even activation is applied and remain odd (`0o`) only if an odd activation is used.
 
     Args:
-        irreps_in (Union[str, Irrep, Irreps]): the input irreps.
-        acts (List[Func]): a list of activation functions for each part of `irreps_in`.
-            The length of the `acts` will be clipped or filled by identity functions to match the length of `irreps_in`.
-        dtype (mindspore.dtype): The type of input tensor. Default: ``mindspore.float32``.
+        irreps_in (Union[str, Irrep, Irreps]): The input irreps.
+        acts (list[Func]): A list of activation functions for each part of `irreps_in`.
+            The length of `acts` will be clipped or filled with identity functions to match the length of `irreps_in`.
+        dtype (mindspore.dtype, optional): The data type of the input tensor. Default: ``mindspore.float32``.
 
     Inputs:
         - **inputs** (Tensor) - The shape of Tensor is :math:`(*, irreps\_in.dim)`.
@@ -76,14 +76,11 @@ class Activation(nn.Cell):
         - **outputs** (Tensor) - The shape of Tensor is :math:`(*, irreps\_in.dim)`.
 
     Raises:
-        ValueError: If `irreps_in` contain non-scalar irrep.
+        ValueError: If `irreps_in` contains non-scalar irrep.
         ValueError: If a irrep in `irreps_in` is odd, but the corresponding activation function is neither even nor odd.
 
-    Supported Platforms:
-        ``Ascend``
-
     Examples:
-        >>> from mindchemistry.e3.nn import Activation
+        >>> from mindscience.e3nn.nn import Activation
         >>> from mindspore import ops, Tensor
         >>> act = Activation('3x0o+2x0e+1x0o', [ops.abs, ops.tanh])
         >>> print(act)
@@ -104,7 +101,7 @@ class Activation(nn.Cell):
         for (mul, (l_in, p_in)), act in zip(irreps_in.data, acts):
             if act is not None:
                 if l_in != 0:
-                    raise ValueError(f"Activation cannot apply an activation function to a non-scalar input.")
+                    raise ValueError("Activation cannot apply an activation function to a non-scalar input.")
 
                 acts_out.append(_Normalize(act, dtype=dtype))
                 p_out = _parity_function(acts_out[-1]) if p_in == -1 else p_in

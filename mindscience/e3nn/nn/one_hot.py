@@ -32,29 +32,49 @@ def soft_unit_step(x):
         x \mapsto \theta(x) e^{-1/x}
 
     Args:
-        x (Tensor): the input tensor.
+        x (Tensor): Input tensor.
 
     Returns:
         Tensor, the output of the unit step function.
 
-    Supported Platforms:
-        ``Ascend``
-
     Examples:
-        >>> from mindchemistry.e3.nn import soft_unit_step
-        >>> from mindspore import ops, set_context, Tensor
+        >>> from mindscience.e3nn.nn import soft_unit_step
+        >>> from mindspore import ops, Tensor
         >>> x = Tensor(ops.linspace(-1.0, 10.0, 1000))
         >>> outputs = soft_unit_step(x)
         >>> print(outputs.shape)
         (1000,)
-
     """
     return ops.relu(x) * ops.exp(- 1 / x) / x
 
 
 class OneHot(nn.Cell):
     r"""
-    One-hot embedding.
+    One-hot embedding with irreps support.
+
+    The output is automatically wrapped with :class:`~.e3nn.o3.Irreps` to indicate
+    that it transforms as a collection of scalar (:math:`l = 0`) representations. This allows
+    the embedding to be used seamlessly in e3nn networks that expect irreps
+    annotations.
+
+    Args:
+        num_types (int): Number of distinct atom types.
+        dtype (mindspore.dtype, optional): Data type of the embedding. Default: ``mindspore.float32``.
+
+    Inputs:
+        - **atom_type** (Tensor) - Tensor of shape :math:`(...)`, containing integer atom-type indices.
+
+    Outputs:
+        - **output** (Tensor) - One-hot tensor of shape :math:`(..., \text{num_types})`.
+
+    Examples:
+        >>> from mindscience.e3nn.nn import OneHot
+        >>> from mindspore import Tensor
+        >>> one_hot = OneHot(num_types=4)
+        >>> atom_type = Tensor([0, 2, 1])
+        >>> out = one_hot(atom_type)
+        >>> print(out.shape)
+        (3, 4)
     """
 
     def __init__(self, num_types, dtype=float32):
@@ -83,23 +103,25 @@ class SoftOneHotLinspace(nn.Cell):
     .. math::
         y_i(x) = \frac{1}{Z} f_i(x)
 
-    where :math:`x` is the input and :math:`f_i` is the ith basis function.
+    where :math:`x` is the input and :math:`f_i` is the ith basis function and
     :math:`Z` is a constant defined (if possible) such that,
 
     .. math::
         \langle \sum_{i=1}^N y_i(x)^2 \rangle_x \approx 1
 
-    Note that `bessel` basis cannot be normalized.
+    Note that `bessel` basis cannot be normalized. The resulting features are
+    designed to be invariant under translations and rotations, making them
+    suitable for encoding radial or scalar information in 3D geometric models.
 
     Args:
         start (float): minimum value span by the basis.
-        end (float): maximum  value span by the basis.
+        end (float): maximum value span by the basis.
         number (int): number of basis functions :math:`N`.
-        basis (str): {'gaussian', 'cosine', 'smooth_finite', 'fourier', 'bessel'}, the basis family.
+        basis (str, optional): {'gaussian', 'cosine', 'smooth_finite', 'fourier', 'bessel'}, the basis family.
             Default: ``'smooth_finite'``.
-        cutoff (bool): whether require the :math:`y_i(x)` from the outside domain of (`start`, `end`) to be
+        cutoff (bool, optional): whether require the :math:`y_i(x)` from the outside domain of (`start`, `end`) to be
             vanished. Default: ``True``.
-        dtype (mindspore.dtype): The type of input tensor. Default: ``mindspore.float32``.
+        dtype (mindspore.dtype, optional): The type of input tensor. Default: ``mindspore.float32``.
 
     Inputs:
         - **x** (Tensor) - The shape of Tensor is :math:`(...)`.
@@ -110,11 +132,8 @@ class SoftOneHotLinspace(nn.Cell):
     Raises:
         ValueError: If `basis` is not in {'gaussian', 'cosine', 'smooth_finite', 'fourier', 'bessel'}.
 
-    Supported Platforms:
-        ``Ascend``
-
     Examples:
-        >>> from mindchemistry.e3.nn import SoftOneHotLinspace
+        >>> from mindscience.e3nn.nn import SoftOneHotLinspace
         >>> from mindspore import ops, Tensor
         >>> soft_one_hot_linspace = SoftOneHotLinspace(-0.5, 1.5, number=4)
         >>> x = Tensor(ops.ones((4, 6)))
@@ -186,9 +205,10 @@ class SoftOneHotLinspace(nn.Cell):
 
     def _set_mixed_precision_type_recursive(self, dst_type):
         super()._set_mixed_precision_type_recursive(dst_type)
-        self.values = self.values.astype(TMAP[dst_type.__str__()])
-        for i in range(len(self.consts)):
-            self.consts[i] = self.consts[i].astype(TMAP[dst_type.__str__()])
+        key = str(dst_type)
+        self.values = self.values.astype(TMAP[key])
+        for i, const in enumerate(self.consts):
+            self.consts[i] = const.astype(TMAP[key])
 
 
 def soft_one_hot_linspace(x, start, end, number, basis='smooth_finite', cutoff=True):
@@ -209,11 +229,11 @@ def soft_one_hot_linspace(x, start, end, number, basis='smooth_finite', cutoff=T
     Args:
         x (Tensor): The shape of Tensor is :math:`(...)`.
         start (float): minimum value span by the basis.
-        end (float): maximum  value span by the basis.
+        end (float): maximum value span by the basis.
         number (int): number of basis functions :math:`N`.
-        basis (str): {'gaussian', 'cosine', 'smooth_finite', 'fourier', 'bessel'}, the basis family.
+        basis (str, optional): {'gaussian', 'cosine', 'smooth_finite', 'fourier', 'bessel'}, the basis family.
             Default: ``'smooth_finite'``.
-        cutoff (bool): whether require the :math:`y_i(x)` from the outside domain of (`start`, `end`) to be
+        cutoff (bool, optional): whether require the :math:`y_i(x)` from the outside domain of (`start`, `end`) to be
             vanished. Default: ``True``.
 
     Returns:
@@ -222,11 +242,8 @@ def soft_one_hot_linspace(x, start, end, number, basis='smooth_finite', cutoff=T
     Raises:
         ValueError: If `basis` is not in {'gaussian', 'cosine', 'smooth_finite', 'fourier', 'bessel'}.
 
-    Supported Platforms:
-        ``Ascend``
-
     Examples:
-        >>> from mindchemistry.e3.nn import soft_one_hot_linspace
+        >>> from mindscience.e3nn.nn import soft_one_hot_linspace
         >>> from mindspore import ops, Tensor
         >>> x = Tensor(ops.ones((4, 6)))
         >>> outputs = soft_one_hot_linspace(x, -0.5, 1.5, number=4)
