@@ -131,17 +131,13 @@ class Irrep:
         3. Rotate by :math:`\alpha` around the newest Y axis.
 
         Args:
-            alpha (Union[Tensor[float32], list[float], tuple[float],
-                         ndarray[np.float32], float]):
+            alpha (Union[Tensor[float32], list[float], tuple[float], ndarray[np.float32], float]):
                 Rotation :math:`\alpha` around Y axis, applied third.
-            beta (Union[Tensor[float32], list[float], tuple[float],
-                        ndarray[np.float32], float]):
+            beta (Union[Tensor[float32], list[float], tuple[float], ndarray[np.float32], float]):
                 Rotation :math:`\beta` around X axis, applied second.
-            gamma (Union[Tensor[float32], list[float], tuple[float],
-                         ndarray[np.float32], float]):
+            gamma (Union[Tensor[float32], list[float], tuple[float], ndarray[np.float32], float]):
                 Rotation :math:`\gamma` around Y axis, applied first.
-            k (Union[None, Tensor[float32], list[float], tuple[float],
-                     ndarray[np.float32], float], optional):
+            k (Union[None, Tensor[float32], list[float], tuple[float], ndarray[np.float32], float], optional):
                 How many times the parity is applied. Default: ``None`` .
 
         Returns:
@@ -775,21 +771,17 @@ class Irreps:
         multiplicity.
 
         Args:
-            alpha (Union[Tensor[float32], list[float], tuple[float],
-                         ndarray[np.float32], float]):
+            alpha (Union[Tensor[float32], list[float], tuple[float], ndarray[np.float32], float]):   
                 rotation :math:`\alpha` around Y axis, applied third.
-            beta (Union[Tensor[float32], list[float], tuple[float],
-                        ndarray[np.float32], float]):
+            beta (Union[Tensor[float32], list[float], tuple[float], ndarray[np.float32], float]):
                 rotation :math:`\beta` around X axis, applied second.
-            gamma (Union[Tensor[float32], list[float], tuple[float],
-                         ndarray[np.float32], float]):
+            gamma (Union[Tensor[float32], list[float], tuple[float], ndarray[np.float32], float]):
                 rotation :math:`\gamma` around Y axis, applied first.
-            k (Union[None, Tensor[float32], list[float], tuple[float],
-                     ndarray[np.float32], float], optional):
+            k (Union[None, Tensor[float32], list[float], tuple[float], ndarray[np.float32], float], optional):
                 How many times the parity is applied. Default: ``None``.
 
         Returns:
-            Tensor, representation wigner D matrix of O(3). The shape of Tensor is :math:`(..., 2l+1, 2l+1)`
+            Tensor, representation wigner D matrix of O(3). The shape of Tensor is :math:`(..., 2l+1, 2l+1)` .
 
         Examples:
             >>> m = Irreps("1o").wigD_from_angles(0, 0 ,0, 1)
@@ -814,7 +806,7 @@ class Irreps:
             R (Tensor): Rotation matrices. The shape of Tensor is :math:`(..., 3, 3)`.
 
         Returns:
-            Tensor, representation wigner D matrix of O(3). The shape of Tensor is :math:`(..., 2l+1, 2l+1)`
+            Tensor, representation wigner D matrix of O(3). The shape of Tensor is :math:`(..., 2l+1, 2l+1)` .
 
         Raises:
             TypeError: If `R` is not a Tensor.
