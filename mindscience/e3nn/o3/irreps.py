@@ -521,7 +521,7 @@ class Irreps:
         Multiplicity of `ir`.
 
         Args:
-            ir (Irrep): `Irrep`
+            ir (Irrep): Irreducible representation.
 
         Returns:
             int, total multiplicity of `ir`.

@@ -8,7 +8,7 @@ mindscience.e3nn.nn.OneHot
 
     参数：
         - **num_types** (int) - 不同原子类型的数量。
-        - **dtype** (mindspore.dtype，可选) - 嵌入的数据类型。默认值：``mindspore.float32`` 。
+        - **dtype** (mindspore.dtype，可选) - 嵌入的数据类型。默认值： ``mindspore.float32`` 。
 
     输入：
         - **atom_type** (Tensor) - 形状为 :math:`(...)` 的张量，包含整数的原子类型索引。

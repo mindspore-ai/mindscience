@@ -122,8 +122,8 @@ def set_fft_cache_size(cache_size):
         cache_size (int): Cache number of ASD FFT operators.
 
     Examples:
-        >>> from mindscience.sciops.fft import set_cache_size
-        >>> set_cache_size(1024)  # Set 1024 fft operators cache number
+        >>> from mindscience.sciops.fft import set_fft_cache_size
+        >>> set_fft_cache_size(1024)  # Set 1024 fft operators cache number
     """
     _get_asd_fft_op().asd_set_cache_size(cache_size)
 
