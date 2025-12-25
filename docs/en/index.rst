@@ -28,7 +28,7 @@ Common Model Interfaces:
 - Distributed Parallelism: Distributed parallelism is a core efficient computing solution for handling large-scale AI4Science tasks. By splitting massive data, complex models, or computing tasks across multi-node, multi-device clusters for collaborative processing, it breaks through the computing power and memory bottlenecks of single devices, providing key computing power guarantees for AI4Science to expand toward more complex and refined research directions.
 
 Applications
------------
+----------------
 
 .. raw:: html
 

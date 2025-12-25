@@ -434,10 +434,10 @@ class IDFTn(DFTn):
 
     Examples:
         >>> from mindspore import ops
-        >>> from mindflow.cell import DFTn
+        >>> from mindscience.sciops.dft import IDFTn
         >>> ar = ops.rand((2, 32, 512))
         >>> ai = ops.rand((2, 32, 512))
-        >>> dft_cell = DFTn(ar.shape[-2:])
+        >>> dft_cell = IDFTn(ar.shape[-2:])
         >>> br, bi = dft_cell(ar, ai)
         >>> print(br.shape)
         (2, 32, 512)
@@ -506,7 +506,7 @@ class IDCT(nn.Cell):
     1D inverse discrete cosine transformation on real number on the last axis. The results should be same as
     `scipy.fft.dct() <https://docs.scipy.org/doc/scipy/reference/generated/scipy.fft.dct.html#scipy.fft.dct>`_ .
     Reference: `A fast cosine transform in one and two dimensions
-        <https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=1163351>`_ .
+    <https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=1163351>`_ .
 
     Args:
         shape (tuple): The shape of the dimensions to be transformed, other dimensions need not be included.
