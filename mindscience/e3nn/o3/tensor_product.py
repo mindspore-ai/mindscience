@@ -361,9 +361,8 @@ class TensorProduct(nn.Cell):
             If `irreps_out` is None, `irreps_out` will be the full
             tensor product irreps (including all possible paths).
             Default: ``None``.
-        instructions (Union[str, list[tuple[int, int, int, str, bool,
-                                            (float)]]], optional): List of tensor
-            product path instructions. Default: ``'full'``.
+        instructions (Union[str, list[tuple[int, int, int, str, bool, (float)]]], optional):
+            List of tensor product path instructions. Default: ``'full'``.
             For `str` in {'full', 'connect', 'element', 'linear',
             'mearge'}, the instructions are constructed automatically
             according to the different modes:
