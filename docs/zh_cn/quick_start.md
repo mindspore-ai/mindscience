@@ -54,6 +54,7 @@ from mindscience.pde import UnsteadyFlowWithLoss
 ```
 
 #### 创建数据集
+
 基于周期边界条件，生成满足如下分布的初始条件 $u_0$：
 
 $$
@@ -61,6 +62,7 @@ u_0 \sim \mathcal{N}\left(0,625(-\Delta + 25I)^{-2}\right).
 $$
 
 该分布已在 `create_training_dataset` 中实现，只需按如下格式调用：
+
 ```python
 from src import create_training_dataset, visual
 # create training dataset

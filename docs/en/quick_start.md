@@ -54,6 +54,7 @@ from mindscience.pde import UnsteadyFlowWithLoss
 ```
 
 #### Create Dataset
+
 Generate initial values $u_0$ that satisfy the following distribution, based on periodic boundary conditions.
 
 $$
@@ -61,6 +62,7 @@ u_0 \sim \mathcal{N}\left(0,625(-\Delta + 25I)^{-2}\right).
 $$
 
 This distribution has already been implemented in `create_training_dataset`. Simply call it in the following format:
+
 ```python
 from src import create_training_dataset, visual
 # create training dataset
