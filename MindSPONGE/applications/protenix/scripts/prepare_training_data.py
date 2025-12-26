@@ -1,3 +1,4 @@
+# Copyright 2025 Huawei Technologies Co., Ltd
 # Copyright 2024 ByteDance and/or its affiliates.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -27,6 +28,7 @@ from tqdm import tqdm
 
 from protenix.data.data_pipeline import DataPipeline
 from protenix.utils.file_io import dump_gzip_pickle
+from prepare_train_msa import get_msa
 
 
 def gen_a_bioassembly_data(
@@ -59,7 +61,8 @@ def gen_a_bioassembly_data(
     if sample_indices_list and bioassembly_dict:
         pdb_id = bioassembly_dict["pdb_id"]
         # save to output dir
-        dump_gzip_pickle(bioassembly_dict, bioassembly_output_dir / f"{pdb_id}.pkl.gz")
+        dump_gzip_pickle(bioassembly_dict,
+                         bioassembly_output_dir / f"{pdb_id}.pkl.gz")
         return sample_indices_list
     return None
 
@@ -137,7 +140,8 @@ def run_gen_data(
     bioassembly_output_dir.mkdir(parents=True, exist_ok=True)
 
     if input_path.is_dir():
-        mmcif_list = list(input_path.glob("*.cif")) + list(input_path.glob("*.cif.gz"))
+        mmcif_list = list(input_path.glob("*.cif")) + \
+            list(input_path.glob("*.cif.gz"))
     elif input_path.suffix == ".txt":
         with open(input_path, encoding="utf-8") as f:
             mmcif_list = [i.strip() for i in f.readlines()]
@@ -184,7 +188,18 @@ if __name__ == "__main__":
         default=None,
         help="Path to the cluster txt file, if any",
     )
-
+    parser.add_argument(
+        "--use_msa",
+        action="store_true",
+        help="Whether to use MSA.",
+    )
+    parser.add_argument(
+        "-m",
+        "--msa_out_dir",
+        type=Path,
+        default=None,
+        help="Directory where msa outputs will be saved.",
+    )
     parser.add_argument(
         "-d",
         "--distillation",
@@ -210,3 +225,10 @@ if __name__ == "__main__":
         distillation=args.distillation,
         num_workers=args.n_cpu,
     )
+    if args.use_msa:
+        get_msa(
+            input_cif_dir=args.input_path,
+            msa_out_dir=args.msa_out_dir if args.msa_out_dir is not None else str(
+                args.input_path / "msa"),
+            num_workers=args.n_cpu,
+        )

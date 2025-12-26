@@ -37,6 +37,7 @@ from protenix.model.protenix import Protenix
 from protenix.download.colab_request_parser import RequestParser
 from protenix.utils.seed import seed_everything
 from runner.dumper import DataDumper
+from runner.batch_inference import msa
 
 logger = logging.getLogger(__name__)
 
@@ -199,6 +200,9 @@ def run() -> None:
         arg_str=parse_sys_args(),
         fill_required_with_null=True,
     )
+    if configs.use_msa:
+        msa(input_path=configs.input_json_path, out_dir=os.path.dirname(configs.input_json_path))
+        configs.input_json_path = configs.input_json_path[:-5] + '-add-msa.json'
     main(configs)
 
 

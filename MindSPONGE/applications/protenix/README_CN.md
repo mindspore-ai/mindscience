@@ -58,6 +58,14 @@ pip install -r requirements.txt
 
 从以下链接下载[模型权重](https://tools.mindspore.cn/dataset/workspace/mindspore_ckpt/ckpt/Protenix/ms_model_v0.5.0.ckpt)并将其放在`./release_data/checkpoint`下。
 
+### 步骤 4：设置环境变量
+
+运行一下命令设置PYTHONPATH：
+
+```bash
+source set_path.sh
+```
+
 ## 🚀 推理
 
 ### 基本用法
@@ -77,16 +85,19 @@ python inference.py \
 创建一个指定生物分子系统的输入 JSON 文件。示例：
 
 ```json
-{
-  "sequences": [
-    {
-      "protein": {
-        "id": "A",
-        "sequence": "MKKYTCTVCGYIYNPEDGDPDNGVNPGTP..."
+[
+  {
+    "sequences": [
+      {
+        "proteinChain": {
+          "sequence": "SEFEKLRQTGDELVQAFQRLREIFDKGDDDSLEQVLEEIEELIQKHRQLFDNRQEAADTEAAKQGDQWVQLFQRFREAIDKGDKDSLEQLLEELEQALQKIRELAEKKN",
+          "count": 1
+        }
       }
-    }
-  ]
-}
+    ],
+    "name": "5tgy"
+  }
+]
 ```
 
 ### 关键参数
@@ -109,7 +120,7 @@ python inference.py \
   --seeds 42 \
   --dump_dir ./output \
   --input_json_path /PATH/TO/INPUT/FILE/input.json \
-  --n_samples 10
+  --n_sample 10
 ```
 
 **不使用 MSA 运行（可能造成精度降低）：**
@@ -144,6 +155,12 @@ python inference.py \
 python scripts/prepare_training_data.py -i /PATH/TO/MMCIF/FILES -o /PATH/TO/OUTPUT/DATA.csv.gz -b /PATH/TO/PROCESSED/DATA -d
 ```
 
+如搜索MSA:
+
+```bash
+python scripts/prepare_training_data.py -i /PATH/TO/MMCIF/FILES -o /PATH/TO/OUTPUT/DATA.csv.gz -b /PATH/TO/PROCESSED/DATA -d --use_msa
+```
+
 ### 数据预处理参数说明
 
 | 参数 | 说明 | 默认值 |
@@ -152,6 +169,8 @@ python scripts/prepare_training_data.py -i /PATH/TO/MMCIF/FILES -o /PATH/TO/OUTP
 | `-o` | csv文件输出路径 | 无(该参数必选) |
 | `-b` | 数据输出目录 | 无(该参数必选) |
 | `-d` | 是否进行额外出处理（包括删除水及氢原子等） | 无需赋值 |
+| `--use_msa` | 是否进行MSA搜索 | 无需赋值 |
+| `-m` | MSA搜索结果路径 | None |
 
 ### 模型训练
 
@@ -172,10 +191,12 @@ python train.py --run_name protenix_train --seed 42 --base_dir ./output --diffus
 | `--checkpoint_interval` | 检查点保存间隔步数 | `-1` |
 | `--train_crop_size` | 训练样本裁剪大小 | `384` |
 | `--lr` | 学习率 | `0.0018` |
-| `--data.msa.enable` | 启用/禁用 MSA 特征 | `True` |
 | `--load_checkpoint_path` | 检查点路径（用于微调） | `""` |
 | `--data.train_sets` | 训练集名称 | `weightedPDB_before2109_wopb_nometalc_0925`, 具体可参考configs.configs_data |
 | `--data.test_sets` | 测试集名称 | `recentPDB_1536_sample384_0925`,  具体可参考configs.configs_data |
+| `--data.msa.enable` | 启用/禁用 MSA 特征 | `True` |
+| `--data.msa.prot.pdb_mmseqs_dir` | MSA文件路径 | `DATA_ROOT_DIR/mmcif_msa` |
+| `--data.msa.prot.seq_to_pdb_idx_path` | seq_to_pdb_idx路径 | `DATA_ROOT_DIR/seq_to_pdb_index.json` |
 
 ### 数据集路径配置
 

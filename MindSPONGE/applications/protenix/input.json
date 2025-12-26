@@ -2,11 +2,12 @@
   {
     "sequences": [
       {
-        "protein": {
-          "id": "A",
-          "sequence": "MKKYTCTVCGYIYNPEDGDPDNGVNPGTP..."
+        "proteinChain": {
+          "sequence": "SEFEKLRQTGDELVQAFQRLREIFDKGDDDSLEQVLEEIEELIQKHRQLFDNRQEAADTEAAKQGDQWVQLFQRFREAIDKGDKDSLEQLLEELEQALQKIRELAEKKN",
+          "count": 1
         }
       }
-    ]
+    ],
+    "name": "5tgy"
   }
 ]

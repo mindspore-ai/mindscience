@@ -19,11 +19,12 @@ Training script for Protenix model.
 """
 import os
 import gc
+import logging
 import time
 import numpy as np
 
 import mindspore as ms
-from mindspore import nn
+from mindspore import nn, mint
 from mindspore.communication import init, get_rank, get_group_size
 
 from configs.configs_base import configs as configs_base
@@ -54,13 +55,9 @@ def train_step(inputs, optim, parallel=None):
 def train_loop(network, inputs, optim, parallel=None):
     network.set_train()
     loss = train_step(inputs, optim, parallel)
-
-    loss_val = loss.asnumpy()
-    print(f"loss: {loss_val:>7f}")
-    del loss
     ms.hal.empty_cache()
     gc.collect()
-    return loss_val
+    return loss
 
 
 if __name__ == '__main__':
@@ -74,7 +71,7 @@ if __name__ == '__main__':
         init()
         ms.set_auto_parallel_context(
             parallel_mode=ms.ParallelMode.DATA_PARALLEL, gradients_mean=True)
-    print('start training')
+    logging.info('start training')
     configs = {**configs_base, **{"data": data_configs}}
     configs = parse_configs(
         configs,
@@ -134,7 +131,7 @@ if __name__ == '__main__':
         for i in idx_per_rank:
             data = dataloader[int(i)]
             count += 1
-            print(f'=======step-{count}========')
+            logging.info('=======step-%d========', count)
             batch = Batch()
             batch.load_from_dict(data)
             batch.atom_perm_list = data["input_feature_dict"]["atom_perm_list"]
@@ -149,7 +146,18 @@ if __name__ == '__main__':
             start_step_time = time.time()
             training_loss = train_loop(model, batch, optimizer, parallel_mode)
             end_step_time = time.time()
-            print(f'time: {end_step_time-start_step_time}, loss: {training_loss.item()}')
+
+            # 在数据并行模式下，聚合所有rank的loss
+            if parallel_mode == "DATA_PARALLEL":
+                # 将loss转换为Tensor并进行AllReduce求和
+                total_loss = mint.distributed.all_reduce(loss_tensor)
+                # 计算平均loss
+                _ = total_loss.asnumpy() / rank_size
+                if rank_id == 0:
+                    logging.info('[Rank %d] time: %f, avg_loss_all_ranks: %f',
+                                rank_id, (end_step_time-start_step_time), avg_loss)
+            else:
+                logging.info('time: %f, loss: %f', (end_step_time-start_step_time), training_loss.item())
             if count % configs.checkpoint_interval == 0:
                 ms.save_checkpoint(model, configs.base_dir + f'/checkpoint_{count}.ckpt')
             if training_loss < best_loss:

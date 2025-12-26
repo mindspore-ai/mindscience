@@ -1,3 +1,4 @@
+# Copyright 2025 Huawei Technologies Co., Ltd
 # Copyright 2024 ByteDance and/or its affiliates.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -125,7 +126,8 @@ def _get_component_rdkit_mol_processing(
 
     # atom name from ccd, reading by pdbeccdutils
     # copy atom name for pickle https://github.com/rdkit/rdkit/issues/2470
-    mol.atom_map = {atom.GetProp("name"): atom.GetIdx() for atom in mol.GetAtoms()}
+    mol.atom_map = {atom.GetProp("name"): atom.GetIdx()
+                    for atom in mol.GetAtoms()}
 
     mol.name = ccd_code
     mol.sanitized = ccd_reader_result.sanitized
@@ -138,7 +140,8 @@ def _get_component_rdkit_mol_processing(
 
     # make ref_mask, ref_mask is True if ideal coord is valid
     atoms = ccd_block.find(
-        "_chem_comp_atom.", ["atom_id", "model_Cartn_x", "pdbx_model_Cartn_x_ideal"]
+        "_chem_comp_atom.", ["atom_id",
+                             "model_Cartn_x", "pdbx_model_Cartn_x_ideal"]
     )
     assert num_atom == len(atoms)
     ref_mask = np.zeros(num_atom, dtype=bool)
@@ -200,7 +203,8 @@ def precompute_ccd_mol(ccd_cif: Path, output_pkl: Path, num_cpu: int = 1):
     # success rate
     n_ccd = len(ccd_codes)
     logging.info(
-        "success rate: %.2f%% (%d/%d)", len(mols) / n_ccd * 100, len(mols), n_ccd
+        "success rate: %.2f%% (%d/%d)", len(mols) /
+        n_ccd * 100, len(mols), n_ccd
     )
 
     # sanitized rate
