@@ -153,7 +153,7 @@ for epoch in range(1, optimizer_params["epochs"] + 1):
         save_checkpoint(model, os.path.join(ckpt_dir, model_params["name"] + '_epoch' + str(epoch)))
 ```
 
-#### Training Method 1: Call the `train.py` script via the command line.
+#### Training Method 1: Call the `train.py` script via the command line
 
 ```shell
 export PYTHONPATH=$(cd ../../../../../ && pwd):$PYTHONPATH
