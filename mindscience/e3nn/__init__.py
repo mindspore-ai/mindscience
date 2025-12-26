@@ -15,9 +15,11 @@
 """init for e3 module"""
 from .o3 import *
 from .nn import *
+from .so2_conv import *
 from .utils import *
 
 __all__ = []
 __all__.extend(o3.__all__)
 __all__.extend(nn.__all__)
+__all__.extend(so2_conv.__all__)
 __all__.extend(utils.__all__)

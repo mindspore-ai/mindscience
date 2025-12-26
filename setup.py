@@ -26,7 +26,7 @@ package_name = os.getenv('ME_PACKAGE_NAME').replace("\n", "")
 def read_version():
     """generate python file"""
     version_file = os.path.join(cur_dir, './', 'version.txt')
-    with open(version_file, 'r') as f:
+    with open(version_file, 'r', encoding='utf-8') as f:
         version_ = f.readlines()[-1].strip()
     return version_
 
@@ -57,6 +57,7 @@ package_data = {
         'sciops/evoformer_attention/binary/*/*/*/*/*/*',
         'sciops/evoformer_attention/binary/*/*/*/*/*/*/*',
         'sciops/evoformer_attention/binary/*/*/*/*/*/*/*/*',
+        'e3nn/so2_conv/jd.pkl',
     ],
     'mindscience.sciops.fft': ['*.cpp'],
     '_c_minddata': ['lib_c_minddata*.so']
