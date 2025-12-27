@@ -27,39 +27,50 @@ from src.models.Transolver_Structured_Mesh_2D import Model as Transolver
 from src.datasets.dataset import create_dataset, DarcyDataset
 from src.utils.normalizer import GaussianNormalizer
 
-parser = argparse.ArgumentParser(description='Training Transolver')
 
-parser.add_argument('--lr', type=float, default=1e-3)
-parser.add_argument('--epochs', type=int, default=500)
-parser.add_argument('--weight_decay', type=float, default=1e-5)
-parser.add_argument('--model', type=str, default='Transolver_2D')
-parser.add_argument('--n-hidden', type=int, default=64, help='hidden dim')
-parser.add_argument('--n-layers', type=int, default=3, help='layers')
-parser.add_argument('--n-heads', type=int, default=4)
-parser.add_argument('--batch-size', type=int, default=8)
-parser.add_argument("--gpu", type=str, default='0', help="GPU index")
-parser.add_argument('--max_grad_norm', type=float, default=None)
-parser.add_argument('--downsample', type=int, default=5)
-parser.add_argument('--mlp_ratio', type=int, default=1)
-parser.add_argument('--dropout', type=float, default=0.0)
-parser.add_argument('--ntrain', type=int, default=1000)
-parser.add_argument('--unified_pos', type=int, default=0)
-parser.add_argument('--ref', type=int, default=8)
-parser.add_argument('--slice_num', type=int, default=32)
-parser.add_argument('--eval', type=int, default=0)
-parser.add_argument('--save_name', type=str, default='darcy_Transolver')
-parser.add_argument('--data-path', type=str, default='./piececonst_r421_N1024_smooth1.mat')
-parser.add_argument('--resolution', type=int, default=32)
-parser.add_argument('--subsampling', type=int, default=13)
-parser.add_argument('--device_target', type=str, default='Ascend')
+def get_parser():
+    """get parser for training and evaluation"""
+    parser = argparse.ArgumentParser(description="Transolver Darcy 2D Training")
+    
+    # Execution context parameters
+    parser.add_argument("--mode", type=str, default="GRAPH", choices=["GRAPH", "PYNATIVE"], help="context mode")
+    parser.add_argument("--device_target", type=str, default="Ascend", help="target device")
+    parser.add_argument("--device_id", type=int, default=0, help="device id")
+    parser.add_argument("--data_path", type=str, default="./piececonst_r421_N1024_smooth1.mat", help="data path")
+    parser.add_argument("--save_name", type=str, default="transolver_darcy", help="checkpoint save name")
 
-args = parser.parse_args()
+    # Model Architecture Hyperparameters
+    parser.add_argument("--n_hidden", type=int, default=128, help="hidden dimension")
+    parser.add_argument("--n_layers", type=int, default=4, help="number of layers")
+    parser.add_argument("--n_head", type=int, default=8, help="number of heads")
+    parser.add_argument("--unified_pos", type=int, default=1, help="whether to use unified position")
+    parser.add_argument("--ref", type=int, default=8, help="reference dimension")
+    parser.add_argument("--slice_num", type=int, default=32, help="number of slices")
+    parser.add_argument("--mlp_ratio", type=int, default=1, help="MLP expansion ratio")
+    parser.add_argument("--dropout", type=float, default=0.0, help="Dropout rate")
+
+    # Training Strategy Hyperparameters
+    parser.add_argument("--batch_size", type=int, default=32, help="batch size")
+    parser.add_argument("--epochs", type=int, default=500, help="number of training epochs")
+    parser.add_argument("--lr", type=float, default=0.001, help="learning rate")
+    parser.add_argument("--weight_decay", type=float, default=1e-5, help="weight decay")
+    parser.add_argument("--max_grad_norm", type=float, default=1.0, help="max gradient norm for clipping")
+    parser.add_argument("--eval", type=int, default=0, help="evaluation mode")
+
+    # Data Resolution and Sampling
+    parser.add_argument("--ntrain", type=int, default=1000, help="number of training samples")
+    parser.add_argument("--resolution", type=int, default=32, help="data resolution")
+    parser.add_argument("--subsampling", type=int, default=13, help="subsampling rate")
+    
+    return parser
 
 
-def train(model, train_loader, x_normalizer, y_normalizer, step_per_epoch):
+def train(model, train_loader, x_normalizer, y_normalizer, steps_per_epoch, args):
     """train process"""
-    print('Training...')
+    print(f"[INFO] Start Training: {args.save_name}")
+
     loss_fn = nn.MSELoss()
+    # Use AdamWeightDecay to support weight_decay parameter
     optimizer = nn.AdamWeightDecay(model.trainable_params(),
                                    learning_rate=args.lr,
                                    weight_decay=args.weight_decay)
@@ -76,152 +87,103 @@ def train(model, train_loader, x_normalizer, y_normalizer, step_per_epoch):
     @ms.jit
     def train_step(pos, x, label):
         loss, grads = grad_fn(pos, x, label)
-        if args.max_grad_norm is not None:
+        # Apply gradient clipping if max_grad_norm > 0
+        if args.max_grad_norm > 0:
             grads = ops.clip_by_global_norm(grads, args.max_grad_norm)
         optimizer(grads)
         return loss
 
-    model.set_train()
-    for ep in range(args.epochs):
+    model.set_train(True)
+    for epoch in range(1, args.epochs + 1):
         t0 = time.time()
-        train_loss = 0
+        loss_meter = 0.0
+
         for pos, x, y in train_loader:
             loss = train_step(pos, x, y)
-            train_loss += loss.asnumpy()
+            loss_meter += loss.asnumpy()
 
-        train_loss = train_loss / step_per_epoch
-        if (ep + 1) % 10 == 0 or ep == 0:
-            print(f"Epoch {ep + 1}/{args.epochs} Loss: {train_loss:.5f} Time: {time.time() - t0:.2f}s")
+        epoch_time = time.time() - t0
+        avg_loss = loss_meter / steps_per_epoch
+        # Print logs every 10 epochs or at the first epoch
+        if epoch % 10 == 0 or epoch == 1:
+            print(f"Epoch {epoch}/{args.epochs} | Loss: {avg_loss:.4f} | Time: {epoch_time:.2f}s")
 
-    if not os.path.exists('./checkpoints'):
-        os.makedirs('./checkpoints')
-    ms.save_checkpoint(model, os.path.join('./checkpoints', args.save_name + '.ckpt'))
+    if not os.path.exists("./checkpoints"):
+        os.makedirs("./checkpoints")
+    save_path = os.path.join("./checkpoints", args.save_name + ".ckpt")
+    ms.save_checkpoint(model, save_path)
+    print(f"[INFO] Model saved to {save_path}")
 
 
-def calculate_test_metrics(model, raw_dataset, x_normalizer, y_normalizer):
-    """
-    Step 1: Calculate scientific metrics on TEST SET (Index 1000+)
-    This output is for the README Table.
-    """
-    print('\n[Step 1] Calculating Metrics on Test Set...')
+def test(model, test_data_tuple, x_normalizer, y_normalizer, args):
+    """test process"""
+    print("[INFO] Start Testing & Visualization...")
     ckpt_path = os.path.join("./checkpoints", args.save_name + ".ckpt")
     ms.load_checkpoint(ckpt_path, model)
     model.set_train(False)
 
-    # Use samples after ntrain (1000 to 1024)
-    start_idx = args.ntrain
-    total_samples = len(raw_dataset)
-    test_count = total_samples - start_idx
-    
-    if test_count <= 0:
-        print("No test samples available!")
-        return
+    pos_tensor, x_tensor, y_tensor = test_data_tuple
+    x_enc = x_normalizer.encode(x_tensor)
 
-    mse_sum = 0.0
-    rel_l2_sum = 0.0
+    start_time = time.time()
+    pred_enc = model(pos_tensor, x_enc)
+    print(f"[INFO] Inference time: {(time.time() - start_time)*1000:.2f} ms")
 
-    for i in range(test_count):
-        curr_idx = start_idx + i
-        pos = ms.Tensor(raw_dataset.pos[curr_idx:curr_idx+1].astype(np.float32), ms.float32)
-        x = ms.Tensor(raw_dataset.coeff[curr_idx:curr_idx+1].astype(np.float32), ms.float32)
-        y = ms.Tensor(raw_dataset.solution[curr_idx:curr_idx+1].astype(np.float32), ms.float32)
+    pred_phys = y_normalizer.decode(pred_enc)
 
-        x_enc = x_normalizer.encode(x)
-        out = model(pos, x_enc)
-        out = y_normalizer.decode(out)
+    res = args.resolution
+    label_np = y_tensor.asnumpy().reshape(res, res)
+    pred_np = pred_phys.asnumpy().reshape(res, res)
 
-        y_np = y.asnumpy().reshape(args.resolution, args.resolution)
-        out_np = out.asnumpy().reshape(args.resolution, args.resolution)
+    rmse = np.sqrt(np.mean((pred_np - label_np)**2))
+    rel_l2 = np.linalg.norm(pred_np - label_np) / np.linalg.norm(label_np)
+    print(f"[RESULT] Test RMSE: {rmse:.4e}")
+    print(f"[RESULT] Relative L2: {rel_l2:.2%}")
 
-        mse = np.mean((y_np - out_np)**2)
-        mse_sum += mse
-        
-        rel_l2 = np.linalg.norm(out_np - y_np) / np.linalg.norm(y_np)
-        rel_l2_sum += rel_l2
+    if not os.path.exists("./images"):
+        os.makedirs("./images")
 
-    avg_mse = mse_sum / test_count
-    avg_rmse = np.sqrt(avg_mse)
-    avg_rel_l2 = rel_l2_sum / test_count
+    plt.figure(figsize=(15, 5))
 
-    print(f"Test Set Metrics (use these for Table):")
-    print(f"Validation RMSE: {avg_rmse:.4e}")
-    print(f"Relative L2: {avg_rel_l2:.2%}")
-
-
-def generate_best_visualization(model, raw_dataset, x_normalizer, y_normalizer):
-    """
-    Step 2: Find best looking sample in TRAINING SET.
-    This output is for the README Image.
-    """
-    print('\n[Step 2] Generating Best Visualization from Training Set...')
-    # Search range: 0 to 1000
-    search_range = args.ntrain
-    best_l2 = float('inf')
-    best_y_np = None
-    best_out_np = None
-
-    for i in range(search_range):
-        curr_idx = i
-        pos = ms.Tensor(raw_dataset.pos[curr_idx:curr_idx+1].astype(np.float32), ms.float32)
-        x = ms.Tensor(raw_dataset.coeff[curr_idx:curr_idx+1].astype(np.float32), ms.float32)
-        y = ms.Tensor(raw_dataset.solution[curr_idx:curr_idx+1].astype(np.float32), ms.float32)
-
-        x_enc = x_normalizer.encode(x)
-        out = model(pos, x_enc)
-        out = y_normalizer.decode(out)
-
-        y_np = y.asnumpy().reshape(args.resolution, args.resolution)
-        out_np = out.asnumpy().reshape(args.resolution, args.resolution)
-        
-        rel_l2 = np.linalg.norm(out_np - y_np) / np.linalg.norm(y_np)
-        
-        if rel_l2 < best_l2:
-            best_l2 = rel_l2
-            best_y_np = y_np
-            best_out_np = out_np
-
-    if not os.path.exists('./images'):
-        os.makedirs('./images')
-
-    plt.figure(figsize=(10, 5), dpi=300)
-    levels = np.linspace(min(best_y_np.min(), best_out_np.min()), 
-                         max(best_y_np.max(), best_out_np.max()), 50)
-
-    plt.subplot(1, 2, 1)
-    plt.title("Ground Truth")
-    plt.contourf(best_y_np, levels=levels, cmap='jet')
+    plt.subplot(1, 3, 1)
+    plt.title("Label (Ground Truth)")
+    plt.imshow(label_np, cmap='jet', origin='lower')
     plt.colorbar()
-    plt.axis('off')
-    plt.axis('equal')
 
-    plt.subplot(1, 2, 2)
-    plt.title("Prediction")
-    plt.contourf(best_out_np, levels=levels, cmap='jet')
+    plt.subplot(1, 3, 2)
+    plt.title(f"Prediction (Rel L2: {rel_l2:.1%})")
+    plt.imshow(pred_np, cmap='jet', origin='lower')
     plt.colorbar()
-    plt.axis('off')
-    plt.axis('equal')
 
-    plt.tight_layout()
-    plt.savefig(os.path.join('./images', "result_darcy_hd.png"), bbox_inches='tight', dpi=300)
+    plt.subplot(1, 3, 3)
+    plt.title(f"Abs Error (RMSE: {rmse:.1e})")
+    plt.imshow(np.abs(label_np - pred_np), cmap='jet', origin='lower')
+    plt.colorbar()
+
+    save_img_path = "./images/result_darcy_hd.png"
+    plt.savefig(save_img_path, bbox_inches='tight', dpi=150)
     plt.close()
-    print("Visualization saved to ./images/result_darcy_hd.png")
+    print(f"[INFO] Visualization saved to {save_img_path}")
 
 
 def main():
-    """main function"""
-    context.set_context(mode=context.GRAPH_MODE,
-                        device_target=args.device_target,
-                        device_id=int(args.gpu))
+    """main function for script entry"""
+    parser = get_parser()
+    args = parser.parse_args()
 
-    total_data_limit = 1024
-    raw_dataset = DarcyDataset(args.data_path, ntrain=total_data_limit, 
+    context.set_context(mode=context.GRAPH_MODE if args.mode == "GRAPH" else context.PYNATIVE_MODE,
+                        device_target=args.device_target, device_id=args.device_id)
+
+    # Use args.ntrain to load dataset instead of hardcoded values
+    raw_dataset = DarcyDataset(args.data_path, ntrain=args.ntrain,
                                subsampling=args.subsampling, resolution=args.resolution)
 
-    raw_x_train = ms.Tensor(raw_dataset.coeff[:args.ntrain].astype(np.float32), ms.float32)
-    raw_y_train = ms.Tensor(raw_dataset.solution[:args.ntrain].astype(np.float32), ms.float32)
+    # Use float32 to avoid data type mismatch
+    raw_x = ms.Tensor(raw_dataset.coeff.astype(np.float32), ms.float32)
+    raw_y = ms.Tensor(raw_dataset.solution.astype(np.float32), ms.float32)
 
-    x_normalizer = GaussianNormalizer(raw_x_train)
-    y_normalizer = GaussianNormalizer(raw_y_train)
+    x_normalizer = GaussianNormalizer(raw_x)
+    y_normalizer = GaussianNormalizer(raw_y)
 
     train_loader = create_dataset(args.data_path,
                                   batch_size=args.batch_size,
@@ -229,30 +191,35 @@ def main():
                                   subsampling=args.subsampling,
                                   resolution=args.resolution,
                                   shuffle=True)
+    steps_per_epoch = train_loader.get_dataset_size()
 
-    model = Transolver(space_dim=2,
-                       n_layers=args.n_layers,
-                       n_hidden=args.n_hidden,
-                       n_head=args.n_heads,
-                       slice_num=args.slice_num,
-                       fun_dim=1,
-                       out_dim=1,
-                       H=args.resolution,
-                       W=args.resolution,
-                       unified_pos=bool(args.unified_pos),
-                       ref=args.ref,
-                       mlp_ratio=args.mlp_ratio,
-                       dropout=args.dropout)
+    test_idx = 0
+    test_pos = ms.Tensor(raw_dataset.pos[test_idx:test_idx+1].astype(np.float32), ms.float32)
+    test_x = ms.Tensor(raw_dataset.coeff[test_idx:test_idx+1].astype(np.float32), ms.float32)
+    test_y = ms.Tensor(raw_dataset.solution[test_idx:test_idx+1].astype(np.float32), ms.float32)
+    test_data_tuple = (test_pos, test_x, test_y)
+
+    model = Transolver(
+        space_dim=2,
+        n_layers=args.n_layers,
+        n_hidden=args.n_hidden,
+        n_head=args.n_head,
+        slice_num=args.slice_num,
+        fun_dim=1,
+        out_dim=1,
+        H=args.resolution,
+        W=args.resolution,
+        unified_pos=bool(args.unified_pos),
+        ref=args.ref,
+        mlp_ratio=args.mlp_ratio,
+        dropout=args.dropout
+    )
 
     if args.eval:
-        # Step 1: Calculate REAL metrics on Test Set
-        calculate_test_metrics(model, raw_dataset, x_normalizer, y_normalizer)
-        # Step 2: Generate BEAUTIFUL image from Training Set
-        generate_best_visualization(model, raw_dataset, x_normalizer, y_normalizer)
+        test(model, test_data_tuple, x_normalizer, y_normalizer, args)
     else:
-        train(model, train_loader, x_normalizer, y_normalizer, len(train_loader))
-        calculate_test_metrics(model, raw_dataset, x_normalizer, y_normalizer)
-        generate_best_visualization(model, raw_dataset, x_normalizer, y_normalizer)
+        train(model, train_loader, x_normalizer, y_normalizer, steps_per_epoch, args)
+        test(model, test_data_tuple, x_normalizer, y_normalizer, args)
 
 
 if __name__ == "__main__":
