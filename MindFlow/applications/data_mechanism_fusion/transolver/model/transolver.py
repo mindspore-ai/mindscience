@@ -22,9 +22,9 @@ from .physics_attention import PhysicsAttention
 
 class TransolverBlock(nn.Cell):
     """
-    Transolver Block
+    Transolver Block consisting of Physics-Attention and Feed-Forward Network.
     """
-    def __init__(self, dim, heads, dim_head, mlp_ratio, dropout, slice_num, _h=None, _w=None):
+    def __init__(self, dim, heads, dim_head, mlp_ratio, dropout, slice_num):
         super().__init__()
         self.norm1 = nn.LayerNorm((dim,), epsilon=1e-5)
         self.norm2 = nn.LayerNorm((dim,), epsilon=1e-5)
@@ -45,9 +45,9 @@ class TransolverBlock(nn.Cell):
 
 class Transolver(nn.Cell):
     """
-    Transolver Model for 2D Structured Mesh
+    Transolver Model for 2D Structured Mesh problems.
     """
-    def __init__(self, _space_dim=2, n_layers=5, n_hidden=256, n_head=8, slice_num=32,
+    def __init__(self, n_layers=5, n_hidden=256, n_head=8, slice_num=32,
                  fun_dim=1, out_dim=1, h=32, w=32, unified_pos=False, ref=8,
                  mlp_ratio=1, dropout=0.0):
         super().__init__()
@@ -61,8 +61,7 @@ class Transolver(nn.Cell):
                 dim_head=n_hidden // n_head,
                 mlp_ratio=mlp_ratio,
                 dropout=dropout,
-                slice_num=slice_num,
-                _h=h, _w=w
+                slice_num=slice_num
             ))
         self.blocks = nn.SequentialCell(layers)
         self.out_project = nn.Linear(n_hidden, out_dim)
@@ -72,3 +71,4 @@ class Transolver(nn.Cell):
         x = self.blocks(x)
         x = self.out_project(x)
         return x
+        
