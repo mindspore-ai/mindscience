@@ -28,6 +28,6 @@ def define_reconstructor(name):
     """Define interpolator according to interpolator configuration"""
     ret = _reconstructor_dict.get(name)
     if ret is None:
-        err = "reconstructor {} has not been implied".format(name)
+        err = f"reconstructor {name} has not been implied"
         raise NameError(err)
     return ret

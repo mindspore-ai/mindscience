@@ -30,7 +30,7 @@ class CentralFourthOrderInterpolator(Interpolator):
     """
 
     def __init__(self, mesh_info):
-        super(CentralFourthOrderInterpolator, self).__init__(mesh_info)
+        super().__init__(mesh_info)
         if self.pad < 2:
             raise ValueError('pad should be not smaller than 3 for Central Fourth Order Interpolator')
 

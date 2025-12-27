@@ -13,7 +13,7 @@
 # limitations under the License.
 # ==============================================================================
 """init of interpolator."""
-from .central_forth_order_interpolator import CentralFourthOrderInterpolator
+from .central_fourth_order_interpolator import CentralFourthOrderInterpolator
 
 _interpolator_dict = {
     'CentralFourthOrderInterpolator': CentralFourthOrderInterpolator,
@@ -24,6 +24,6 @@ def define_interpolator(name):
     """Define interpolator according to interpolator configuration"""
     ret = _interpolator_dict.get(name)
     if ret is None:
-        err = "interpolator {} has not been implied".format(name)
+        err = f"interpolator {name} has not been implied"
         raise NameError(err)
     return ret

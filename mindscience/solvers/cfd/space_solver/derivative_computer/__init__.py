@@ -13,8 +13,8 @@
 # limitations under the License.
 # ==============================================================================
 """init of derivative computer"""
-from .forth_order_face_derivative_computer import FourthOrderFaceDerivativeComputer
-from .forth_order_central_derivative_computer import FourthOrderCentralDerivativeComputer
+from .fourth_order_face_derivative_computer import FourthOrderFaceDerivativeComputer
+from .fourth_order_central_derivative_computer import FourthOrderCentralDerivativeComputer
 
 _derivative_dict = {
     'FourthOrderFaceDerivativeComputer': FourthOrderFaceDerivativeComputer,
@@ -26,6 +26,6 @@ def define_derivative_computer(name):
     """Define derivative computer according to derivative computer configuration"""
     ret = _derivative_dict.get(name)
     if ret is None:
-        err = "derivative {} has not been implied".format(name)
+        err = f"derivative {name} has not been implied"
         raise NameError(err)
     return ret
