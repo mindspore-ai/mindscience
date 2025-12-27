@@ -89,4 +89,3 @@ class PhysicsAttention(nn.Cell):
         out_x = out_x.reshape(b_size, num, -1)
 
         return self.to_out(out_x)
-        

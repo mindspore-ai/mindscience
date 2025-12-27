@@ -31,7 +31,7 @@ from src.utils.normalizer import GaussianNormalizer
 def get_parser():
     """get parser for training and evaluation"""
     parser = argparse.ArgumentParser(description="Transolver Darcy 2D Training")
-    
+
     # Execution context parameters
     parser.add_argument("--mode", type=str, default="GRAPH", choices=["GRAPH", "PYNATIVE"], help="context mode")
     parser.add_argument("--device_target", type=str, default="Ascend", help="target device")
@@ -61,7 +61,7 @@ def get_parser():
     parser.add_argument("--ntrain", type=int, default=1000, help="number of training samples")
     parser.add_argument("--resolution", type=int, default=32, help="data resolution")
     parser.add_argument("--subsampling", type=int, default=13, help="subsampling rate")
-    
+
     return parser
 
 
@@ -224,4 +224,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-    
