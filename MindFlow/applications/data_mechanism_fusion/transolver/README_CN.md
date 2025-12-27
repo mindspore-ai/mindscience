@@ -92,15 +92,16 @@ python exp_darcy.py --mode GRAPH --device_target Ascend --device_id 0 --epochs 5
 | **模型配置** | Layers=4, Hidden=64, Ref=8 | 符合论文轻量化配置 |
 | **训练参数** | batch_size=8, epochs=500 | |
 | **优化器** | AdamWeightDecay | LR=1e-3 (Cosine Decay) |
-| **训练损失 (MSE)** | **0.1507** | 归一化尺度 (Normalized Scale) |
-| **验证损失 (RMSE)** | **4.20e-04** | 物理真实尺度 (Physical Scale) |
-| **推理速度** | **~24 ms/step** | Batch Size = 8 |
+| **训练损失 (MSE)** | **0.0149** | 归一化尺度 (Normalized Scale) |
+| **验证损失 (RMSE)** | **2.30e-04** | 物理真实尺度 (Physical Scale) |
+| **相对误差 (Rel L2)**| **3.00%** | |
+| **推理速度** | **~25 ms/step** | Batch Size = 8 |
 
 > **说明**：
 >
 > 1. 训练损失 (MSE) 是在归一化数据（Gaussian Distribution）上计算的，用于监控收敛趋势。
 > 2. 验证损失 (RMSE) 是在反归一化后的物理数值上计算的，代表真实的物理误差。
-> 3. 采用余弦退火（Cosine Decay）策略训练 500 Epoch，模型收敛更充分，精度相比基准提升约 11%。
+> 3. 采用余弦退火（Cosine Decay）策略训练 500 Epoch，并优化了 Attention 算子实现，模型精度显著提升（Rel L2 达 3.00%）。
 
 ## 许可证
 
