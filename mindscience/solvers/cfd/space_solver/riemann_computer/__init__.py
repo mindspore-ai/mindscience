@@ -25,6 +25,6 @@ def define_riemann_computer(name):
     """Define riemann computer according to riemann computer configuration"""
     ret = _riemann_dict.get(name)
     if ret is None:
-        err = "riemann {} has not been implied".format(name)
+        err = f"riemann {name} has not been implied"
         raise NameError(err)
     return ret
