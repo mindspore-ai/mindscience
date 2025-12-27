@@ -10,7 +10,7 @@ mindscience.models.transformer.MultiHeadAttention
         - **num_heads** (int) - 注意力头的数量。
         - **enable_flash_attn** (bool) - 是否使用闪存注意力。闪存注意力仅支持 Ascend 后端。闪存注意力提出于 `FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness <https://arxiv.org/abs/2205.14135>`_。默认值： ``False``。
         - **fa_dtype** (mindspore.dtype) - FlashAttention 计算数据类型。从 `mstype.bfloat16`、`mstype.float16` 中选择。默认值： ``mstype.bfloat16``，表示 ``mindspore.bfloat16``。
-        - **drop_mode** (str) - 丢弃方法，支持``"dropout"`` 或 ``"droppath"``。默认值： ``"dropout"``。
+        - **drop_mode** (str) - 丢弃方法，支持 ``"dropout"`` 或 ``"droppath"``。默认值： ``"dropout"``。
         - **dropout_rate** (float) - dropout 层的丢弃率，大于 0 且小于等于 1。默认值： ``0.0``。
         - **compute_dtype** (mindspore.dtype) - 计算数据类型。默认值： ``mstype.float32``，表示 ``mindspore.float32``。
 

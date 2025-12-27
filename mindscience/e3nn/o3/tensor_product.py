@@ -414,17 +414,17 @@ class TensorProduct(nn.Cell):
             normalization of the input and output representations.
             Default: ``'component'``.
 
-             - 'norm': :math:`\| x \| = \| y \| = 1 \Longrightarrow \| x \otimes y \| = 1`
-             - 'component': :math:`\| x \| = \| y \| = 1 \Longrightarrow \| x \otimes y \| = \| x \| \| y \|`
+            - 'norm': :math:`\| x \| = \| y \| = 1 \Longrightarrow \| x \otimes y \| = 1`
+            - 'component': :math:`\| x \| = \| y \| = 1 \Longrightarrow \| x \otimes y \| = \| x \| \| y \|`
 
         path_norm (str, optional): {'element', 'path'}, the normalization method
             of path weights. Default: ``'element'``.
 
-             - 'element': each output is normalized by the total number
-               of elements (independently of their paths).
-             - 'path': each path is normalized by the total number of
-               elements in the path, then each output is normalized by
-               the number of paths.
+            - 'element': each output is normalized by the total number
+              of elements (independently of their paths).
+            - 'path': each path is normalized by the total number of
+              elements in the path, then each output is normalized by
+              the number of paths.
 
         weight_init (str, optional): {'zeros', 'ones', 'truncatedNormal',
             'normal', 'uniform', 'he_uniform', 'he_normal',
@@ -433,9 +433,9 @@ class TensorProduct(nn.Cell):
         weight_mode (str, optional): {'inner', 'share', 'custom'} determine the weights' mode. 
             Default: ``'inner'``.
 
-             - 'inner': weights will initialized in the tensor product internally.
-             - 'share': weights should given manually without batch dimension.
-             - 'custom': weights should given manually with batch dimension.
+            - 'inner': weights will initialized in the tensor product internally.
+            - 'share': weights should given manually without batch dimension.
+            - 'custom': weights should given manually with batch dimension.
 
         core_mode (str, optional): {'ncon', 'einsum'} determine the core computation mode. Default: ``'ncon'``.
         ncon_dtype (mindspore.dtype, optional): The type of input tensors of ncon

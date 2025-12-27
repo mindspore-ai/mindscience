@@ -36,9 +36,9 @@ class Scatter(nn.Cell):
         - **src** (Tensor) - The source tensor to scatter.
         - **index** (Tensor) - The indices of elements to scatter, must be int type.
         - **out** (Tensor, optional) - The destination tensor. If provided, scatter will be performed in-place.
-            Default: ``None``.
+          Default: ``None``.
         - **dim_size** (int, optional) - If `out` is not given, automatically create output with size `dim_size`.
-            If `dim_size` is not given, a minimal sized output tensor is returned. Default: ``None``.
+          If `dim_size` is not given, a minimal sized output tensor is returned. Default: ``None``.
 
     Outputs:
         Tensor, the result after scatter operation.
