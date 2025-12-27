@@ -11,6 +11,7 @@ mindscience.e3nn.so2_conv.SO3Rotation
         - **irreps_out** (Union[str, Irreps]) - 输出不可约表示。
 
     .. py:method:: narrow(inputs, axis, start, length)
+        :staticmethod:
 
         沿指定维度对张量进行切片。
 
@@ -46,6 +47,7 @@ mindscience.e3nn.so2_conv.SO3Rotation
             Tensor，逆旋转并拼接后的输出张量，形状为 ``(..., irreps_out.dim)``。
 
     .. py:method:: rotation_to_wigner_d_matrix(edge_rot_mat, start_lmax, end_lmax)
+        :staticmethod:
 
         将批量 :math:`3 \times 3` 旋转矩阵转换为指定角动量范围的 Wigner-D 矩阵。
 

@@ -1,7 +1,7 @@
 mindscience.distributed.modules.initialize_affine_weight
 ========================================================
 
-.. py:function:: initialize_affine_weight(init_shape, tp_world_size, partition_dim, init_method="XavierUniform", init_dtype=ms.float32)
+.. py:function:: mindscience.distributed.modules.initialize_affine_weight(init_shape, tp_world_size, partition_dim, init_method="XavierUniform", init_dtype=ms.float32)
 
     为并行处理初始化并（可选）分割权重张量。
 

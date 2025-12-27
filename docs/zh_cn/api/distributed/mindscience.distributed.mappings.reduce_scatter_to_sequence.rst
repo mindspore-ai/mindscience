@@ -1,7 +1,7 @@
 mindscience.distributed.mappings.reduce_scatter_to_sequence
 ============================================================
 
-.. py:function:: reduce_scatter_to_sequence(x, group)
+.. py:function:: mindscience.distributed.mappings.reduce_scatter_to_sequence(x, group)
 
     沿第一个维度对切分的张量执行 reduce-scatter 操作。
 

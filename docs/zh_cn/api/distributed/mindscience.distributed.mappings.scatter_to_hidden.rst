@@ -1,7 +1,7 @@
 mindscience.distributed.mappings.scatter_to_hidden
 ===================================================
 
-.. py:function:: scatter_to_hidden(x, group)
+.. py:function:: mindscience.distributed.mappings.scatter_to_hidden(x, group)
 
     沿最后一个维度将张量分散到不同卡上。
 

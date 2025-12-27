@@ -1,7 +1,7 @@
 mindscience.distributed.mappings.scatter_to_sequence
 =====================================================
 
-.. py:function:: scatter_to_sequence(x, group)
+.. py:function:: mindscience.distributed.mappings.scatter_to_sequence(x, group)
 
     沿第一个维度将张量分散到不同卡上。
 

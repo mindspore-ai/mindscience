@@ -1,7 +1,7 @@
 mindscience.distributed.modules.RowParallelLinear
 =================================================
 
-.. py:class:: RowParallelLinear(in_features, out_features, bias=True, input_is_parallel=False, use_sequence_parallel=False, weight_init=None, bias_init=None, param_init_dtype=ms.float32, compute_dtype=ms.bfloat16)
+.. py:class:: mindscience.distributed.modules.RowParallelLinear(in_features, out_features, bias=True, input_is_parallel=False, use_sequence_parallel=False, weight_init=None, bias_init=None, param_init_dtype=ms.float32, compute_dtype=ms.bfloat16)
 
     行并行线性层，将输入特征维度在TP通信组中进行分片。
 

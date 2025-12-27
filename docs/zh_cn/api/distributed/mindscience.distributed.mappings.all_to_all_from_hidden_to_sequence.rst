@@ -1,7 +1,7 @@
 mindscience.distributed.mappings.all_to_all_from_hidden_to_sequence
 ====================================================================
 
-.. py:function:: all_to_all_from_hidden_to_sequence(x, group)
+.. py:function:: mindscience.distributed.mappings.all_to_all_from_hidden_to_sequence(x, group)
 
     执行从特征维度切分到序列维度切分的 all-to-all 操作。
 

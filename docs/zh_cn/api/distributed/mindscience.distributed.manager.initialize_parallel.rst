@@ -1,7 +1,7 @@
 mindscience.distributed.manager.initialize_parallel
 ===================================================
 
-.. py:function:: initialize_parallel(tensor_parallel_size=1, context_parallel_size=1, order="tp-cp-dp")
+.. py:function:: mindscience.distributed.manager.initialize_parallel(tensor_parallel_size=1, context_parallel_size=1, order="tp-cp-dp")
 
     初始化分布式训练的并行通信组。
 
