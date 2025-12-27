@@ -1,6 +1,9 @@
 mindscience.e3nn
 =========================
 
+nn
+----------------
+
 .. mscnautosummary::
     :toctree: e3nn
     :nosignatures:
@@ -15,6 +18,14 @@ mindscience.e3nn
     mindscience.e3nn.nn.soft_one_hot_linspace
     mindscience.e3nn.nn.soft_unit_step
     mindscience.e3nn.nn.SoftOneHotLinspace
+
+o3
+----------------
+
+.. mscnautosummary::
+    :toctree: e3nn
+    :nosignatures:
+
     mindscience.e3nn.o3.angles_to_matrix
     mindscience.e3nn.o3.angles_to_xyz
     mindscience.e3nn.o3.change_basis_real_to_complex
@@ -34,6 +45,7 @@ mindscience.e3nn
     mindscience.e3nn.o3.Norm
     mindscience.e3nn.o3.rand_angles
     mindscience.e3nn.o3.so3_generators
+    mindscience.e3nn.o3.spherical_harmonics
     mindscience.e3nn.o3.SphericalHarmonics
     mindscience.e3nn.o3.su2_generators
     mindscience.e3nn.o3.TensorProduct
@@ -41,9 +53,25 @@ mindscience.e3nn
     mindscience.e3nn.o3.wigner_3j
     mindscience.e3nn.o3.wigner_D
     mindscience.e3nn.o3.xyz_to_angles
+
+so2_conv
+----------------
+
+.. mscnautosummary::
+    :toctree: e3nn
+    :nosignatures:
+
     mindscience.e3nn.so2_conv.SO3Rotation
     mindscience.e3nn.so2_conv.SO2Convolution
     mindscience.e3nn.so2_conv.init_edge_rot_mat
+
+utils
+----------------
+
+.. mscnautosummary::
+    :toctree: e3nn
+    :nosignatures:
+
     mindscience.e3nn.utils.Ncon
     mindscience.e3nn.utils.radius
     mindscience.e3nn.utils.radius_full

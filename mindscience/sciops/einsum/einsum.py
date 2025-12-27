@@ -263,15 +263,13 @@ class Einsum(nn.Cell):
         >>> from mindspore import nn, Tensor, ops
         >>> import numpy as np
         >>> import Einsum
-
         >>> x = Tensor(np.array([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]]), ms.float32)
         >>> y = Tensor(np.array([[2.0, 3.0], [1.0, 2.0], [4.0, 5.0]]), ms.float32)
         >>> equation = "ij,jk->ik"
         >>> einsum = Einsum(equation, use_opt=False)
         >>> output = einsum(x, y)
         >>> print(output.shape)
-            (2, 2)
-
+        (2, 2)
         >>> shapes = [(156, 16, 16), (660, 128, 16), (660, 128, 16)]
         >>> x, y, z = [ops.randn(tp) for tp in shapes]
         >>> equation = "ijk,zui,zuj->zuk"

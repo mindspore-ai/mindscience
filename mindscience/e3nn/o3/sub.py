@@ -237,7 +237,7 @@ class LinearBias(TensorProduct):
         - **v1** (Tensor): Input tensor. The shape of Tensor is :math:`(..., 2l+1)`.
         - **v2** (Tensor, optional): Input tensor. The shape of Tensor is :math:`(..., 2l+1)`. Default: ``None``.
         - **weight** (Tensor, optional): Weight tensor. The shape of Tensor is :math:`(..., 2l+1)`.
-            Default: ``None``.
+          Default: ``None``.
     
     Outputs:
         - **out** (Tensor): Output tensor. The shape of Tensor is :math:`(..., 2l+1)`.
