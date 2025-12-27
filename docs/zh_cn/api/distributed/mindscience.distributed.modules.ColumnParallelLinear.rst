@@ -1,7 +1,7 @@
 mindscience.distributed.modules.ColumnParallelLinear
 ====================================================
 
-.. py:class:: ColumnParallelLinear(in_features, out_features, bias=True, gather_output=True, use_sequence_parallel=False, weight_init=None, bias_init=None, param_init_dtype=ms.float32, compute_dtype=ms.bfloat16)
+.. py:class:: mindscience.distributed.modules.ColumnParallelLinear(in_features, out_features, bias=True, gather_output=True, use_sequence_parallel=False, weight_init=None, bias_init=None, param_init_dtype=ms.float32, compute_dtype=ms.bfloat16)
 
     列并行线性层，将输出特征维度在TP通信组中进行分片。
 

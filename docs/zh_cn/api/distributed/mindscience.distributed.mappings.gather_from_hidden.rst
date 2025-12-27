@@ -1,7 +1,7 @@
 mindscience.distributed.mappings.gather_from_hidden
 ====================================================
 
-.. py:function:: gather_from_hidden(x, group)
+.. py:function:: mindscience.distributed.mappings.gather_from_hidden(x, group)
 
     沿最后一个维度收集切分的张量。
 

@@ -1,7 +1,7 @@
 mindscience.distributed.mappings.gather_from_sequence
 ======================================================
 
-.. py:function:: gather_from_sequence(x, group, tensor_parallel_output_grad=True)
+.. py:function:: mindscience.distributed.mappings.gather_from_sequence(x, group, tensor_parallel_output_grad=True)
 
     沿第一个维度收集切分的张量。
 

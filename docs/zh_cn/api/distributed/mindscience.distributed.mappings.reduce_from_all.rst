@@ -1,7 +1,7 @@
 mindscience.distributed.mappings.reduce_from_all
 =================================================
 
-.. py:function:: reduce_from_all(x, group)
+.. py:function:: mindscience.distributed.mappings.reduce_from_all(x, group)
 
     对所有卡执行全归约操作。
 

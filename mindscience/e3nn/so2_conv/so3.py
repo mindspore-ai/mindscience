@@ -31,8 +31,8 @@ class SO3Rotation:
 
     Args:
         lmax (int): Maximum angular momentum to be considered.
-        irreps_in (Union[Irreps, str]): Input irreps specification.
-        irreps_out (Union[Irreps, str]): Output irreps specification.
+        irreps_in (Union[str, Irreps]): Input irreps specification.
+        irreps_out (Union[str, Irreps]): Output irreps specification.
 
     Examples:
         >>> from mindscience.e3nn.so2_conv import SO3Rotation

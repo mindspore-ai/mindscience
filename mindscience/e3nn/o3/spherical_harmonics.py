@@ -35,8 +35,8 @@ class SphericalHarmonics(nn.Cell):
             projecting onto the spherical harmonics.
         normalization (str, optional): {'integral', 'component', 'norm'}, normalization method of the output tensors.
             Default: ``'integral'``.
-        irreps_in (Union[str, `Irreps`, None], optional): irreducible representations of input for spherical harmonics.
-            Default: ``None``.
+        irreps_in (Union[str, `Irrep`, `Irreps`], optional): irreducible representations of input for spherical
+            harmonics. Default: ``None``.
         dtype (mindspore.dtype, optional): The type of input tensor. Default: ``mindspore.float32`` .
 
     Inputs:
@@ -187,9 +187,11 @@ def spherical_harmonics(l, x, normalize=True, normalization='integral'):
     The value of the constant depends on the choice of normalization.
 
     It obeys the following property:
+
     .. math::
         Y^{l+1}_i(x) &= \text{cste}(l) \; & C_{ijk} Y^l_j(x) x_k
         \partial_k Y^{l+1}_i(x) &= \text{cste}(l) \; (l+1) & C_{ijk} Y^l_j(x)
+
     where :math:`C` are the `wigner_3j`.
 
     Args:

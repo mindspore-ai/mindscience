@@ -1,7 +1,7 @@
 mindscience.distributed.mappings.copy_to_all
 =============================================
 
-.. py:function:: copy_to_all(x, group)
+.. py:function:: mindscience.distributed.mappings.copy_to_all(x, group)
 
     将输入转发到指定通信组中的所有卡。
 

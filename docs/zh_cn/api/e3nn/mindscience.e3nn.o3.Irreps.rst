@@ -48,8 +48,8 @@ mindscience.e3nn.o3.Irreps
         通过 `keep` 或 `drop` 过滤 `Irreps`。
 
         参数：
-            - **keep** (Union[str, Irrep, Irreps, list[str, Irrep]]) - 要保留的 irrep 列表。默认值: ``None``。
-            - **drop** (Union[str, Irrep, Irreps, list[str, Irrep]]) - 要删除的 irrep 列表。默认值: ``None``。
+            - **keep** (Union[str, Irrep, Irreps, list[str, Irrep]], 可选) - 要保留的 irrep 列表。默认值: ``None``。
+            - **drop** (Union[str, Irrep, Irreps, list[str, Irrep]], 可选) - 要删除的 irrep 列表。默认值: ``None``。
 
         返回：
             `Irreps`，过滤后的 irreps。
