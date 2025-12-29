@@ -62,7 +62,7 @@ class FFNOBlocks(nn.Cell):
         ffno_compute_dtype (dtype.Number, optional): The computation type of MLP in ffno skip.
             Should be ``mstype.float32`` or ``mstype.float16``. ``mstype.float32`` is recommended for the GPU backend,
             ``mstype.float16`` is recommended for the Ascend backend.
-            Default: ``mstype.float16``.
+            Default: ``mstype.float32``.
 
     Inputs:
         - **x** (Tensor) - Tensor of shape :math:`(batch\_size, in\_channels, resolution)`.
@@ -73,7 +73,7 @@ class FFNOBlocks(nn.Cell):
     Raises:
         ValueError: If `ff_weight_norm` is not ``False``.
 
-    Examples:`
+    Examples:
         >>> import numpy as np
         >>> from mindspore import Tensor
         >>> import mindspore.common.dtype as mstype

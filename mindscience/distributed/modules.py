@@ -60,7 +60,7 @@ def initialize_affine_weight(
     Returns:
         Parameter, The full parameter when tp_world_size==1 or the per-rank partition otherwise.
 
-    Example:
+    Examples:
         >>> import mindspore as ms
         >>> from mindspore.communication import init
         >>> from mindscience.distributed import initialize_parallel
@@ -105,7 +105,7 @@ class ColumnParallelLinear(nn.Cell):
         - **output** (Tensor): Output tensor of shape (seq_len, out_features) or (seq_len, out_features // TP),
           depending on whether `gather_output` is True.
 
-    Example:
+    Examples:
         >>> import mindspore as ms
         >>> from mindspore.communication import init
         >>> from mindscience.distributed import initialize_parallel
@@ -189,7 +189,7 @@ class RowParallelLinear(nn.Cell):
         - **output** (Tensor): Output tensor of shape (seq_len // TP, out_features) or (seq_len, out_features),
           depending on whether `use_sequence_parallel` is True.
 
-    Example:
+    Examples:
         >>> import mindspore as ms
         >>> from mindspore.communication import init
         >>> from mindscience.distributed import initialize_parallel
