@@ -36,56 +36,48 @@ class FFNOBlocks(nn.Cell):
         out_channels (int): The number of channels in the output space.
         n_modes (Union[int, list(int)]): The number of modes reserved after linear transformation in Fourier Layer.
         resolutions (Union[int, list(int)]): The resolutions of the input tensor.
-        factor (int): The number of neurons in the hidden layer of a feedforward network. Default: ``1``.
-        n_ff_layers (int): The number of layers (hidden layers) in the feedforward neural network. Default: ``2``.
-        ff_weight_norm (bool): Whether to do weight normalization in feedforward or not. Used as a reserved function
-            interface, the weight normalization is not supported in feedforward. Default: ``False``.
-        layer_norm (bool): Whether to do layer normalization in feedforward or not. Default: ``True``.
-        dropout (float): The value of percent be dropped when applying dropout regularization. Default: ``0.0``.
-        r_padding (int): The number used to pad a tensor on the right in a certain dimension. Pad the domain if
-            input is non-periodic. Default: ``0``.
-        use_fork (bool): Whether to perform forecasting or not. Default: ``False``.
-        forecast_ff (Feedforward): The feedforward network of generating "backcast" output. Default: ``None``.
-        backcast_ff (Feedforward): The feedforward network of generating "forecast" output. Default: ``None``.
-        fourier_weight (ParameterTuple[Parmemter]): The fourier weight for transforming data in the frequency
+        factor (int, optional): The number of neurons in the hidden layer of a feedforward network. Default: ``1``.
+        n_ff_layers (int, optional): The number of layers (hidden layers) in the feedforward neural network.
+            Default: ``2``.
+        ff_weight_norm (bool, optional): Whether to do weight normalization in feedforward or not.
+            Used as a reserved function interface, the weight normalization is not supported in feedforward.
+            Default: ``False``.
+        layer_norm (bool, optional): Whether to do layer normalization in feedforward or not. Default: ``True``.
+        dropout (float, optional): The value of percent be dropped when applying dropout regularization.
+            Default: ``0.0``.
+        r_padding (int, optional): The number used to pad a tensor on the right in a certain dimension.
+            Pad the domain if input is non-periodic. Default: ``0``.
+        use_fork (bool, optional): Whether to perform forecasting or not. Default: ``False``.
+        forecast_ff (Feedforward, optional): The feedforward network of generating "backcast" output. Default: ``None``.
+        backcast_ff (Feedforward, optional): The feedforward network of generating "forecast" output. Default: ``None``.
+        fourier_weight (ParameterTuple[Parmemter], optional): The fourier weight for transforming data in the frequency
             domain, with a ParameterTuple of Parmemter with a length of 2N.
 
             - Even indices (0, 2, 4, ...) represent the real parts of the complex parmemter.
             - Odd indices (1, 3, 5, ...) represent the imaginary parts of the complex parmemter.
-            - Default: ``None``, meaning no data is provided.
-        dft_compute_dtype (dtype.Number): The computation type of DFT in SpectralConv. Default: ``mstype.float32``.
-        ffno_compute_dtype (dtype.Number): The computation type of MLP in ffno skip. Default: ``mstype.float16``.
-            Should be ``mstype.float32`` or ``mstype.float16``. mstype.float32 is recommended for the GPU backend,
-            mstype.float16 is recommended for the Ascend backend.
+
+            Default: ``None``, meaning no data is provided.
+        dft_compute_dtype (dtype.Number, optional): The computation type of DFT in SpectralConv.
+            Default: ``mstype.float32``.
+        ffno_compute_dtype (dtype.Number, optional): The computation type of MLP in ffno skip.
+            Should be ``mstype.float32`` or ``mstype.float16``. ``mstype.float32`` is recommended for the GPU backend,
+            ``mstype.float16`` is recommended for the Ascend backend.
+            Default: ``mstype.float16``.
 
     Inputs:
         - **x** (Tensor) - Tensor of shape :math:`(batch\_size, in\_channels, resolution)`.
 
     Outputs:
-        Tensor, the output of this FFNOBlocks.
-
         - **output** (Tensor) -Tensor of shape :math:`(batch\_size, out\_channels, resolution)`.
 
     Raises:
-        TypeError: If `in_channels` is not an int.
-        TypeError: If `out_channels` is not an int.
-        TypeError: If `factor` is not an int.
-        TypeError: If `n_ff_layers` is not an int.
-        TypeError: If `ff_weight_norm` is not a Boolean value.
         ValueError: If `ff_weight_norm` is not ``False``.
-        TypeError: If `layer_norm` is not a Boolean value.
-        TypeError: If `dropout` is not a float.
-        TypeError: If `r_padding` is not an int.
-        TypeError: If `use_fork` is not a Boolean value.
-
-    Supported Platforms:
-        ``Ascend``
 
     Examples:`
         >>> import numpy as np
         >>> from mindspore import Tensor
         >>> import mindspore.common.dtype as mstype
-        >>> from mindflow.cell.neural_operators import FFNOBlocks
+        >>> from mindscience.models.neural_operator.ffno import FFNOBlocks
         >>> data = Tensor(np.ones([2, 128, 128, 2]), mstype.float32)
         >>> net = FFNOBlocks(in_channels=2, out_channels=2, n_modes=[20, 20], resolutions=[128, 128])
         >>> out0, out1 = net(data)
@@ -221,58 +213,44 @@ class FFNO(nn.Cell):
         out_channels (int): The number of channels in the output space.
         n_modes (Union[int, list(int)]): The number of modes reserved after linear transformation in Fourier Layer.
         resolutions (Union[int, list(int)]): The resolutions of the input tensor.
-        hidden_channels (int): The number of channels of the FNOBlock input and output. Default: ``20``.
-        lifting_channels (int): The number of channels of the lifting layer mid channels. Default: None.
-        projection_channels (int): The number of channels of the projection layer mid channels. Default: ``128``.
-        factor (int): The number of neurons in the hidden layer of a feedforward network. Default: ``1``.
-        n_layers (int): The number that Fourier Layer nests. Default: ``4``.
-        n_ff_layers (int): The number of layers (hidden layers) in the feedforward neural network. Default: ``2``.
-        ff_weight_norm (bool): Whether to do weight normalization in feedforward or not. Used as a reserved function
-            interface, the weight normalization is not supported in feedforward. Default: ``False``.
-        layer_norm (bool): Whether to do layer normalization in feedforward or not. Default: ``True``.
-        share_weight (bool): Whether to share weights between SpectralConv layers or not. Default: ``False``.
-        r_padding (int): The number used to pad a tensor on the right in a certain dimension. Pad the domain if
-            input is non-periodic. Default: ``0``.
-        data_format (str): The input data channel sequence. Default: ``channels_last``.
-        positional_embedding (bool): Whether to embed positional information or not. Default: ``True``.
-        dft_compute_dtype (dtype.Number): The computation type of DFT in SpectralConvDft. Default: ``mstype.float32``.
-        ffno_compute_dtype (dtype.Number): The computation type of MLP in fno skip. Default: ``mstype.float16``.
-         Should be ``mstype.float32`` or ``mstype.float16``. mstype.float32 is recommended for
-         the GPU backend, mstype.float16 is recommended for the Ascend backend.
+        hidden_channels (int, optional): The number of channels of the FNOBlock input and output. Default: ``20``.
+        lifting_channels (int, optional): The number of channels of the lifting layer mid channels. Default: ``None``.
+        projection_channels (int, optional): The number of channels of the projection layer mid channels.
+            Default: ``128``.
+        factor (int, optional): The number of neurons in the hidden layer of a feedforward network. Default: ``1``.
+        n_layers (int, optional): The number that Fourier Layer nests. Default: ``4``.
+        n_ff_layers (int, optional): The number of layers (hidden layers) in the feedforward neural network.
+            Default: ``2``.
+        ff_weight_norm (bool, optional): Whether to do weight normalization in feedforward or not.
+            Used as a reserved function interface, the weight normalization is not supported in feedforward.
+            Default: ``False``.
+        layer_norm (bool, optional): Whether to do layer normalization in feedforward or not. Default: ``True``.
+        share_weight (bool, optional): Whether to share weights between SpectralConv layers or not. Default: ``False``.
+        r_padding (int, optional): The number used to pad a tensor on the right in a certain dimension.
+            Pad the domain if input is non-periodic. Default: ``0``.
+        data_format (str, optional): The input data channel sequence. Default: ``"channels_last"``.
+        positional_embedding (bool, optional): Whether to embed positional information or not. Default: ``True``.
+        dft_compute_dtype (dtype.Number, optional): The computation type of DFT in SpectralConvDft.
+            Default: ``mstype.float32``.
+        ffno_compute_dtype (dtype.Number, optional): The computation type of MLP in fno skip.
+            Should be ``mstype.float32`` or ``mstype.float16``. ``mstype.float32`` is recommended for
+            the GPU backend, ``mstype.float16`` is recommended for the Ascend backend.
+            Default: ``mstype.float16``.
 
     Inputs:
         - **x** (Tensor) - Tensor of shape :math:`(batch\_size, resolution, in\_channels)`.
 
     Outputs:
-        Tensor, the output of this FNOBlocks.
-
         - **output** (Tensor) -Tensor of shape :math:`(batch\_size, resolution, out\_channels)`.
 
     Raises:
-        TypeError: If `in_channels` is not an int.
-        TypeError: If `out_channels` is not an int.
-        TypeError: If `hidden_channels` is not an int.
-        TypeError: If `lifting_channels` is not an int.
-        TypeError: If `projection_channels` is not an int.
-        TypeError: If `factor` is not an int.
-        TypeError: If `n_layers` is not an int.
-        TypeError: If `n_ff_layers` is not an int.
-        TypeError: If `ff_weight_norm` is not a Boolean value.
         ValueError: If `ff_weight_norm` is not ``False``.
-        TypeError: If `layer_norm` is not a Boolean value.
-        TypeError: If `share_weight` is not a Boolean value.
-        TypeError: If `r_padding` is not an int.
-        TypeError: If `data_format` is not a str.
-        TypeError: If `positional_embedding` is not a bool.
-
-    Supported Platforms:
-        ``Ascend``
 
     Examples:
         >>> import numpy as np
         >>> from mindspore import Tensor
         >>> import mindspore.common.dtype as mstype
-        >>> from mindflow.cell.neural_operators.ffno import FFNO
+        >>> from mindscience.models.neural_operator.ffno import FFNO
         >>> data = Tensor(np.ones([2, 128, 128, 2]), mstype.float32)
         >>> net = FFNO(in_channels=2, out_channels=2, n_modes=[20, 20], resolutions=[128, 128])
         >>> out = net(data)
@@ -353,7 +331,7 @@ class FFNO(nn.Cell):
                 param_list.append(w_re)
                 param_list.append(w_im)
 
-            self.fourier_weight = ParameterTuple([param for param in param_list])
+            self.fourier_weight = ParameterTuple(list(param_list))
 
         self.factor = factor
         self.ff_weight_norm = ff_weight_norm
@@ -458,59 +436,44 @@ class FFNO1D(FFNO):
         out_channels (int): The number of channels in the output space.
         n_modes (Union[int, list(int)]): The number of modes reserved after linear transformation in Fourier Layer.
         resolutions (Union[int, list(int)]): The resolutions of the input tensor.
-        hidden_channels (int): The number of channels of the FNOBlock input and output. Default: ``20``.
-        lifting_channels (int): The number of channels of the lifting layer mid channels. Default: None.
-        projection_channels (int): The number of channels of the projection layer mid channels. Default: ``128``.
-        factor (int): The number of neurons in the hidden layer of a feedforward network. Default: ``1``.
-        n_layers (int): The number that Fourier Layer nests. Default: ``4``.
-        n_ff_layers (int): The number of layers (hidden layers) in the feedforward neural network. Default: ``2``.
-        ff_weight_norm (bool): Whether to do weight normalization in feedforward or not. Used as a reserved function
-            interface, the weight normalization is not supported in feedforward. Default: ``False``.
-        layer_norm (bool): Whether to do layer normalization in feedforward or not. Default: ``True``.
-        share_weight (bool): Whether to share weights between SpectralConv layers or not. Default: ``False``.
-        r_padding (int): The number used to pad a tensor on the right in a certain dimension. Default: ``0``.
-        data_format (str): The input data channel sequence. Default: ``channels_last``.
-        positional_embedding (bool): Whether to embed positional information or not. Default: ``True``.
-        dft_compute_dtype (dtype.Number): The computation type of DFT in SpectralConvDft. Default: ``mstype.float32``.
-        ffno_compute_dtype (dtype.Number): The computation type of MLP in fno skip. Default: ``mstype.float16``.
-            Should be ``mstype.float32`` or ``mstype.float16``. mstype.float32 is recommended for
-            the GPU backend, mstype.float16 is recommended for the Ascend backend.
+        hidden_channels (int, optional): The number of channels of the FNOBlock input and output. Default: ``20``.
+        lifting_channels (int, optional): The number of channels of the lifting layer mid channels. Default: ``None``.
+        projection_channels (int, optional): The number of channels of the projection layer mid channels.
+            Default: ``128``.
+        factor (int, optional): The number of neurons in the hidden layer of a feedforward network. Default: ``1``.
+        n_layers (int, optional): The number that Fourier Layer nests. Default: ``4``.
+        n_ff_layers (int, optional): The number of layers (hidden layers) in the feedforward neural network.
+            Default: ``2``.
+        ff_weight_norm (bool, optional): Whether to do weight normalization in feedforward or not.
+            Used as a reserved function interface, the weight normalization is not supported in feedforward.
+            Default: ``False``.
+        layer_norm (bool, optional): Whether to do layer normalization in feedforward or not. Default: ``True``.
+        share_weight (bool, optional): Whether to share weights between SpectralConv layers or not. Default: ``False``.
+        r_padding (int, optional): The number used to pad a tensor on the right in a certain dimension. Default: ``0``.
+        data_format (str, optional): The input data channel sequence. Default: ``"channels_last"``.
+        positional_embedding (bool, optional): Whether to embed positional information or not. Default: ``True``.
+        dft_compute_dtype (dtype.Number, optional): The computation type of DFT in SpectralConvDft.
+            Default: ``mstype.float32``.
+        ffno_compute_dtype (dtype.Number, optional): The computation type of MLP in fno skip.
+            Should be ``mstype.float32`` or ``mstype.float16``. ``mstype.float32`` is recommended for
+            the GPU backend, ``mstype.float16`` is recommended for the Ascend backend.
+            Default: ``mstype.float16``.
 
     Inputs:
         - **x** (Tensor) - Tensor of shape :math:`(batch\_size, resolution, in\_channels)`.
 
     Outputs:
-        Tensor, the output of this FNOBlocks.
-
         - **output** (Tensor) -Tensor of shape :math:`(batch\_size, resolution, out\_channels)`.
 
     Raises:
-        TypeError: If `in_channels` is not an int.
-        TypeError: If `out_channels` is not an int.
-        TypeError: If `hidden_channels` is not an int.
-        TypeError: If `lifting_channels` is not an int.
-        TypeError: If `projection_channels` is not an int.
-        TypeError: If `factor` is not an int.
-        TypeError: If `n_layers` is not an int.
-        TypeError: If `n_ff_layers` is not an int.
-        TypeError: If `ff_weight_norm` is not a Boolean value.
         ValueError: If `ff_weight_norm` is not ``False``.
-        TypeError: If `layer_norm` is not a Boolean value.
-        TypeError: If `share_weight` is not a Boolean value.
-        TypeError: If `r_padding` is not an int.
-        TypeError: If `data_format` is not a str.
-        TypeError: If `positional_embedding` is not a bool.
-
-    Supported Platforms:
-        ``Ascend``
 
     Examples:
         >>> import numpy as np
         >>> import mindspore
-        >>> import mindflow
         >>> from mindspore import Tensor
         >>> import mindspore.common.dtype as mstype
-        >>> from mindflow.cell import FFNO1D
+        >>> from mindscience.models.neural_operator.ffno import FFNO1D
         >>> data = Tensor(np.ones([2, 128, 3]), mstype.float32)
         >>> net = FFNO1D(in_channels=3, out_channels=3, n_modes=[20], resolutions=[128])
         >>> out = net(data)
@@ -573,59 +536,44 @@ class FFNO2D(FFNO):
         out_channels (int): The number of channels in the output space.
         n_modes (Union[int, list(int)]): The number of modes reserved after linear transformation in Fourier Layer.
         resolutions (Union[int, list(int)]): The resolutions of the input tensor.
-        hidden_channels (int): The number of channels of the FNOBlock input and output. Default: ``20``.
-        lifting_channels (int): The number of channels of the lifting layer mid channels. Default: None.
-        projection_channels (int): The number of channels of the projection layer mid channels. Default: ``128``.
-        factor (int): The number of neurons in the hidden layer of a feedforward network. Default: ``1``.
-        n_layers (int): The number that Fourier Layer nests. Default: ``4``.
-        n_ff_layers (int): The number of layers (hidden layers) in the feedforward neural network. Default: ``2``.
-        ff_weight_norm (bool): Whether to do weight normalization in feedforward or not. Used as a reserved function
-            interface, the weight normalization is not supported in feedforward. Default: ``False``.
-        layer_norm (bool): Whether to do layer normalization in feedforward or not. Default: ``True``.
-        share_weight (bool): Whether to share weights between SpectralConv layers or not. Default: ``False``.
+        hidden_channels (int, optional): The number of channels of the FNOBlock input and output. Default: ``20``.
+        lifting_channels (int, optional): The number of channels of the lifting layer mid channels. Default: ``None``.
+        projection_channels (int, optional): The number of channels of the projection layer mid channels.
+            Default: ``128``.
+        factor (int, optional): The number of neurons in the hidden layer of a feedforward network. Default: ``1``.
+        n_layers (int, optional): The number that Fourier Layer nests. Default: ``4``.
+        n_ff_layers (int, optional): The number of layers (hidden layers) in the feedforward neural network.
+            Default: ``2``.
+        ff_weight_norm (bool, optional): Whether to do weight normalization in feedforward or not.
+            Used as a reserved function interface, the weight normalization is not supported in feedforward.
+            Default: ``False``.
+        layer_norm (bool, optional): Whether to do layer normalization in feedforward or not. Default: ``True``.
+        share_weight (bool, optional): Whether to share weights between SpectralConv layers or not. Default: ``False``.
         r_padding (int): The number used to pad a tensor on the right in a certain dimension. Default: ``0``.
-        data_format (str): The input data channel sequence. Default: ``channels_last``.
-        positional_embedding (bool): Whether to embed positional information or not. Default: ``True``.
-        dft_compute_dtype (dtype.Number): The computation type of DFT in SpectralConvDft. Default: ``mstype.float32``.
-        ffno_compute_dtype (dtype.Number): The computation type of MLP in fno skip. Default: ``mstype.float16``.
-            Should be ``mstype.float32`` or ``mstype.float16``. mstype.float32 is recommended for
-            the GPU backend, mstype.float16 is recommended for the Ascend backend.
+        data_format (str, optional): The input data channel sequence. Default: ``"channels_last"``.
+        positional_embedding (bool, optional): Whether to embed positional information or not. Default: ``True``.
+        dft_compute_dtype (dtype.Number, optional): The computation type of DFT in SpectralConvDft.
+            Default: ``mstype.float32``.
+        ffno_compute_dtype (dtype.Number, optional): The computation type of MLP in fno skip.
+            Should be ``mstype.float32`` or ``mstype.float16``. ``mstype.float32`` is recommended for
+            the GPU backend, ``mstype.float16`` is recommended for the Ascend backend.
+            Default: ``mstype.float16``.
 
     Inputs:
         - **x** (Tensor) - Tensor of shape :math:`(batch\_size, resolution, in\_channels)`.
 
     Outputs:
-        Tensor, the output of this FNOBlocks.
-
         - **output** (Tensor) -Tensor of shape :math:`(batch\_size, resolution, out\_channels)`.
 
     Raises:
-        TypeError: If `in_channels` is not an int.
-        TypeError: If `out_channels` is not an int.
-        TypeError: If `hidden_channels` is not an int.
-        TypeError: If `lifting_channels` is not an int.
-        TypeError: If `projection_channels` is not an int.
-        TypeError: If `factor` is not an int.
-        TypeError: If `n_layers` is not an int.
-        TypeError: If `n_ff_layers` is not an int.
-        TypeError: If `ff_weight_norm` is not a Boolean value.
         ValueError: If `ff_weight_norm` is not ``False``.
-        TypeError: If `layer_norm` is not a Boolean value.
-        TypeError: If `share_weight` is not a Boolean value.
-        TypeError: If `r_padding` is not an int.
-        TypeError: If `data_format` is not a str.
-        TypeError: If `positional_embedding` is not a bool.
-
-    Supported Platforms:
-        ``Ascend``
 
     Examples:
         >>> import numpy as np
         >>> import mindspore
-        >>> import mindflow
         >>> from mindspore import Tensor
         >>> import mindspore.common.dtype as mstype
-        >>> from mindflow.cell import FFNO2D
+        >>> from mindscience.models.neural_operator.ffno import FFNO2D
         >>> data = Tensor(np.ones([2, 128, 128, 3]), mstype.float32)
         >>> net = FFNO2D(in_channels=3, out_channels=3, n_modes=[20, 20], resolutions=[128, 128])
         >>> out = net(data)
@@ -688,59 +636,44 @@ class FFNO3D(FFNO):
         out_channels (int): The number of channels in the output space.
         n_modes (Union[int, list(int)]): The number of modes reserved after linear transformation in Fourier Layer.
         resolutions (Union[int, list(int)]): The resolutions of the input tensor.
-        hidden_channels (int): The number of channels of the FNOBlock input and output. Default: ``20``.
-        lifting_channels (int): The number of channels of the lifting layer mid channels. Default: None.
-        projection_channels (int): The number of channels of the projection layer mid channels. Default: ``128``.
-        factor (int): The number of neurons in the hidden layer of a feedforward network. Default: ``1``.
-        n_layers (int): The number that Fourier Layer nests. Default: ``4``.
-        n_ff_layers (int): The number of layers (hidden layers) in the feedforward neural network. Default: ``2``.
-        ff_weight_norm (bool): Whether to do weight normalization in feedforward or not. Used as a reserved function
-            interface, the weight normalization is not supported in feedforward. Default: ``False``.
-        layer_norm (bool): Whether to do layer normalization in feedforward or not. Default: ``True``.
-        share_weight (bool): Whether to share weights between SpectralConv layers or not. Default: ``False``.
-        r_padding (int): The number used to pad a tensor on the right in a certain dimension. Default: ``0``.
-        data_format (str): The input data channel sequence. Default: ``channels_last``.
-        positional_embedding (bool): Whether to embed positional information or not. Default: ``True``.
-        dft_compute_dtype (dtype.Number): The computation type of DFT in SpectralConvDft. Default: ``mstype.float32``.
-        ffno_compute_dtype (dtype.Number): The computation type of MLP in fno skip. Default: ``mstype.float16``.
-            Should be ``mstype.float32`` or ``mstype.float16``. mstype.float32 is recommended for
-            the GPU backend, mstype.float16 is recommended for the Ascend backend.
+        hidden_channels (int, optional): The number of channels of the FNOBlock input and output. Default: ``20``.
+        lifting_channels (int, optional): The number of channels of the lifting layer mid channels. Default: ``None``.
+        projection_channels (int, optional): The number of channels of the projection layer mid channels.
+            Default: ``128``.
+        factor (int, optional): The number of neurons in the hidden layer of a feedforward network. Default: ``1``.
+        n_layers (int, optional): The number that Fourier Layer nests. Default: ``4``.
+        n_ff_layers (int, optional): The number of layers (hidden layers) in the feedforward neural network.
+            Default: ``2``.
+        ff_weight_norm (bool, optional): Whether to do weight normalization in feedforward or not.
+            Used as a reserved function interface, the weight normalization is not supported in feedforward.
+            Default: ``False``.
+        layer_norm (bool, optional): Whether to do layer normalization in feedforward or not. Default: ``True``.
+        share_weight (bool, optional): Whether to share weights between SpectralConv layers or not. Default: ``False``.
+        r_padding (int, optional): The number used to pad a tensor on the right in a certain dimension. Default: ``0``.
+        data_format (str, optional): The input data channel sequence. Default: ``"channels_last"``.
+        positional_embedding (bool, optional): Whether to embed positional information or not. Default: ``True``.
+        dft_compute_dtype (dtype.Number, optional): The computation type of DFT in SpectralConvDft.
+            Default: ``mstype.float32``.
+        ffno_compute_dtype (dtype.Number, optional): The computation type of MLP in fno skip.
+            Should be ``mstype.float32`` or ``mstype.float16``. ``mstype.float32`` is recommended for
+            the GPU backend, ``mstype.float16`` is recommended for the Ascend backend.
+            Default: ``mstype.float16``.
 
     Inputs:
         - **x** (Tensor) - Tensor of shape :math:`(batch\_size, resolution, in\_channels)`.
 
     Outputs:
-        Tensor, the output of this FNOBlocks.
-
         - **output** (Tensor) -Tensor of shape :math:`(batch\_size, resolution, out\_channels)`.
 
     Raises:
-        TypeError: If `in_channels` is not an int.
-        TypeError: If `out_channels` is not an int.
-        TypeError: If `hidden_channels` is not an int.
-        TypeError: If `lifting_channels` is not an int.
-        TypeError: If `projection_channels` is not an int.
-        TypeError: If `factor` is not an int.
-        TypeError: If `n_layers` is not an int.
-        TypeError: If `n_ff_layers` is not an int.
-        TypeError: If `ff_weight_norm` is not a Boolean value.
         ValueError: If `ff_weight_norm` is not ``False``.
-        TypeError: If `layer_norm` is not a Boolean value.
-        TypeError: If `share_weight` is not a Boolean value.
-        TypeError: If `r_padding` is not an int.
-        TypeError: If `data_format` is not a str.
-        TypeError: If `positional_embedding` is not a bool.
-
-    Supported Platforms:
-        ``Ascend``
 
     Examples:
         >>> import numpy as np
         >>> import mindspore
-        >>> import mindflow
         >>> from mindspore import Tensor
         >>> import mindspore.common.dtype as mstype
-        >>> from mindflow.cell import FFNO3D
+        >>> from mindscience.models.neural_operator.ffno import FFNO3D
         >>> data = Tensor(np.ones([2, 128, 128, 128, 3]), mstype.float32)
         >>> net = FFNO3D(in_channels=3, out_channels=3, n_modes=[20, 20, 20], resolutions=[128, 128, 128])
         >>> out = net(data)

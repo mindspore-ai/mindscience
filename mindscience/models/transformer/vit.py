@@ -85,9 +85,6 @@ class VisionTransformerEncoder(nn.Cell):
              - **output** (Tensor) - Tensor of shape :math:`(batch\_size, patchify\_size, embed\_dim)`.
              where patchify_size = (image_height * image_width) / (patch_size * patch_size).
 
-     Supported Platforms:
-         ``Ascend`` ``GPU``
-
     Examples:
         >>> from mindspore import ops
         >>> from mindscience.models.transformer.vit import VisionTransformerEncoder
@@ -172,9 +169,6 @@ class VisionTransformerDecoder(nn.Cell):
         - **output** (Tensor) - Tensor of shape :math:`(batch\_size, patchify\_size, embed\_dim)`.
           where patchify_size = (image_height * image_width) / (patch_size * patch_size).
 
-    Supported Platforms:
-        ``Ascend`` ``GPU``
-
     Examples:
         >>> from mindspore import ops
         >>> from mindscience.models.transformer.vit import VisionTransformerDecoder
@@ -258,9 +252,6 @@ class VisionTransformer(nn.Cell):
     Outputs:
         - **output** (Tensor) - Tensor of shape :math:`(batch\_size, patchify\_size, embed\_dim)`.
           where patchify_size = (image_height * image_width) / (patch_size * patch_size).
-
-    Supported Platforms:
-        ``Ascend`` ``GPU``
 
     Examples:
         >>> from mindspore import ops

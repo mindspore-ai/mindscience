@@ -37,33 +37,29 @@ class FNOBlocks(nn.Cell):
         out_channels (int): The number of channels in the output space.
         n_modes (Union[int, list(int)]): The number of modes reserved after linear transformation in Fourier Layer.
         resolutions (Union[int, list(int)]): The resolutions of the input tensor.
-        act (Union[str, class]): The activation function, could be either str or class. Default: ``gelu``.
-        add_residual (bool): Whether to add residual in FNOBlock or not. Default: ``False``.
-        dft_compute_dtype (dtype.Number): The computation type of DFT in SpectralConvDft. Default: ``mstype.float32``.
-        fno_compute_dtype (dtype.Number): The computation type of MLP in fno skip. Default: ``mstype.float16``.
-            Should be ``mstype.float32`` or ``mstype.float16``. mstype.float32 is recommended for
-            the GPU backend, mstype.float16 is recommended for the Ascend backend.
+        act (Union[str, class], optional): The activation function, could be either str or class. Default: ``"gelu"``.
+        add_residual (bool, optional): Whether to add residual in FNOBlock or not. Default: ``False``.
+        dft_compute_dtype (dtype.Number, optional): The computation type of DFT in SpectralConvDft.
+            Default: ``mstype.float32``.
+        fno_compute_dtype (dtype.Number, optional): The computation type of MLP in fno skip.
+            Should be ``mstype.float32`` or ``mstype.float16``. ``mstype.float32`` is recommended for
+            the GPU backend, ``mstype.float16`` is recommended for the Ascend backend.
+            Default: ``mstype.float16``.
 
     Inputs:
         - **x** (Tensor) - Tensor of shape :math:`(batch\_size, in\_channels, resolution)`.
 
     Outputs:
-        Tensor, the output of this FNOBlocks.
-
         - **output** (Tensor) -Tensor of shape :math:`(batch\_size, out\_channels, resolution)`.
 
     Raises:
-        TypeError: If `in_channels` is not an int.
-        TypeError: If `out_channels` is not an int.
-
-    Supported Platforms:
-        ``Ascend`` ``GPU``
+        ValueError: If the dimension of `n_modes` is not equal to that of `resolutions`.
 
     Examples:
         >>> import numpy as np
         >>> from mindspore import Tensor
         >>> import mindspore.common.dtype as mstype
-        >>> from mindflow.cell.neural_operators import FNOBlocks
+        >>> from mindscience.models.neural_operator.fno import FNOBlocks
         >>> data = Tensor(np.ones([2, 3, 128, 128]), mstype.float32)
         >>> net = FNOBlocks(in_channels=3, out_channels=3, n_modes=[20, 20], resolutions=[128, 128])
         >>> out = net(data)
@@ -94,9 +90,9 @@ class FNOBlocks(nn.Cell):
         self.resolutions = resolutions
         if len(self.n_modes) != len(self.resolutions):
             raise ValueError(
-                "The dimension of n_modes should be equal to that of resolutions\
-                 but got dimension of n_modes {} and dimension of resolutions {}".format(len(self.n_modes),
-                                                                                         len(self.resolutions)))
+                f"The dimension of n_modes should be equal to that of resolutions "
+                f"but got dimension of n_modes {len(self.n_modes)} and "
+                f"dimension of resolutions {len(self.resolutions)}")
         self.act = get_activation(act) if isinstance(act, str) else act
         self.add_residual = add_residual
         self.dft_compute_dtype = dft_compute_dtype
@@ -136,8 +132,8 @@ class FNOBlocks(nn.Cell):
                 has_bias=False, weight_init="HeUniform"
             ).to_float(self.fno_compute_dtype)
         else:
-            raise ValueError("The length of input resolutions dimensions should be in [1, 2, 3], but got: {}".format(
-                len(self.resolutions)))
+            raise ValueError(f"The length of input resolutions dimensions should be in [1, 2, 3], "
+                             f"but got: {len(self.resolutions)}")
 
     def construct(self, x: Tensor):
         if self.add_residual:
@@ -158,49 +154,36 @@ class FNO(nn.Cell):
         out_channels (int): The number of channels in the output space.
         n_modes (Union[int, list(int)]): The number of modes reserved after linear transformation in Fourier Layer.
         resolutions (Union[int, list(int)]): The resolutions of the input tensor.
-        hidden_channels (int): The number of channels of the FNOBlock input and output. Default: ``20``.
-        lifting_channels (int): The number of channels of the lifting layer mid channels. Default: None.
-        projection_channels (int): The number of channels of the projection layer mid channels. Default: ``128``.
-        n_layers (int): The number that Fourier Layer nests. Default: ``4``.
-        data_format (str): The input data channel sequence. Default: ``channels_last``.
-        fnoblock_act (Union[str, class]): The activation function for FNOBlock, could be either str or class.
+        hidden_channels (int, optional): The number of channels of the FNOBlock input and output. Default: ``20``.
+        lifting_channels (int, optional): The number of channels of the lifting layer mid channels. Default: ``None``.
+        projection_channels (int, optional): The number of channels of the projection layer mid channels.
+            Default: ``128``.
+        n_layers (int, optional): The number that Fourier Layer nests. Default: ``4``.
+        data_format (str, optional): The input data channel sequence. Default: ``"channels_last"``.
+        fnoblock_act (Union[str, class], optional): The activation function for FNOBlock, could be either str or class.
             Default: ``identity``.
-        mlp_act (Union[str, class]): The activation function for MLP layers, could be either str or class.
-            Default: ``gelu``.
-        add_residual (bool): Whether to add residual in FNOBlock or not. Default: ``False``.
-        positional_embedding (bool): Whether to embed positional information or not. Default: ``True``.
-        dft_compute_dtype (dtype.Number): The computation type of DFT in SpectralConvDft. Default: ``mstype.float32``.
-        fno_compute_dtype (dtype.Number): The computation type of MLP in fno skip. Default: ``mstype.float16``.
-            Should be ``mstype.float32`` or ``mstype.float16``. mstype.float32 is recommended for
-            the GPU backend, mstype.float16 is recommended for the Ascend backend.
+        mlp_act (Union[str, class], optional): The activation function for MLP layers, could be either str or class.
+            Default: ``"gelu"``.
+        add_residual (bool, optional): Whether to add residual in FNOBlock or not. Default: ``False``.
+        positional_embedding (bool, optional): Whether to embed positional information or not. Default: ``True``.
+        dft_compute_dtype (dtype.Number, optional): The computation type of DFT in SpectralConvDft.
+            Default: ``mstype.float32``.
+        fno_compute_dtype (dtype.Number, optional): The computation type of MLP in fno skip.
+            Should be ``mstype.float32`` or ``mstype.float16``. ``mstype.float32`` is recommended for
+            the GPU backend, ``mstype.float16`` is recommended for the Ascend backend.
+            Default: ``mstype.float16``.
 
     Inputs:
         - **x** (Tensor) - Tensor of shape :math:`(batch\_size, resolution, in\_channels)`.
 
     Outputs:
-        Tensor, the output of this FNOBlocks.
-
         - **output** (Tensor) -Tensor of shape :math:`(batch\_size, resolution, out\_channels)`.
-
-    Raises:
-        TypeError: If `in_channels` is not an int.
-        TypeError: If `out_channels` is not an int.
-        TypeError: If `hidden_channels` is not an int.
-        TypeError: If `lifting_channels` is not an int.
-        TypeError: If `projection_channels` is not an int.
-        TypeError: If `n_layers` is not an int.
-        TypeError: If `data_format` is not a str.
-        TypeError: If `add_residual` is not an bool.
-        TypeError: If `positional_embedding` is not an bool.
-
-    Supported Platforms:
-        ``Ascend`` ``GPU``
 
     Examples:
         >>> import numpy as np
         >>> from mindspore import Tensor
         >>> import mindspore.common.dtype as mstype
-        >>> from mindflow.cell.neural_operators.fno import FNO
+        >>> from mindscience.models.neural_operator.fno import FNO
         >>> data = Tensor(np.ones([2, 3, 128, 128]), mstype.float32)
         >>> net = FNO(in_channels=3, out_channels=3, n_modes=[20, 20], resolutions=[128, 128])
         >>> out = net(data)
@@ -247,9 +230,9 @@ class FNO(nn.Cell):
         self.resolutions = resolutions
         if len(self.n_modes) != len(self.resolutions):
             raise ValueError(
-                "The dimension of n_modes should be equal to that of resolutions\
-                 but got dimension of n_modes {} and dimension of resolutions {}".format(len(self.n_modes),
-                                                                                         len(self.resolutions)))
+                f"The dimension of n_modes should be equal to that of resolutions "
+                f"but got dimension of n_modes {len(self.n_modes)} and "
+                f"dimension of resolutions {len(self.resolutions)}")
         self.n_layers = n_layers
         self.data_format = data_format
         if fnoblock_act == "identity":
@@ -324,7 +307,7 @@ class FNO(nn.Cell):
             output_perm = (0, 2, 3, 4, 1)
         else:
             raise ValueError(
-                "The length of input resolutions dimensions should be in [1, 2, 3], but got: {}".format(n_dim))
+                f"The length of input resolutions dimensions should be in [1, 2, 3], but got: {n_dim}")
         return positional_embedding, input_perm, output_perm
 
 
@@ -340,52 +323,38 @@ class FNO1D(FNO):
         out_channels (int): The number of channels in the output space.
         n_modes (Union[int, list(int)]): The number of modes reserved after linear transformation in Fourier Layer.
         resolutions (Union[int, list(int)]): The resolutions of the input tensor.
-        hidden_channels (int): The number of channels of the FNOBlock input and output. Default: ``20``.
-        lifting_channels (int): The number of channels of the lifting layer mid channels. Default: None.
-        projection_channels (int): The number of channels of the projection layer mid channels. Default: ``128``.
-        n_layers (int): The number that Fourier Layer nests. Default: ``4``.
-        data_format (str): The input data channel sequence. Default: ``"channels_last"``.
-            Support value: ``"channels_last"``, ``"channels_first"``.
-        fnoblock_act (Union[str, class]): The activation function for FNOBlock, could be either str or class.
+        hidden_channels (int, optional): The number of channels of the FNOBlock input and output. Default: ``20``.
+        lifting_channels (int, optional): The number of channels of the lifting layer mid channels. Default: ``None``.
+        projection_channels (int, optional): The number of channels of the projection layer mid channels.
+            Default: ``128``.
+        n_layers (int, optional): The number that Fourier Layer nests. Default: ``4``.
+        data_format (str, optional): The input data channel sequence.
+            Support value: ``"channels_last"``, ``"channels_first"``. Default: ``"channels_last"``.
+        fnoblock_act (Union[str, class], optional): The activation function for FNOBlock, could be either str or class.
             Default: ``"gelu"``.
-        mlp_act (Union[str, class]): The activation function for MLP layers, could be either str or class.
-            Default: ``gelu``.
-        add_residual (bool): Whether to add residual in FNOBlock or not. Default: ``False``.
-        positional_embedding (bool): Whether to embed positional information or not. Default: ``True``.
-        dft_compute_dtype (dtype.Number): The computation type of DFT in SpectralConvDft. Default: ``mstype.float32``.
-        fno_compute_dtype (dtype.Number): The computation type of MLP in fno skip. Default: ``mstype.float16``.
-            Should be ``mstype.float32`` or ``mstype.float16``. mstype.float32 is recommended for
-            the GPU backend, mstype.float16 is recommended for the Ascend backend.
+        mlp_act (Union[str, class], optional): The activation function for MLP layers, could be either str or class.
+            Default: ``"gelu"``.
+        add_residual (bool, optional): Whether to add residual in FNOBlock or not. Default: ``False``.
+        positional_embedding (bool, optional): Whether to embed positional information or not. Default: ``True``.
+        dft_compute_dtype (dtype.Number, optional): The computation type of DFT in SpectralConvDft.
+            Default: ``mstype.float32``.
+        fno_compute_dtype (dtype.Number, optional): The computation type of MLP in fno skip.
+            Should be ``mstype.float32`` or ``mstype.float16``. ``mstype.float32`` is recommended for
+            the GPU backend, ``mstype.float16`` is recommended for the Ascend backend.
+            Default: ``mstype.float16``.
 
     Inputs:
         - **x** (Tensor) - Tensor of shape :math:`(batch\_size, resolution, in\_channels)`.
 
     Outputs:
-        Tensor, the output of this FNOBlocks.
-
         - **output** (Tensor) -Tensor of shape :math:`(batch\_size, resolution, out\_channels)`.
-
-    Raises:
-        TypeError: If `in_channels` is not an int.
-        TypeError: If `out_channels` is not an int.
-        TypeError: If `hidden_channels` is not an int.
-        TypeError: If `lifting_channels` is not an int.
-        TypeError: If `projection_channels` is not an int.
-        TypeError: If `n_layers` is not an int.
-        TypeError: If `data_format` is not a str.
-        TypeError: If `add_residual` is not an bool.
-        TypeError: If `positional_embedding` is not an bool.
-
-    Supported Platforms:
-        ``Ascend`` ``GPU``
 
     Examples:
         >>> import numpy as np
         >>> import mindspore
-        >>> import mindflow
         >>> from mindspore import Tensor
         >>> import mindspore.common.dtype as mstype
-        >>> from mindflow.cell import FNO1D
+        >>> from mindscience.models.neural_operator.fno import FNO1D
         >>> data = Tensor(np.ones([2, 128, 3]), mstype.float32)
         >>> net = FNO1D(in_channels=3, out_channels=3, n_modes=[20], resolutions=[128])
         >>> out = net(data)
@@ -442,52 +411,42 @@ class FNO2D(FNO):
         out_channels (int): The number of channels in the output space.
         n_modes (Union[int, list(int)]): The number of modes reserved after linear transformation in Fourier Layer.
         resolutions (Union[int, list(int)]): The resolutions of the input tensor.
-        hidden_channels (int): The number of channels of the FNOBlock input and output. Default: ``20``.
-        lifting_channels (int): The number of channels of the lifting layer mid channels. Default: None.
-        projection_channels (int): The number of channels of the projection layer mid channels. Default: ``128``.
-        n_layers (int): The number that Fourier Layer nests. Default: ``4``.
-        data_format (str): The input data channel sequence. Default: ``channels_last``.
-            Support value: ``"channels_last"``, ``"channels_first"``.
-        fnoblock_act (Union[str, class]): The activation function for FNOBlock, could be either str or class.
+        hidden_channels (int, optional): The number of channels of the FNOBlock input and output. Default: ``20``.
+        lifting_channels (int, optional): The number of channels of the lifting layer mid channels. Default: ``None``.
+        projection_channels (int, optional): The number of channels of the projection layer mid channels.
+            Default: ``128``.
+        n_layers (int, optional): The number that Fourier Layer nests. Default: ``4``.
+        data_format (str, optional): The input data channel sequence.
+            Support value: ``"channels_last"``, ``"channels_first"``. Default: ``"channels_last"``.
+        fnoblock_act (Union[str, class], optional): The activation function for FNOBlock, could be either str or class.
             Default: ``"gelu"``.
-        mlp_act (Union[str, class]): The activation function for MLP layers, could be either str or class.
-            Default: ``gelu``.
-        add_residual (bool): Whether to add residual in FNOBlock or not. Default: ``False``.
-        positional_embedding (bool): Whether to embed positional information or not. Default: ``True``.
-        dft_compute_dtype (dtype.Number): The computation type of DFT in SpectralConvDft. Default: ``mstype.float32``.
-        fno_compute_dtype (dtype.Number): The computation type of MLP in fno skip. Default: ``mstype.float16``.
-            Should be ``mstype.float32`` or ``mstype.float16``. mstype.float32 is recommended for
-            the GPU backend, mstype.float16 is recommended for the Ascend backend.
+        mlp_act (Union[str, class], optional): The activation function for MLP layers, could be either str or class.
+            Default: ``"gelu"``.
+        add_residual (bool, optional): Whether to add residual in FNOBlock or not. Default: ``False``.
+        positional_embedding (bool, optional): Whether to embed positional information or not. Default: ``True``.
+        dft_compute_dtype (dtype.Number, optional): The computation type of DFT in SpectralConvDft.
+            Default: ``mstype.float32``.
+        fno_compute_dtype (dtype.Number, optional): The computation type of MLP in fno skip.
+            Should be ``mstype.float32`` or ``mstype.float16``. ``mstype.float32`` is recommended for
+            the GPU backend, ``mstype.float16`` is recommended for the Ascend backend.
+            Default: ``mstype.float16``.
 
     Inputs:
         - **x** (Tensor) - Tensor of shape :math:`(batch\_size, resolution[0], resolution[1], in\_channels)`.
 
     Outputs:
-        Tensor, the output of this FNOBlocks.
-
         - **output** (Tensor) -Tensor of shape :math:`(batch\_size, resolution[0], resolution[1], out\_channels)`.
 
     Raises:
-        TypeError: If `in_channels` is not an int.
-        TypeError: If `out_channels` is not an int.
-        TypeError: If `hidden_channels` is not an int.
-        TypeError: If `lifting_channels` is not an int.
-        TypeError: If `projection_channels` is not an int.
-        TypeError: If `n_layers` is not an int.
-        TypeError: If `data_format` is not a str.
-        TypeError: If `add_residual` is not an bool.
-        TypeError: If `positional_embedding` is not an bool.
-
-    Supported Platforms:
-        ``Ascend`` ``GPU``
+        ValueError: If the dimension of `n_modes` is not equal to ``2``.
+        ValueError: If the dimension of `resolutions` is not equal to ``2``.
 
     Examples:
         >>> import numpy as np
         >>> import mindspore
-        >>> import mindflow
         >>> from mindspore import Tensor
         >>> import mindspore.common.dtype as mstype
-        >>> from mindflow.cell import FNO2D
+        >>> from mindscience.models.neural_operator.fno import FNO2D
         >>> data = Tensor(np.ones([2, 128, 128, 3]), mstype.float32)
         >>> net = FNO2D(in_channels=3, out_channels=3, n_modes=[20, 20], resolutions=[128, 128])
         >>> out = net(data)
@@ -519,13 +478,13 @@ class FNO2D(FNO):
             resolutions = [resolutions, resolutions]
         if len(n_modes) != 2:
             raise ValueError(
-                "The dimension of n_modes should be equal to 2 when using FNO2D "
-                "but got dimension of n_modes {}".format(len(n_modes))
+                f"The dimension of n_modes should be equal to 2 when using FNO2D "
+                f"but got dimension of n_modes {len(n_modes)}"
             )
         if len(resolutions) != 2:
             raise ValueError(
-                "The dimension of resolutions should be equal to 2 when using FNO2D "
-                "but got dimension of resolutions {}".format(len(resolutions))
+                f"The dimension of resolutions should be equal to 2 when using FNO2D "
+                f"but got dimension of resolutions {len(resolutions)}"
             )
         super().__init__(
             in_channels,
@@ -558,54 +517,44 @@ class FNO3D(FNO):
         out_channels (int): The number of channels in the output space.
         n_modes (Union[int, list(int)]): The number of modes reserved after linear transformation in Fourier Layer.
         resolutions (Union[int, list(int)]): The resolutions of the input tensor.
-        hidden_channels (int): The number of channels of the FNOBlock input and output. Default: ``20``.
-        lifting_channels (int): The number of channels of the lifting layer mid channels. Default: None.
-        projection_channels (int): The number of channels of the projection layer mid channels. Default: ``128``.
-        n_layers (int): The number that Fourier Layer nests. Default: ``4``.
-        data_format (str): The input data channel sequence. Default: ``channels_last``.
-            Support value: ``"channels_last"``, ``"channels_first"``.
-        fnoblock_act (Union[str, class]): The activation function for FNOBlock, could be either str or class.
+        hidden_channels (int, optional): The number of channels of the FNOBlock input and output. Default: ``20``.
+        lifting_channels (int, optional): The number of channels of the lifting layer mid channels. Default: ``None``.
+        projection_channels (int, optional): The number of channels of the projection layer mid channels.
+            Default: ``128``.
+        n_layers (int, optional): The number that Fourier Layer nests. Default: ``4``.
+        data_format (str, optional): The input data channel sequence.
+            Support value: ``"channels_last"``, ``"channels_first"``. Default: ``"channels_last"``.
+        fnoblock_act (Union[str, class], optional): The activation function for FNOBlock, could be either str or class.
             Default: ``"gelu"``.
-        mlp_act (Union[str, class]): The activation function for MLP layers, could be either str or class.
-            Default: ``gelu``.
-        add_residual (bool): Whether to add residual in FNOBlock or not. Default: ``False``.
-        positional_embedding (bool): Whether to embed positional information or not. Default: ``True``.
-        dft_compute_dtype (dtype.Number): The computation type of DFT in SpectralConvDft. Default: ``mstype.float32``.
-        fno_compute_dtype (dtype.Number): The computation type of MLP in fno skip. Default: ``mstype.float16``.
-            Should be ``mstype.float32`` or ``mstype.float16``. mstype.float32 is recommended for
-            the GPU backend, mstype.float16 is recommended for the Ascend backend.
+        mlp_act (Union[str, class], optional): The activation function for MLP layers, could be either str or class.
+            Default: ``"gelu"``.
+        add_residual (bool, optional): Whether to add residual in FNOBlock or not. Default: ``False``.
+        positional_embedding (bool, optional): Whether to embed positional information or not. Default: ``True``.
+        dft_compute_dtype (dtype.Number, optional): The computation type of DFT in SpectralConvDft.
+            Default: ``mstype.float32``.
+        fno_compute_dtype (dtype.Number, optional): The computation type of MLP in fno skip.
+            Should be ``mstype.float32`` or ``mstype.float16``. ``mstype.float32`` is recommended for
+            the GPU backend, ``mstype.float16`` is recommended for the Ascend backend.
+            Default: ``mstype.float16``.
 
     Inputs:
         - **x** (Tensor) - Tensor of shape :math:`(batch\_size, resolution[0], resolution[1], resolution[2], \
           in\_channels)`.
 
     Outputs:
-        Tensor, the output of this FNOBlocks.
-
         - **output** (Tensor) -Tensor of shape :math:`(batch\_size, resolution[0], resolution[1],
           resolution[2], out\_channels)`.
 
     Raises:
-        TypeError: If `in_channels` is not an int.
-        TypeError: If `out_channels` is not an int.
-        TypeError: If `hidden_channels` is not an int.
-        TypeError: If `lifting_channels` is not an int.
-        TypeError: If `projection_channels` is not an int.
-        TypeError: If `n_layers` is not an int.
-        TypeError: If `data_format` is not a str.
-        TypeError: If `add_residual` is not an bool.
-        TypeError: If `positional_embedding` is not an bool.
-
-    Supported Platforms:
-        ``Ascend`` ``GPU``
+        ValueError: If the dimension of `n_modes` is not equal to ``3``.
+        ValueError: If the dimension of `resolutions` is not equal to ``3``.
 
     Examples:
         >>> import numpy as np
         >>> import mindspore
-        >>> import mindflow
         >>> from mindspore import Tensor
         >>> import mindspore.common.dtype as mstype
-        >>> from mindflow.cell import FNO3D
+        >>> from mindscience.models.neural_operator.fno import FNO3D
         >>> data = Tensor(np.ones([2, 128, 128, 128, 3]), mstype.float32)
         >>> net = FNO3D(in_channels=3, out_channels=3, n_modes=[20, 20, 20], resolutions=[128, 128, 128])
         >>> out = net(data)
@@ -637,13 +586,13 @@ class FNO3D(FNO):
             resolutions = [resolutions, resolutions, resolutions]
         if len(n_modes) != 3:
             raise ValueError(
-                "The dimension of n_modes should be equal to 3 when using FNO3D "
-                "but got dimension of n_modes {}".format(len(n_modes))
+                f"The dimension of n_modes should be equal to 3 when using FNO3D "
+                f"but got dimension of n_modes {len(n_modes)}"
             )
         if len(resolutions) != 3:
             raise ValueError(
-                "The dimension of resolutions should be equal to 3 when using FNO3D "
-                "but got dimension of resolutions {}".format(len(resolutions))
+                f"The dimension of resolutions should be equal to 3 when using FNO3D "
+                f"but got dimension of resolutions {len(resolutions)}"
             )
         super().__init__(
             in_channels,
