@@ -5,7 +5,7 @@ mindscience.models.layers.MultiScaleFCSequential
 
     多尺度全连接网络。
 
-    参数:
+    参数：
         - **in_channels** (int) - 输入空间的通道数。
         - **out_channels** (int) - 输出空间的通道数。
         - **layers** (int) - 层数总数，包括输入/隐藏/输出层。
@@ -23,13 +23,13 @@ mindscience.models.layers.MultiScaleFCSequential
         - **input_center** (Union[list, None], 可选) - 坐标平移的中心位置。如果不为 ``None``，将在网络中设置输入之前对输入进行平移。默认值：``None``。
         - **latent_vector** (Union[Parameter, None], 可选) - 可训练参数，将与采样输入连接并在训练期间更新。默认值：``None``。
 
-    输入:
+    输入：
         - **input** (Tensor) - 形状为 :math:`(*, in\_channels)` 的张量。
 
-    输出:
+    输出：
         - **output** (Tensor) - 形状为 :math:`(*, out\_channels)` 的张量。
 
-    异常:
+    异常：
         - **TypeError** - 如果 `num_scales` 不是整数。
         - **TypeError** - 如果 `amp_factor` 既不是整数也不是浮点数。
         - **TypeError** - 如果 `scale_factor` 既不是整数也不是浮点数。

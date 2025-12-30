@@ -5,9 +5,9 @@ mindscience.models.layers.get_activation
 
     获取激活函数。
 
-    参数:
+    参数：
         - **name** (Union[str, None]) - 激活函数的名称。如果 `name` 为 ``None``，则返回 ``None``。
 
-    返回:
+    返回：
         Function(mindspore.cell)，激活函数。
 

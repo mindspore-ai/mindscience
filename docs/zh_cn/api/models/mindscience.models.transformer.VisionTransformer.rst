@@ -5,7 +5,7 @@ mindscience.models.transformer.VisionTransformer
 
     此模块基于 VisionTransformer 骨干，包含编码器、解码器嵌入、解码器和密集层。
 
-    参数:
+    参数：
         - **image_size** (tuple[int], 可选) - 输入的图像大小。默认值： ``(192, 384)``。
         - **in_channels** (int, 可选) - 输入的特征大小。默认值： ``7``。
         - **out_channels** (int, 可选) - 输出的特征大小。默认值： ``3``。
@@ -19,8 +19,8 @@ mindscience.models.transformer.VisionTransformer
         - **dropout_rate** (float, 可选) - dropout 层的速率。默认值： ``0.0``。
         - **compute_dtype** (mindspore.dtype, 可选) - 编码器、解码器嵌入、解码器和密集层的数据类型。默认值： ``mstype.float16``。
 
-    输入:
+    输入：
         - **input** (Tensor) - 形状为 :math:`(batch\_size, feature\_size, image\_height, image\_width)`。
 
-    输出:
+    输出：
         - **output** (Tensor) - 形状为 :math:`(batch\_size, patchify\_size, embed\_dim)`。其中 patchify_size = (image_height * image_width) / (patch_size * patch_size)。

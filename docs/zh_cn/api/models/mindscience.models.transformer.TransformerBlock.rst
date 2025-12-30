@@ -5,7 +5,7 @@ mindscience.models.transformer.TransformerBlock
 
     `TransformerBlock` 包含一个 `MultiHeadAttention` 和一个 `FeedForward` 层。
 
-    参数:
+    参数：
         - **in_channels** (int) - 输入通道。
         - **num_heads** (int) - 注意力头的数量。
         - **enable_flash_attn** (bool, 可选) - 是否使用Flash Attention。Flash Attention仅支持 Ascend 后端。Flash Attention提出于 `FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness <https://arxiv.org/abs/2205.14135>`_。默认值： ``False``。
@@ -14,9 +14,9 @@ mindscience.models.transformer.TransformerBlock
         - **dropout_rate** (float, 可选) - dropout 层的丢弃率，大于 0 且小于等于 1。默认值： ``0.0``。
         - **compute_dtype** (mindspore.dtype, 可选) - 计算数据类型。默认值： ``mstype.float32``，表示 ``mindspore.float32``。
 
-    输入:
+    输入：
         - **x** (Tensor) - Tensor，形状为 :math:`(batch\_size, sequence\_len, in\_channels)`。
         - **mask** (Tensor, 可选) - Tensor，形状为 :math:`(sequence\_len, sequence\_len)` 或 :math:`(batch\_size, 1, sequence\_len, sequence\_len)`。默认值： ``None``。
 
-    输出:
+    输出：
         - **output** (Tensor) - 形状为 :math:`(batch\_size, sequence\_len, in\_channels)`。

@@ -7,7 +7,7 @@ mindscience.models.layers.UNet2D
 
     U-Net 是用于生物医学图像分割的 U 形卷积神经网络。它具有捕获上下文的收缩路径和实现精确定位的扩展路径。详情请参阅 `U-Net: Convolutional Networks for Biomedical Image Segmentation <https://arxiv.org/abs/1505.04597>`_ 。
 
-    参数:
+    参数：
         - **in_channels** (int) - 输入通道数。
         - **out_channels** (int) - 输出通道数。
         - **base_channels** (int) - UNet2D 的基础通道数。
@@ -18,12 +18,12 @@ mindscience.models.layers.UNet2D
         - **activation** (Union[str, class], 可选) - 激活函数，可以是 str 或类。默认值：``"relu"``。
         - **enable_bn** (bool, 可选) - 指定卷积中是否使用批归一化。默认值：``True``。
 
-    输入:
+    输入：
         - **x** (Tensor) - 形状为 :math:`(batch\_size, resolution, resolution, channels)` 的张量。
 
-    输出:
+    输出：
         - **output** (Tensor) - 形状为 :math:`(batch\_size, resolution, resolution, channels)` 的张量。
 
-    异常:
+    异常：
         - **ValueError** - 如果 `data_format` 不是 ``'NHWC'`` 或 ``'NCHW'``。
         - **ValueError** - 如果 `n_layers` 为 ``0``。
