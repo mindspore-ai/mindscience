@@ -1,7 +1,7 @@
 mindscience.diffuser
-===================
+=====================
 
-.. mscnplatformautosummary::
+.. mscnautosummary::
     :toctree: diffuser
     :nosignatures:
 

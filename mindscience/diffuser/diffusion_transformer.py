@@ -192,13 +192,13 @@ class ConditionDiffusionTransformer(DiffusionTransformer):
     Args:
         in_channels (int): The number of input channel.
         out_channels (int): The number of output channel.
-        hidden_channels (int): The number of hidden channel.
         cond_channels (int): The number of condition channel.
+        hidden_channels (int): The number of hidden channel.
         layers (int): The number of transformer block layers.
         heads (int): The number of transformer heads.
         time_token_cond (bool): Whether to use timestep as condition token. Default: ``True``.
         cond_as_token (bool): Whether to use condition as token. Default: ``True``.
-        compute_dtype (mindspore.dtype): the dtype of compute, it can be ``mstype.float32`` or ``mstype.float16``.
+        compute_dtype (mindspore.dtype): The dtype of compute, it can be ``mstype.float32`` or ``mstype.float16``.
             Default: ``mstype.float32``, indicates ``mindspore.float32``.
 
     Inputs:

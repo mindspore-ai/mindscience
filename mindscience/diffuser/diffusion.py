@@ -110,7 +110,7 @@ class DiffusionScheduler:
         num_train_timesteps (int): The number of diffusion steps to train the model. Default: ``1000``.
         beta_start (float): The starting `beta` value of inference. Default: ``0.0001``.
         beta_end (float): The final `beta` value. Default: ``0.02``.
-        beta_schedule (str): The beta schedule, a mapping from a beta range to a sequence of betas for stepping the model. Choose from
+        beta_schedule (str): The `beta` schedule, a mapping from a beta range to a sequence of betas for stepping the model. Choose from
             `linear`, `scaled_linear`, or `squaredcos_cap_v2`. Default: ``squaredcos_cap_v2``.
         prediction_type (str): Prediction type of the scheduler function; can be `epsilon` (predicts the noise of the diffusion process),
             `sample` (directly predicts the noisy sample`) or `v_prediction` (see section 2.4 of `Imagen
@@ -121,13 +121,13 @@ class DiffusionScheduler:
             as Stable Diffusion. Default: ``False``.
         sample_max_value (float): The threshold value for dynamic thresholding. Valid only when `thresholding=True`. Default: ``1.0``.
         dynamic_thresholding_ratio (float): The ratio for the dynamic thresholding method. Valid only when `thresholding=True`. Default: ``0.995``.
-        timestep_spacing (str): The way the timesteps should be scaled. Refer to Table 2 of the `Common Diffusion Noise Schedules and
-            Sample Steps are Flawed <https://huggingface.co/papers/2305.08891>`_ for more information. Choose from ``linspace``, ``leading`` or ``trailing``.
-            Default: ``leading``.
         rescale_betas_zero_snr (bool): Whether to rescale the betas to have zero terminal SNR. This enables the model to generate very bright and
             dark samples instead of limiting it to samples with medium brightness. Loosely related to
             `offset_noise <https://github.com/huggingface/diffusers/blob/74fd735eb073eb1d774b1ab4154a0876eb82f055/examples/dreambooth/train_dreambooth.py#L506>`_. Default: ``False``.
-        compute_dtype: the dtype of compute, it can be `mstype.float32` or `mstype.float16`.  Default: ``mstype.float32``, indicates ``mindspore.float32``.
+        timestep_spacing (str): The way the timesteps should be scaled. Refer to Table 2 of the `Common Diffusion Noise Schedules and
+            Sample Steps are Flawed <https://huggingface.co/papers/2305.08891>`_ for more information. Choose from ``linspace``, ``leading`` or ``trailing``.
+            Default: ``leading``.
+        compute_dtype: The dtype of compute, it can be ``mstype.float32`` or ``mstype.float16``.  Default: ``mstype.float32``, indicates ``mindspore.float32``.
     """
 
     def __init__(self,
@@ -435,13 +435,13 @@ class DDPMScheduler(DiffusionScheduler):
             as Stable Diffusion. Default: ``False``.
         sample_max_value (float): The threshold value for dynamic thresholding. Valid only when `thresholding=True`. Default: ``1.0``.
         dynamic_thresholding_ratio (float): The ratio for the dynamic thresholding method. Valid only when `thresholding=True`. Default: ``0.995``.
-        timestep_spacing (str): The way the timesteps should be scaled. Refer to Table 2 of the `Common Diffusion Noise Schedules and
-            Sample Steps are Flawed <https://huggingface.co/papers/2305.08891>`_ for more information. Choose from ``linspace``, ``leading`` or ``trailing``.
-            Default: ``leading``.
         rescale_betas_zero_snr (bool): Whether to rescale the betas to have zero terminal SNR. This enables the model to generate very bright and
             dark samples instead of limiting it to samples with medium brightness. Loosely related to
             `offset_noise <https://github.com/huggingface/diffusers/blob/74fd735eb073eb1d774b1ab4154a0876eb82f055/examples/dreambooth/train_dreambooth.py#L506>`_. Default: ``False``.
-        compute_dtype (mindspore.dtype): the dtype of compute, it can be `mstype.float32` or `mstype.float16`. Default: ``mstype.float32``, indicates ``mindspore.float32``.
+        timestep_spacing (str): The way the timesteps should be scaled. Refer to Table 2 of the `Common Diffusion Noise Schedules and
+            Sample Steps are Flawed <https://huggingface.co/papers/2305.08891>`_ for more information. Choose from ``linspace``, ``leading`` or ``trailing``.
+            Default: ``leading``.
+        compute_dtype (mindspore.dtype): The dtype of compute, it can be ``mstype.float32`` or ``mstype.float16``. Default: ``mstype.float32``, indicates ``mindspore.float32``.
 
     Examples:
         >>> from mindspore import ops, dtype as mstype
@@ -600,8 +600,7 @@ class DDPMScheduler(DiffusionScheduler):
 class DDIMScheduler(DiffusionScheduler):
     r"""
     `DDIMScheduler` extends the denoising procedure introduced in denoising diffusion probabilistic models.
-    Check `Denoising Diffusion Implicit Models <https://arxiv.org/abs/2010.02502>`_
-    for more information.
+    Check `Denoising Diffusion Implicit Models <https://arxiv.org/abs/2010.02502>`_ for more information.
 
     Args:
         num_train_timesteps (int): The number of diffusion steps to train the model. Default: ``1000``.
@@ -618,13 +617,13 @@ class DDIMScheduler(DiffusionScheduler):
             as Stable Diffusion. Default: ``False``.
         sample_max_value (float): The threshold value for dynamic thresholding. Valid only when `thresholding=True`. Default: ``1.0``.
         dynamic_thresholding_ratio (float): The ratio for the dynamic thresholding method. Valid only when `thresholding=True`. Default: ``0.995``.
-        timestep_spacing (str): The way the timesteps should be scaled. Refer to Table 2 of the `Common Diffusion Noise Schedules and
-            Sample Steps are Flawed <https://huggingface.co/papers/2305.08891>`_ for more information. Choose from ``linspace``, ``leading`` or ``trailing``.
-            Default: ``leading``.
         rescale_betas_zero_snr (bool): Whether to rescale the betas to have zero terminal SNR. This enables the model to generate very bright and
             dark samples instead of limiting it to samples with medium brightness. Loosely related to
             `offset_noise <https://github.com/huggingface/diffusers/blob/74fd735eb073eb1d774b1ab4154a0876eb82f055/examples/dreambooth/train_dreambooth.py#L506>`_. Default: ``False``.
-        compute_dtype (mindspore.dtype): the dtype of compute, it can be `mstype.float32` or `mstype.float16`. Default: ``mstype.float32``, indicates ``mindspore.float32``.
+        timestep_spacing (str): The way the timesteps should be scaled. Refer to Table 2 of the `Common Diffusion Noise Schedules and
+            Sample Steps are Flawed <https://huggingface.co/papers/2305.08891>`_ for more information. Choose from ``linspace``, ``leading`` or ``trailing``.
+            Default: ``leading``.
+        compute_dtype (mindspore.dtype): The dtype of compute, it can be ``mstype.float32`` or ``mstype.float16``. Default: ``mstype.float32``, indicates ``mindspore.float32``.
 
     Examples:
         >>> from mindspore import ops, dtype as mstype
@@ -742,10 +741,7 @@ class DDIMScheduler(DiffusionScheduler):
             sample (Tensor): A current instance of a sample created by the diffusion process.
             timestep (Tensor): The current discrete timestep in the diffusion chain.
             eta (float): The weight of noise for added noise in diffusion step. DDIM when eta=0, DDPM when eta=1. Default: ``0.0``.
-            use_clipped_model_output (bool): If `True`, computes "corrected" `model_output` from the clipped predicted original sample. Necessary
-                because predicted original sample is clipped to [-1, 1] when `self.clip_sample` is `True`. If no
-                clipping has happened, "corrected" `model_output` would coincide with the one provided as input and
-                `use_clipped_model_output` has no effect. Default: ``False.``.
+            use_clipped_model_output (bool): Controls whether to recompute the noise `epsilon` from the clipped predicted original sample (`x_0`) to compensate for bias introduced by `clip_sample`. This correction is applied only during sampling. If ``True``, derive `epsilon` from the clipped `x_0` and use the corrected noise for the denoising step, improving stability when `x_0` clipping would otherwise skew the update. If ``False``, use the raw `model_output` directly without this correction, preserving the model's unadjusted prediction. Default: ``False.``.
 
         Returns:
             Tensor, Denoised output x_prev.
@@ -823,7 +819,7 @@ class DiffusionPipeline:
         batch_size (int): The number of images to generate.
         seq_len (int): Sequence length of inputs.
         num_inference_steps (int): Number of Denoising steps.
-        compute_dtype (mindspore.dtype): The dtype of compute, it can be mstype.float32 or mstype.float16.
+        compute_dtype (mindspore.dtype): The dtype of compute, it can be ``mstype.float32`` or ``mstype.float16``.
             Default: ``mstype.float32``, indicates ``mindspore.float32``.
 
     Raises:
@@ -937,7 +933,7 @@ class DDPMPipeline(DiffusionPipeline):
         batch_size (int): The number of images to generate.
         seq_len (int): Sequence length of inputs.
         num_inference_steps (int): Number of Denoising steps. Default: ``1000``.
-        compute_dtype (mindspore.dtype): The dtype of compute, it can be mstype.float32 or mstype.float16.
+        compute_dtype (mindspore.dtype): The dtype of compute, it can be ``mstype.float32`` or ``mstype.float16``.
             Default: ``mstype.float32``, indicates ``mindspore.float32``.
 
     Raises:
@@ -1009,7 +1005,7 @@ class DDIMPipeline(DiffusionPipeline):
         batch_size (int): The number of images to generate.
         seq_len (int): Sequence length of inputs.
         num_inference_steps (int): Number of Denoising steps. Default: ``1000``.
-        compute_dtype (mindspore.dtype): The dtype of compute, it can be mstype.float32 or mstype.float16. Default: ``mstype.float32``, indicates ``mindspore.float32``.
+        compute_dtype (mindspore.dtype): The dtype of compute, it can be ``mstype.float32`` or ``mstype.float16``. Default: ``mstype.float32``, indicates ``mindspore.float32``.
 
     Raises:
         TypeError: If `scheduler` is not `DDIMScheduler` type.
