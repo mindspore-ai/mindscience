@@ -17,6 +17,13 @@ mindscience.e3nn.o3.Irrep
         - **ValueError** - 如果 `l` 不能转换为 `Irrep`。
         - **TypeError** - 如果 `l` 不是 int 或 str。
 
+    .. py:method:: is_scalar()
+
+        检查该不可约表示是否为简单（标量）表示。
+
+        返回：
+            bool，如果 ``l = 0`` 并且奇偶性为 ``p = 1`` 则为 ``True`` ，否则为 ``False`` 。
+
     .. py:method:: wigD_from_angles(alpha, beta, gamma, k=None)
 
         根据三个描述旋转顺序的欧拉角 :math:`(\alpha, \beta, \gamma)` 计算 O(3) 的 Wigner-D 矩阵表示：
