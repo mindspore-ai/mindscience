@@ -22,7 +22,7 @@ mindscience.e3nn.o3.Irrep
         检查该不可约表示是否为简单（标量）表示。
 
         返回：
-            bool，如果 ``l = 0`` 并且奇偶性为 ``p = 1`` 则为 ``True`` ，否则为 ``False`` 。
+            bool。如果 ``l = 0`` 并且奇偶性为 ``p = 1`` 则为 ``True`` ，否则为 ``False`` 。
 
     .. py:method:: wigD_from_angles(alpha, beta, gamma, k=None)
 
