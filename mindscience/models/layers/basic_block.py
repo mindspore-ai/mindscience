@@ -60,7 +60,7 @@ class LinearBlock(nn.Cell):
         - **input** (Tensor) - Tensor of shape :math:`(*, in\_channels)`.
 
     Outputs:
-        Tensor of shape :math:`(*, out\_channels)`.
+        - **output** (Tensor) - Tensor of shape :math:`(*, out\_channels)`.
 
     Examples:
         >>> import numpy as np
@@ -189,7 +189,7 @@ class InputScale(nn.Cell):
         - **input** (Tensor) - Tensor of shape :math:`(*, channels)`.
 
     Outputs:
-        Tensor of shape :math:`(*, channels)`.
+        - **output** (Tensor) - Tensor of shape :math:`(*, channels)`.
 
     Raises:
         TypeError: If `input_scale` is not a list.

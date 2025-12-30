@@ -549,7 +549,7 @@ class FFNO2D(FFNO):
             Default: ``False``.
         layer_norm (bool, optional): Whether to do layer normalization in feedforward or not. Default: ``True``.
         share_weight (bool, optional): Whether to share weights between SpectralConv layers or not. Default: ``False``.
-        r_padding (int): The number used to pad a tensor on the right in a certain dimension. Default: ``0``.
+        r_padding (int, optional): The number used to pad a tensor on the right in a certain dimension. Default: ``0``.
         data_format (str, optional): The input data channel sequence. Default: ``"channels_last"``.
         positional_embedding (bool, optional): Whether to embed positional information or not. Default: ``True``.
         dft_compute_dtype (dtype.Number, optional): The computation type of DFT in SpectralConvDft.

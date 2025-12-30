@@ -41,7 +41,7 @@ class Scatter(nn.Cell):
           If `dim_size` is not given, a minimal sized output tensor is returned. Default: ``None``.
 
     Outputs:
-        Tensor, the result after scatter operation.
+        - **output** (Tensor) - The result after scatter operation.
 
     Raises:
         ValueError: If `mode` is not legal.
