@@ -26,7 +26,7 @@ def lecun_init(fan_in, initializer_name='linear'):
     
     Args:
         fan_in (int): The number of input features.
-        initializer_name (str, optional): The name of the initializer. Default: 'linear'.
+        initializer_name (str, optional): The name of the initializer, support ``"linear"`` or ``"relu"``. Default: ``"linear"``.
 
     Returns:
         Initializer: The initializer.
@@ -48,7 +48,7 @@ def glorot_uniform(fan_in, fan_out, weight_shape):
         weight_shape (tuple): The shape of the weight.
 
     Returns:
-        numpy.ndarray: The weight.
+        Numpy.ndarray, the weight.
     """
     limit = np.sqrt(6 / (fan_in + fan_out))
     return np.random.uniform(-limit, limit, size=weight_shape)

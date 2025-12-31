@@ -24,10 +24,10 @@ def to_3tuple(t):
     Convert an integer or a tuple of integers to a 3-tuple.
 
     Args:
-        t (Union[int, tuple(int)]): The grid height and width.
+        t (Union[int, tuple(int)]): The depth, height and width of the grid.
 
     Returns:
-        Same as input or a tuple as (t,t,t).
+        Tuple(int, int, int), same as input or a tuple as `(t,t,t)`.
 
     """
     return t if isinstance(t, tuple) else (t, t, t)
@@ -41,7 +41,7 @@ def to_2tuple(t):
         t (Union[int, tuple(int)]): The grid height and width.
 
     Returns:
-        Same as input or a tuple as (t,t).
+        Tuple(int, int), same as input or a tuple as `(t,t)`.
 
     """
     return t if isinstance(t, tuple) else (t, t)
@@ -49,12 +49,14 @@ def to_2tuple(t):
 
 def get_2d_sin_cos_pos_embed(embed_dim, grid_size):
     r"""
+    Construct 2D sine-cosine positional embeddings on a two-dimensional grid.
+
     Args:
         embed_dim (int): The output dimension for each position.
         grid_size (tuple(int)): The grid height and width.
 
     Returns:
-        The numpy array with shape of :math:`(1, grid\_height*grid\_width, embed\_dim)`
+        Numpy.array, with shape :math:`(1, grid\_height*grid\_width, embed\_dim)`
 
     """
     grid_size = to_2tuple(grid_size)
@@ -118,10 +120,10 @@ def patchify(label, patch_size=16):
 
     Args:
         label (Union[int, float]): output dimension for each position.
-        patch_size (int): The patch size of image. Default: 16.
+        patch_size (int, optional): The patch size of image. Default: 16.
 
     Returns:
-        The numpy array with new shape of (H, W).
+        Numpy.array, the array with new shape of ``(H, W)``.
     """
     label_shape = label.shape
     label = np.reshape(label, (label_shape[0] // patch_size,
@@ -141,13 +143,13 @@ def unpatchify(labels, img_size=(192, 384), patch_size=16, nchw=False):
     Convert a sequence of flattened patches back into an image-like tensor.
 
     Args:
-        labels (Union[int, float]): output dimension for each position.
-        img_size (tuple(int)): Input image size. Default (192, 384).
-        patch_size (int): The patch size of image. Default: 16.
-        nchw (bool): If True, the unpatchify shape contains N, C, H, W.
+        labels (Union[int, float]): Output dimension for each position.
+        img_size (tuple(int), optional): Input image size. Default ``(192, 384)``.
+        patch_size (int, optional): The patch size of image. Default: ``16``.
+        nchw (bool, optional): If ``True``, the unpatchify shape contains ``N, C, H, W``.
 
     Returns:
-        The tensor with shape of :math:`(N, H, W, C)`.
+        Tensor, with shape of :math:`(N, H, W, C)`.
     """
     label_shape = labels.shape
     output_dim = label_shape[-1] // (patch_size * patch_size)
@@ -176,10 +178,10 @@ class SpectralNorm(nn.Cell):
     with spectral norm.
 
     Args:
-        module (nn.Cell): containing module.
-        n_power_iterations (int): number of power iterations to calculate spectral norm.
-        dim (int): dimension corresponding to number of outputs.
-        eps (float): epsilon for numerical stability in calculating norms.
+        module (nn.Cell): Containing module.
+        n_power_iterations (int, optional): Number of power iterations to calculate spectral norm. Default ``1``.
+        dim (int, optional): Dimension corresponding to number of outputs. Default ``0``.
+        eps (float, optional): Epsilon for numerical stability in calculating norms. Default ``1e-12``.
 
     Inputs:
         - **input** - The positional parameter of containing module.
@@ -269,8 +271,7 @@ class SpectralNorm(nn.Cell):
 
 def pixel_shuffle(x, upscale_factor):
     r"""
-    Applies a pixel_shuffle operation over an input signal composed of several input planes. This is useful for
-    implementiong efficient sub-pixel convolution with a stride of :math:`1/r`. For more details, refer to
+    Applies a pixel_shuffle operation over an input signal composed of several input planes. This is useful for implementiong efficient sub-pixel convolution with a stride of :math:`1/r`. For more details, refer to
     `Real-Time Single Image and Video Super-Resolution Using an Efficient Sub-Pixel Convolutional Neural Network
     <https://arxiv.org/abs/1609.05158>`_ .
 
@@ -278,17 +279,16 @@ def pixel_shuffle(x, upscale_factor):
     :math:`(*, C, H \times r, W \times r)`, where `r` is an upscale factor and `*` is zero or more batch dimensions.
 
     Args:
-        x (Tensor): Tensor of shape :math:`(*, C \times r^2, H, W)` . The dimension of `x` is larger than 2, and the
-            length of third to last dimension can be divisible by `upscale_factor` squared.
-        upscale_factor (int):  factor to increase spatial resolution by, and is a positive integer.
+        x (Tensor): Tensor of shape :math:`(*, C \times r^2, H, W)` . The dimension of `x` is larger than ``2``, and the length of third to last dimension can be divisible by `upscale_factor` squared.
+        upscale_factor (int): Factor to increase spatial resolution by, and is a positive integer.
 
     Returns:
-        - **output** (Tensor) - Tensor of shape :math:`(*, C, H \times r, W \times r)` .
+        Tensor, tensor of shape :math:`(*, C, H \times r, W \times r)` .
 
     Raises:
         ValueError: If `upscale_factor` is not a positive integer.
         ValueError: If the length of third to last dimension is not divisible by `upscale_factor` squared.
-        TypeError: If the dimension of `x` is less than 3.
+        TypeError: If the dimension of `x` is less than ``3``.
     """
     idx = x.shape
     length = len(idx)
@@ -323,11 +323,10 @@ class PixelShuffle(nn.Cell):
     :math:`(*, C, H \times r, W \times r)`, where r is an upscale factor and * is zero or more batch dimensions.
 
     Args:
-        upscale_factor (int):  factor to increase spatial resolution by, and is a positive integer.
+        upscale_factor (int):  Factor to increase spatial resolution by, and is a positive integer.
 
     Inputs:
-        - **x** (Tensor) - Tensor of shape :math:`(*, C \times r^2, H, W)` . The dimension of `x` is larger than 2, and
-          the length of third to last dimension can be divisible by `upscale_factor` squared.
+        - **x** (Tensor) - Tensor of shape :math:`(*, C \times r^2, H, W)` . The dimension of `x` is larger than ``2``, and the length of third to last dimension can be divisible by `upscale_factor` squared.
 
     Outputs:
         - **output** (Tensor) - Tensor of shape :math:`(*, C, H \times r, W \times r)` .
@@ -335,7 +334,7 @@ class PixelShuffle(nn.Cell):
     Raises:
         ValueError: If `upscale_factor` is not a positive integer.
         ValueError: If the length of third to last dimension of `x` is not divisible by `upscale_factor` squared.
-        TypeError: If the dimension of `x` is less than 3.
+        TypeError: If the dimension of `x` is less than ``3``.
     """
     def __init__(self, upscale_factor):
         super().__init__()
@@ -347,25 +346,23 @@ class PixelShuffle(nn.Cell):
 
 def pixel_unshuffle(x, downscale_factor):
     r"""
-    Applies a pixel_unshuffle operation over an input signal composed of several input planes. For more details, refer
-    to `Real-Time Single Image and Video Super-Resolution Using an Efficient Sub-Pixel Convolutional Neural Network
+    Applies a pixel_unshuffle operation over an input signal composed of several input planes. For more details, refer to `Real-Time Single Image and Video Super-Resolution Using an Efficient Sub-Pixel Convolutional Neural Network
     <https://arxiv.org/abs/1609.05158>`_ .
 
     Typically, the input is of shape :math:`(*, C, H \times r, W \times r)` , and the output is of shape
     :math:`(*, C \times r^2, H, W)` , where `r` is a downscale factor and `*` is zero or more batch dimensions.
 
     Args:
-        x (Tensor): Tensor of shape :math:`(*, C, H \times r, W \times r)` . The dimension of `x` is larger than 2,
-            and the length of second to last dimension or last dimension can be divisible by `downscale_factor` .
-        downscale_factor (int): factor to decrease spatial resolution by, and is a positive integer.
+        x (Tensor): Tensor of shape :math:`(*, C, H \times r, W \times r)` . The dimension of `x` is larger than ``2``, and the length of second to last dimension or last dimension can be divisible by `downscale_factor` .
+        downscale_factor (int): Factor to decrease spatial resolution by, and is a positive integer.
 
     Returns:
-        - **output** (Tensor) - Tensor of shape :math:`(*, C \times r^2, H, W)` .
+        Tensor, tensor of shape :math:`(*, C \times r^2, H, W)` .
 
     Raises:
         ValueError: If `downscale_factor` is not a positive integer.
         ValueError: If the length of second to last dimension or last dimension is not divisible by `downscale_factor` .
-        TypeError: If the dimension of `x` is less than 3.
+        TypeError: If the dimension of `x` is less than ``3``.
     """
     idx = x.shape
     length = len(idx)
@@ -403,8 +400,7 @@ class PixelUnshuffle(nn.Cell):
         downscale_factor (int): factor to decrease spatial resolution by, and is a positive integer.
 
     Inputs:
-        - **x** (Tensor) - Tensor of shape :math:`(*, C, H \times r, W \times r)` . The dimension of `x` is larger than
-          2, and the length of second to last dimension or last dimension can be divisible by `downscale_factor` .
+        - **x** (Tensor) - Tensor of shape :math:`(*, C, H \times r, W \times r)` . The dimension of `x` is larger than ``2``, and the length of second to last dimension or last dimension can be divisible by `downscale_factor` .
 
     Outputs:
         - **output** (Tensor) - Tensor of shape :math:`(*, C \times r^2, H, W)` .
@@ -412,7 +408,7 @@ class PixelUnshuffle(nn.Cell):
     Raises:
         ValueError: If `downscale_factor` is not a positive integer.
         ValueError: If the length of second to last dimension or last dimension is not divisible by `downscale_factor` .
-        TypeError: If the dimension of `x` is less than 3.
+        TypeError: If the dimension of `x` is less than ``3``.
     """
     def __init__(self, downscale_factor):
         super().__init__()

@@ -7,7 +7,7 @@ mindscience.common.get_2d_sin_cos_pos_embed
 
     参数：
         - **embed_dim** (int) - 每个位置的输出维度。
-        - **grid_size** (tuple(int)) - 网格的高度和宽度，形式为整数元组。
+        - **grid_size** (tuple(int)) - 网格的高度和宽度。
 
     返回：
-        形状为 :math:`(1, grid\_height*grid\_width, embed\_dim)` 的数组。
+        Numpy.array，形状为 :math:`(1, grid\_height*grid\_width, embed\_dim)` 的数组。

@@ -1,5 +1,5 @@
 mindscience.common.get_loss_metric
-==================================
+===================================
 
 .. py:function:: mindscience.common.get_loss_metric(name)
 

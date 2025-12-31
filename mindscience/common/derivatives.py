@@ -41,12 +41,10 @@ def batched_jacobian(model):
     Calculate Jacobian matrix of network model.
 
     Args:
-        model (mindspore.nn.Cell): a network with the input dimension is in_channels and output dimension is
-            out_channels.
+        model (mindspore.nn.Cell): A network with the input dimension is in_channels and output dimension is out_channels.
 
     Returns:
-        jacobian(Tensor), jacobi of the model. With the input dimension is [batch_size, in_channels], output dimension
-        is [out_channels, batch_size, in_channels].
+        Tensor, jacobi of the model. With the input dimension is :math:`[batch_size, in_channels]`, output dimension is :math:`[out_channels, batch_size, in_channels]`.
 
     Note:
         The version of MindSpore should be >= 2.0.0 for using `mindspore.jacrev`.
@@ -86,12 +84,10 @@ def batched_hessian(model):
     Calculate Hessian matrix of network model.
 
     Args:
-        model (mindspore.nn.Cell): a network with the input dimension is in_channels and output dimension is
-            out_channels.
+        model (mindspore.nn.Cell): A network with the input dimension is in_channels and output dimension is out_channels.
 
     Returns:
-        hessian(Tensor), hessian of the model. With the input dimension is [batch_size, in_channels], output dimension
-        is [out_channels, in_channels, batch_size, in_channels].
+        Tensor, hessian of the model. With the input dimension is :math:`[batch_size, in_channels]`, output dimension is :math:`[out_channels, in_channels, batch_size, in_channels]`.
 
     Note:
         The version of MindSpore should be >= 2.0.0 for using `mindspore.jacrev`.

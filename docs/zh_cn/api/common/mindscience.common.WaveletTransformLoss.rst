@@ -3,14 +3,14 @@ mindscience.common.WaveletTransformLoss
 
 .. py:class:: mindscience.common.WaveletTransformLoss(wave_level=2, regroup=False)
 
-    多级小波变换损失。
+    多层小波变换损失函数。
 
     参数：
-        - **wave_level** (int) - 小波变换级数，应为正整数。默认值： ``2``。
-        - **regroup** (bool) - 小波变换损失的regroup误差组合形式。默认值： ``False``。
+        - **wave_level** (int, 可选) - 小波变换级数，应为正整数。默认值： ``2``。
+        - **regroup** (bool, 可选) - 小波变换损失中误差的重新组合方式。默认值： ``False``。
 
     输入：
-        - **input** - 张量构成的tuple。Tensor的shape为 :math:`(B*H*W/(P*P), P*P*C)` ，其中B表示批次大小。H、W分别表示图像的高度和宽度。P表示补丁大小。C表示特征通道。
+        - **input (tuple(Tensor, Tensor))** - Tensor 构成的元组。Tensor 的形状为 :math:`(B*H*W/(P*P), P*P*C)` ，其中 B 表示批次大小。H、W 分别表示图像的高度和宽度。P 表示 patch 大小。C 表示特征通道。
 
     输出：
-        Tensor。小波变换损失函数输出。
+        Tensor，小波变换损失函数输出。

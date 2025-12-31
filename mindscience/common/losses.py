@@ -47,13 +47,13 @@ _loss_metric = {
 def unpatchify(labels, img_size=(192, 384), patch_size=16, nchw=False):
     """
     Args:
-        labels (Union[int, float]): output dimension for each position.
-        img_size (tuple(int)): Input image size. Default ``(192, 384)``.
-        patch_size (int): The patch size of image. Default: ``16``.
-        nchw (bool): If ``True``, the unpatchify shape contains ``N, C, H, W``.
+        labels (Union[int, float]): Output dimension for each position.
+        img_size (tuple(int), optional): Input image size. Default ``(192, 384)``.
+        patch_size (int, optional): The patch size of image. Default: ``16``.
+        nchw (bool, optional): If ``True``, the unpatchify shape contains ``N, C, H, W``.
 
     Returns:
-        The tensor with shape of :math:`(N, H, W, C)`.
+        Tensor, with shape of :math:`(N, H, W, C)`.
     """
     label_shape = labels.shape
     output_dim = label_shape[-1] // (patch_size * patch_size)
@@ -110,14 +110,14 @@ class RegularizedLossCell(nn.Cell):
 
     Args:
         reg_params (Parameter): Parameter type tensor used for regularization.
-        reg_mode (str): type to compute the regularized loss function. Only [``"l1"``, ``"l2"``] are supported.
+        reg_mode (str): Type to compute the regularized loss function. Only [``"l1"``, ``"l2"``] are supported.
             Default: ``"l2"``.
 
     Inputs:
         None.
 
     Outputs:
-        Tensor. a scalar tensor with shape :math:`()`.
+        - **output** (Tensor) - A scalar tensor with shape :math:`()`.
 
     Examples:
         >>> import numpy as np
@@ -184,14 +184,13 @@ class MTLWeightedLoss(WeightedLossCell):
 
     Args:
         num_losses (int): The number of multi-task losses, should be positive integer.
-        bound_param (float): The square addition to weight and regularization when the mere bound
-            is higher than certain constant given.
+        bound_param (float, optional): The square addition to weight and regularization when the mere bound is higher than certain constant given. Default: ``0.0``.
 
     Inputs:
         - **input** (tuple[Tensor]) - The input data.
 
     Outputs:
-        Tensor. Losses for MTL weighted strategy.
+        - **output** (Tensor) - Losses for MTL weighted strategy.
 
     Examples:
         >>> import numpy as np
@@ -241,8 +240,8 @@ class WaveletTransformLoss(nn.LossBase):
     The multi-level wavelet transformation losses.
 
     Args:
-        wave_level (int): The number of the wavelet transformation levels, should be positive integer. Default: ``2``.
-        regroup (bool): The regroup error combination form of the wavelet transformation losses. Default: ``"False"``.
+        wave_level (int, optional): The number of the wavelet transformation levels, should be positive integer. Default: ``2``.
+        regroup (bool, optional): The regroup error combination form of the wavelet transformation losses. Default: ``"False"``.
 
     Inputs:
         - **input** - tuple of Tensors. Tensor of shape :math:`(B*H*W/(P*P), P*P*C)`, where B denotes the batch size.
@@ -250,7 +249,7 @@ class WaveletTransformLoss(nn.LossBase):
           P denotes the patch size. C denots the feature channels.
 
     Outputs:
-        Tensor. Losses for multi-level wavelet transformation.
+        - **output** (Tensor) - Losses for multi-level wavelet transformation.
 
     Examples:
         >>> import numpy as np
@@ -359,19 +358,16 @@ class RelativeRMSELoss(nn.LossBase):
         loss = \sqrt{\frac{\sum_{i=1}^{N}{(x_i-y_i)^2}}{\sum_{i=1}^{N}{(y_i)^2}}}
 
     Args:
-        reduction (str): Type of reduction to be applied to loss. The optional values are ``"mean"``,
-            ``"sum"``, and ``"none"``. Default: ``"sum"``.
+        reduction (str, optional): Type of reduction to be applied to loss. The optional values are ``"mean"``, ``"sum"`` and ``"none"``. Default: ``"sum"``.
 
     Inputs:
-        - **prediction** (Tensor) - The prediction value of the network. Tensor of shape :math:`(N, *)` where :math:`*`
-          means, any number of additional dimensions.
-        - **labels** (Tensor) - True value of the samples. Tensor of shape :math:`(N, *)`,  where :math:`*`
-          means, any number of additional dimensions, same shape as the `prediction` in common cases.
+        - **prediction** (Tensor) - The prediction value of the network. Tensor of shape :math:`(N, *)` where :math:`*` means, any number of additional dimensions.
+        - **labels** (Tensor) - True value of the samples. Tensor of shape :math:`(N, *)`, where :math:`*` means, any number of additional dimensions, same shape as the `prediction` in common cases.
           However, it supports the shape of `labels` is different from the shape of `prediction` and they should be
           broadcasted to each other.
 
     Outputs:
-        Tensor, weighted loss.
+        - **output** (Tensor) - Weighted loss.
 
     Examples:
         >>> import numpy as np

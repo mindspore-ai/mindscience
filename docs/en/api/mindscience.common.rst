@@ -1,5 +1,5 @@
 mindscience.common
-==================
+===================
 
 .. autosummary::
     :toctree: common
