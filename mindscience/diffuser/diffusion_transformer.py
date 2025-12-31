@@ -92,8 +92,8 @@ class DiffusionTransformer(nn.Cell):
         hidden_channels (int): The number of hidden channel.
         layers (int): The number of transformer block layers.
         heads (int): The number of transformer heads.
-        time_token_cond (bool): Whether to use timestep as condition token. Default: ``True``.
-        compute_dtype (mindspore.dtype): The dtype of compute, it can be ``mstype.float32`` or ``mstype.float16``.
+        time_token_cond (bool, optional): Whether to use timestep as condition token. Default: ``True``.
+        compute_dtype (mindspore.dtype, optional): The dtype of compute, it can be ``mstype.float32`` or ``mstype.float16``.
             Default: ``mstype.float32``, indicates ``mindspore.float32``.
 
     Inputs:
@@ -196,16 +196,15 @@ class ConditionDiffusionTransformer(DiffusionTransformer):
         hidden_channels (int): The number of hidden channel.
         layers (int): The number of transformer block layers.
         heads (int): The number of transformer heads.
-        time_token_cond (bool): Whether to use timestep as condition token. Default: ``True``.
-        cond_as_token (bool): Whether to use condition as token. Default: ``True``.
-        compute_dtype (mindspore.dtype): The dtype of compute, it can be ``mstype.float32`` or ``mstype.float16``.
+        time_token_cond (bool, optional): Whether to use timestep as condition token. Default: ``True``.
+        cond_as_token (bool, optional): Whether to use condition as token. Default: ``True``.
+        compute_dtype (mindspore.dtype, optional): The dtype of compute, it can be ``mstype.float32`` or ``mstype.float16``.
             Default: ``mstype.float32``, indicates ``mindspore.float32``.
 
     Inputs:
         - **x** (Tensor) - The input has a shape of :math:`(batch\_size, sequence\_len, in\_channels)`.
         - **timestep** (Tensor) - The timestep input has a shape of :math:`(batch\_size,)`.
-        - **condition** (Tensor) - The condition input has a shape of :math:`(batch\_size, cond\_size)`.
-          Default: ``None``.
+        - **condition** (Tensor, optional) - The condition input has a shape of :math:`(batch\_size, cond\_size)`. Default: ``None``.
 
     Outputs:
         - **output** (Tensor) - The output has a shape of :math:`(batch\_size, sequence\_len, out\_channels)`.

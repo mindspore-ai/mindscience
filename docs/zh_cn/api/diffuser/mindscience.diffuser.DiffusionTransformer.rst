@@ -11,8 +11,8 @@ mindscience.diffuser.DiffusionTransformer
         - **hidden_channels** (int) - 隐藏层特征维度。
         - **layers** (int) - `Transformer` 模块的层数。
         - **heads** (int) - `Transformer` 模块的注意力头数。
-        - **time_token_cond** (bool) - 是否将时间作为条件token。默认 ``True``。
-        - **compute_dtype** (mindspore.dtype) - 计算使用的数据类型。支持 ``mstype.float32`` 或 ``mstype.float16``。默认 ``mstype.float32``，表示 ``mindspore.float32``。
+        - **time_token_cond** (bool, 可选) - 是否将时间作为条件token。默认 ``True``。
+        - **compute_dtype** (mindspore.dtype, 可选) - 计算使用的数据类型。支持 ``mstype.float32`` 或 ``mstype.float16``。默认 ``mstype.float32``，表示 ``mindspore.float32``。
 
     输入：
         - **x** (Tensor) - 网络输入张量。形状为 :math:`(batch\_size, sequence\_len, in\_channels)`。
