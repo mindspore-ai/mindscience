@@ -53,9 +53,6 @@ def load_yaml_config(file_path):
 
     Returns:
         Dict. The configuration information in dict format.
-
-    Supported Platforms:
-        ``Ascend`` ``CPU`` ``GPU``
     """
     # Read YAML experiment definition file
     with open(file_path, 'r') as stream:
