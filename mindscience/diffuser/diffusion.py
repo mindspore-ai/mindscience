@@ -42,8 +42,7 @@ def betas_for_alpha_bar(
     Args:
         num_diffusion_timesteps (int): the number of betas to produce.
         max_beta (float): the maximum beta to use; use values lower than 1 to prevent singularities.
-        alpha_transform_type (str): the type of noise schedule for alpha_bar. Choose from `cosine` or `exp`.
-            Default: ``cosine``.
+        alpha_transform_type (str): the type of noise schedule for alpha_bar. Choose from `cosine` or `exp`. Default: ``cosine``.
 
     Returns:
         numpy.ndarray, the betas used by the scheduler to step the model outputs.
@@ -125,9 +124,8 @@ class DiffusionScheduler:
             dark samples instead of limiting it to samples with medium brightness. Loosely related to
             `offset_noise <https://github.com/huggingface/diffusers/blob/74fd735eb073eb1d774b1ab4154a0876eb82f055/examples/dreambooth/train_dreambooth.py#L506>`_. Default: ``False``.
         timestep_spacing (str, optional): The way the timesteps should be scaled. Refer to Table 2 of the `Common Diffusion Noise Schedules and
-            Sample Steps are Flawed <https://huggingface.co/papers/2305.08891>`_ for more information. Choose from ``"linspace"``, ``"leading"`` or ``"trailing"``.
-            Default: ``"leading"``.
-        compute_dtype (mindspore.dtype, optional): The dtype of compute, it can be ``mstype.float32`` or ``mstype.float16``.  Default: ``mstype.float32``, indicates ``mindspore.float32``.
+            Sample Steps are Flawed <https://huggingface.co/papers/2305.08891>`_ for more information. Choose from ``"linspace"``, ``"leading"`` or ``"trailing"``. Default: ``"leading"``.
+        compute_dtype (mindspore.dtype, optional): The dtype of compute, it can be ``mstype.float32`` or ``mstype.float16``. Default: ``mstype.float32``, indicates ``mindspore.float32``.
     """
 
     def __init__(self,
@@ -439,8 +437,7 @@ class DDPMScheduler(DiffusionScheduler):
             dark samples instead of limiting it to samples with medium brightness. Loosely related to
             `offset_noise <https://github.com/huggingface/diffusers/blob/74fd735eb073eb1d774b1ab4154a0876eb82f055/examples/dreambooth/train_dreambooth.py#L506>`_. Default: ``False``.
         timestep_spacing (str, optional): The way the timesteps should be scaled. Refer to Table 2 of the `Common Diffusion Noise Schedules and
-            Sample Steps are Flawed <https://huggingface.co/papers/2305.08891>`_ for more information. Choose from ``"linspace"``, ``"leading"`` or ``"trailing"``.
-            Default: ``"leading"``.
+            Sample Steps are Flawed <https://huggingface.co/papers/2305.08891>`_ for more information. Choose from ``"linspace"``, ``"leading"`` or ``"trailing"``. Default: ``"leading"``.
         compute_dtype (mindspore.dtype, optional): The dtype of compute, it can be ``mstype.float32`` or ``mstype.float16``. Default: ``mstype.float32``, indicates ``mindspore.float32``.
 
     Examples:
@@ -621,8 +618,7 @@ class DDIMScheduler(DiffusionScheduler):
             dark samples instead of limiting it to samples with medium brightness. Loosely related to
             `offset_noise <https://github.com/huggingface/diffusers/blob/74fd735eb073eb1d774b1ab4154a0876eb82f055/examples/dreambooth/train_dreambooth.py#L506>`_. Default: ``False``.
         timestep_spacing (str, optional): The way the timesteps should be scaled. Refer to Table 2 of the `Common Diffusion Noise Schedules and
-            Sample Steps are Flawed <https://huggingface.co/papers/2305.08891>`_ for more information. Choose from ``"linspace"``, ``"leading"`` or ``"trailing"``.
-            Default: ``"leading"``.
+            Sample Steps are Flawed <https://huggingface.co/papers/2305.08891>`_ for more information. Choose from ``"linspace"``, ``"leading"`` or ``"trailing"``. Default: ``"leading"``.
         compute_dtype (mindspore.dtype, optional): The dtype of compute, it can be ``mstype.float32`` or ``mstype.float16``. Default: ``mstype.float32``, indicates ``mindspore.float32``.
 
     Examples:
@@ -819,8 +815,7 @@ class DiffusionPipeline:
         batch_size (int): The number of images to generate.
         seq_len (int): Sequence length of inputs.
         num_inference_steps (int): Number of Denoising steps.
-        compute_dtype (mindspore.dtype): The dtype of compute, it can be ``mstype.float32`` or ``mstype.float16``.
-            Default: ``mstype.float32``, indicates ``mindspore.float32``.
+        compute_dtype (mindspore.dtype): The dtype of compute, it can be ``mstype.float32`` or ``mstype.float16``. Default: ``mstype.float32``, indicates ``mindspore.float32``.
 
     Raises:
         TypeError: If `scheduler` is not `DiffusionScheduler` type.
@@ -933,8 +928,7 @@ class DDPMPipeline(DiffusionPipeline):
         batch_size (int): The number of images to generate.
         seq_len (int): Sequence length of inputs.
         num_inference_steps (int, optional): Number of Denoising steps. Default: ``1000``.
-        compute_dtype (mindspore.dtype, optional): The dtype of compute, it can be ``mstype.float32`` or ``mstype.float16``.
-            Default: ``mstype.float32``, indicates ``mindspore.float32``.
+        compute_dtype (mindspore.dtype, optional): The dtype of compute, it can be ``mstype.float32`` or ``mstype.float16``. Default: ``mstype.float32``, indicates ``mindspore.float32``.
 
     Raises:
         TypeError: If `scheduler` is not `DDIMScheduler` type.
@@ -1133,9 +1127,9 @@ class DiffusionTrainer:
         scheduler (DiffusionScheduler): DDPM or DDIM scheduler.
         objective (str, optional): Prediction type of the scheduler function, can be ``"pred_noise"`` (predicts the noise of the diffusion process), ``"pred_x0"`` (predicts the original sample) or
             ``"pred_v"`` (see section 2.4 of `Imagen Video <https://imagen.research.google/video/paper.pdf>`_ paper). Default: ``"pred_noise"``.
-        p2_loss_weight_gamma (float, optional): p2 loss weight gamma, from `Perception Prioritized Training of Diffusion Models <https://arxiv.org/abs/2204.00227>`_. Default: ``0``.
+        p2_loss_weight_gamma (float, optional): p2 loss weight gamma, from `Perception Prioritized Training of Diffusion Models <https://arxiv.org/abs/2204.00227>`_. Default: ``0.``.
         p2_loss_weight_k (float, optional): p2 loss weight k, from
-            `Perception Prioritized Training of Diffusion Models <https://arxiv.org/abs/2204.00227>`_. Default: ``1``.
+            `Perception Prioritized Training of Diffusion Models <https://arxiv.org/abs/2204.00227>`_. Default: ``1.0``.
         loss_type (str, optional): The type of loss, it can be ``"l1"`` or ``"l2"``. Default: ``"l1"``.
 
     Raises:
@@ -1186,7 +1180,7 @@ class DiffusionTrainer:
                  scheduler,
                  objective='pred_noise',
                  p2_loss_weight_gamma=0.,
-                 p2_loss_weight_k=1,
+                 p2_loss_weight_k=1.0,
                  loss_type='l1',
                  ):
         if not isinstance(scheduler, DiffusionScheduler):
