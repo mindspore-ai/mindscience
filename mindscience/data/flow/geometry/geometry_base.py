@@ -21,6 +21,7 @@ import copy
 import numpy as np
 from ....utils import check_param_type, check_param_type_value, check_dict_type_value
 
+
 GEOM_TYPES = ["domain", "BC", "IC", "time"]
 DATA_TYPES = (np.int32, np.int64, np.float16, np.float32, np.float64)
 SAMPLER_TYPES = ["uniform", "lhs", "halton", "sobol"]
@@ -39,14 +40,8 @@ class PartSamplingConfig:
         with_sdf (bool): Specifies whether return the sign-distance-function result of the inner domain points.
                          Default: ``False``.
 
-    Raises:
-        TypeError: `size` is not int number when random sampling.
-
-    Supported Platforms:
-        ``Ascend`` ``GPU``
-
     Examples:
-        >>> from mindflow.geometry import PartSamplingConfig
+        >>> from mindscience.data import PartSamplingConfig
         >>> partsampling = PartSamplingConfig(100, True, "uniform", True, True)
     """
     def __init__(self, size, random_sampling=True, sampler="uniform",
@@ -74,22 +69,10 @@ class SamplingConfig:
     Definition of global sampling configuration.
 
     Args:
-        part_sampling_dict (dict): sampling configuration.
-
-    Raises:
-        TypeError: If `part_sampling_dict` is not dict.
-        KeyError: If `geom_type` not ``"domain"``, ``"BC"``, ``"IC"`` or ``"time"``.
-        TypeError: If 'config' is not PartSamplingConfig object.
-        ValueError: If `domain.size` in `part_sampling_dict` is neither list nor tuple.
-        ValueError: If `ic.size` in `part_sampling_dict` is neither list nor tuple.
-        ValueError: If `time.size` in `part_sampling_dict` is neither list nor tuple.
-
-
-    Supported Platforms:
-        ``Ascend`` ``GPU``
+        part_sampling_dict (dict): A dictionary that specifies sampling configurations for different parts. Supported keys include ``"domain"``, ``"BC"``, ``"IC"`` and ``"time"``. Each value is a :class:`mindscience.data.PartSamplingConfig` instance. Any supported key can be omitted, and the corresponding sampling configuration will be set to ``None`` by default.
 
     Examples:
-        >>> from mindflow.geometry import SamplingConfig, PartSamplingConfig
+        >>> from mindscience.data import SamplingConfig, PartSamplingConfig
         >>> part_sampling_config_dict = {"domain" : PartSamplingConfig([100, 100], False, True),
         ...                              "BC" : PartSamplingConfig(100, True, "uniform", True, True)}
         >>> sampling_config = SamplingConfig(part_sampling_config_dict)
@@ -128,11 +111,8 @@ class Geometry:
         dtype (numpy.dtype): Data type of sampled point data type. Default: ``numpy.float32``.
         sampling_config (SamplingConfig): sampling configuration. Default: ``None``.
 
-    Supported Platforms:
-        ``Ascend`` ``GPU``
-
     Examples:
-        >>> from mindflow.geometry import generate_sampling_config, Geometry
+        >>> from mindscience.data import generate_sampling_config, Geometry
         >>> geometry_config = dict({'domain' : dict({'random_sampling' : True, 'size' : 100}),
         ...                          'BC' : dict({'random_sampling' : True, 'size' : 100, 'sampler' : 'uniform',}),
         ...                          'random_merge' : True,})
@@ -146,7 +126,7 @@ class Geometry:
         check_param_type(dim, "dim", data_type=int, exclude_type=bool)
         self.dim = dim
         if self.dim <= 0:
-            raise ValueError("dimension should not be <= 0, but got dim: {}".format(self.dim))
+            raise ValueError(f"dimension should not be <= 0, but got dim: {self.dim}")
         supported_type = (int, float, np.ndarray, list, tuple)
         check_param_type(coord_min, "coord_min", data_type=supported_type, exclude_type=bool)
         check_param_type(coord_max, "coord_max", data_type=supported_type, exclude_type=bool)
@@ -160,11 +140,11 @@ class Geometry:
         for ele in self.coord_max:
             check_param_type(ele, "element of coord_max", data_type=DATA_TYPES, exclude_type=bool)
         if len(coord_min) != self.dim or len(coord_max) != self.dim:
-            raise ValueError("length of coordinates array must be equal with dimension, but got dim: {},"
-                             "coord_min: {} with length {}, coord_max {} with length {}".format(
-                                 dim, coord_min, len(coord_min), coord_max, len(coord_max)))
+            raise ValueError(f"length of coordinates array must be equal with dimension, but got dim: {dim}, "
+                             f"coord_min: {coord_min} with length {len(coord_min)}, coord_max {coord_max} "
+                             f"with length {len(coord_max)}")
         if dtype not in DATA_TYPES:
-            raise TypeError("Only data type {} are supported, but got {}".format(DATA_TYPES, dtype))
+            raise TypeError(f"Only data type {DATA_TYPES} are supported, but got {dtype}")
         self.dtype = dtype
         check_param_type(sampling_config, "sampling_config", data_type=(type(None), SamplingConfig))
         self.sampling_config = sampling_config
@@ -181,7 +161,7 @@ class Geometry:
             TypeError: If `name` is not string.
 
         Examples:
-            >>> from mindflow.geometry import generate_sampling_config, Geometry
+            >>> from mindscience.data import generate_sampling_config, Geometry
             >>> geom = Geometry("geom", 1, 0.0, 1.0)
             >>> geom.set_name("geom_name")
         """
@@ -199,7 +179,7 @@ class Geometry:
             TypeError: If `sampling_config` is not instance of SamplingConfig.
 
         Examples:
-            >>> from sciai.geometry import generate_sampling_config, Geometry
+            >>> from mindscience.data import generate_sampling_config, Geometry
             >>> geometry_config = dict({'domain': dict({'random_sampling': True, 'size': 100}),
             ...                          'BC': dict({'random_sampling': True, 'size': 100, 'sampler': 'uniform',}),
             ...                          'random_merge': True,})
@@ -212,25 +192,25 @@ class Geometry:
 
     @abstractmethod
     def _inside(self, points, strict=False):
-        raise NotImplementedError("{}._inside not implemented".format(self.geom_type))
+        raise NotImplementedError(f"{self.geom_type}._inside not implemented")
 
     @abstractmethod
     def _on_boundary(self, points):
-        raise NotImplementedError("{}._on_boundary not implemented".format(self.geom_type))
+        raise NotImplementedError(f"{self.geom_type}._on_boundary not implemented")
 
     @abstractmethod
     def sampling(self, geom_type="domain"):
-        raise NotImplementedError("{}.sampling not implemented".format(self.geom_type))
+        raise NotImplementedError(f"{self.geom_type}.sampling not implemented")
 
     @abstractmethod
     def _boundary_normal(self, points):
-        raise NotImplementedError("{}._boundary_normal not implemented".format(self.geom_type))
+        raise NotImplementedError(f"{self.geom_type}._boundary_normal not implemented")
 
     def __and__(self, geom):
         return self.intersection(geom)
 
     def intersection(self, geom, sampling_config=None):
-        from .csg import CSGIntersection
+        from .csg import CSGIntersection  # pylint: disable=import-outside-toplevel
         return CSGIntersection(self, geom, sampling_config)
 
     def __or__(self, geom):
@@ -240,16 +220,16 @@ class Geometry:
         return self.difference(geom)
 
     def union(self, geom, sampling_config=None):
-        from .csg import CSGUnion
+        from .csg import CSGUnion  # pylint: disable=import-outside-toplevel
         return CSGUnion(self, geom, sampling_config)
 
     def __xor__(self, geom):
         return self.exclusive_or(geom)
 
     def difference(self, geom, sampling_config=None):
-        from .csg import CSGDifference
+        from .csg import CSGDifference  # pylint: disable=import-outside-toplevel
         return CSGDifference(self, geom, sampling_config)
 
     def exclusive_or(self, geom, sampling_config=None):
-        from .csg import CSGXOR
+        from .csg import CSGXOR  # pylint: disable=import-outside-toplevel
         return CSGXOR(self, geom, sampling_config)

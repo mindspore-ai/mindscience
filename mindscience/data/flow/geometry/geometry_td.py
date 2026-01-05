@@ -39,11 +39,8 @@ class TimeDomain(Interval):
         dtype (numpy.dtype): Data type of sampled point data type. Default: ``numpy.float32``.
         sampling_config (SamplingConfig): sampling configuration. Default: ``None``.
 
-    Supported Platforms:
-        ``Ascend`` ``GPU``
-
     Examples:
-        >>> from mindflow.geometry import generate_sampling_config, TimeDomain
+        >>> from mindscience.data import generate_sampling_config, TimeDomain
         >>> time_config = dict({
         ...     'domain': dict({
         ...         'random_sampling': True,
@@ -60,7 +57,7 @@ class TimeDomain(Interval):
     def __init__(self, name, start=0.0, end=1.0, dtype=np.float32, sampling_config=None):
         self.start = start
         self.end = end
-        super(TimeDomain, self).__init__(name, coord_min=start, coord_max=end, dtype=dtype,
+        super().__init__(name, coord_min=start, coord_max=end, dtype=dtype,
                                          sampling_config=sampling_config)
 
 
@@ -76,11 +73,8 @@ class GeometryWithTime(Geometry):
     Raises:
         ValueError: If `sampling_config` is not ``None`` but `sampling_config.time` is ``None`` .
 
-    Supported Platforms:
-        ``Ascend`` ``GPU``
-
     Examples:
-        >>> from mindflow.geometry import generate_sampling_config, Rectangle, TimeDomain, GeometryWithTime
+        >>> from mindscience.data import generate_sampling_config, Rectangle, TimeDomain, GeometryWithTime
         >>> rect_with_time_config = dict({
         ...     'domain': dict({
         ...         'random_sampling': True,
@@ -121,7 +115,7 @@ class GeometryWithTime(Geometry):
         geometry = copy.deepcopy(geometry)
         timedomain = copy.deepcopy(timedomain)
         name = timedomain.name + "_" + geometry.name
-        super(GeometryWithTime, self).__init__(name, geometry.dim, geometry.coord_min, geometry.coord_max,
+        super().__init__(name, geometry.dim, geometry.coord_min, geometry.coord_max,
                                                geometry.dtype)
         self.geom = geometry
         self.td = timedomain
@@ -130,8 +124,8 @@ class GeometryWithTime(Geometry):
             if self.geom.sampling_config and self.td.sampling_config:
                 self.sampling_config = copy.deepcopy(self.geom.sampling_config)
                 if not self.geom.sampling_config.domain or not self.td.sampling_config.domain:
-                    logger.info("Undefined sampling info for {}:{}, please call set_sampling_config method to "
-                                "reset sampling info".format(self.geom_type, self.name))
+                    logger.info(f"Undefined sampling info for {self.geom_type}:{self.name}, please "
+                                f"call set_sampling_config method to reset sampling info")
                     self.sampling_config = None
                 else:
                     self.sampling_config.ic = self.geom.sampling_config.domain
@@ -147,7 +141,7 @@ class GeometryWithTime(Geometry):
 
     def set_sampling_config(self, sampling_config: SamplingConfig):
         """
-        set sampling info
+        Set sampling info.
 
         Args:
             sampling_config (SamplingConfig): sampling configuration.
@@ -156,8 +150,8 @@ class GeometryWithTime(Geometry):
             TypeError: If `sampling_config` is not instance of SamplingConfig.
         """
         if not isinstance(sampling_config, SamplingConfig):
-            raise TypeError("sampling_config: {} should be instance of class SamplingConfig, bug got: {}".format(
-                sampling_config, type(sampling_config)))
+            raise TypeError(f"sampling_config: {sampling_config} should be instance of class SamplingConfig, "
+                            f"but got: {type(sampling_config)}")
         check_param_type(sampling_config, "sampling_config", data_type=SamplingConfig)
 
         self.sampling_config = copy.deepcopy(sampling_config)
@@ -206,6 +200,7 @@ class GeometryWithTime(Geometry):
 
     def _sampling_boundary_samples(self):
         """sample boundary data"""
+        samples_normal = None
         time_points = self._get_time_samples()
         if self.sampling_config.bc.with_normal:
             bc_points, bc_normal = self._get_geom_boundary_samples()
@@ -230,7 +225,7 @@ class GeometryWithTime(Geometry):
 
     def sampling(self, geom_type="domain"):
         """
-        sampling points
+        Sampling points.
 
         Args:
             geom_type (str): geometry type: can be ``'domain'`` or ``'BC'`` or ``'IC'``. Default: ``'domain'``.
@@ -244,10 +239,9 @@ class GeometryWithTime(Geometry):
                          boundary normal vectors. Otherwise, returns 2D numpy array without boundary normal vectors.
 
         Raises:
-            ValueError: If `config` is ``None``.
-            KeyError: If `geom_type` is ``'domain'`` but `config.domain` is ``None``.
-            KeyError: If `geom_type` is ``'BC'`` but `config.bc` is ``None``.
-            KeyError: If `geom_type` is ``'IC'`` but `config.ic` is ``None``.
+            KeyError: If `geom_type` is ``'domain'`` but ``self.sampling_config.domain`` is ``None``.
+            KeyError: If `geom_type` is ``'BC'`` but ``self.sampling_config.bc`` is ``None``.
+            KeyError: If `geom_type` is ``'IC'`` but ``self.sampling_config.ic`` is ``None``.
             ValueError: If `geom_type` is not ``'BC'``, ``'IC'`` nor ``'domain'``.
         """
         config = self.sampling_config
@@ -258,8 +252,7 @@ class GeometryWithTime(Geometry):
         if geom_type.lower() == "domain":
             check_param_type(config.domain, _space.join((self.geom_type, self.name, "'s domain config")),
                              exclude_type=type(None))
-            logger.info("Sampling domain points for {}:{}, config info: {}"
-                        .format(self.geom_type, self.name, config.domain))
+            logger.info(f"Sampling domain points for {self.geom_type}:{self.name}, config info: {config.domain}")
 
             column_name = self.name + "_domain_points"
             data = self._sampling_domain_samples()
@@ -269,8 +262,7 @@ class GeometryWithTime(Geometry):
         if geom_type.lower() == "bc":
             check_param_type(config.bc, _space.join((self.geom_type, self.name, "'s bc config")),
                              exclude_type=type(None))
-            logger.info("Sampling BC points for {}:{}, config info: {}"
-                        .format(self.geom_type, self.name, config.domain))
+            logger.info(f"Sampling BC points for {self.geom_type}:{self.name}, config info: {config.domain}")
             if config.bc.with_normal:
                 data, data_normal = self._sampling_boundary_samples()
                 column_data = self.name + "_BC_points"
@@ -287,15 +279,14 @@ class GeometryWithTime(Geometry):
         if geom_type.lower() == "ic":
             check_param_type(config.domain, _space.join((self.geom_type, self.name, "'s ic config")),
                              exclude_type=type(None))
-            logger.info("Sampling IC points for {}:{}, config info: {}"
-                        .format(self.geom_type, self.name, config.domain))
+            logger.info(f"Sampling IC points for {self.geom_type}:{self.name}, config info: {config.domain}")
             data = self._sampling_initial_samples()
             column_data = self.name + "_IC_points"
             self.columns_dict["IC"] = [column_data]
             data = data.astype(self.dtype)
             return data
-        raise ValueError("Unknown geom_type: {}, only \"domain/BC/IC\" are supported for {}:{}".format(
-            geom_type, self.geom_type, self.name))
+        raise ValueError(f"Unknown geom_type: {geom_type}, only \"domain/BC/IC\" are "
+                         f"supported for {self.geom_type}:{self.name}")
 
     def _sampling_initial_samples(self):
         domain_config = self.geom.sampling_config.domain
