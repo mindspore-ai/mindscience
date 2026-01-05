@@ -35,11 +35,8 @@ class Interval(HyperCube):
     Raises:
         ValueError: If `coord_min` or `coord_max` is neither int nor float .
 
-    Supported Platforms:
-        ``Ascend`` ``GPU``
-
     Examples:
-        >>> from mindflow.geometry import generate_sampling_config, Interval
+        >>> from mindscience.data import generate_sampling_config, Interval
         >>> line_config = dict({'domain': dict({'random_sampling': True, 'size': 100, 'sampler': 'uniform'}),
         ...                      'BC': dict({'random_sampling': True, 'size': 10, 'sampler': 'uniform',}),})
         >>> line = Interval("line", -1.0, 1.0, sampling_config=generate_sampling_config(line_config))
@@ -51,4 +48,4 @@ class Interval(HyperCube):
     def __init__(self, name, coord_min, coord_max, dtype=np.float32, sampling_config=None):
         check_param_type(coord_min, "coord_min", data_type=(int, float), exclude_type=bool)
         check_param_type(coord_max, "coord_max", data_type=(int, float), exclude_type=bool)
-        super(Interval, self).__init__(name, 1, [coord_min], [coord_max], dtype=dtype, sampling_config=sampling_config)
+        super().__init__(name, 1, [coord_min], [coord_max], dtype=dtype, sampling_config=sampling_config)

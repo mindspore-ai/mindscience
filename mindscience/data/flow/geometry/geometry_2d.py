@@ -45,11 +45,8 @@ class Disk(Geometry):
         ValueError: If `center` is neither list nor tuple of length 2.
         ValueError: If `radius` is negative.
 
-    Supported Platforms:
-        ``Ascend`` ``GPU``
-
     Examples:
-        >>> from mindflow.geometry import generate_sampling_config, Disk
+        >>> from mindscience.data import generate_sampling_config, Disk
         >>> disk_mesh = dict({'domain': dict({'random_sampling': False, 'size' : [100, 180]}),
         ...                   'BC': dict({'random_sampling': False, 'size': 200, 'with_normal' : True,})})
         >>> disk = Disk("disk", (-1.0, 0), 2.0, sampling_config=generate_sampling_config(disk_mesh))
@@ -63,19 +60,19 @@ class Disk(Geometry):
         check_param_type(center, "center", data_type=(np.ndarray, tuple, list))
         self.center = np.array(center)
         if len(self.center) != 2:
-            raise ValueError("Disk: {}'s center position should be 2D array, but got {} with dim {}".format(
-                name, self.center, len(self.center)))
+            raise ValueError(f"Disk: {name}'s center position should be 2D array, but got {self.center} "
+                             f"with dim {len(self.center)}")
         for ele in self.center:
             check_param_type(ele, "ele in center", data_type=DATA_TYPES, exclude_type=bool)
 
         check_param_type(radius, "radius", data_type=[int, float], exclude_type=bool)
         if radius <= 0:
-            raise ValueError("Disk: {}'s radius should not be >=0.0, but got: {}".format(name, radius))
+            raise ValueError(f"Disk: {name}'s radius should not be >=0.0, but got: {radius}")
         self.radius = radius
         self.columns_dict = {}
         coord_min = self.center - self.radius
         coord_max = self.center + self.radius
-        super(Disk, self).__init__(name, 2, coord_min, coord_max, dtype, sampling_config)
+        super().__init__(name, 2, coord_min, coord_max, dtype, sampling_config)
 
     def _inside(self, points, strict=False):
         """whether inside domain"""
@@ -133,9 +130,8 @@ class Disk(Geometry):
         """Generate uniformly distributed domain points"""
         mesh_size = self.sampling_config.domain.size
         if len(mesh_size) != self.dim:
-            raise ValueError("For grid sampling, length of mesh_size list: {} should be equal to dimension: {}".format(
-                mesh_size, self.dim
-            ))
+            raise ValueError(
+                f"For grid sampling, length of mesh_size list: {mesh_size} should be equal to dimension: {self.dim}")
         r_theta_mesh = generate_mesh(np.array([0, 0]), np.array([1, 1]), mesh_size, endpoint=False)
         cartesian = np.zeros(r_theta_mesh.shape)
         cartesian[:, 0] = r_theta_mesh[:, 0] * self.radius * np.cos(2 * np.pi * r_theta_mesh[:, 1])
@@ -151,7 +147,7 @@ class Disk(Geometry):
 
     def sampling(self, geom_type="domain"):
         """
-        sampling domain and boundary points
+        Sampling domain and boundary points.
 
         Args:
             geom_type (str): geometry type: can be ``'domain'`` or ``'BC'``. Default: ``'domain'``.
@@ -164,9 +160,8 @@ class Disk(Geometry):
             boundary normal vectors. Otherwise, returns 2D numpy array without boundary normal vectors.
 
         Raises:
-            ValueError: If `config` is ``None``.
-            KeyError: If `geom_type` is ``'domain'`` but `config.domain` is ``None``.
-            KeyError: If `geom_type` is ``'BC'`` but `config.bc` is ``None``.
+            KeyError: If `geom_type` is ``'domain'`` but ``self.sampling_config.domain`` is ``None``.
+            KeyError: If `geom_type` is ``'BC'`` but ``self.sampling_config.bc`` is ``None``.
             ValueError: If `geom_type` is neither ``'BC'`` nor ``'domain'``.
         """
         config = self.sampling_config
@@ -178,8 +173,7 @@ class Disk(Geometry):
         if geom_type.lower() == "domain":
             check_param_type(config.domain, _SPACE.join((self.geom_type, self.name, "'s domain config")),
                              exclude_type=type(None))
-            logger.info("Sampling domain points for {}:{}, config info: {}"
-                        .format(self.geom_type, self.name, config.domain))
+            logger.info(f"Sampling domain points for {self.geom_type}:{self.name}, config info: {config.domain}")
             column_name = self.name + "_domain_points"
             if config.domain.random_sampling:
                 disk_data = self._random_disk_domain_points()
@@ -197,8 +191,7 @@ class Disk(Geometry):
         if geom_type.lower() == "bc":
             check_param_type(config.bc, _SPACE.join((self.geom_type, self.name, "'s bc config")),
                              exclude_type=type(None))
-            logger.info("Sampling BC points for {}:{}, config info: {}"
-                        .format(self.geom_type, self.name, config.bc))
+            logger.info(f"Sampling BC points for {self.geom_type}:{self.name}, config info: {config.bc}")
             if config.bc.with_normal:
                 if config.bc.random_sampling:
                     disk_data, disk_data_normal = self._random_disk_boundary_points(need_normal=True)
@@ -219,8 +212,8 @@ class Disk(Geometry):
             self.columns_dict["BC"] = [column_data]
             disk_data = disk_data.astype(self.dtype)
             return disk_data
-        raise ValueError("Unknown geom_type: {}, only \"domain/BC\" are supported for {}:{}".format(
-            geom_type, self.geom_type, self.name))
+        raise ValueError(f"Unknown geom_type: {geom_type}, only \"domain/BC\" are "
+                         f"supported for {self.geom_type}:{self.name}")
 
 
 class Rectangle(HyperCube):
@@ -236,11 +229,8 @@ class Rectangle(HyperCube):
         dtype (numpy.dtype): data type of sampled point data type. Default: ``numpy.float32``.
         sampling_config (SamplingConfig): sampling configuration. Default: ``None``.
 
-    Supported Platforms:
-        ``Ascend`` ``GPU``
-
     Examples:
-        >>> from mindflow.geometry import generate_sampling_config, Rectangle
+        >>> from mindscience.data import generate_sampling_config, Rectangle
         >>> rectangle_mesh = dict({'domain': dict({'random_sampling': False, 'size': [50, 25]}),
         ...                        'BC': dict({'random_sampling': False, 'size': 300, 'with_normal': True,}),})
         >>> rectangle = Rectangle("rectangle", (-3.0, 1), (1, 2),
@@ -251,7 +241,7 @@ class Rectangle(HyperCube):
         (1250, 2)
     """
     def __init__(self, name, coord_min, coord_max, dtype=np.float32, sampling_config=None):
-        super(Rectangle, self).__init__(name, 2, coord_min, coord_max, dtype=dtype, sampling_config=sampling_config)
+        super().__init__(name, 2, coord_min, coord_max, dtype=dtype, sampling_config=sampling_config)
 
 
 class Triangle(adapter.Geometry):
@@ -267,14 +257,11 @@ class Triangle(adapter.Geometry):
               area (length) of the boundary.
             - ``'unweighted'``, the expected number of samples in each boundary is the same.
 
-        dtype (numpy.dtype): data type of sampled point data type. Default: ``np.float32``.
-        sampling_config (SamplingConfig): sampling configuration. Default: ``none``.
-
-    Supported Platforms:
-        ``Ascend`` ``GPU``
+        dtype (numpy.dtype): data type of sampled point data type. Default: ``numpy.float32``.
+        sampling_config (SamplingConfig): sampling configuration. Default: ``None``.
 
     Examples:
-        >>> from mindflow.geometry import generate_sampling_config, Triangle
+        >>> from mindscience.data import generate_sampling_config, Triangle
         >>> triangle_mesh = dict({'domain': dict({'random_sampling': True, 'size': 300}),
         ...                       'BC': dict({'random_sampling': True, 'size': 300, 'with_normal': False,}),})
         >>> vertices = np.array([[0., .1], [.9, .2], [.5, .6]])
@@ -287,7 +274,7 @@ class Triangle(adapter.Geometry):
     """
     def __init__(self, name, vertices,
                  boundary_type="uniform", dtype=np.float32, sampling_config=None):
-        super(Triangle, self).__init__(
+        super().__init__(
             name=name,
             shape=simplex.Simplex(vertices, boundary_type),
             dim=2,
@@ -311,14 +298,11 @@ class Pentagon(adapter.Geometry):
               area (length) of the boundary.
             - ``'unweighted'``, the expected number of samples in each boundary is the same.
 
-        dtype (numpy.dtype): data type of sampled point data type. Default: ``np.float32``.
-        sampling_config (SamplingConfig): sampling configuration. Default: ``none``.
-
-    Supported Platforms:
-        ``Ascend`` ``GPU``
+        dtype (numpy.dtype): data type of sampled point data type. Default: ``numpy.float32``.
+        sampling_config (SamplingConfig): sampling configuration. Default: ``None``.
 
     Examples:
-        >>> from mindflow.geometry import generate_sampling_config, Pentagon
+        >>> from mindscience.data import generate_sampling_config, Pentagon
         >>> pentagon_mesh = dict({'domain': dict({'random_sampling': True, 'size': 300}),
         ...                       'BC': dict({'random_sampling': True, 'size': 300, 'with_normal': False,}),})
         >>> vertices = np.array([[0., .1], [.5, .1], [.9, .2], [.7, .6], [.2, .5]])
@@ -331,7 +315,7 @@ class Pentagon(adapter.Geometry):
     """
     def __init__(self, name, vertices,
                  boundary_type="uniform", dtype=np.float32, sampling_config=None):
-        super(Pentagon, self).__init__(
+        super().__init__(
             name=name,
             shape=pentagon.Pentagon(vertices, boundary_type),
             dim=2,
@@ -355,14 +339,11 @@ class Polygon(adapter.Geometry):
               area (length) of the boundary.
             - ``'unweighted'``, the expected number of samples in each boundary is the same.
 
-        dtype (numpy.dtype): data type of sampled point data type. Default: ``np.float32``.
-        sampling_config (SamplingConfig): sampling configuration. Default: ``none``.
-
-    Supported Platforms:
-        ``Ascend`` ``GPU``
+        dtype (numpy.dtype): data type of sampled point data type. Default: ``numpy.float32``.
+        sampling_config (SamplingConfig): sampling configuration. Default: ``None``.
 
     Examples:
-        >>> from mindflow.geometry import generate_sampling_config, Polygon
+        >>> from mindscience.data import generate_sampling_config, Polygon
         >>> polygon_mesh = dict({'domain': dict({'random_sampling': True, 'size': 300}),
         ...                      'BC': dict({'random_sampling': True, 'size': 300, 'with_normal': False,}),})
         >>> vertices = np.array([[0., 0], [1, 0], [1, 1], [.5, 1], [0.5, 0.5], [0, 0.5]])
@@ -376,7 +357,7 @@ class Polygon(adapter.Geometry):
 
     def __init__(self, name, vertices,
                  boundary_type="uniform", dtype=np.float32, sampling_config=None):
-        super(Polygon, self).__init__(
+        super().__init__(
             name=name,
             shape=polygon.Polygon(vertices, boundary_type),
             dim=2,

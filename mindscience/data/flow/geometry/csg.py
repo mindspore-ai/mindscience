@@ -34,17 +34,14 @@ def _check_geom(geoms):
     for i, _ in enumerate(geoms):
         check_param_type(geoms[i], _SPACE.join(("geom", str(i + 1))), data_type=Geometry)
         if geoms[0].dim != geoms[i].dim:
-            raise ValueError("Mismatch of dimension, geom1: {}'s dim is: {} while geom{}: {}'s dim is: {}.".format(
-                geoms[0].name, geoms[0].dim, i + 1, geoms[i].name, geoms[i].dim))
+            raise ValueError(f"Mismatch of dimension, geom1: {geoms[0].name}'s dim is: {geoms[0].dim} while "
+                             f"geom{i + 1}: {geoms[i].name}'s dim is: {geoms[i].dim}.")
+
 
 
 class CSG(Geometry):
     r"""
     CSG base class.
-
-    Supported Platforms:
-        ``Ascend````GPU``
-    """
 
     def __init__(self, name, geom1, geom2, coord_min, coord_max, sampling_config=None):
         _check_geom([geom1, geom2])
@@ -54,7 +51,7 @@ class CSG(Geometry):
         self.geom1 = geom1
         self.geom2 = geom2
 
-        super(CSG, self).__init__(name, geom1.dim, coord_min, coord_max, geom1.dtype, sampling_config)
+        super().__init__(name, geom1.dim, coord_min, coord_max, geom1.dtype, sampling_config)
 
     def _check_sampling_config(self, sampling_config):
         """check sampling_config"""
@@ -68,10 +65,10 @@ class CSG(Geometry):
             raise ValueError("Only random sampling strategy is supported for CSG instance in ic")
 
     def _random_domain_points(self):
-        raise NotImplementedError("{}._random_domain_points not implemented".format(self.geom_type))
+        raise NotImplementedError(f"{self.geom_type}._random_domain_points not implemented")
 
     def _random_boundary_points(self):
-        raise NotImplementedError("{}._random_boundary_points not implemented".format(self.geom_type))
+        raise NotImplementedError(f"{self.geom_type}._random_boundary_points not implemented")
 
     def set_sampling_config(self, sampling_config: SamplingConfig):
         """
@@ -117,8 +114,7 @@ class CSG(Geometry):
         if geom_type.lower() == "domain":
             check_param_type(config.domain, _SPACE.join((self.geom_type, self.name, "'s domain config")),
                              exclude_type=type(None))
-            logger.info("Sampling domain points for {}:{}, config info: {}"
-                        .format(self.geom_type, self.name, config.domain))
+            logger.info(f"Sampling domain points for {self.geom_type}:{self.name}, config info: {config.domain}")
             column_name = self.name + "_domain_points"
             data = self._random_domain_points()
             self.columns_dict["domain"] = [column_name]
@@ -127,8 +123,7 @@ class CSG(Geometry):
         if geom_type.lower() == "bc":
             check_param_type(config.bc, _SPACE.join((self.geom_type, self.name, "'s bc config")),
                              exclude_type=type(None))
-            logger.info("Sampling BC points for {}:{}, config info: {}"
-                        .format(self.geom_type, self.name, config.domain))
+            logger.info(f"Sampling BC points for {self.geom_type}:{self.name}, config info: {config.domain}")
             if config.bc.with_normal:
                 data, data_normal = self._random_boundary_points()
                 column_data = self.name + "_BC_points"
@@ -142,24 +137,21 @@ class CSG(Geometry):
             self.columns_dict["BC"] = [column_data]
             data = data.astype(self.dtype)
             return data
-        raise ValueError("Unknown geom_type: {}, only \"domain/BC\" are supported for {}:{}".format(
-            geom_type, self.geom_type, self.name))
+        raise ValueError(f"Unknown geom_type: {geom_type}, only \"domain/BC\" are "
+                         f"supported for {self.geom_type}:{self.name}")
 
 
 class CSGDifference(CSG):
     r"""
-    CSG class for difference of geometry.
+    CSG class for difference of geometries.
 
     Args:
         geom1 (Geometry): a geometry object.
         geom2 (Geometry): a geometry object to be subtracted from geom1.
         sampling_config (SamplingConfig): sampling configuration. Default: ``None``.
 
-    Supported Platforms:
-        ``Ascend`` ``GPU``
-
     Examples:
-        >>> from mindflow.geometry import generate_sampling_config, Disk, Rectangle, CSGDifference
+        >>> from mindscience.data import generate_sampling_config, Disk, Rectangle, CSGDifference
         >>> sampling_config_csg = dict({
         ...     'domain': dict({
         ...         'random_sampling': True,
@@ -188,7 +180,7 @@ class CSGDifference(CSG):
         _check_geom([geom1, geom2])
         name = geom1.name + "_sub_" + geom2.name
         self.columns_dict = {}
-        super(CSGDifference, self).__init__(name, geom1, geom2, geom1.coord_min, geom1.coord_max, sampling_config)
+        super().__init__(name, geom1, geom2, geom1.coord_min, geom1.coord_max, sampling_config)
         if sampling_config is None:
             sampling_config = geom1.sampling_config
         else:
@@ -278,11 +270,8 @@ class CSGUnion(CSG):
         geom2 (Geometry): a geometry object to be subtracted from geom1.
         sampling_config (SamplingConfig): sampling configuration. Default: ``None``.
 
-    Supported Platforms:
-        ``Ascend`` ``GPU``
-
     Examples:
-        >>> from mindflow.geometry import generate_sampling_config, Disk, Rectangle, CSGUnion
+        >>> from mindscience.data import generate_sampling_config, Disk, Rectangle, CSGUnion
         >>> sampling_config_csg = dict({
         ...     'domain': dict({
         ...         'random_sampling': True,
@@ -313,7 +302,7 @@ class CSGUnion(CSG):
         self.columns_dict = {}
         min_coord_min = np.minimum(geom1.coord_min, geom2.coord_min)
         max_coord_max = np.maximum(geom1.coord_max, geom2.coord_max)
-        super(CSGUnion, self).__init__(name, geom1, geom2, min_coord_min, max_coord_max, sampling_config)
+        super().__init__(name, geom1, geom2, min_coord_min, max_coord_max, sampling_config)
         if sampling_config is None:
             self.sampling_config = None
         else:
@@ -395,11 +384,8 @@ class CSGIntersection(CSG):
         geom2 (Geometry): a geometry object to be subtracted from geom1.
         sampling_config (SamplingConfig): sampling configuration. Default: ``None``.
 
-    Supported Platforms:
-        ``Ascend`` ``GPU``
-
     Examples:
-        >>> from mindflow.geometry import generate_sampling_config, Disk, Rectangle, CSGIntersection
+        >>> from mindscience.data import generate_sampling_config, Disk, Rectangle, CSGIntersection
         >>> sampling_config_csg = dict({
         ...     'domain': dict({
         ...         'random_sampling': True,
@@ -427,12 +413,12 @@ class CSGIntersection(CSG):
         """This class returns geom1 and geom2"""
         _check_geom([geom1, geom2])
         if geom1.dim != geom2.dim:
-            raise ValueError("Unable to union: {} and {} do not match in dimension.".format(geom1.name, geom2.name))
+            raise ValueError(f"Unable to union: {geom1.name} and {geom2.name} do not match in dimension.")
         name = geom1.name + "_add_" + geom2.name
         self.columns_dict = {}
         max_coord_min = np.maximum(geom1.coord_min, geom2.coord_min)
         min_coord_max = np.minimum(geom1.coord_max, geom2.coord_max)
-        super(CSGIntersection, self).__init__(name, geom1, geom2, max_coord_min, min_coord_max, sampling_config)
+        super().__init__(name, geom1, geom2, max_coord_min, min_coord_max, sampling_config)
         if sampling_config is None:
             sampling_config = geom1.sampling_config
         else:
@@ -514,11 +500,8 @@ class CSGXOR(CSG):
         geom2 (Geometry): a geometry object to be subtracted from geom1.
         sampling_config (SamplingConfig): sampling configuration. Default: ``None``.
 
-    Supported Platforms:
-        ``Ascend`` ``GPU``
-
     Examples:
-        >>> from mindflow.geometry import generate_sampling_config, Disk, Rectangle, CSGXOR
+        >>> from mindscience.data import generate_sampling_config, Disk, Rectangle, CSGXOR
         >>> sampling_config_csg = dict({
         ...     'domain': dict({
         ...         'random_sampling': True,
@@ -549,7 +532,7 @@ class CSGXOR(CSG):
         self.columns_dict = {}
         max_coord_min = np.minimum(geom1.coord_min, geom2.coord_min)
         min_coord_max = np.maximum(geom1.coord_max, geom2.coord_max)
-        super(CSGXOR, self).__init__(name, geom1, geom2, max_coord_min, min_coord_max, sampling_config)
+        super().__init__(name, geom1, geom2, max_coord_min, min_coord_max, sampling_config)
         if sampling_config is None:
             sampling_config = geom1.sampling_config
         else:

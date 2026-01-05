@@ -34,11 +34,8 @@ def generate_sampling_config(dict_config):
     Raises:
         ValueError: If part_dict_config can not be generated from input dict.
 
-    Supported Platforms:
-        ``Ascend`` ``GPU``
-
     Examples:
-        >>> from mindflow.geometry import generate_sampling_config
+        >>> from mindscience.data import generate_sampling_config
         >>> rect_config = dict({
         ...     'domain': dict({
         ...         'random_sampling': True,
@@ -79,8 +76,8 @@ _sampler_method = {
 def sample(size, dimension, sampler="uniform"):
     """function for sampling points by different random methods"""
     sampler = sampler.lower()
-    if sampler not in _sampler_method.keys() or sampler not in SAMPLER_TYPES:
-        raise ValueError("Unknown sampler method {}, only {} are supported".format(sampler, _sampler_method.keys()))
+    if sampler not in _sampler_method or sampler not in SAMPLER_TYPES:
+        raise ValueError(f"Unknown sampler method {sampler}, only {_sampler_method.keys()} are supported")
     sample_method = _sampler_method.get(sampler)
     if sampler == "uniform":
         data = sample_method(size, dimension)
@@ -102,8 +99,8 @@ def generate_mesh(coord_min, coord_max, mesh_size, endpoint=True):
     """generate regularly distributed mesh"""
     dimension = len(coord_min)
     if dimension != len(coord_max) or dimension != len(mesh_size):
-        raise ValueError("Inconsistent dimension info, coord_min: {}, coord_max: {}, mesh_size: {}"
-                         .format(coord_min, coord_max, mesh_size))
+        raise ValueError(f"Inconsistent dimension info, coord_min: {coord_min}, "
+                         f"coord_max: {coord_max}, mesh_size: {mesh_size}")
 
     axis_x = np.linspace(coord_min[0], coord_max[0], mesh_size[0], endpoint=endpoint)
     mesh = None
@@ -131,5 +128,5 @@ def generate_mesh(coord_min, coord_max, mesh_size, endpoint=True):
                           mesh_z.flatten()[:, None], mesh_t.flatten()[:, None])).astype(np.float32)
         return mesh
     if dimension > 4:
-        raise ValueError("Only dimension <= 4 are supported, but got {}".format(dimension))
+        raise ValueError(f"Only dimension <= 4 are supported, but got {dimension}")
     return mesh

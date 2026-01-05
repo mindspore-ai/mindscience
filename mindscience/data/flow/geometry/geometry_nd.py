@@ -37,11 +37,8 @@ class FixedPoint(Geometry):
         dtype (numpy.dtype): Data type of sampled point data type. Default: ``numpy.float32``.
         sampling_config (SamplingConfig): sampling configuration. Default: ``None``.
 
-    Supported Platforms:
-        ``Ascend`` ``GPU``
-
     Examples:
-        >>> from mindflow.geometry import generate_sampling_config, FixedPoint
+        >>> from mindscience.data import generate_sampling_config, FixedPoint
         >>> hypercube_random = dict({
         ...      'domain': dict({
         ...          'random_sampling': True,
@@ -58,7 +55,7 @@ class FixedPoint(Geometry):
     def __init__(self, name, coord, dtype=np.float32, sampling_config=None):
         if isinstance(coord, (int, float)):
             coord = [coord]
-        super(FixedPoint, self).__init__(name, len(coord), coord, coord, dtype, sampling_config)
+        super().__init__(name, len(coord), coord, coord, dtype, sampling_config)
         self.coord = coord
         self.columns_dict = {}
         self.length = 0.0
@@ -66,17 +63,17 @@ class FixedPoint(Geometry):
         self.area = 0.0
 
     def _inside(self, points, strict=False):
-        raise NotImplementedError("{}._inside not implemented".format(self.geom_type))
+        raise NotImplementedError(f"{self.geom_type}._inside not implemented")
 
     def _on_boundary(self, points):
-        raise NotImplementedError("{}._on_boundary not implemented".format(self.geom_type))
+        raise NotImplementedError(f"{self.geom_type}._on_boundary not implemented")
 
     def _boundary_normal(self, points):
-        raise NotImplementedError("{}._boundary_normal not implemented".format(self.geom_type))
+        raise NotImplementedError(f"{self.geom_type}._boundary_normal not implemented")
 
     def sampling(self, geom_type="domain"):
         """
-        sampling points
+        Sampling points.
 
         Args:
             geom_type (str): geometry type, which supports ``'domain'`` and ``'BC'``. Default: ``'domain'``.
@@ -85,17 +82,15 @@ class FixedPoint(Geometry):
             Numpy.ndarray, 2D numpy array with or without boundary normal vectors.
 
         Raises:
-            ValueError: If `config` is ``None``.
-            KeyError: If `geom_type` is ``'domain'`` but `config.domain` is ``None``.
-            KeyError: If `geom_type` is ``'BC'`` but `config.bc` is ``None``.
+            KeyError: If `geom_type` is ``'domain'`` but ``self.sampling_config.domain`` is ``None``.
+            KeyError: If `geom_type` is ``'BC'`` but ``self.sampling_config.bc`` is ``None``.
             ValueError: If `geom_type` is neither ``'BC'`` nor ``'domain'``.
         """
         config = self.sampling_config
         check_param_type_value(geom_type, _SPACE.join((self.geom_type, self.name, "'s geom_type")),
                                GEOM_TYPES, data_type=str)
         if geom_type.lower() == "domain":
-            logger.info("Sampling domain points for {}:{}, config info: {}"
-                        .format(self.geom_type, self.name, config.domain))
+            logger.info(f"Sampling domain points for {self.geom_type}:{self.name}, config info: {config.domain}")
             column_name = self.name + "_domain_points"
             data = np.tile(self.coord, (self.sampling_config.domain.size, 1))
             data = np.reshape(data, (-1, self.dim))
@@ -103,8 +98,7 @@ class FixedPoint(Geometry):
             data = data.astype(self.dtype)
             return data
         if geom_type.lower() == "bc":
-            logger.info("Sampling BC points for {}:{}, config info: {}"
-                        .format(self.geom_type, self.name, config.bc))
+            logger.info(f"Sampling BC points for {self.geom_type}:{self.name}, config info: {config.bc}")
             if config.bc.with_normal:
                 raise ValueError("Normal is not supported on point: {}")
             data = np.tile(self.coord, (self.sampling_config.bc.size, 1))
@@ -113,8 +107,8 @@ class FixedPoint(Geometry):
             self.columns_dict["BC"] = [column_data]
             data = data.astype(self.dtype)
             return data
-        raise ValueError("Unknown geom_type: {}, only \"domain/BC\" are supported for {}:{}".format(
-            geom_type, self.geom_type, self.name))
+        raise ValueError(f"Unknown geom_type: {geom_type}, only \"domain/BC\" are "
+                         f"supported for {self.geom_type}:{self.name}")
 
 
 class HyperCube(Geometry):
@@ -136,11 +130,8 @@ class HyperCube(Geometry):
     Raises:
         TypeError: `sampling_config` is not instance of class SamplingConfig.
 
-    Supported Platforms:
-        ``Ascend`` ``GPU``
-
     Examples:
-        >>> from mindflow.geometry import generate_sampling_config, HyperCube
+        >>> from mindscience.data import generate_sampling_config, HyperCube
         >>> hypercube_random = dict({
         ...      'domain': dict({
         ...          'random_sampling': True,
@@ -162,10 +153,10 @@ class HyperCube(Geometry):
         (1000, 3)
     """
     def __init__(self, name, dim, coord_min, coord_max, dtype=np.float32, sampling_config=None):
-        super(HyperCube, self).__init__(name, dim, coord_min, coord_max, dtype, sampling_config)
+        super().__init__(name, dim, coord_min, coord_max, dtype, sampling_config)
         if np.any(self.coord_max - self.coord_min <= 0.0):
-            raise ValueError("coord_min should be smaller than coord_max, but got coord_min: {}, coord_max: {}".format(
-                self.coord_min, self.coord_max))
+            raise ValueError(f"coord_min should be smaller than coord_max, but got coord_min: "
+                             f"{self.coord_min}, coord_max: {self.coord_max}")
         self.columns_dict = {}
         self.length = self.coord_max - self.coord_min
         self.vol = np.prod(self.length)
@@ -210,9 +201,8 @@ class HyperCube(Geometry):
         """generate domain mesh points"""
         mesh_size = self.sampling_config.domain.size
         if len(mesh_size) != self.dim:
-            raise ValueError("For grid sampling, length of mesh_size list: {} should be equal to dimension: {}".format(
-                mesh_size, self.dim
-            ))
+            raise ValueError(f"For grid sampling, length of mesh_size list: {mesh_size} "
+                             f"should be equal to dimension: {self.dim}")
         mesh_x = generate_mesh(self.coord_min, self.coord_max, mesh_size)
         data = np.reshape(mesh_x, (-1, self.dim))
         return data
@@ -270,7 +260,7 @@ class HyperCube(Geometry):
 
     def sampling(self, geom_type="domain"):
         """
-        sampling points
+        Sampling points.
 
         Args:
             geom_type (str): geometry type: can be ``'domain'`` or ``'BC'``. Default: ``'domain'``.
@@ -283,9 +273,8 @@ class HyperCube(Geometry):
                          boundary normal vectors. Otherwise, returns 2D numpy array without boundary normal vectors.
 
         Raises:
-            ValueError: If `config` is ``None``.
-            KeyError: If `geom_type` is ``'domain'`` but `config.domain` is ``None``.
-            KeyError: If `geom_type` is ``'BC'`` but `config.bc` is ``None``.
+            KeyError: If `geom_type` is ``'domain'`` but ``self.sampling_config.domain`` is ``None``.
+            KeyError: If `geom_type` is ``'BC'`` but ``self.sampling_config.bc`` is ``None``.
             ValueError: If `geom_type` is neither ``'BC'`` nor ``'domain'``.
         """
         config = self.sampling_config
@@ -297,10 +286,8 @@ class HyperCube(Geometry):
             check_param_type(config.domain, _SPACE.join((self.geom_type, self.name, "'s domain config")),
                              exclude_type=type(None))
             if config.domain is None:
-                raise KeyError("Sampling config for domain of {}:{} should not be none"
-                               .format(self.geom_type, self.name))
-            logger.info("Sampling domain points for {}:{}, config info: {}"
-                        .format(self.geom_type, self.name, config.domain))
+                raise KeyError(f"Sampling config for domain of {self.geom_type}:{self.name} should not be none")
+            logger.info(f"Sampling domain points for {self.geom_type}:{self.name}, config info: {config.domain}")
             column_name = self.name + "_domain_points"
             if config.domain.random_sampling:
                 data = self._random_domain_points()
@@ -319,8 +306,7 @@ class HyperCube(Geometry):
         if geom_type.lower() == "bc":
             check_param_type(config.bc, _SPACE.join((self.geom_type, self.name, "'s bc config")),
                              exclude_type=type(None))
-            logger.info("Sampling BC points for {}:{}, config info: {}"
-                        .format(self.geom_type, self.name, config.bc))
+            logger.info(f"Sampling BC points for {self.geom_type}:{self.name}, config info: {config.bc}")
             if config.bc.with_normal:
                 if config.bc.random_sampling:
                     data, data_normal = self._random_boundary_points(need_normal=True)
@@ -341,5 +327,5 @@ class HyperCube(Geometry):
             self.columns_dict["BC"] = [column_data]
             data = data.astype(self.dtype)
             return data
-        raise ValueError("Unknown geom_type: {}, only \"domain/BC\" are supported for {}:{}".format(
-            geom_type, self.geom_type, self.name))
+        raise ValueError(f"Unknown geom_type: {geom_type}, only \"domain/BC\" are "
+                         f"supported for {self.geom_type}:{self.name}")
