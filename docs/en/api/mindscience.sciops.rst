@@ -46,8 +46,6 @@ fft
     :nosignatures:
     :template: classtemplate.rst
 
-    mindscience.sciops.evoformer_attention.evo_attention
-
     mindscience.sciops.fft.ASD_FFT
     mindscience.sciops.fft.ASD_FFT2D
     mindscience.sciops.fft.ASD_IFFT
