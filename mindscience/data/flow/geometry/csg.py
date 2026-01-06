@@ -42,6 +42,7 @@ def _check_geom(geoms):
 class CSG(Geometry):
     r"""
     CSG base class.
+    """
 
     def __init__(self, name, geom1, geom2, coord_min, coord_max, sampling_config=None):
         _check_geom([geom1, geom2])
