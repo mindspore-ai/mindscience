@@ -29,7 +29,7 @@ def lecun_init(fan_in, initializer_name='linear'):
         initializer_name (str, optional): The name of the initializer, support ``"linear"`` or ``"relu"``. Default: ``"linear"``.
 
     Returns:
-        Initializer: The initializer.
+        Initializer. The initializer.
     """
     scale = 1.0
     if initializer_name == 'relu':

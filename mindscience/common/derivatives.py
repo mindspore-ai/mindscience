@@ -47,7 +47,7 @@ def batched_jacobian(model):
         Tensor, jacobi of the model. With the input dimension is :math:`[batch_size, in_channels]`, output dimension is :math:`[out_channels, batch_size, in_channels]`.
 
     Note:
-        The version of MindSpore should be >= 2.0.0 for using `mindspore.jacrev`.
+        This function internally relies on ``mindspore.jacrev`` to compute Jacobian matrices. Therefore, MindSpore version >= 2.0.0 is required.
 
     Examples:
         >>> import numpy as np
@@ -90,7 +90,7 @@ def batched_hessian(model):
         Tensor, hessian of the model. With the input dimension is :math:`[batch_size, in_channels]`, output dimension is :math:`[out_channels, in_channels, batch_size, in_channels]`.
 
     Note:
-        The version of MindSpore should be >= 2.0.0 for using `mindspore.jacrev`.
+        This function internally relies on ``mindspore.jacrev`` to compute Hessian matrices. Therefore, MindSpore version >= 2.0.0 is required.
 
     Examples:
         >>> import numpy as np

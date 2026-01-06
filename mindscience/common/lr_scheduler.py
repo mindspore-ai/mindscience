@@ -177,7 +177,7 @@ def get_warmup_cosine_annealing_lr(lr_init, steps_per_epoch, last_epoch,
         warmup\_learning\_rate[i] = (lr\_init - warmup\_lr\_init) * i / warmup\_steps + warmup\_lr\_init
 
     Args:
-        lr_init (float): iInit learning rate, positive float value.
+        lr_init (float): Init learning rate, positive float value.
         steps_per_epoch (int): Number of steps to each epoch, positive int value.
         last_epoch (int): Total epoch of training, positive int value.
         warmup_epochs (int, optional): Total epoch of warming up. Default: ``0``.

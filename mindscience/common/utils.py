@@ -56,7 +56,7 @@ def get_2d_sin_cos_pos_embed(embed_dim, grid_size):
         grid_size (tuple(int)): The grid height and width.
 
     Returns:
-        Numpy.array, with shape :math:`(1, grid\_height*grid\_width, embed\_dim)`
+        Numpy.array, with shape :math:`(1, grid\_height*grid\_width, embed\_dim)` .
 
     """
     grid_size = to_2tuple(grid_size)
@@ -120,7 +120,7 @@ def patchify(label, patch_size=16):
 
     Args:
         label (Union[int, float]): output dimension for each position.
-        patch_size (int, optional): The patch size of image. Default: 16.
+        patch_size (int, optional): The patch size of image. Default: ``16``.
 
     Returns:
         Numpy.array, the array with new shape of ``(H, W)``.
@@ -143,13 +143,13 @@ def unpatchify(labels, img_size=(192, 384), patch_size=16, nchw=False):
     Convert a sequence of flattened patches back into an image-like tensor.
 
     Args:
-        labels (Union[int, float]): Output dimension for each position.
+        labels (Tensor): A tensor containing flattened patch representations. The shape of `labels` is expected to be `(N, num_patches, patch_size * patch_size * C)`, where `C` denotes the number of output channels.
         img_size (tuple(int), optional): Input image size. Default ``(192, 384)``.
-        patch_size (int, optional): The patch size of image. Default: ``16``.
-        nchw (bool, optional): If ``True``, the unpatchify shape contains ``N, C, H, W``.
+        patch_size (int, optional): The patch size of image. Default ``16``.
+        nchw (bool, optional): If ``True``, the unpatchify shape contains ``N, C, H, W``. if ``False``, the unpatchify shape contains ``(N, H, W, C)``. Default: ``False``.
 
     Returns:
-        Tensor, with shape of :math:`(N, H, W, C)`.
+        Tensor, with shape of :math:`(N, H, W, C)` if ``nchw`` is ``False`` or :math:`(N, C, H, W)` if ``nchw`` is ``True``.
     """
     label_shape = labels.shape
     output_dim = label_shape[-1] // (patch_size * patch_size)
@@ -353,7 +353,7 @@ def pixel_unshuffle(x, downscale_factor):
     :math:`(*, C \times r^2, H, W)` , where `r` is a downscale factor and `*` is zero or more batch dimensions.
 
     Args:
-        x (Tensor): Tensor of shape :math:`(*, C, H \times r, W \times r)` . The dimension of `x` is larger than ``2``, and the length of second to last dimension or last dimension can be divisible by `downscale_factor` .
+        x (Tensor): Tensor of shape :math:`(*, C, H \times r, W \times r)` . The dimension of `x` is larger than ``2``, and the length of second to last dimension and last dimension can be divisible by `downscale_factor` .
         downscale_factor (int): Factor to decrease spatial resolution by, and is a positive integer.
 
     Returns:
@@ -400,7 +400,7 @@ class PixelUnshuffle(nn.Cell):
         downscale_factor (int): factor to decrease spatial resolution by, and is a positive integer.
 
     Inputs:
-        - **x** (Tensor) - Tensor of shape :math:`(*, C, H \times r, W \times r)` . The dimension of `x` is larger than ``2``, and the length of second to last dimension or last dimension can be divisible by `downscale_factor` .
+        - **x** (Tensor) - Tensor of shape :math:`(*, C, H \times r, W \times r)` . The dimension of `x` is larger than ``2``, and the length of second to last dimension and last dimension can be divisible by `downscale_factor` .
 
     Outputs:
         - **output** (Tensor) - Tensor of shape :math:`(*, C \times r^2, H, W)` .

@@ -244,9 +244,9 @@ class WaveletTransformLoss(nn.LossBase):
         regroup (bool, optional): The regroup error combination form of the wavelet transformation losses. Default: ``"False"``.
 
     Inputs:
-        - **input** - tuple of Tensors. Tensor of shape :math:`(B*H*W/(P*P), P*P*C)`, where B denotes the batch size.
-          H, W denotes the height and the width of the image, respectively.
-          P denotes the patch size. C denots the feature channels.
+        - **input** (tuple(Tensor, Tensor)) - Tuple of Tensors. Tensor of shape :math:`(B*H*W/(P*P), P*P*C)`, where B denotes the batch size, 
+          H, W denotes the height and the width of the image respectively,
+          P denotes the patch size, C denotes the feature channels.
 
     Outputs:
         - **output** (Tensor) - Losses for multi-level wavelet transformation.
