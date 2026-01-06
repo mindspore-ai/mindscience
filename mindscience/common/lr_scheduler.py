@@ -82,14 +82,17 @@ def get_multi_step_lr(lr_init, milestones, gamma, steps_per_epoch, last_epoch):
     number of epoch reaches one of the `milestones`.
 
     Calculate learning rate by the given `milestone` and `lr_init`. Let the value of `milestone` be
-    :math:`(M_1, M_2, ..., M_t, ..., M_N)` and the value of `lr_init` be :math:`(x_1, x_2, ..., x_t, ..., x_N)`. N is the length of `milestone`. Let the output learning rate be `y`, then for the i-th step, the formula of computing `decayed_learning_rate[i]` is:
+    :math:`(M_1, M_2, ..., M_t, ..., M_N)` and the value of `lr_init` be :math:`(x_1, x_2, ..., x_t, ..., x_N)`.
+    N is the length of `milestone`. Let the output learning rate be `y`, then for the i-th step,
+    the formula of computing `decayed_learning_rate[i]` is:
 
     .. math::
         y[i] = x_t,\ for\ i \in [M_{t-1}, M_t)
 
     Args:
         lr_init (float): Init learning rate, positive float value.
-        milestones (Union[list[int], tuple[int]]): List of epoch indices, each element in the list must be greater than ``0``.
+        milestones (Union[list[int], tuple[int]]): List of epoch indices, each element
+        in the list must be greater than ``0``.
         gamma (float): Multiplicative factor of learning rate decay.
         steps_per_epoch (int): Number of steps to each epoch, positive int value.
         last_epoch (int): Total epoch of training, positive int value.

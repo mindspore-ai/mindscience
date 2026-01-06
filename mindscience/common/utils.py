@@ -143,13 +143,15 @@ def unpatchify(labels, img_size=(192, 384), patch_size=16, nchw=False):
     Convert a sequence of flattened patches back into an image-like tensor.
 
     Args:
-        labels (Tensor): A tensor containing flattened patch representations. The shape of `labels` is expected to be `(N, num_patches, patch_size * patch_size * C)`, where `C` denotes the number of output channels.
+        labels (Tensor): A tensor containing flattened patch representations. The shape of `labels` is expected to be
+        :math:`(N, num_patches, patch_size * patch_size * C)`, where `C` denotes the number of output channels.
         img_size (tuple(int), optional): Input image size. Default ``(192, 384)``.
         patch_size (int, optional): The patch size of image. Default ``16``.
-        nchw (bool, optional): If ``True``, the unpatchify shape contains ``N, C, H, W``. if ``False``, the unpatchify shape contains ``(N, H, W, C)``. Default: ``False``.
+        nchw (bool, optional): If ``True``, the unpatchify shape contains :math:`(N, C, H, W)`; if ``False``,
+        the unpatchify shape contains :math:`(N, H, W, C)`. Default: ``False``.
 
     Returns:
-        Tensor, with shape of :math:`(N, H, W, C)` if ``nchw`` is ``False`` or :math:`(N, C, H, W)` if ``nchw`` is ``True``.
+        Tensor, with shape of :math:`(N, H, W, C)` if `nchw` is ``False`` or :math:`(N, C, H, W)` if `nchw` is ``True``.
     """
     label_shape = labels.shape
     output_dim = label_shape[-1] // (patch_size * patch_size)
@@ -271,7 +273,8 @@ class SpectralNorm(nn.Cell):
 
 def pixel_shuffle(x, upscale_factor):
     r"""
-    Applies a pixel_shuffle operation over an input signal composed of several input planes. This is useful for implementiong efficient sub-pixel convolution with a stride of :math:`1/r`. For more details, refer to
+    Applies a pixel_shuffle operation over an input signal composed of several input planes. This is useful for
+    implementiong efficient sub-pixel convolution with a stride of :math:`1/r`. For more details, refer to
     `Real-Time Single Image and Video Super-Resolution Using an Efficient Sub-Pixel Convolutional Neural Network
     <https://arxiv.org/abs/1609.05158>`_ .
 
@@ -279,7 +282,8 @@ def pixel_shuffle(x, upscale_factor):
     :math:`(*, C, H \times r, W \times r)`, where `r` is an upscale factor and `*` is zero or more batch dimensions.
 
     Args:
-        x (Tensor): Tensor of shape :math:`(*, C \times r^2, H, W)` . The dimension of `x` is larger than ``2``, and the length of third to last dimension can be divisible by `upscale_factor` squared.
+        x (Tensor): Tensor of shape :math:`(*, C \times r^2, H, W)` . The dimension of `x` is larger than ``2``,
+        and the length of third to last dimension can be divisible by `upscale_factor` squared.
         upscale_factor (int): Factor to increase spatial resolution by, and is a positive integer.
 
     Returns:
@@ -326,7 +330,8 @@ class PixelShuffle(nn.Cell):
         upscale_factor (int):  Factor to increase spatial resolution by, and is a positive integer.
 
     Inputs:
-        - **x** (Tensor) - Tensor of shape :math:`(*, C \times r^2, H, W)` . The dimension of `x` is larger than ``2``, and the length of third to last dimension can be divisible by `upscale_factor` squared.
+        - **x** (Tensor) - Tensor of shape :math:`(*, C \times r^2, H, W)` . The dimension of `x` is larger than ``2``,
+        and the length of third to last dimension can be divisible by `upscale_factor` squared.
 
     Outputs:
         - **output** (Tensor) - Tensor of shape :math:`(*, C, H \times r, W \times r)` .
@@ -346,14 +351,16 @@ class PixelShuffle(nn.Cell):
 
 def pixel_unshuffle(x, downscale_factor):
     r"""
-    Applies a pixel_unshuffle operation over an input signal composed of several input planes. For more details, refer to `Real-Time Single Image and Video Super-Resolution Using an Efficient Sub-Pixel Convolutional Neural Network
+    Applies a pixel_unshuffle operation over an input signal composed of several input planes. For more details, refer
+    to `Real-Time Single Image and Video Super-Resolution Using an Efficient Sub-Pixel Convolutional Neural Network
     <https://arxiv.org/abs/1609.05158>`_ .
 
     Typically, the input is of shape :math:`(*, C, H \times r, W \times r)` , and the output is of shape
     :math:`(*, C \times r^2, H, W)` , where `r` is a downscale factor and `*` is zero or more batch dimensions.
 
     Args:
-        x (Tensor): Tensor of shape :math:`(*, C, H \times r, W \times r)` . The dimension of `x` is larger than ``2``, and the length of second to last dimension and last dimension can be divisible by `downscale_factor` .
+        x (Tensor): Tensor of shape :math:`(*, C, H \times r, W \times r)` . The dimension of `x` is larger than ``2``,
+        and the length of second to last dimension and last dimension can be divisible by `downscale_factor` .
         downscale_factor (int): Factor to decrease spatial resolution by, and is a positive integer.
 
     Returns:
@@ -400,7 +407,8 @@ class PixelUnshuffle(nn.Cell):
         downscale_factor (int): factor to decrease spatial resolution by, and is a positive integer.
 
     Inputs:
-        - **x** (Tensor) - Tensor of shape :math:`(*, C, H \times r, W \times r)` . The dimension of `x` is larger than ``2``, and the length of second to last dimension and last dimension can be divisible by `downscale_factor` .
+        - **x** (Tensor) - Tensor of shape :math:`(*, C, H \times r, W \times r)` . The dimension of `x` is larger than
+        ``2``, and the length of second to last dimension and last dimension can be divisible by `downscale_factor` .
 
     Outputs:
         - **output** (Tensor) - Tensor of shape :math:`(*, C \times r^2, H, W)` .

@@ -20,9 +20,9 @@ from mindspore import nn, ops
 
 class AdaHessian(nn.Adam):
     r"""
-    The Adahessian optimizer, which performs optimization using second-order information from the diagonal elements of the Hessian matrix.
-    It has been proposed in `ADAHESSIAN: An Adaptive Second Order Optimizer for Machine Learning
-    <https://arxiv.org/abs/2006.00719>`_ .
+    The Adahessian optimizer, which performs optimization using second-order information from the
+    diagonal elements of the Hessian matrix. It has been proposed in
+    `ADAHESSIAN: An Adaptive Second Order Optimizer for Machine Learning <https://arxiv.org/abs/2006.00719>`_ .
     The Hessian power here is fixed to ``1``, and the way of spatially averaging the Hessian traces is
 
     - for 1D: no spatial average.

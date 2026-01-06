@@ -184,7 +184,8 @@ class MTLWeightedLoss(WeightedLossCell):
 
     Args:
         num_losses (int): The number of multi-task losses, should be positive integer.
-        bound_param (float, optional): The square addition to weight and regularization when the mere bound is higher than certain constant given. Default: ``0.0``.
+        bound_param (float, optional): The square addition to weight and regularization when the mere bound
+        is higher than certain constant given. Default: ``0.0``.
 
     Inputs:
         - **input** (tuple[Tensor]) - The input data.
@@ -240,13 +241,16 @@ class WaveletTransformLoss(nn.LossBase):
     The multi-level wavelet transformation losses.
 
     Args:
-        wave_level (int, optional): The number of the wavelet transformation levels, should be positive integer. Default: ``2``.
-        regroup (bool, optional): The regroup error combination form of the wavelet transformation losses. Default: ``"False"``.
+        wave_level (int, optional): The number of the wavelet transformation levels,
+        should be positive integer. Default: ``2``.
+        regroup (bool, optional): The regroup error combination form of the wavelet
+        transformation losses. Default: ``"False"``.
 
     Inputs:
-        - **input** (tuple(Tensor, Tensor)) - Tuple of Tensors. Tensor of shape :math:`(B*H*W/(P*P), P*P*C)`, where B denotes the batch size, 
-          H, W denotes the height and the width of the image respectively,
-          P denotes the patch size, C denotes the feature channels.
+        - **input** (tuple(Tensor, Tensor)) - Tuple of Tensors. Tensor of shape
+        :math:`(B*H*W/(P*P), P*P*C)`, where B denotes the batch size, H, W denotes
+        the height and the width of the image respectively, P denotes the patch size,
+        C denotes the feature channels.
 
     Outputs:
         - **output** (Tensor) - Losses for multi-level wavelet transformation.
@@ -358,13 +362,15 @@ class RelativeRMSELoss(nn.LossBase):
         loss = \sqrt{\frac{\sum_{i=1}^{N}{(x_i-y_i)^2}}{\sum_{i=1}^{N}{(y_i)^2}}}
 
     Args:
-        reduction (str, optional): Type of reduction to be applied to loss. The optional values are ``"mean"``, ``"sum"`` and ``"none"``. Default: ``"sum"``.
+        reduction (str, optional): Type of reduction to be applied to loss. The optional values are
+        ``"mean"``, ``"sum"`` and ``"none"``. Default: ``"sum"``.
 
     Inputs:
-        - **prediction** (Tensor) - The prediction value of the network. Tensor of shape :math:`(N, *)` where :math:`*` means, any number of additional dimensions.
-        - **labels** (Tensor) - True value of the samples. Tensor of shape :math:`(N, *)`, where :math:`*` means, any number of additional dimensions, same shape as the `prediction` in common cases.
-          However, it supports the shape of `labels` is different from the shape of `prediction` and they should be
-          broadcasted to each other.
+        - **prediction** (Tensor) - The prediction value of the network. Tensor of shape :math:`(N, *)` where
+        :math:`*` means, any number of additional dimensions.
+        - **labels** (Tensor) - True value of the samples. Tensor of shape :math:`(N, *)`, where :math:`*` means,
+        any number of additional dimensions, same shape as the `prediction` in common cases.However, it supports
+        the shape of `labels` is different from the shape of `prediction` and they should be broadcasted to each other.
 
     Outputs:
         - **output** (Tensor) - Weighted loss.

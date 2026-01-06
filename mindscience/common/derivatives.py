@@ -26,7 +26,10 @@ class SimplifiedGradient(nn.Cell):
     def __init__(self, net, order=1):
         super().__init__()
         if not isinstance(order, int):
-            raise TypeError(f"The type of order should be int, but got {type(order)}")
+            raise TypeError(
+                f"The type of order should be int, "
+                f"but got {type(order)}."
+            )
         self.net = net
         self.axis = order - 1
         self.cast = ops.Cast()
@@ -40,14 +43,17 @@ def batched_jacobian(model):
     """
     Calculate Jacobian matrix of network model.
 
+    Note:
+        This function internally relies on `mindspore.jacrev` to compute Jacobian matrices.
+        Therefore, **MindSpore version >= 2.0.0** is required.
+
     Args:
-        model (mindspore.nn.Cell): A network with the input dimension is in_channels and output dimension is out_channels.
+        model (mindspore.nn.Cell): A network with the input dimension is in_channels and
+        output dimension is out_channels.
 
     Returns:
-        Tensor, jacobi of the model. With the input dimension is :math:`[batch_size, in_channels]`, output dimension is :math:`[out_channels, batch_size, in_channels]`.
-
-    Note:
-        This function internally relies on ``mindspore.jacrev`` to compute Jacobian matrices. Therefore, MindSpore version >= 2.0.0 is required.
+        Tensor, jacobi of the model. With the input dimension is :math:`[batch_size, in_channels]`,
+        output dimension is :math:`[out_channels, batch_size, in_channels]`.
 
     Examples:
         >>> import numpy as np
@@ -83,14 +89,17 @@ def batched_hessian(model):
     """
     Calculate Hessian matrix of network model.
 
+    Note:
+        This function internally relies on `mindspore.jacrev` to compute Hessian matrices.
+        Therefore, **MindSpore version >= 2.0.0** is required.
+
     Args:
-        model (mindspore.nn.Cell): A network with the input dimension is in_channels and output dimension is out_channels.
+        model (mindspore.nn.Cell): A network with the input dimension is in_channels and
+        output dimension is out_channels.
 
     Returns:
-        Tensor, hessian of the model. With the input dimension is :math:`[batch_size, in_channels]`, output dimension is :math:`[out_channels, in_channels, batch_size, in_channels]`.
-
-    Note:
-        This function internally relies on ``mindspore.jacrev`` to compute Hessian matrices. Therefore, MindSpore version >= 2.0.0 is required.
+        Tensor, hessian of the model. With the input dimension is :math:`[batch_size, in_channels]`,
+        output dimension is :math:`[out_channels, in_channels, batch_size, in_channels]`.
 
     Examples:
         >>> import numpy as np

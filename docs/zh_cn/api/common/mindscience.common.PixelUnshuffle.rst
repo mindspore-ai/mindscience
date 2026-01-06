@@ -14,7 +14,7 @@ mindscience.common.PixelUnshuffle
         - **downscale_factor** (int) - 下采样因子，正整数。
 
     输入：
-        - **x** (Tensor) - 形状为 :math:`(*, C, H \times r, W \times r)` 的张量，维度数需大于 ``2``，且倒数第二个维度和最后一个维度的长度必须能够被 `downscale_factor` 整除。
+        - **x** (Tensor) - 形状为 :math:`(*, C, H \times r, W \times r)` 的张量，维度数需大于 ``2``，且倒数第二个维度和最后一个维度的长度必须都能够被 `downscale_factor` 整除。
 
     输出：
         - **output** (Tensor) - 形状为 :math:`(*, C \times r^2, H, W)` 的张量。

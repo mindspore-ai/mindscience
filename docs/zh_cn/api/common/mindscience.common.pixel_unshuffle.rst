@@ -10,7 +10,7 @@ mindscience.common.pixel_unshuffle
     其中 `r` 是下采样倍数，`*` 代表零个或多个 batch 维度。
 
     参数：
-        - **x** (Tensor) - 形状为 :math:`(*, C, H \times r, W \times r)` 的张量。`x` 的维度数需大于 ``2``，且倒数第二个维度和最后一个维度的长度必须能够被 `downscale_factor` 整除。
+        - **x** (Tensor) - 形状为 :math:`(*, C, H \times r, W \times r)` 的张量。`x` 的维度数需大于 ``2``，且倒数第二个维度和最后一个维度的长度必须都能够被 `downscale_factor` 整除。
         - **downscale_factor** (int) - 下采样倍数，正整数。
 
     返回：
