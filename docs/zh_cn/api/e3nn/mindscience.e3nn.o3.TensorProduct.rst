@@ -1,7 +1,7 @@
 mindscience.e3nn.o3.TensorProduct
 =========================================
 
-.. py:class:: mindscience.e3nn.o3.TensorProduct(irreps_in1, irreps_in2=None, irreps_out=None, instructions='full', dtype=mindspore.float32, irrep_norm='component', path_norm='element', weight_init='normal', weight_mode='inner', core_mode='ncon', ncon_dtype = float32)
+.. py:class:: mindscience.e3nn.o3.TensorProduct(irreps_in1, irreps_in2=None, irreps_out=None, instructions='full', dtype=mindspore.float32, irrep_norm='component', path_norm='element', weight_init='normal', weight_mode='inner', core_mode='ncon', ncon_dtype=mindspore.float32)
 
     多功能张量乘积运算符，适用于两个输入 `Irreps` 和一个输出 `Irreps`，将两个张量发送到一个张量中并保持几何张量属性。
     该类集成了不同的典型用法：`TensorSquare`、`FullTensorProduct`、`FullyConnectedTensorProduct`、`ElementwiseTensorProduct` 和 `Linear`。

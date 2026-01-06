@@ -242,7 +242,6 @@ class GeometryWithTime(Geometry):
             KeyError: If `geom_type` is ``'domain'`` but ``self.sampling_config.domain`` is ``None``.
             KeyError: If `geom_type` is ``'BC'`` but ``self.sampling_config.bc`` is ``None``.
             KeyError: If `geom_type` is ``'IC'`` but ``self.sampling_config.ic`` is ``None``.
-            ValueError: If `geom_type` is not ``'BC'``, ``'IC'`` nor ``'domain'``.
         """
         config = self.sampling_config
         check_param_type(config, _space.join((self.geom_type, self.name, "'s sampling_config")),

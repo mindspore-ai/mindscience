@@ -14,7 +14,7 @@ def log_timer(func):
         func (callable): The function to decorate. Should be a callable object.
 
     Returns:
-        callable: The decorated function.
+        callable. The decorated function.
     """
     def wrapper(*args, **kwargs):
         start_time = time.time()

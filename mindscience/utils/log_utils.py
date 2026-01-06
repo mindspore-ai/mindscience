@@ -32,6 +32,7 @@ def log_config(log_dir='./logs', model_name="model", permission=0o644):
 def print_log(*msg, level=logging.INFO, enable_log=True):
     """
     Print in the standard output stream as well as into the log file.
+
     Args:
         *msg (any): Message(s) to print and log.
         level (int, optional): Log level. Default: ``logging.INFO``.

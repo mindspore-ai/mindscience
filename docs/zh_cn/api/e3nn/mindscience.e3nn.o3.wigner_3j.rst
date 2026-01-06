@@ -1,7 +1,7 @@
 mindscience.e3nn.o3.wigner_3j
 ==============================
 
-.. py:function:: mindscience.e3nn.o3.wigner_3j(l1, l2, l3, dtype=float32)
+.. py:function:: mindscience.e3nn.o3.wigner_3j(l1, l2, l3, dtype=mindspore.float32)
 
     Wigner 3j符号 :math:`C_{lmn}`。
     它满足以下两个性质:

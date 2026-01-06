@@ -41,10 +41,12 @@ def change_basis_real_to_complex(l, dtype=float32):
 
     Args:
         l (int): degree of spherical harmonics.
-        dtype (dtype, optional): {float32, float64} data type of the real basis. Default: ``float32``.
+        dtype (mindspore.dtype, optional): {mindspore.float32, mindspore.float64} data type of the real basis.
+            Default: ``mindspore.float32``.
 
     Returns:
-        Tensor, the complex basis with dtype complex64 for `dtype` = float32 and complex128 for `dtype` = float64.
+        Tensor, the complex basis with dtype complex64 for `dtype=mindspore.float32` and
+        complex128 for `dtype=mindspore.float64`.
 
     Examples:
         >>> from mindscience.e3nn.o3 import change_basis_real_to_complex
@@ -133,10 +135,11 @@ def so3_generators(l, dtype=float32):
 
     Args:
         l (int): degree of generators.
-        dtype (dtype, optional): {float32, float64} data type of generators. Default: ``float32``.
+        dtype (mindspore.dtype, optional): {mindspore.float32, mindspore.float64} data type of generators.
+            Default: ``mindspore.float32``.
 
     Returns:
-        Tensor, so(3) generators with the dtype is `dtype`.
+        Tensor, so(3) generators with the dtype is `mindspore.dtype`.
 
     Raise:
         TypeError: If `l` is not int.

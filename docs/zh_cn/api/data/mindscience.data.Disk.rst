@@ -21,13 +21,13 @@ mindscience.data.Disk
         采样区域或边界点。
 
         参数：
-            - **geom_type** (str) - 几何类型，可选 ``'domain'``（问题可行域）或 ``'BC'``（边界），默认 ``'domain'``。
+            - **geom_type** (str) - 几何类型，可选 ``'domain'`` （问题可行域）或 ``'BC'`` （边界），默认 ``'domain'``。
 
               - ``'domain'``：问题的可行域（feasible domain of the problem）。
               - ``'BC'``：问题的边界（boundary of the problem）。
 
         返回：
-            Numpy.array。如果配置选择包括法向向量(`with_normal=True` )，返回带边界法向向量的二维numpy数组。否则返回不带边界法向向量的二维numpy数组。
+            Numpy.array。如果配置选择包括法向向量（ `with_normal=True` ），返回带边界法向向量的二维numpy数组。否则返回不带边界法向向量的二维numpy数组。
 
         异常：
             - **KeyError** - 如果 `geom_type` 是 ``'domain'``，但 ``self.sampling_config.domain`` 是 ``None``。
