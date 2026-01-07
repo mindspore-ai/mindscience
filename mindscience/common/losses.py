@@ -50,10 +50,13 @@ def unpatchify(labels, img_size=(192, 384), patch_size=16, nchw=False):
         labels (Union[int, float]): Output dimension for each position.
         img_size (tuple(int), optional): Input image size. Default ``(192, 384)``.
         patch_size (int, optional): The patch size of image. Default: ``16``.
-        nchw (bool, optional): If ``True``, the unpatchify shape contains ``N, C, H, W``.
+        nchw (bool, optional): Whether to return the output tensor inchannel-first format.
+            If ``True``, the output tensor is arranged as :math:`(N, C, H, W)`;
+            if ``False``, it is arranged as :math:`(N, H, W, C)`. Default: ``False``.
 
     Returns:
-        Tensor, with shape of :math:`(N, H, W, C)`.
+        Tensor, the reconstructed image tensor. The shape is :math:`(N, H, W, C)` when 
+        `nchw` is ``False``, and :math:`(N, C, H, W)` when `nchw` is ``True``.
     """
     label_shape = labels.shape
     output_dim = label_shape[-1] // (patch_size * patch_size)
@@ -248,9 +251,9 @@ class WaveletTransformLoss(nn.LossBase):
 
     Inputs:
         - **input** (tuple(Tensor, Tensor)) - Tuple of Tensors. Tensor of shape
-        :math:`(B*H*W/(P*P), P*P*C)`, where B denotes the batch size, H, W denotes
-        the height and the width of the image respectively, P denotes the patch size,
-        C denotes the feature channels.
+          :math:`(B*H*W/(P*P), P*P*C)`, where B denotes the batch size, H, W denotes
+          the height and the width of the image respectively, P denotes the patch size,
+          C denotes the feature channels.
 
     Outputs:
         - **output** (Tensor) - Losses for multi-level wavelet transformation.
@@ -367,10 +370,10 @@ class RelativeRMSELoss(nn.LossBase):
 
     Inputs:
         - **prediction** (Tensor) - The prediction value of the network. Tensor of shape :math:`(N, *)` where
-        :math:`*` means, any number of additional dimensions.
+          :math:`*` means, any number of additional dimensions.
         - **labels** (Tensor) - True value of the samples. Tensor of shape :math:`(N, *)`, where :math:`*` means,
-        any number of additional dimensions, same shape as the `prediction` in common cases.However, it supports
-        the shape of `labels` is different from the shape of `prediction` and they should be broadcasted to each other.
+          any number of additional dimensions, same shape as the `prediction` in common cases.However, it supports
+          the shape of `labels` is different from the shape of `prediction` and they should be broadcasted to each other.
 
     Outputs:
         - **output** (Tensor) - Weighted loss.
