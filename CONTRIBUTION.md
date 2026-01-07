@@ -1,9 +1,8 @@
-# Mindscience贡献指南
+# mindscience仓贡献指南
 
 <!-- TOC -->
 
-
-- [Mindscience贡献指南](#mindscience贡献指南)
+- [mindscience仓贡献指南](#mindscience仓贡献指南)
     - [如何成为mindscience仓的贡献者](#如何成为mindscience仓的贡献者)
         - [一、提交合并请求，为mindscience仓贡献自己的力量](#一提交合并请求为mindscience仓贡献自己的力量)
         - [二、新增测试用例，看护代码功能](#二新增测试用例看护代码功能)
@@ -29,7 +28,7 @@
 
 ## **如何成为mindscience仓的贡献者**
 
-- 在gitee上输入mindscience的主仓网站:https://gitee.com/mindspore/mindscience
+- 在AtomGit上输入mindscience的主仓网站:https://atomgit.com/mindspore-lab/mindscience
 - 通过右上角的Star按钮成为mindscience仓的贡献者
 - 通过右上角的Fork按钮Fork一个mindscience主仓，为后续贡献代码做准备
 
@@ -57,6 +56,10 @@
 <img src="https://raw.atomgit.com/mindspore-lab/mindscience/raw/master/docs/contribution_guide/pr_introduction.png" alt="pr_introduction" width="600"/>
 </div>
 
+<div align=center>
+<img src="https://raw.atomgit.com/mindspore-lab/mindscience/raw/master/docs/contribution_guide/pr_introduction_1." alt="pr_introduction" width="600"/>
+</div>
+
 - 关联Issue处如果没有可选择的Issue关联，可以在主仓新建一个Issue，如果有则直接忽略此步。在主仓中点击新建Issue，根据合并请求的类型选择对应Issue类型，输入标题后，点击创建即可，这样在新建合并请求的关联Issue操作中就可以选择刚刚创建的Issue（**注意：Issue标题格式为[SPONGE]+内容**）
 
 <div align=center>
@@ -65,6 +68,10 @@
 
 <div align=center>
 <img src="https://raw.atomgit.com/mindspore-lab/mindscience/raw/master/docs/contribution_guide/issue_introduction.png" alt="issue_introduction" width="600"/>
+</div>
+
+<div align=center>
+<img src="https://raw.atomgit.com/mindspore-lab/mindscience/raw/master/docs/contribution_guide/issue_introduction_2.png" alt="issue_introduction" width="600"/>
 </div>
 
 - 新用户如果未注册过CLA，新建的合并请求会打上（mindspore-cla/no）标签，需要通过i-robot给出的链接注册，注册完成后在评论区输入（/check-cla）重新校验，已注册用户请忽略此步
@@ -77,6 +84,14 @@
 
 <div align=center>
 <img src="https://raw.atomgit.com/mindspore-lab/mindscience/raw/master/docs/contribution_guide/retest.png" alt="retest" width="600"/>
+</div>
+
+<div align=center>
+<img src="https://raw.atomgit.com/mindspore-lab/mindscience/raw/master/docs/contribution_guide/test_fail.PNG" alt="retest" width="600"/>
+</div>
+
+<div align=center>
+<img src="https://raw.atomgit.com/mindspore-lab/mindscience/raw/master/docs/contribution_guide/test_success.PNG" alt="retest" width="600"/>
 </div>
 
 ### **二、新增测试用例，看护代码功能**
@@ -130,12 +145,12 @@ git config --global user.email abc@tbs.com
 
 - 代码提交流程为：本地代码---->push到远端自己仓_分支(Fork的仓即可以作为自己的远端仓)---->提起PR请求合入主仓_分支
 
-- 采用git clone + 代码仓链接方式拉取代码，代码仓路径在gitee仓代码目录的右上角，有个克隆/下载按钮，点击后可以复制HTTPS或者SSH链接，即为clone所需的代码仓路径链接
+- 采用git clone + 代码仓链接方式拉取代码，代码仓路径在AtomGot仓代码目录的右上角，有个Clone按钮，点击后可以复制HTTPS或者SSH链接，即为git clone所需的代码仓路径链接
 
 ```bash
 git clone 代码仓链接
 git clone -b 分支名 代码仓链接
-例如：git clone https://gitee.com/mindspore/mindscience.git
+例如：git clone https://atomgit.com/mindspore-lab/mindscience.git
 ```
 
 - 代码拉取完成后，进入代码目录内部便可以使用git操作（ **注意：拉取代码时的目录是无法使用类似git pull/push/remote/log等命令，必须进入其下一级目录才可以使用git pull/push等命令** ）
@@ -157,7 +172,7 @@ git clone -b 分支名 代码仓链接
 ```bash
 git remote -v
 git remote add 仓名 仓地址
-例如：git remote add master https://gitee.com/xxxxxxx/mindscience.git
+例如：git remote add master https://atomgit.com/xxxxxxx/mindscience.git
 ```
 
 <div align=center>
@@ -602,7 +617,7 @@ python train.py --config_file_path ./configs/burgers.yaml --mode GRAPH --device_
 
 ## 贡献者
 
-gitee id: [id](开发者gitee个人空间的链接)
+AtomGit id: [id](开发者AtomGit个人空间的链接)
 
 email: myemail@163.com
 
@@ -610,6 +625,6 @@ email: myemail@163.com
 
 ### Jupyter Notebook文件格式
 
-Jupyter Notebook文件格式可参考[2D_steady_CN.ipynb](https://gitee.com/mindspore/mindscience/blob/master/MindFlow/applications/data_driven/airfoil/2D_steady/2D_steady_CN.ipynb)。
+Jupyter Notebook文件格式可参考[2D_steady_CN.ipynb](https://atomgit.com/mindspore-lab/mindscience/blob/master/MindFlow/applications/cfd/acoustic/acoustic.ipynb)。
 
 将主要代码模块从训练脚本中抽出，有序分块放入Jupyter Notebook文件。Jupyter Notebook一般包含`概述`、`问题背景`、`技术路径`、`依赖导入`、`数据集制作`、`模型搭建`、`模型训练`、`结果展示`等部分。在每个部分，应当对代码重要内容进行说明，保证按照说明执行代码块能正常运行。
