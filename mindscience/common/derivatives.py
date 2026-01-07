@@ -26,7 +26,10 @@ class SimplifiedGradient(nn.Cell):
     def __init__(self, net, order=1):
         super().__init__()
         if not isinstance(order, int):
-            raise TypeError("The type of order should be int, but got {}".format(type(order)))
+            raise TypeError(
+                f"The type of order should be int, "
+                f"but got {type(order)}."
+            )
         self.net = net
         self.axis = order - 1
         self.cast = ops.Cast()
@@ -40,25 +43,23 @@ def batched_jacobian(model):
     """
     Calculate Jacobian matrix of network model.
 
+    Note:
+        This function internally relies on `mindspore.jacrev` to compute Jacobian matrices.
+        Therefore, **MindSpore version >= 2.0.0** is required.
+
     Args:
-        model (mindspore.nn.Cell): a network with the input dimension is in_channels and output dimension is
-            out_channels.
+        model (mindspore.nn.Cell): A network with the input dimension is in_channels and
+            output dimension is out_channels.
 
     Returns:
-        jacobian(Tensor), jacobi of the model. With the input dimension is [batch_size, in_channels], output dimension
-        is [out_channels, batch_size, in_channels].
-
-    Note:
-        The version of MindSpore should be >= 2.0.0 for using `mindspore.jacrev`.
-
-    Supported Platforms:
-        ``Ascend`` ``GPU`` ``CPU``
+        Tensor, jacobi of the model. With the input dimension is :math:`[batch_size, in_channels]`,
+        output dimension is :math:`[out_channels, batch_size, in_channels]`.
 
     Examples:
         >>> import numpy as np
         >>> from mindspore import nn, ops, Tensor
         >>> from mindspore import dtype as mstype
-        >>> from mindflow.operators import batched_jacobian
+        >>> from mindscience.common import batched_jacobian
         >>> np.random.seed(123456)
         >>> class Net(nn.Cell):
         ...     def __init__(self, cin=2, cout=1, hidden=10):
@@ -88,25 +89,23 @@ def batched_hessian(model):
     """
     Calculate Hessian matrix of network model.
 
+    Note:
+        This function internally relies on `mindspore.jacrev` to compute Hessian matrices.
+        Therefore, **MindSpore version >= 2.0.0** is required.
+
     Args:
-        model (mindspore.nn.Cell): a network with the input dimension is in_channels and output dimension is
-            out_channels.
+        model (mindspore.nn.Cell): A network with the input dimension is in_channels and
+            output dimension is out_channels.
 
     Returns:
-        hessian(Tensor), hessian of the model. With the input dimension is [batch_size, in_channels], output dimension
-        is [out_channels, in_channels, batch_size, in_channels].
-
-    Note:
-        The version of MindSpore should be >= 2.0.0 for using `mindspore.jacrev`.
-
-    Supported Platforms:
-        ``Ascend`` ``GPU`` ``CPU``
+        Tensor, hessian of the model. With the input dimension is :math:`[batch_size, in_channels]`,
+        output dimension is :math:`[out_channels, in_channels, batch_size, in_channels]`.
 
     Examples:
         >>> import numpy as np
         >>> from mindspore import nn, ops, Tensor
         >>> from mindspore import dtype as mstype
-        >>> from mindflow.operators import batched_hessian
+        >>> from mindscience.common import batched_hessian
         >>> np.random.seed(123456)
         >>> class Net(nn.Cell):
         ...     def __init__(self, cin=2, cout=1, hidden=10):

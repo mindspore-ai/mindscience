@@ -27,25 +27,22 @@ def get_poly_lr(global_step, lr_init, lr_end, lr_max, warmup_steps, total_steps,
     Generate polynomial decay learning rate array.
     The learning rate decays in a polynomial manner as training goes along.
     it follows :math:`lr = step * (lr\_max - lr\_init)/warmup\_steps` ,
-    then :math:`lr = lr\_end + (lr\_max - lr\_end) * [(1 - i + step)/(total\_steps - warmup\_steps)]**poly\_power`
+    then :math:`lr = lr\_end + (lr\_max - lr\_end) * [(1 - i + step)/(total\_steps - warmup\_steps)]**poly\_power`.
 
     Args:
-        global_step (int): current step number, non-negtive int value.
-        lr_init (float): init learning rate, positive float value.
-        lr_end (float): end learning rate, non-negtive float value.
-        lr_max (float): max learning rate, positive float value.
-        warmup_steps (int): number of warmup epochs, non-negtive int value.
-        total_steps (int): total epoch of training, positive int value.
-        poly_power (float): poly learning rate power, positive float value.
+        global_step (int): Current step number, non-negtive int value.
+        lr_init (float): Init learning rate, positive float value.
+        lr_end (float): End learning rate, non-negtive float value.
+        lr_max (float): Max learning rate, positive float value.
+        warmup_steps (int): Number of warmup epochs, non-negtive int value.
+        total_steps (int): Total epoch of training, positive int value.
+        poly_power (float): Poly learning rate power, positive float value.
 
     Returns:
         Numpy.array, learning rate array.
 
-    Supported Platforms:
-        ``Ascend`` ``GPU``
-
     Examples:
-        >>> from mindflow.common import get_poly_lr
+        >>> from mindscience.common import get_poly_lr
         >>> learning_rate = get_poly_lr(100, 0.001, 0.1, 0.0001, 1000, 10000, 0.5)
         >>> print(learning_rate.shape)
         (9900,)
@@ -70,8 +67,7 @@ def get_poly_lr(global_step, lr_init, lr_end, lr_max, warmup_steps, total_steps,
             base = (1.0 - (float(i) - float(warmup_steps)) / (float(total_steps) - float(warmup_steps)))
             lr = float(lr_max - lr_end) * (base ** poly_power)
             lr = lr + lr_end
-            if lr < 0.0:
-                lr = 0.0
+            lr = max(lr, 0.0)
         lr_each_step.append(lr)
 
     learning_rate = np.array(lr_each_step).astype(np.float32)
@@ -82,24 +78,24 @@ def get_poly_lr(global_step, lr_init, lr_end, lr_max, warmup_steps, total_steps,
 
 def get_multi_step_lr(lr_init, milestones, gamma, steps_per_epoch, last_epoch):
     r"""
-    Generate decay learning rate array of each parameter group by gamma once the
-    number of epoch reaches one of the milestones.
+    Generate decay learning rate array of each parameter group by `gamma` once the
+    number of epoch reaches one of the `milestones`.
 
     Calculate learning rate by the given `milestone` and `lr_init`. Let the value of `milestone` be
     :math:`(M_1, M_2, ..., M_t, ..., M_N)` and the value of `lr_init` be :math:`(x_1, x_2, ..., x_t, ..., x_N)`.
-    N is the length of `milestone`. Let the output learning rate be `y`, then for the i-th step, the formula of
-    computing decayed_learning_rate[i] is:
+    N is the length of `milestone`. Let the output learning rate be `y`, then for the i-th step,
+    the formula of computing `decayed_learning_rate[i]` is:
 
     .. math::
         y[i] = x_t,\ for\ i \in [M_{t-1}, M_t)
 
     Args:
-        lr_init (float): init learning rate, positive float value.
-        milestones (Union[list[int], tuple[int]]): list of epoch indices, each element in the list must be greater than
-            0.
-        gamma (float): multiplicative factor of learning rate decay.
-        steps_per_epoch (int): number of steps to each epoch, positive int value.
-        last_epoch (int): total epoch of training, positive int value.
+        lr_init (float): Init learning rate, positive float value.
+        milestones (Union[list[int], tuple[int]]): List of epoch indices, each element
+            in the list must be greater than ``0``.
+        gamma (float): Multiplicative factor of learning rate decay.
+        steps_per_epoch (int): Number of steps to each epoch, positive int value.
+        last_epoch (int): Total epoch of training, positive int value.
 
     Returns:
         Numpy.array, learning rate array.
@@ -109,11 +105,8 @@ def get_multi_step_lr(lr_init, milestones, gamma, steps_per_epoch, last_epoch):
         TypeError: If `steps_per_epoch` or `last_epoch` is not an int.
         TypeError: If `milestones` is neither a tuple nor a list.
 
-    Supported Platforms:
-        ``Ascend`` ``GPU`` ``CPU``
-
     Examples:
-        >>> from mindflow import get_multi_step_lr
+        >>> from mindscience.common import get_multi_step_lr
         >>> lr_init = 0.001
         >>> milestones = [2, 4]
         >>> gamma = 0.1
@@ -187,12 +180,12 @@ def get_warmup_cosine_annealing_lr(lr_init, steps_per_epoch, last_epoch,
         warmup\_learning\_rate[i] = (lr\_init - warmup\_lr\_init) * i / warmup\_steps + warmup\_lr\_init
 
     Args:
-        lr_init (float): init learning rate, positive float value.
-        steps_per_epoch (int): number of steps to each epoch, positive int value.
-        last_epoch (int): total epoch of training, positive int value.
-        warmup_epochs (int): total epoch of warming up, default: ``0``.
-        warmup_lr_init (float): warmup init learning rate, default: ``0.0``.
-        eta_min (float): minimum learning rate, default: ``1e-6``.
+        lr_init (float): Init learning rate, positive float value.
+        steps_per_epoch (int): Number of steps to each epoch, positive int value.
+        last_epoch (int): Total epoch of training, positive int value.
+        warmup_epochs (int, optional): Total epoch of warming up. Default: ``0``.
+        warmup_lr_init (float, optional): Warmup init learning rate. Default: ``0.0``.
+        eta_min (float, optional): Minimum learning rate. Default: ``1e-6``.
 
     Returns:
         Numpy.array, learning rate array.
@@ -201,11 +194,8 @@ def get_warmup_cosine_annealing_lr(lr_init, steps_per_epoch, last_epoch,
         TypeError: If `lr_init` or `warmup_lr_init` or `eta_min` is not a float.
         TypeError: If `steps_per_epoch` or `warmup_epochs` or `last_epoch` is not an int.
 
-    Supported Platforms:
-        ``Ascend`` ``GPU`` ``CPU``
-
     Examples:
-        >>> from mindflow import get_warmup_cosine_annealing_lr
+        >>> from mindscience.common import get_warmup_cosine_annealing_lr
         >>> lr_init = 0.001
         >>> steps_per_epoch = 3
         >>> last_epoch = 5

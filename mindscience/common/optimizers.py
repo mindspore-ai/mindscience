@@ -20,13 +20,10 @@ from mindspore import nn, ops
 
 class AdaHessian(nn.Adam):
     r"""
-    The Adahessian optimizer.
-    It has been proposed in `ADAHESSIAN: An Adaptive Second Order Optimizer for Machine Learning
-    <https://arxiv.org/abs/2006.00719>`_ .
-    See the `Torch implementation
-    <https://github.com/amirgholami/adahessian/blob/master/instruction/adahessian.py>`_  for reference.
-    The Hessian power here is fixed to 1, and the way of spatially averaging the Hessian traces follows the default
-    behavior in the Torch implementation, that is
+    The Adahessian optimizer, which performs optimization using second-order information from the
+    diagonal elements of the Hessian matrix. It has been proposed in
+    `ADAHESSIAN: An Adaptive Second Order Optimizer for Machine Learning <https://arxiv.org/abs/2006.00719>`_ .
+    The Hessian power here is fixed to ``1``, and the way of spatially averaging the Hessian traces is
 
     - for 1D: no spatial average.
     - for 2D: use the entire row as the spatial average.
@@ -35,14 +32,11 @@ class AdaHessian(nn.Adam):
 
     Args see `mindspore.nn.Adam <https://www.mindspore.cn/docs/en/master/api_python/nn/mindspore.nn.Adam.html>`_ .
 
-    Supported Platforms:
-        ``Ascend``
-
     Examples:
         >>> import numpy as np
         >>> import mindspore as ms
         >>> from mindspore import ops, nn
-        >>> from mindflow import AdaHessian
+        >>> from mindscience.common import AdaHessian
         >>> ms.set_context(device_target="Ascend", mode=ms.GRAPH_MODE)
         >>> net = nn.Conv2d(in_channels=2, out_channels=4, kernel_size=3)
         >>> def forward(a):
@@ -90,10 +84,10 @@ class AdaHessian(nn.Adam):
                 raise RuntimeError(f'You need to write your customized function to support this shape: {hv.shape}')
 
         # modify moment2
-        for i in range(len(self.moment2)):
+        for i, v in enumerate(self.moment2):
             ops.assign(
-                self.moment2[i],
-                self.moment2[i] + (1. - self.beta2) * (
+                v,
+                v + (1. - self.beta2) * (
                     hutchinson_trace[i] + grads[i]) * (hutchinson_trace[i] - grads[i]) / self.beta2)
 
         return grads
