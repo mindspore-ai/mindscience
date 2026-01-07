@@ -47,7 +47,7 @@ class SinusoidalPosEmb(nn.Cell):
     def __init__(self, dim, max_period=10000, compute_dtype=mstype.float32):
         super().__init__()
         half_dim = dim // 2
-        self.concat_zero = (dim % 2 == 1)
+        self.concat_zero = dim % 2 == 1
         freqs = np.exp(-math.log(max_period) *
                        np.arange(start=0, stop=half_dim) / half_dim)
         self.freqs = Tensor(freqs, compute_dtype)
@@ -92,9 +92,9 @@ class DiffusionTransformer(nn.Cell):
         hidden_channels (int): The number of hidden channel.
         layers (int): The number of transformer block layers.
         heads (int): The number of transformer heads.
-        time_token_cond (bool): Whether to use timestep as condition token. Default: ``True``.
-        compute_dtype (mindspore.dtype): The dtype of compute, it can be ``mstype.float32`` or ``mstype.float16``.
-            Default: ``mstype.float32``, indicates ``mindspore.float32``.
+        time_token_cond (bool, optional): Whether to use timestep as condition token. Default: ``True``.
+        compute_dtype (mindspore.dtype, optional): The dtype of compute, it can be ``mstype.float32``
+            or ``mstype.float16``. Default: ``mstype.float32``, indicates ``mindspore.float32``.
 
     Inputs:
         - **x** (Tensor) - The input has a shape of :math:`(batch\_size, sequence\_len, in\_channels)`.
@@ -103,12 +103,9 @@ class DiffusionTransformer(nn.Cell):
     Outputs:
         - **output** (Tensor) - The output has a shape of :math:`(batch\_size, sequence\_len, out\_channels)`.
 
-    Supported Platforms:
-        ``Ascend``
-
     Examples:
         >>> from mindspore import ops
-        >>> from mindflow.cell import DiffusionTransformer
+        >>> from mindscience.diffuser import DiffusionTransformer
         >>> in_channels, out_channels, hidden_channels, layers, heads, batch_size, seq_len = 16, 16, 256, 3, 4, 8, 256
         >>> model = DiffusionTransformer(in_channels=in_channels,
         ...                              out_channels=out_channels,
@@ -195,30 +192,27 @@ class ConditionDiffusionTransformer(DiffusionTransformer):
     Args:
         in_channels (int): The number of input channel.
         out_channels (int): The number of output channel.
-        hidden_channels (int): The number of hidden channel.
         cond_channels (int): The number of condition channel.
+        hidden_channels (int): The number of hidden channel.
         layers (int): The number of transformer block layers.
         heads (int): The number of transformer heads.
-        time_token_cond (bool): Whether to use timestep as condition token. Default: ``True``.
-        cond_as_token (bool): Whether to use condition as token. Default: ``True``.
-        compute_dtype (mindspore.dtype): the dtype of compute, it can be ``mstype.float32`` or ``mstype.float16``.
-            Default: ``mstype.float32``, indicates ``mindspore.float32``.
+        time_token_cond (bool, optional): Whether to use timestep as condition token. Default: ``True``.
+        cond_as_token (bool, optional): Whether to use condition as token. Default: ``True``.
+        compute_dtype (mindspore.dtype, optional): The dtype of compute, it can be ``mstype.float32`` or
+            ``mstype.float16``. Default: ``mstype.float32``, indicates ``mindspore.float32``.
 
     Inputs:
         - **x** (Tensor) - The input has a shape of :math:`(batch\_size, sequence\_len, in\_channels)`.
         - **timestep** (Tensor) - The timestep input has a shape of :math:`(batch\_size,)`.
-        - **condition** (Tensor) - The condition input has a shape of :math:`(batch\_size, cond\_size)`.
-          Default: ``None``.
+        - **condition** (Tensor, optional) - The condition input has a shape of
+          :math:`(batch\_size, cond\_size)`. Default: ``None``.
 
     Outputs:
         - **output** (Tensor) - The output has a shape of :math:`(batch\_size, sequence\_len, out\_channels)`.
 
-    Supported Platforms:
-        ``Ascend``
-
     Examples:
         >>> from mindspore import ops
-        >>> from mindflow.cell import ConditionDiffusionTransformer
+        >>> from mindscience.diffuser import ConditionDiffusionTransformer
         >>> in_channels, out_channels, cond_channels, hidden_channels = 16, 16, 10, 256
         >>> layers, heads, batch_size, seq_len = 3, 4, 8, 256
         >>> model = ConditionDiffusionTransformer(in_channels=in_channels,

@@ -42,8 +42,7 @@ def betas_for_alpha_bar(
     Args:
         num_diffusion_timesteps (int): the number of betas to produce.
         max_beta (float): the maximum beta to use; use values lower than 1 to prevent singularities.
-        alpha_transform_type (str): the type of noise schedule for alpha_bar. Choose from `cosine` or `exp`.
-            Default: ``cosine``.
+        alpha_transform_type (str): the type of noise schedule for alpha_bar. Choose from `cosine` or `exp`. Default: ``cosine``.
 
     Returns:
         numpy.ndarray, the betas used by the scheduler to step the model outputs.
@@ -107,27 +106,26 @@ class DiffusionScheduler:
     Diffusion Scheduler base class.
 
     Args:
-        num_train_timesteps (int): The number of diffusion steps to train the model. Default: ``1000``.
-        beta_start (float): The starting `beta` value of inference. Default: ``0.0001``.
-        beta_end (float): The final `beta` value. Default: ``0.02``.
-        beta_schedule (str): The beta schedule, a mapping from a beta range to a sequence of betas for stepping the model. Choose from
-            `linear`, `scaled_linear`, or `squaredcos_cap_v2`. Default: ``squaredcos_cap_v2``.
-        prediction_type (str): Prediction type of the scheduler function; can be `epsilon` (predicts the noise of the diffusion process),
-            `sample` (directly predicts the noisy sample`) or `v_prediction` (see section 2.4 of `Imagen
-            Video <https://imagen.research.google/video/paper.pdf>`_ paper). Default: ``epsilon``.
-        clip_sample (bool): Clip the predicted sample for numerical stability. Default: ``True``.
-        clip_sample_range (float): The maximum magnitude for sample clipping. Valid only when `clip_sample=True`. Default: ``1.0``.
-        thresholding (bool): Whether to use the "dynamic thresholding" method. This is unsuitable for latent-space diffusion models such
+        num_train_timesteps (int, optional): The number of diffusion steps to train the model. Default: ``1000``.
+        beta_start (float, optional): The starting `beta` value of inference. Default: ``0.0001``.
+        beta_end (float, optional): The final `beta` value. Default: ``0.02``.
+        beta_schedule (str, optional): The `beta` schedule, a mapping from a `beta` range to a sequence of betas for stepping the model. Choose from
+            ``"linear"``, ``"scaled_linear"`` or ``"squaredcos_cap_v2"``. Default: ``"squaredcos_cap_v2"``.
+        prediction_type (str, optional): Prediction type of the scheduler function, it can be ``"epsilon"`` (predicts the noise of the diffusion process),
+            ``"sample"`` (directly predicts the noisy sample`) or ``"v_prediction"`` (see section 2.4 of `Imagen
+            Video <https://imagen.research.google/video/paper.pdf>`_ paper). Default: ``"epsilon"``.
+        clip_sample (bool, optional): Clip the predicted sample for numerical stability. Default: ``True``.
+        clip_sample_range (float, optional): The maximum magnitude for sample clipping. Valid only when `clip_sample=True`. Default: ``1.0``.
+        thresholding (bool, optional): Whether to use the "dynamic thresholding" method. This is unsuitable for latent-space diffusion models such
             as Stable Diffusion. Default: ``False``.
-        sample_max_value (float): The threshold value for dynamic thresholding. Valid only when `thresholding=True`. Default: ``1.0``.
-        dynamic_thresholding_ratio (float): The ratio for the dynamic thresholding method. Valid only when `thresholding=True`. Default: ``0.995``.
-        timestep_spacing (str): The way the timesteps should be scaled. Refer to Table 2 of the `Common Diffusion Noise Schedules and
-            Sample Steps are Flawed <https://huggingface.co/papers/2305.08891>`_ for more information. Choose from ``linspace``, ``leading`` or ``trailing``.
-            Default: ``leading``.
-        rescale_betas_zero_snr (bool): Whether to rescale the betas to have zero terminal SNR. This enables the model to generate very bright and
+        sample_max_value (float, optional): The threshold value for dynamic thresholding. Valid only when `thresholding=True`. Default: ``1.0``.
+        dynamic_thresholding_ratio (float, optional): The ratio for the dynamic thresholding method. Valid only when `thresholding=True`. Default: ``0.995``.
+        rescale_betas_zero_snr (bool, optional): Whether to rescale the betas to have zero terminal SNR. This enables the model to generate very bright and
             dark samples instead of limiting it to samples with medium brightness. Loosely related to
             `offset_noise <https://github.com/huggingface/diffusers/blob/74fd735eb073eb1d774b1ab4154a0876eb82f055/examples/dreambooth/train_dreambooth.py#L506>`_. Default: ``False``.
-        compute_dtype: the dtype of compute, it can be `mstype.float32` or `mstype.float16`.  Default: ``mstype.float32``, indicates ``mindspore.float32``.
+        timestep_spacing (str, optional): The way the timesteps should be scaled. Refer to Table 2 of the `Common Diffusion Noise Schedules and
+            Sample Steps are Flawed <https://huggingface.co/papers/2305.08891>`_ for more information. Choose from ``"linspace"``, ``"leading"`` or ``"trailing"``. Default: ``"leading"``.
+        compute_dtype (mindspore.dtype, optional): The dtype of compute, it can be ``mstype.float32`` or ``mstype.float16``. Default: ``mstype.float32``, indicates ``mindspore.float32``.
     """
 
     def __init__(self,
@@ -389,7 +387,7 @@ class DiffusionScheduler:
                 original_samples.shape) *
             noise)
 
-    def step(self, model_output: Tensor, sample: Tensor, timestep: Tensor):
+    def step(self, model_output: Tensor, sample: Tensor, timestep: Tensor):  # pylint: disable=unused-argument
         """
         Diffusion denoising step.
 
@@ -399,8 +397,13 @@ class DiffusionScheduler:
             timestep (Tensor): The current discrete timestep in the diffusion chain.
 
         Returns:
-            Tensor, the denoised sample.
+            Tensor, the sample for the previous diffusion step.
+
+        Raises:
+            NotImplementedError: If `num_inference_steps` is not set. You must call `set_timesteps` before invoking this method.
+            NotImplementedError: If `step` function is not implemented for the current class. This method is intended to be overridden by subclasses.
         """
+        _ = model_output, sample, timestep
         if not self.num_inference_steps:
             raise NotImplementedError(
                 f"num_inference_steps is not set for {self.__class__}.Need to set timesteps first.")
@@ -414,36 +417,32 @@ class DDPMScheduler(DiffusionScheduler):
     Check `Denoising Diffusion Probabilistic Models <https://arxiv.org/abs/2006.11239>`_ for more information.
 
     Args:
-        num_train_timesteps (int): The number of diffusion steps to train the model. Default: ``1000``.
-        beta_start (float): The starting `beta` value of inference. Default: ``0.0001``.
-        beta_end (float): The final `beta` value.  Default: ``0.02``.
-        beta_schedule (str): The beta schedule, a mapping from a beta range to a sequence of betas for stepping the model. Choose from
-            `linear`, `scaled_linear`, or `squaredcos_cap_v2`. Default: ``squaredcos_cap_v2``.
-        prediction_type (str): Prediction type of the scheduler function; can be `epsilon` (predicts the noise of the diffusion process),
-            `sample` (directly predicts the noisy sample) or `v_prediction` (see section 2.4 of `Imagen
-            Video <https://imagen.research.google/video/paper.pdf>`_ paper). Default: ``epsilon``.
-        variance_type (str): Clip the variance when adding noise to the denoised sample. Choose from ``fixed_small``, ``fixed_small_log``,
-            ``fixed_large``, ``fixed_large_log``, ``learned`` or ``learned_range``. Default: ``fixed_small_log``.
-        clip_sample (bool): Clip the predicted sample for numerical stability. Default: ``True``.
-        clip_sample_range (float): The maximum magnitude for sample clipping. Valid only when `clip_sample=True`. Default: ``1.0``.
-        thresholding (bool): Whether to use the "dynamic thresholding" method. This is unsuitable for latent-space diffusion models such
+        num_train_timesteps (int, optional): The number of diffusion steps to train the model. Default: ``1000``.
+        beta_start (float, optional): The starting `beta` value of inference. Default: ``0.0001``.
+        beta_end (float, optional): The final `beta` value. Default: ``0.02``.
+        beta_schedule (str, optional): The `beta` schedule, a mapping from a `beta` range to a sequence of betas for stepping the model. Choose from
+            ``"linear"``, ``"scaled_linear"`` or ``"squaredcos_cap_v2"``. Default: ``"squaredcos_cap_v2"``.
+        prediction_type (str, optional): Prediction type of the scheduler function, can be ``"epsilon"`` (predicts the noise of the diffusion process),
+            ``"sample"`` (directly predicts the noisy sample) or ``"v_prediction"`` (see section 2.4 of `Imagen
+            Video <https://imagen.research.google/video/paper.pdf>`_ paper). Default: ``"epsilon"``.
+        variance_type (str, optional): Clip the variance when adding noise to the denoised sample. Choose from ``"fixed_small"``, ``"fixed_small_log"``,
+            ``"fixed_large"``, ``"fixed_large_log"``, ``"learned"`` or ``"learned_range"``. Default: ``"fixed_small_log"``.
+        clip_sample (bool, optional): Clip the predicted sample for numerical stability. Default: ``True``.
+        clip_sample_range (float, optional): The maximum magnitude for sample clipping. Valid only when `clip_sample=True`. Default: ``1.0``.
+        thresholding (bool, optional): Whether to use the "dynamic thresholding" method. This is unsuitable for latent-space diffusion models such
             as Stable Diffusion. Default: ``False``.
-        sample_max_value (float): The threshold value for dynamic thresholding. Valid only when `thresholding=True`. Default: ``1.0``.
-        dynamic_thresholding_ratio (float): The ratio for the dynamic thresholding method. Valid only when `thresholding=True`. Default: ``0.995``.
-        timestep_spacing (str): The way the timesteps should be scaled. Refer to Table 2 of the `Common Diffusion Noise Schedules and
-            Sample Steps are Flawed <https://huggingface.co/papers/2305.08891>`_ for more information. Choose from ``linspace``, ``leading`` or ``trailing``.
-            Default: ``leading``.
-        rescale_betas_zero_snr (bool): Whether to rescale the betas to have zero terminal SNR. This enables the model to generate very bright and
+        sample_max_value (float, optional): The threshold value for dynamic thresholding. Valid only when `thresholding=True`. Default: ``1.0``.
+        dynamic_thresholding_ratio (float, optional): The ratio for the dynamic thresholding method. Valid only when `thresholding=True`. Default: ``0.995``.
+        rescale_betas_zero_snr (bool, optional): Whether to rescale the betas to have zero terminal SNR. This enables the model to generate very bright and
             dark samples instead of limiting it to samples with medium brightness. Loosely related to
             `offset_noise <https://github.com/huggingface/diffusers/blob/74fd735eb073eb1d774b1ab4154a0876eb82f055/examples/dreambooth/train_dreambooth.py#L506>`_. Default: ``False``.
-        compute_dtype (mindspore.dtype): the dtype of compute, it can be `mstype.float32` or `mstype.float16`. Default: ``mstype.float32``, indicates ``mindspore.float32``.
-
-    Supported Platforms:
-        ``Ascend``
+        timestep_spacing (str, optional): The way the timesteps should be scaled. Refer to Table 2 of the `Common Diffusion Noise Schedules and
+            Sample Steps are Flawed <https://huggingface.co/papers/2305.08891>`_ for more information. Choose from ``"linspace"``, ``"leading"`` or ``"trailing"``. Default: ``"leading"``.
+        compute_dtype (mindspore.dtype, optional): The dtype of compute, it can be ``mstype.float32`` or ``mstype.float16``. Default: ``mstype.float32``, indicates ``mindspore.float32``.
 
     Examples:
         >>> from mindspore import ops, dtype as mstype
-        >>> from mindflow.cell import DDPMScheduler
+        >>> from mindscience.diffuser import DDPMScheduler
         >>> scheduler = DDPMScheduler(num_train_timesteps=1000,
         ...                           beta_start=0.0001,
         ...                           beta_end=0.02,
@@ -553,10 +552,10 @@ class DDPMScheduler(DiffusionScheduler):
             model_output (Tensor): The direct output from learned diffusion model.
             sample (Tensor): A current instance of a sample created by the diffusion process.
             timestep (Tensor): The current discrete timestep in the diffusion chain.
-            predicted_variance (Tensor): The predicted variance. Default: ``None``.
+            predicted_variance (Tensor, optional): The predicted variance. Default: ``None``.
 
         Returns:
-            Tensor, the sample of last step.
+            Tensor, the predicted sample at timestep `t-1` corresponding to the current timestep `t`.
         """
         # 1. compute predicted original sample from predicted noise also called
         # "predicted x_0" of formula (15) from `Denoising Diffusion Probabilistic Models <https://arxiv.org/abs/2006.11239>`_
@@ -598,38 +597,33 @@ class DDPMScheduler(DiffusionScheduler):
 class DDIMScheduler(DiffusionScheduler):
     r"""
     `DDIMScheduler` extends the denoising procedure introduced in denoising diffusion probabilistic models.
-    Check `Denoising Diffusion Implicit Models <https://arxiv.org/abs/2010.02502>`_
-    for more information.
+    Check `Denoising Diffusion Implicit Models <https://arxiv.org/abs/2010.02502>`_ for more information.
 
     Args:
-        num_train_timesteps (int): The number of diffusion steps to train the model. Default: ``1000``.
-        beta_start (float): The starting `beta` value of inference. Default: ``0.0001``.
-        beta_end (float): The final `beta` value.  Default: ``0.02``.
-        beta_schedule (str): The beta schedule, a mapping from a beta range to a sequence of betas for stepping the model. Choose from
-            `linear`, `scaled_linear`, or `squaredcos_cap_v2`. Default: ``squaredcos_cap_v2``.
-        prediction_type (str): Prediction type of the scheduler function; can be `epsilon` (predicts the noise of the diffusion process),
-            `sample` (directly predicts the noisy sample) or `v_prediction` (see section 2.4 of `Imagen
-            Video <https://imagen.research.google/video/paper.pdf>`_ paper). Default: ``epsilon``.
-        clip_sample (bool): Clip the predicted sample for numerical stability. Default: ``True``.
-        clip_sample_range (float): The maximum magnitude for sample clipping. Valid only when `clip_sample=True`. Default: ``1.0``.
-        thresholding (bool): Whether to use the "dynamic thresholding" method. This is unsuitable for latent-space diffusion models such
+        num_train_timesteps (int, optional): The number of diffusion steps to train the model. Default: ``1000``.
+        beta_start (float, optional): The starting `beta` value of inference. Default: ``0.0001``.
+        beta_end (float, optional): The final `beta` value. Default: ``0.02``.
+        beta_schedule (str, optional): The `beta` schedule, a mapping from a `beta` range to a sequence of betas for stepping the model. Choose from
+            ``"linear"``, ``"scaled_linear"`` or ``"squaredcos_cap_v2"``. Default: ``"squaredcos_cap_v2"``.
+        prediction_type (str, optional): Prediction type of the scheduler function; can be ``"epsilon"`` (predicts the noise of the diffusion process),
+            ``"sample"`` (directly predicts the noisy sample) or ``"v_prediction"`` (see section 2.4 of `Imagen
+            Video <https://imagen.research.google/video/paper.pdf>`_ paper). Default: ``"epsilon"``.
+        clip_sample (bool, optional): Clip the predicted sample for numerical stability. Default: ``True``.
+        clip_sample_range (float, optional): The maximum magnitude for sample clipping. Valid only when `clip_sample=True`. Default: ``1.0``.
+        thresholding (bool, optional): Whether to use the "dynamic thresholding" method. This is unsuitable for latent-space diffusion models such
             as Stable Diffusion. Default: ``False``.
-        sample_max_value (float): The threshold value for dynamic thresholding. Valid only when `thresholding=True`. Default: ``1.0``.
-        dynamic_thresholding_ratio (float): The ratio for the dynamic thresholding method. Valid only when `thresholding=True`. Default: ``0.995``.
-        timestep_spacing (str): The way the timesteps should be scaled. Refer to Table 2 of the `Common Diffusion Noise Schedules and
-            Sample Steps are Flawed <https://huggingface.co/papers/2305.08891>`_ for more information. Choose from ``linspace``, ``leading`` or ``trailing``.
-            Default: ``leading``.
-        rescale_betas_zero_snr (bool): Whether to rescale the betas to have zero terminal SNR. This enables the model to generate very bright and
+        sample_max_value (float, optional): The threshold value for dynamic thresholding. Valid only when `thresholding=True`. Default: ``1.0``.
+        dynamic_thresholding_ratio (float, optional): The ratio for the dynamic thresholding method. Valid only when `thresholding=True`. Default: ``0.995``.
+        rescale_betas_zero_snr (bool, optional): Whether to rescale the betas to have zero terminal SNR. This enables the model to generate very bright and
             dark samples instead of limiting it to samples with medium brightness. Loosely related to
             `offset_noise <https://github.com/huggingface/diffusers/blob/74fd735eb073eb1d774b1ab4154a0876eb82f055/examples/dreambooth/train_dreambooth.py#L506>`_. Default: ``False``.
-        compute_dtype (mindspore.dtype): the dtype of compute, it can be `mstype.float32` or `mstype.float16`. Default: ``mstype.float32``, indicates ``mindspore.float32``.
-
-    Supported Platforms:
-        ``Ascend``
+        timestep_spacing (str, optional): The way the timesteps should be scaled. Refer to Table 2 of the `Common Diffusion Noise Schedules and
+            Sample Steps are Flawed <https://huggingface.co/papers/2305.08891>`_ for more information. Choose from ``"linspace"``, ``"leading"`` or ``"trailing"``. Default: ``"leading"``.
+        compute_dtype (mindspore.dtype, optional): The dtype of compute, it can be ``mstype.float32`` or ``mstype.float16``. Default: ``mstype.float32``, indicates ``mindspore.float32``.
 
     Examples:
         >>> from mindspore import ops, dtype as mstype
-        >>> from mindflow.cell import DDIMScheduler
+        >>> from mindscience.diffuser import DDIMScheduler
         >>> scheduler = DDIMScheduler(num_train_timesteps=1000,
         ...                           beta_start=0.0001,
         ...                           beta_end=0.02,
@@ -742,17 +736,14 @@ class DDIMScheduler(DiffusionScheduler):
             model_output (Tensor): The direct output from learned diffusion model.
             sample (Tensor): A current instance of a sample created by the diffusion process.
             timestep (Tensor): The current discrete timestep in the diffusion chain.
-            eta (float): The weight of noise for added noise in diffusion step. DDIM when eta=0, DDPM when eta=1. Default: ``0.0``.
-            use_clipped_model_output (bool): If `True`, computes "corrected" `model_output` from the clipped predicted original sample. Necessary
-                because predicted original sample is clipped to [-1, 1] when `self.clip_sample` is `True`. If no
-                clipping has happened, "corrected" `model_output` would coincide with the one provided as input and
-                `use_clipped_model_output` has no effect. Default: ``False.``.
+            eta (float, optional): The weight of noise for added noise in diffusion step. DDIM when `eta=0`, DDPM when `eta=1`. Default: ``0.0``.
+            use_clipped_model_output (bool, optional): Controls whether to recompute the noise `epsilon` from the clipped predicted original sample (`x_0`) to compensate for bias introduced by `clip_sample`. This correction is applied only during sampling. If ``True``, derive `epsilon` from the clipped `x_0` and use the corrected noise for the denoising step, improving stability when `x_0` clipping would otherwise skew the update. If ``False``, use the raw `model_output` directly without this correction, preserving the model's unadjusted prediction. Default: ``False``.
 
         Returns:
-            Tensor, Denoised output x_prev.
+            Tensor, the sample for the previous diffusion step.
 
         Raises:
-            ValueError: If `eta` not in [0, 1].
+            ValueError: If `eta` not in :math:`[0, 1]`.
         """
         # See formulas (12) and (16) of DDIM paper `Denoising Diffusion Implicit Models <https://arxiv.org/abs/2010.02502>`_
         # Ideally, read DDIM paper in-detail understanding
@@ -824,19 +815,15 @@ class DiffusionPipeline:
         batch_size (int): The number of images to generate.
         seq_len (int): Sequence length of inputs.
         num_inference_steps (int): Number of Denoising steps.
-        compute_dtype (mindspore.dtype): The dtype of compute, it can be mstype.float32 or mstype.float16.
-            Default: ``mstype.float32``, indicates ``mindspore.float32``.
+        compute_dtype (mindspore.dtype): The dtype of compute, it can be ``mstype.float32`` or ``mstype.float16``. Default: ``mstype.float32``, indicates ``mindspore.float32``.
 
     Raises:
         TypeError: If `scheduler` is not `DiffusionScheduler` type.
         ValueError: If `num_inference_steps` is greater than `scheduler.num_train_timesteps`.
 
-    Supported Platforms:
-        ``Ascend``
-
     Examples:
         >>> from mindspore import ops, dtype as mstype
-        >>> from mindflow.cell import DiffusionPipeline, DDPMScheduler, ConditionDiffusionTransformer
+        >>> from mindscience.diffuser import DiffusionPipeline, DDPMScheduler, ConditionDiffusionTransformer
         >>> # init params
         >>> in_dim, out_dim, hidden_dim, cond_dim, layers, heads, seq_len, batch_size = 16, 16, 256, 4, 3, 4, 256, 8
         >>> # init condition
@@ -940,20 +927,16 @@ class DDPMPipeline(DiffusionPipeline):
         scheduler (DDPMScheduler): A scheduler to be used in combination with `model` to denoise the noised sample.
         batch_size (int): The number of images to generate.
         seq_len (int): Sequence length of inputs.
-        num_inference_steps (int): Number of Denoising steps. Default: ``1000``.
-        compute_dtype (mindspore.dtype): The dtype of compute, it can be mstype.float32 or mstype.float16.
-            Default: ``mstype.float32``, indicates ``mindspore.float32``.
+        num_inference_steps (int, optional): Number of Denoising steps. Default: ``1000``.
+        compute_dtype (mindspore.dtype, optional): The dtype of compute, it can be ``mstype.float32`` or ``mstype.float16``. Default: ``mstype.float32``, indicates ``mindspore.float32``.
 
     Raises:
         TypeError: If `scheduler` is not `DDIMScheduler` type.
         ValueError: If `num_inference_steps` is not equal to `scheduler.num_train_timesteps`.
 
-    Supported Platforms:
-        ``Ascend``
-
     Examples:
         >>> from mindspore import ops, dtype as mstype
-        >>> from mindflow.cell import DDPMPipeline, DDPMScheduler, ConditionDiffusionTransformer
+        >>> from mindscience.diffuser import DDPMPipeline, DDPMScheduler, ConditionDiffusionTransformer
         >>> # init params
         >>> in_dim, out_dim, hidden_dim, cond_dim, layers, heads, seq_len, batch_size = 16, 16, 256, 4, 3, 4, 256, 8
         >>> # init condition
@@ -1015,19 +998,16 @@ class DDIMPipeline(DiffusionPipeline):
         scheduler (DDIMScheduler): A scheduler to be used in combination with `model` to denoise samples.
         batch_size (int): The number of images to generate.
         seq_len (int): Sequence length of inputs.
-        num_inference_steps (int): Number of Denoising steps. Default: ``1000``.
-        compute_dtype (mindspore.dtype): The dtype of compute, it can be mstype.float32 or mstype.float16. Default: ``mstype.float32``, indicates ``mindspore.float32``.
+        num_inference_steps (int, optional): Number of denoising steps. Default: ``1000``.
+        compute_dtype (mindspore.dtype, optional): The dtype of compute, it can be ``mstype.float32`` or ``mstype.float16``. Default: ``mstype.float32``, indicates ``mindspore.float32``.
 
     Raises:
         TypeError: If `scheduler` is not `DDIMScheduler` type.
         ValueError: If `num_inference_steps` is greater than `scheduler.num_train_timesteps` .
 
-    Supported Platforms:
-        ``Ascend``
-
     Examples:
         >>> from mindspore import ops, dtype as mstype
-        >>> from mindflow.cell import DDIMPipeline, DDIMScheduler, ConditionDiffusionTransformer
+        >>> from mindscience.diffuser import DDIMPipeline, DDIMScheduler, ConditionDiffusionTransformer
         >>> # init params
         >>> in_dim, out_dim, hidden_dim, cond_dim, layers, heads, seq_len, batch_size = 16, 16, 256, 4, 3, 4, 256, 8
         >>> # init condition
@@ -1145,24 +1125,19 @@ class DiffusionTrainer:
     Args:
         model (nn.Cell): The diffusion backbone model.
         scheduler (DiffusionScheduler): DDPM or DDIM scheduler.
-        objective (str): Prediction type of the scheduler function;
-            can be `pred_noise` (predicts the noise of the diffusion process), `pred_x0` (predicts the original sample) or
-            `pred_v` (see section 2.4 of `Imagen Video <https://imagen.research.google/video/paper.pdf>`_ paper). Default: ``pred_noise``.
-        p2_loss_weight_gamma (float): p2 loss weight gamma, from
-            `Perception Prioritized Training of Diffusion Models <https://arxiv.org/abs/2204.00227>`_. Default: ``0``.
-        p2_loss_weight_k (float): p2 loss weight k, from
-            `Perception Prioritized Training of Diffusion Models <https://arxiv.org/abs/2204.00227>`_. Default: ``1``.
-        loss_type (str): The type of loss, it can be l1 or l2. Default: ``l1``.
+        objective (str, optional): Prediction type of the scheduler function, can be ``"pred_noise"`` (predicts the noise of the diffusion process), ``"pred_x0"`` (predicts the original sample) or
+            ``"pred_v"`` (see section 2.4 of `Imagen Video <https://imagen.research.google/video/paper.pdf>`_ paper). Default: ``"pred_noise"``.
+        p2_loss_weight_gamma (float, optional): p2 loss weight gamma, from `Perception Prioritized Training of Diffusion Models <https://arxiv.org/abs/2204.00227>`_. Default: ``0.``.
+        p2_loss_weight_k (float, optional): p2 loss weight k, from
+            `Perception Prioritized Training of Diffusion Models <https://arxiv.org/abs/2204.00227>`_. Default: ``1.0``.
+        loss_type (str, optional): The type of loss, it can be ``"l1"`` or ``"l2"``. Default: ``"l1"``.
 
     Raises:
         TypeError: If `scheduler` is not `DiffusionScheduler` type.
 
-    Supported Platforms:
-        ``Ascend``
-
     Examples:
         >>> from mindspore import ops, dtype as mstype
-        >>> from mindflow.cell import DDPMScheduler, ConditionDiffusionTransformer, DiffusionTrainer
+        >>> from mindscience.diffuser import DDPMScheduler, ConditionDiffusionTransformer, DiffusionTrainer
         >>> # init params
         >>> batch_size, seq_len, in_dim, cond_dim, num_train_timesteps = 4, 256, 16, 4, 100
         >>> original_samples = ops.randn([batch_size, seq_len, in_dim])
@@ -1205,7 +1180,7 @@ class DiffusionTrainer:
                  scheduler,
                  objective='pred_noise',
                  p2_loss_weight_gamma=0.,
-                 p2_loss_weight_k=1,
+                 p2_loss_weight_k=1.0,
                  loss_type='l1',
                  ):
         if not isinstance(scheduler, DiffusionScheduler):
@@ -1237,7 +1212,7 @@ class DiffusionTrainer:
             original_samples (Tensor): The direct output from learned diffusion model.
             noise (Tensor): A current instance of a noise sample created by the diffusion process.
             timesteps (Tensor): The current discrete timestep in the diffusion chain.
-            condition (Tensor): The condition for desired outputs. Default: ``None``.
+            condition (Tensor, optional): The condition for desired outputs. Default: ``None``.
 
         Returns:
             Tensor, the model forward loss.
