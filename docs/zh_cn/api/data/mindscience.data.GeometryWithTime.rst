@@ -25,7 +25,7 @@ mindscience.data.GeometryWithTime
               - ``'IC'``：问题的初始条件（initial condition of the problem）。
 
         返回：
-            Numpy.array。若边界配置 `with_normal` 为 True，则返回 **两项**（采样点二维数组与对应法线二维数组）；否则返回 **一项**（采样点二维数组）。
+            Numpy.array。若边界配置 `with_normal` 为 True，则返回 **两项** （采样点二维数组与对应法线二维数组）；否则返回 **一项** （采样点二维数组）。
 
         异常：
             - **KeyError** - 当 `geom_type` 为 ``'domain'`` 但 ``self.sampling_config.domain`` 为 ``None`` 时抛出。
