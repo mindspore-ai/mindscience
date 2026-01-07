@@ -34,12 +34,12 @@ class Disk(Geometry):
     Definition of Disk object.
 
     Args:
-        name (str): name of the disk.
+        name (str): Name of the disk.
         center (Union[tuple[int, int], tuple[float, float], list[int, int], list[float, float], numpy.ndarray]):
-            center coordinates of the disk.
-        radius (Union[int, float]): radius of the disk.
-        dtype (numpy.dtype): data type of sampled point data type. Default: ``numpy.float32``.
-        sampling_config (SamplingConfig): sampling configuration. Default: ``None``.
+            Center coordinates of the disk.
+        radius (Union[int, float]): Radius of the disk.
+        dtype (numpy.dtype): Data type of sampled point data type. Default: ``numpy.float32``.
+        sampling_config (SamplingConfig): Sampling configuration. Default: ``None``.
 
     Raises:
         ValueError: If `center` is neither list nor tuple of length 2.
@@ -221,13 +221,13 @@ class Rectangle(HyperCube):
     Definition of Rectangle object.
 
     Args:
-        name (str): name of the rectangle.
+        name (str): Name of the rectangle.
         coord_min (Union[tuple[int, int], tuple[float, float], list[int, int], list[float, float], numpy.ndarray]):
-            coordinates of the bottom left corner of rectangle.
+            Coordinates of the bottom left corner of rectangle.
         coord_max (Union[tuple[int, int], tuple[float, float], list[int, int], list[float, float], numpy.ndarray]):
-            coordinates of the top right corner of rectangle.
-        dtype (numpy.dtype): data type of sampled point data type. Default: ``numpy.float32``.
-        sampling_config (SamplingConfig): sampling configuration. Default: ``None``.
+            Coordinates of the top right corner of rectangle.
+        dtype (numpy.dtype): Data type of sampled point data type. Default: ``numpy.float32``.
+        sampling_config (SamplingConfig): Sampling configuration. Default: ``None``.
 
     Examples:
         >>> from mindscience.data import generate_sampling_config, Rectangle
@@ -249,16 +249,16 @@ class Triangle(adapter.Geometry):
     Definition of triangle object.
 
     Args:
-        name (str): name of the triangle.
-        vertices (numpy.ndarray): vertices of the triangle.
-        boundary_type (str): this can be ``'uniform'`` or ``'unweighted'``. Default: ``'uniform'``.
+        name (str): Name of the triangle.
+        vertices (numpy.ndarray): Vertices of the triangle.
+        boundary_type (str): This can be ``'uniform'`` or ``'unweighted'``. Default: ``'uniform'``.
 
             - ``'uniform'``, the expected number of samples in each boundary is proportional to the
               area (length) of the boundary.
             - ``'unweighted'``, the expected number of samples in each boundary is the same.
 
-        dtype (numpy.dtype): data type of sampled point data type. Default: ``numpy.float32``.
-        sampling_config (SamplingConfig): sampling configuration. Default: ``None``.
+        dtype (numpy.dtype): Data type of sampled point data type. Default: ``numpy.float32``.
+        sampling_config (SamplingConfig): Sampling configuration. Default: ``None``.
 
     Examples:
         >>> from mindscience.data import generate_sampling_config, Triangle
@@ -290,16 +290,16 @@ class Pentagon(adapter.Geometry):
     Definition of pentagon object.
 
     Args:
-        name (str): name of the pentagon.
-        vertices (numpy.ndarray): vertices of the pentagon in an anti-clockwise order.
-        boundary_type (str): this can be ``'uniform'`` or ``'unweighted'``. Default: ``'uniform'``.
+        name (str): Name of the pentagon.
+        vertices (numpy.ndarray): Vertices of the pentagon in an anti-clockwise order.
+        boundary_type (str): This can be ``'uniform'`` or ``'unweighted'``. Default: ``'uniform'``.
 
             - ``'uniform'``, the expected number of samples in each boundary is proportional to the
               area (length) of the boundary.
             - ``'unweighted'``, the expected number of samples in each boundary is the same.
 
-        dtype (numpy.dtype): data type of sampled point data type. Default: ``numpy.float32``.
-        sampling_config (SamplingConfig): sampling configuration. Default: ``None``.
+        dtype (numpy.dtype): Data type of sampled point data type. Default: ``numpy.float32``.
+        sampling_config (SamplingConfig): Sampling configuration. Default: ``None``.
 
     Examples:
         >>> from mindscience.data import generate_sampling_config, Pentagon
@@ -331,16 +331,16 @@ class Polygon(adapter.Geometry):
     Definition of polygon object.
 
     Args:
-        name (str): name of the polygon.
-        vertices (numpy.ndarray): vertices of the polygon in an anti-clockwise order.
-        boundary_type (str): this can be ``'uniform'`` or ``'unweighted'``. Default: ``'uniform'``.
+        name (str): Name of the polygon.
+        vertices (numpy.ndarray): Vertices of the polygon in an anti-clockwise order.
+        boundary_type (str): This can be ``'uniform'`` or ``'unweighted'``. Default: ``'uniform'``.
 
             - ``'uniform'``, the expected number of samples in each boundary is proportional to the
               area (length) of the boundary.
             - ``'unweighted'``, the expected number of samples in each boundary is the same.
 
-        dtype (numpy.dtype): data type of sampled point data type. Default: ``numpy.float32``.
-        sampling_config (SamplingConfig): sampling configuration. Default: ``None``.
+        dtype (numpy.dtype): Data type of sampled point data type. Default: ``numpy.float32``.
+        sampling_config (SamplingConfig): Sampling configuration. Default: ``None``.
 
     Examples:
         >>> from mindscience.data import generate_sampling_config, Polygon

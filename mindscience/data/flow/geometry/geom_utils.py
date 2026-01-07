@@ -26,7 +26,7 @@ def generate_sampling_config(dict_config):
     Convert from dict to SamplingConfig.
 
     Args:
-        dict_config (dict): dict containing configuration info.
+        dict_config (dict): Dict containing configuration info.
 
     Returns:
         geometry_base.SamplingConfig, sampling configuration.

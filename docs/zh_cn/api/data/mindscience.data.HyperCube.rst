@@ -8,8 +8,8 @@ mindscience.data.HyperCube
     参数：
         - **name** (str) - 超立方体名称。
         - **dim** (int) - 维度数量。
-        - **coord_min** (Union[int, float, tuple, list, numpy.ndarray]) - 超立方体的最小坐标。若类型为 tuple/list，其元素可为 ``tuple[int, int]``、``tuple[float, float]``、``list[int, int]``、``list[float, float]`` 等形式。
-        - **coord_max** (Union[int, float, tuple, list, numpy.ndarray]) - 超立方体的最大坐标。若类型为 tuple/list，其元素可为 ``tuple[int, int]``、``tuple[float, float]``、``list[int, int]``、``list[float, float]`` 等形式。
+        - **coord_min** (Union[int, float, tuple, list, numpy.ndarray]) - 超立方体的最小坐标。当参数类型为 tuple/list 时，其元素应为 int/float，且其长度必须与 `dim` 参数保持一致。
+        - **coord_max** (Union[int, float, tuple, list, numpy.ndarray]) - 超立方体的最大坐标。当参数类型为 tuple/list 时，其元素应为 int/float，且其长度必须与 `dim` 参数保持一致。
         - **dtype** (numpy.dtype) - 采样点数据类型，默认 ``numpy.float32``。
         - **sampling_config** (SamplingConfig) - 采样配置，默认 ``None``。
 

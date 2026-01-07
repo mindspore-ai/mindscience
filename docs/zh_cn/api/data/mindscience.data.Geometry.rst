@@ -8,8 +8,8 @@ mindscience.data.Geometry
     参数：
         - **name** (str) - 几何体的名称。
         - **dim** (int) - 维数。
-        - **coord_min** (Union[int, float, list[int, float], tuple[int, float], numpy.ndarray]) - 几何体的最小坐标。
-        - **coord_max** (Union[int, float, list[int, float], tuple[int, float], numpy.ndarray]) - 几何体的最大坐标。
+        - **coord_min** (Union[int, float, tuple, list, numpy.ndarray]) - 几何体的最小坐标。当参数类型为 tuple/list 时，其元素应为 int/float，且其长度必须与 `dim` 参数保持一致。
+        - **coord_max** (Union[int, float, tuple, list, numpy.ndarray]) - 几何体的最大坐标。当参数类型为 tuple/list 时，其元素应为 int/float，且其长度必须与 `dim` 参数保持一致。
         - **dtype** (numpy.dtype) - 采样点数据类型，默认 ``numpy.float32``。
         - **sampling_config** (SamplingConfig) - 采样配置，默认 ``None``。
 

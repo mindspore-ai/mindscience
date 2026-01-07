@@ -33,11 +33,11 @@ class TimeDomain(Interval):
     Definition of Time Domain.
 
     Args:
-        name (str): name of the time domain.
-        start (Union[int, float]): start of the time domain. Default: ``0.0``.
-        end (Union[int, float]): end of the time domain. Default: ``1.0``.
+        name (str): Name of the time domain.
+        start (Union[int, float]): Start of the time domain. Default: ``0.0``.
+        end (Union[int, float]): End of the time domain. Default: ``1.0``.
         dtype (numpy.dtype): Data type of sampled point data type. Default: ``numpy.float32``.
-        sampling_config (SamplingConfig): sampling configuration. Default: ``None``.
+        sampling_config (SamplingConfig): Sampling configuration. Default: ``None``.
 
     Examples:
         >>> from mindscience.data import generate_sampling_config, TimeDomain
@@ -66,9 +66,9 @@ class GeometryWithTime(Geometry):
     Definition of geometry with time.
 
     Args:
-        geometry (Geometry): geometry.
-        timedomain (TimeDomain): time domain.
-        sampling_config (SamplingConfig): sampling configuration. Default: ``None``.
+        geometry (Geometry): Geometry.
+        timedomain (TimeDomain): Time domain.
+        sampling_config (SamplingConfig): Sampling configuration. Default: ``None``.
 
     Raises:
         ValueError: If `sampling_config` is not ``None`` but `sampling_config.time` is ``None`` .
@@ -144,7 +144,7 @@ class GeometryWithTime(Geometry):
         Set sampling info.
 
         Args:
-            sampling_config (SamplingConfig): sampling configuration.
+            sampling_config (SamplingConfig): Sampling configuration.
 
         Raises:
             TypeError: If `sampling_config` is not instance of SamplingConfig.
@@ -228,7 +228,7 @@ class GeometryWithTime(Geometry):
         Sampling points.
 
         Args:
-            geom_type (str): geometry type: can be ``'domain'`` or ``'BC'`` or ``'IC'``. Default: ``'domain'``.
+            geom_type (str): Geometry type: can be ``'domain'`` or ``'BC'`` or ``'IC'``. Default: ``'domain'``.
 
                 - ``'domain'``, feasible domain of the problem.
                 - ``'BC'``, boundary of the problem.
