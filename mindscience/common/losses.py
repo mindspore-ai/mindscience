@@ -185,7 +185,7 @@ class MTLWeightedLoss(WeightedLossCell):
     Args:
         num_losses (int): The number of multi-task losses, should be positive integer.
         bound_param (float, optional): The square addition to weight and regularization when the mere bound
-        is higher than certain constant given. Default: ``0.0``.
+            is higher than certain constant given. Default: ``0.0``.
 
     Inputs:
         - **input** (tuple[Tensor]) - The input data.
@@ -242,9 +242,9 @@ class WaveletTransformLoss(nn.LossBase):
 
     Args:
         wave_level (int, optional): The number of the wavelet transformation levels,
-        should be positive integer. Default: ``2``.
+            should be positive integer. Default: ``2``.
         regroup (bool, optional): The regroup error combination form of the wavelet
-        transformation losses. Default: ``"False"``.
+            transformation losses. Default: ``"False"``.
 
     Inputs:
         - **input** (tuple(Tensor, Tensor)) - Tuple of Tensors. Tensor of shape
@@ -363,7 +363,7 @@ class RelativeRMSELoss(nn.LossBase):
 
     Args:
         reduction (str, optional): Type of reduction to be applied to loss. The optional values are
-        ``"mean"``, ``"sum"`` and ``"none"``. Default: ``"sum"``.
+            ``"mean"``, ``"sum"`` and ``"none"``. Default: ``"sum"``.
 
     Inputs:
         - **prediction** (Tensor) - The prediction value of the network. Tensor of shape :math:`(N, *)` where

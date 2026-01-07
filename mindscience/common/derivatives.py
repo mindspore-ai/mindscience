@@ -49,7 +49,7 @@ def batched_jacobian(model):
 
     Args:
         model (mindspore.nn.Cell): A network with the input dimension is in_channels and
-        output dimension is out_channels.
+            output dimension is out_channels.
 
     Returns:
         Tensor, jacobi of the model. With the input dimension is :math:`[batch_size, in_channels]`,
@@ -95,7 +95,7 @@ def batched_hessian(model):
 
     Args:
         model (mindspore.nn.Cell): A network with the input dimension is in_channels and
-        output dimension is out_channels.
+            output dimension is out_channels.
 
     Returns:
         Tensor, hessian of the model. With the input dimension is :math:`[batch_size, in_channels]`,

@@ -27,7 +27,7 @@ def lecun_init(fan_in, initializer_name='linear'):
     Args:
         fan_in (int): The number of input features.
         initializer_name (str, optional): The name of the initializer, support ``"linear"`` or ``"relu"``.
-        Default: ``"linear"``.
+            Default: ``"linear"``.
 
     Returns:
         Initializer. The initializer.

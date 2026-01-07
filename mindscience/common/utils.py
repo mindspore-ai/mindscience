@@ -144,11 +144,11 @@ def unpatchify(labels, img_size=(192, 384), patch_size=16, nchw=False):
 
     Args:
         labels (Tensor): A tensor containing flattened patch representations. The shape of `labels` is expected to be
-        :math:`(N, num_patches, patch_size * patch_size * C)`, where `C` denotes the number of output channels.
+            :math:`(N, num_patches, patch_size * patch_size * C)`, where `C` denotes the number of output channels.
         img_size (tuple(int), optional): Input image size. Default ``(192, 384)``.
         patch_size (int, optional): The patch size of image. Default ``16``.
         nchw (bool, optional): If ``True``, the unpatchify shape contains :math:`(N, C, H, W)`; if ``False``,
-        the unpatchify shape contains :math:`(N, H, W, C)`. Default: ``False``.
+            the unpatchify shape contains :math:`(N, H, W, C)`. Default: ``False``.
 
     Returns:
         Tensor, with shape of :math:`(N, H, W, C)` if `nchw` is ``False`` or :math:`(N, C, H, W)` if `nchw` is ``True``.
@@ -283,7 +283,7 @@ def pixel_shuffle(x, upscale_factor):
 
     Args:
         x (Tensor): Tensor of shape :math:`(*, C \times r^2, H, W)` . The dimension of `x` is larger than ``2``,
-        and the length of third to last dimension can be divisible by `upscale_factor` squared.
+            and the length of third to last dimension can be divisible by `upscale_factor` squared.
         upscale_factor (int): Factor to increase spatial resolution by, and is a positive integer.
 
     Returns:
@@ -331,7 +331,7 @@ class PixelShuffle(nn.Cell):
 
     Inputs:
         - **x** (Tensor) - Tensor of shape :math:`(*, C \times r^2, H, W)` . The dimension of `x` is larger than ``2``,
-        and the length of third to last dimension can be divisible by `upscale_factor` squared.
+          and the length of third to last dimension can be divisible by `upscale_factor` squared.
 
     Outputs:
         - **output** (Tensor) - Tensor of shape :math:`(*, C, H \times r, W \times r)` .
@@ -360,7 +360,7 @@ def pixel_unshuffle(x, downscale_factor):
 
     Args:
         x (Tensor): Tensor of shape :math:`(*, C, H \times r, W \times r)` . The dimension of `x` is larger than ``2``,
-        and the length of second to last dimension and last dimension can be divisible by `downscale_factor` .
+            and the length of second to last dimension and last dimension can be divisible by `downscale_factor` .
         downscale_factor (int): Factor to decrease spatial resolution by, and is a positive integer.
 
     Returns:
@@ -408,7 +408,7 @@ class PixelUnshuffle(nn.Cell):
 
     Inputs:
         - **x** (Tensor) - Tensor of shape :math:`(*, C, H \times r, W \times r)` . The dimension of `x` is larger than
-        ``2``, and the length of second to last dimension and last dimension can be divisible by `downscale_factor` .
+          ``2``, and the length of second to last dimension and last dimension can be divisible by `downscale_factor` .
 
     Outputs:
         - **output** (Tensor) - Tensor of shape :math:`(*, C \times r^2, H, W)` .

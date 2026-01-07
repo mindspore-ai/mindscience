@@ -92,7 +92,7 @@ def get_multi_step_lr(lr_init, milestones, gamma, steps_per_epoch, last_epoch):
     Args:
         lr_init (float): Init learning rate, positive float value.
         milestones (Union[list[int], tuple[int]]): List of epoch indices, each element
-        in the list must be greater than ``0``.
+            in the list must be greater than ``0``.
         gamma (float): Multiplicative factor of learning rate decay.
         steps_per_epoch (int): Number of steps to each epoch, positive int value.
         last_epoch (int): Total epoch of training, positive int value.
