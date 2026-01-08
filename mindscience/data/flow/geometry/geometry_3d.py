@@ -30,11 +30,11 @@ class Cuboid(HyperCube):
     Args:
         name (str): Name of the cuboid.
         coord_min (Union[tuple, list, numpy.ndarray]): Coordinates of the bottom left back corner of cuboid.
-            If the parameter type is tuple or list, it should contain int or float,
-            and its length must be consistent with the `dim` parameter.
+            If the parameter type is tuple or list, each element should be of type int or float,
+            and its length must be ``3``.
         coord_max (Union[tuple, list, numpy.ndarray]): Coordinates of the top right front corner of cuboid.
-            If the parameter type is tuple or list, it should contain int or float,
-            and its length must be consistent with the `dim` parameter.
+            If the parameter type is tuple or list, each element should be of type int or float,
+            and its length must be ``3``.
         dtype (numpy.dtype): Data type of sampled point data type. Default: ``numpy.float32``.
         sampling_config (SamplingConfig): Sampling configuration. Default: ``None``.
 

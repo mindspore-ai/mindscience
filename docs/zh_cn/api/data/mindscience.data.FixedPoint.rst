@@ -7,7 +7,7 @@ mindscience.data.FixedPoint
 
     参数：
         - **name** (str) - 定义几何体的名称。
-        - **coord** (Union[int, float, tuple, list, numpy.ndarray]) - 固定点坐标。支持单值、list、tuple或数组，其中list/tuple元素可为 `(int, int)` 或 `(float, float)` 。
+        - **coord** (Union[int, float, tuple, list, numpy.ndarray]) - 固定点坐标。当参数类型为 tuple 或 list 时，其元素应为 int 或 float 类型。
         - **dtype** (numpy.dtype) - 采样点数据类型，默认 ``numpy.float32``。
         - **sampling_config** (SamplingConfig) - 采样配置，默认 ``None``。
 

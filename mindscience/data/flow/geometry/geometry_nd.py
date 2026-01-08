@@ -32,8 +32,8 @@ class FixedPoint(Geometry):
 
     Args:
         name (str): Name of the fixed point.
-        coord (Union[int, float, tuple, list, numpy.ndarray]): Coordinate of the fixed point. If the parameter type is
-            tuple or list, the element support tuple[int, int], tuple[float, float], list[int, int], list[float, float].
+        coord (Union[int, float, tuple, list, numpy.ndarray]): Coordinate of the fixed point. If the parameter
+            type is tuple or list, each element should be of type int or float.
         dtype (numpy.dtype): Data type of sampled point data type. Default: ``numpy.float32``.
         sampling_config (SamplingConfig): Sampling configuration. Default: ``None``.
 
@@ -119,11 +119,11 @@ class HyperCube(Geometry):
         name (str): Name of the hyper cube.
         dim (int): Number of dimensions.
         coord_min (Union[int, float, tuple, list, numpy.ndarray]): Minimal coordinate of the hyper cube.
-            If the parameter type is tuple or list, it should contain int or float, and its length
-            must be consistent with the `dim` parameter.
+            If the parameter type is tuple or list, each element should be of type int or float,
+            and its length must be consistent with the `dim` parameter.
         coord_max (Union[int, float, tuple, list, numpy.ndarray]): Maximal coordinate of the hyper cube.
-            If the parameter type is tuple or list, it should contain int or float, and its length
-            must be consistent with the `dim` parameter.
+            If the parameter type is tuple or list, each element should be of type int or float,
+            and its length must be consistent with the `dim` parameter.
         dtype (numpy.dtype): Data type of sampled point data type. Default: ``numpy.float32``.
         sampling_config (SamplingConfig): Sampling configuration. Default: ``None``.
 

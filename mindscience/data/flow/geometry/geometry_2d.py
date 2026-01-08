@@ -35,8 +35,9 @@ class Disk(Geometry):
 
     Args:
         name (str): Name of the disk.
-        center (Union[tuple[int, int], tuple[float, float], list[int, int], list[float, float], numpy.ndarray]):
-            Center coordinates of the disk.
+        center (Union[tuple, list, numpy.ndarray]):
+            Center coordinates of the disk. If the parameter type is tuple or list, each element should
+            be of type int or float, and its length must be ``2``.
         radius (Union[int, float]): Radius of the disk.
         dtype (numpy.dtype): Data type of sampled point data type. Default: ``numpy.float32``.
         sampling_config (SamplingConfig): Sampling configuration. Default: ``None``.
@@ -222,10 +223,12 @@ class Rectangle(HyperCube):
 
     Args:
         name (str): Name of the rectangle.
-        coord_min (Union[tuple[int, int], tuple[float, float], list[int, int], list[float, float], numpy.ndarray]):
-            Coordinates of the bottom left corner of rectangle.
-        coord_max (Union[tuple[int, int], tuple[float, float], list[int, int], list[float, float], numpy.ndarray]):
-            Coordinates of the top right corner of rectangle.
+        coord_min (Union[tuple, list, numpy.ndarray]):
+            Coordinates of the bottom left corner of rectangle. If the parameter type is tuple or list, each
+            element should be of type int or float, and its length must be ``2``.
+        coord_max (Union[tuple, list, numpy.ndarray]):
+            Coordinates of the top right corner of rectangle. If the parameter type is tuple or list, each
+            element should be of type int or float, and its length must be ``2``.
         dtype (numpy.dtype): Data type of sampled point data type. Default: ``numpy.float32``.
         sampling_config (SamplingConfig): Sampling configuration. Default: ``None``.
 
