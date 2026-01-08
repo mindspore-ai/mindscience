@@ -8,7 +8,7 @@ mindscience.diffuser.DiffusionTrainer
     参数：
         - **model** (nn.Cell) - 扩散模型的主干网络。
         - **scheduler** (DiffusionScheduler) - 扩散调度器，可为 DDPM 或 DDIM 调度器。
-        - **objective** (str, 可选) - 调度器函数的预测目标类型，支持以下类型： ``"pred_noise"``（预测扩散过程中的噪声）、 ``"pred_x0"``（预测原始样本）或 ``"pred_v"``（参见 `Imagen Video <https://imagen.research.google/video/paper.pdf>`_ 论文第 2.4 节）。默认 ``"pred_noise"``。
+        - **objective** (str, 可选) - 调度器函数的预测目标类型，支持以下类型： ``"pred_noise"`` （预测扩散过程中的噪声）、 ``"pred_x0"`` （预测原始样本）或 ``"pred_v"`` （参见 `Imagen Video <https://imagen.research.google/video/paper.pdf>`_ 论文第 2.4 节）。默认 ``"pred_noise"``。
         - **p2_loss_weight_gamma** (float, 可选) - p2 损失权重中的 `gamma` 参数，具体信息查看 `Perception Prioritized Training of Diffusion Models <https://arxiv.org/abs/2204.00227>`_ 。默认 ``0.``。
         - **p2_loss_weight_k** (float, 可选) - p2 损失权重中的 k 参数，具体信息查看 `Perception Prioritized Training of Diffusion Models <https://arxiv.org/abs/2204.00227>`_ 。默认 ``1.0``。
         - **loss_type** (str, 可选) - 损失函数类型。支持以下类型： ``"l1"`` 或 ``"l2"``。默认 ``"l1"``。

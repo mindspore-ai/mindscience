@@ -10,7 +10,7 @@ mindscience.diffuser.DiffusionScheduler
         - **beta_start** (float, 可选) - 推理阶段 `beta` 起始值。默认 ``0.0001``。
         - **beta_end** (float, 可选) - `beta` 终止值。默认 ``0.02``。
         - **beta_schedule** (str, 可选) - `beta` 调度方式，用于将 `beta` 取值范围映射为模型迭代所需的一组 `beta` 序列，支持以下类型： ``"linear"``、 ``"scaled_linear"`` 或 ``"squaredcos_cap_v2"``。默认 ``"squaredcos_cap_v2"``。
-        - **prediction_type** (str, 可选) - 调度器函数的预测类型，支持以下类型： ``"epsilon"``（预测噪声）、 ``"sample"``（预测带噪样本）或 ``"v_prediction"``（参见 `Imagen Video <https://imagen.research.google/video/paper.pdf>`_ 论文 2.4 节）。默认 ``"epsilon"``。
+        - **prediction_type** (str, 可选) - 调度器函数的预测类型，支持以下类型： ``"epsilon"`` （预测噪声）、 ``"sample"`` （预测带噪样本）或 ``"v_prediction"`` （参见 `Imagen Video <https://imagen.research.google/video/paper.pdf>`_ 论文 2.4 节）。默认 ``"epsilon"``。
         - **clip_sample** (bool, 可选) - 是否对预测样本进行裁剪以提升数值稳定性。默认 ``True``。
         - **clip_sample_range** (float, 可选) - 样本裁剪的最大幅值，仅在 `clip_sample=True` 时生效。默认 ``1.0``。
         - **thresholding** (bool, 可选) - 是否使用动态阈值方法。该方法不适用于潜空间扩散模型（如 Stable Diffusion）。默认 ``False``。

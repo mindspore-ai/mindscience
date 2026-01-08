@@ -3,7 +3,7 @@ mindscience.diffuser.DiffusionTransformer
 
 .. py:class:: mindscience.diffuser.DiffusionTransformer(in_channels, out_channels, hidden_channels, layers, heads, time_token_cond=True, compute_dtype=mstype.float32)
 
-     基于 Transformer 主干结构的扩散模型实现。
+    基于 Transformer 主干结构的扩散模型实现。
 
     参数：
         - **in_channels** (int) - 输入特征维度。
