@@ -10,7 +10,7 @@ mindscience.diffuser.DDPMScheduler
         - **beta_start** (float, 可选) - 推理阶段 `beta` 起始值。默认 ``0.0001``。
         - **beta_end** (float, 可选) - `beta` 终止值。默认 ``0.02``。
         - **beta_schedule** (str, 可选) - `beta` 的调度方式，用于将 `beta` 区间映射为逐步更新的 `beta` 序列。支持以下类型： ``"linear"``、 ``"scaled_linear"`` 或 ``"squaredcos_cap_v2"``。默认 ``"squaredcos_cap_v2"``。
-        - **prediction_type** (str, 可选) - 扩散调度器预测类型。支持以下类型： ``"epsilon"``（预测噪声）、 ``"sample"``（预测带噪样本）或 ``"v_prediction"``（参见 `Imagen Video <https://imagen.research.google/video/paper.pdf>`_ 论文 2.4 节）。默认 ``"epsilon"``。
+        - **prediction_type** (str, 可选) - 扩散调度器预测类型。支持以下类型： ``"epsilon"`` （预测噪声）、 ``"sample"`` （预测带噪样本）或 ``"v_prediction"`` （参见 `Imagen Video <https://imagen.research.google/video/paper.pdf>`_ 论文 2.4 节）。默认 ``"epsilon"``。
         - **variance_type** (str, 可选) - 对去噪样本加噪时的方差处理策略，支持以下类型： ``"fixed_small"``、 ``"fixed_small_log"``、 ``"fixed_large"``、 ``"fixed_large_log"``、 ``"learned"`` 或 ``"learned_range"``。默认 ``"fixed_small_log"``。
         - **clip_sample** (bool, 可选) - 是否裁剪预测样本以提升数值稳定性。默认 ``True``。
         - **clip_sample_range** (float, 可选) - 样本裁剪最大幅值，仅当 `clip_sample=True` 生效。默认 ``1.0``。

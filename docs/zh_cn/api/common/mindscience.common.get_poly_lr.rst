@@ -14,5 +14,5 @@ mindscience.common.get_poly_lr
         - **total_steps** (int) - 训练总轮数，正值。
         - **poly_power** (float) - 多项式衰减的指数，正值。
 
-   返回：
+    返回：
         Numpy.array，学习率数组。

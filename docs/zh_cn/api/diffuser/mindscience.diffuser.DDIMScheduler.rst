@@ -10,7 +10,7 @@ mindscience.diffuser.DDIMScheduler
         - **beta_start** (float, 可选) - 噪声控制参数 `beta` 起始值。默认 ``0.0001``。
         - **beta_end** (float, 可选) - 噪声控制参数 `beta` 终点值。默认 ``0.02``。
         - **beta_schedule** (str, 可选) - `beta` 调度策略，用于将 `beta` 区间映射为模型逐步使用的 `beta` 序列。支持以下类型： ``"squaredcos_cap_v2"`` 、 ``"linear"`` 或 ``"scaled_linear"`` 。默认 ``"squaredcos_cap_v2"``。
-        - **prediction_type** (str, 可选) - 扩散调度器预测类型。支持以下类型： ``"epsilon"`` (预测扩散过程的噪声) 、 ``"sample"`` (直接预测加噪样本) 或 ``"v_prediction"``（参考 `Imagen Video <https://imagen.research.google/video/paper.pdf>`_ ）。默认 ``"epsilon"``。
+        - **prediction_type** (str, 可选) - 扩散调度器预测类型。支持以下类型： ``"epsilon"`` （预测扩散过程的噪声）、 ``"sample"`` （直接预测加噪样本）或 ``"v_prediction"`` （参考 `Imagen Video <https://imagen.research.google/video/paper.pdf>`_ ）。默认 ``"epsilon"``。
         - **clip_sample** (bool, 可选) - 是否为了数值稳定性，裁剪预测的样本。默认 ``True`` 。
         - **clip_sample_range** (float, 可选) - 样本裁剪最大幅度。仅当 `clip_sample=True` 时有效。默认 ``1.0``。
         - **thresholding** (bool, 可选) - 是否采用动态阈值方法。该方法不适用于潜在空间扩散模型，例如 Stable Diffusion。默认 ``False``。
