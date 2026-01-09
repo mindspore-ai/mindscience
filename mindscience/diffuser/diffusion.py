@@ -112,7 +112,7 @@ class DiffusionScheduler:
         beta_schedule (str, optional): The `beta` schedule, a mapping from a `beta` range to a sequence of betas for stepping the model. Choose from
             ``"linear"``, ``"scaled_linear"`` or ``"squaredcos_cap_v2"``. Default: ``"squaredcos_cap_v2"``.
         prediction_type (str, optional): Prediction type of the scheduler function, it can be ``"epsilon"`` (predicts the noise of the diffusion process),
-            ``"sample"`` (directly predicts the noisy sample`) or ``"v_prediction"`` (see section 2.4 of `Imagen
+            ``"sample"`` (directly predicts the noisy sample) or ``"v_prediction"`` (see section 2.4 of `Imagen
             Video <https://imagen.research.google/video/paper.pdf>`_ paper). Default: ``"epsilon"``.
         clip_sample (bool, optional): Clip the predicted sample for numerical stability. Default: ``True``.
         clip_sample_range (float, optional): The maximum magnitude for sample clipping. Valid only when `clip_sample=True`. Default: ``1.0``.
