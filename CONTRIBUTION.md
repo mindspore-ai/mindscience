@@ -367,7 +367,7 @@ API代码主要指合入`MindFlow/mindflow`目录的代码，主要为案例提�
 
 ### 单个案例目录格式
 
-单一的案例代码如[`PINNs求解Burgers`](./applications/physics_driven/burgers)为例，代码目录分成以下结构：
+单一的案例代码如[`PINNs求解Burgers`](https://atomgit.com/mindspore-lab/mindscience/tree/legacy-master/MindFlow/applications/physics_driven/burgers)为例，代码目录分成以下结构：
 
 ```shell
 .
