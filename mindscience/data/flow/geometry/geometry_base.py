@@ -32,9 +32,9 @@ class PartSamplingConfig:
     Definition of partial sampling configuration.
 
     Args:
-        size (Union[int, tuple[int], list[int]]): number of sampling points.
+        size (Union[int, tuple[int], list[int]]): Number of sampling points.
         random_sampling (bool): Whether randomly sampling points. Default: ``True``.
-        sampler (str): method for random sampling. Default: ``"uniform"``.
+        sampler (str): Method for random sampling. Default: ``"uniform"``.
         random_merge (bool): Specifies whether randomly merge coordinates of different dimensions. Default: ``True``.
         with_normal (bool): Specifies whether generating the normal vectors of the boundary. Default: ``False``.
         with_sdf (bool): Specifies whether return the sign-distance-function result of the inner domain points.
@@ -69,7 +69,10 @@ class SamplingConfig:
     Definition of global sampling configuration.
 
     Args:
-        part_sampling_dict (dict): A dictionary that specifies sampling configurations for different parts. Supported keys include ``"domain"``, ``"BC"``, ``"IC"`` and ``"time"``. Each value is a :class:`mindscience.data.PartSamplingConfig` instance. Any supported key can be omitted, and the corresponding sampling configuration will be set to ``None`` by default.
+        part_sampling_dict (dict): A dictionary that specifies sampling configurations for different parts.
+            Supported keys include ``"domain"``, ``"BC"``, ``"IC"`` and ``"time"``. Each value is a
+            :class:`mindscience.data.PartSamplingConfig` instance. Any supported key can be omitted, and the
+            corresponding sampling configuration will be set to ``None`` by default.
 
     Examples:
         >>> from mindscience.data import SamplingConfig, PartSamplingConfig
@@ -102,14 +105,16 @@ class Geometry:
     Definition of Geometry object.
 
     Args:
-        name (str): name of the geometry.
-        dim (int): number of dimensions.
-        coord_min (Union[int, float, list[int, float], tuple[int, float], numpy.ndarray]):
-            minimal coordinate of the geometry.
-        coord_max (Union[int, float, list[int, float], tuple[int, float], numpy.ndarray]):
-            maximal coordinate of the geometry.
+        name (str): Name of the geometry.
+        dim (int): Number of dimensions.
+        coord_min (Union[int, float, tuple, list, numpy.ndarray]):
+            Minimal coordinate of the geometry. If the parameter type is tuple or list, each element should be of type
+            int or float, and its length must be consistent with the `dim` parameter.
+        coord_max (Union[int, float, tuple, list, numpy.ndarray]):
+            Maximal coordinate of the geometry. If the parameter type is tuple or list, each element should be of type
+            int or float, and its length must be consistent with the `dim` parameter.
         dtype (numpy.dtype): Data type of sampled point data type. Default: ``numpy.float32``.
-        sampling_config (SamplingConfig): sampling configuration. Default: ``None``.
+        sampling_config (SamplingConfig): Sampling configuration. Default: ``None``.
 
     Examples:
         >>> from mindscience.data import generate_sampling_config, Geometry
@@ -155,7 +160,7 @@ class Geometry:
         Set geometry instance name.
 
         Args:
-            name (str): name of geometry instance.
+            name (str): Name of geometry instance.
 
         Raises:
             TypeError: If `name` is not string.
@@ -173,7 +178,7 @@ class Geometry:
         Set sampling info.
 
         Args:
-            sampling_config (SamplingConfig): sampling configuration.
+            sampling_config (SamplingConfig): Sampling configuration.
 
         Raises:
             TypeError: If `sampling_config` is not instance of SamplingConfig.

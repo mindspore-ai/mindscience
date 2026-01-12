@@ -28,13 +28,15 @@ class Cuboid(HyperCube):
     Definition of Cuboid object.
 
     Args:
-        name (str): name of the cuboid.
-        coord_min (Union[tuple[int, int], tuple[float, float], list[int, int], list[float, float], numpy.ndarray]):
-            coordinates of the bottom left back corner of cuboid.
-        coord_max (Union[tuple[int, int], tuple[float, float], list[int, int], list[float, float], numpy.ndarray]):
-            coordinates of the top right front corner of cuboid.
-        dtype (numpy.dtype): data type of sampled point data type. Default: ``numpy.float32``.
-        sampling_config (SamplingConfig): sampling configuration. Default: ``None``.
+        name (str): Name of the cuboid.
+        coord_min (Union[tuple, list, numpy.ndarray]): Coordinates of the bottom left back corner of cuboid.
+            If the parameter type is tuple or list, each element should be of type int or float,
+            and its length must be ``3``.
+        coord_max (Union[tuple, list, numpy.ndarray]): Coordinates of the top right front corner of cuboid.
+            If the parameter type is tuple or list, each element should be of type int or float,
+            and its length must be ``3``.
+        dtype (numpy.dtype): Data type of sampled point data type. Default: ``numpy.float32``.
+        sampling_config (SamplingConfig): Sampling configuration. Default: ``None``.
 
     Examples:
         >>> from mindscience.data import generate_sampling_config, Cuboid
@@ -55,16 +57,16 @@ class Tetrahedron(adapter.Geometry):
     Definition of tetrahedron object.
 
     Args:
-        name (str): name of the tetrahedron.
-        vertices (numpy.ndarray): vertices of the tetrahedron.
-        boundary_type (str): this can be ``'uniform'`` or ``'unweighted'``. Default: ``'uniform'``.
+        name (str): Name of the tetrahedron.
+        vertices (numpy.ndarray): Vertices of the tetrahedron.
+        boundary_type (str): This can be ``'uniform'`` or ``'unweighted'``. Default: ``'uniform'``.
 
             - ``'uniform'``, the expected number of samples in each boundary is proportional to the
               area (length) of the boundary.
             - ``'unweighted'``, the expected number of samples in each boundary is the same.
 
-        dtype (numpy.dtype): data type of sampled point data type. Default: ``numpy.float32``.
-        sampling_config (SamplingConfig): sampling configuration. Default: ``None``.
+        dtype (numpy.dtype): Data type of sampled point data type. Default: ``numpy.float32``.
+        sampling_config (SamplingConfig): Sampling configuration. Default: ``None``.
 
     Examples:
         >>> import numpy as np
@@ -101,20 +103,20 @@ class Cylinder(adapter.Geometry):
     Definition of cylinder object.
 
     Args:
-        name (str): name of the cylinder.
-        centre (numpy.ndarray): origin of the bottom disk.
+        name (str): Name of the cylinder.
+        centre (numpy.ndarray): Origin of the bottom disk.
         radius (float): Radius of the cylinder.
         h_min (float): Height coordinate of the bottom disk.
         h_max (float): Height coordinate of the top disk.
         h_axis (int): Axis of the normal vector of the bottom disk.
-        boundary_type (str): this can be ``'uniform'`` or ``'unweighted'``. Default: ``'uniform'``.
+        boundary_type (str): This can be ``'uniform'`` or ``'unweighted'``. Default: ``'uniform'``.
 
             - ``'uniform'``, the expected number of samples in each boundary is proportional to the
               area (length) of the boundary.
             - ``'unweighted'``, the expected number of samples in each boundary is the same.
 
-        dtype (numpy.dtype): data type of sampled point data type. Default: ``numpy.float32``.
-        sampling_config (SamplingConfig): sampling configuration. Default: ``None``.
+        dtype (numpy.dtype): Data type of sampled point data type. Default: ``numpy.float32``.
+        sampling_config (SamplingConfig): Sampling configuration. Default: ``None``.
 
     Examples:
         >>> import numpy as np
@@ -156,20 +158,20 @@ class Cone(adapter.Geometry):
     Definition of cone object.
 
     Args:
-        name (str): name of the cone.
-        centre (numpy.ndarray): origin of the bottom disk.
+        name (str): Name of the cone.
+        centre (numpy.ndarray): Origin of the bottom disk.
         radius (float): Radius of the bottom disk.
         h_min (float): Height coordinate of the bottom disk.
         h_max (float): Maximum Height coordinate of the cone.
         h_axis (int): Axis of the normal vector of the bottom disk.
-        boundary_type (str): this can be ``'uniform'`` or ``'unweighted'``. Default: ``'uniform'``.
+        boundary_type (str): This can be ``'uniform'`` or ``'unweighted'``. Default: ``'uniform'``.
 
             - ``'uniform'``, the expected number of samples in each boundary is proportional to the
               area (length) of the boundary.
             - ``'unweighted'``, the expected number of samples in each boundary is the same.
 
-        dtype (numpy.dtype): data type of sampled point data type. Default: ``numpy.float32``.
-        sampling_config (SamplingConfig): sampling configuration. Default: ``None``.
+        dtype (numpy.dtype): Data type of sampled point data type. Default: ``numpy.float32``.
+        sampling_config (SamplingConfig): Sampling configuration. Default: ``None``.
 
     Examples:
         >>> import numpy as np

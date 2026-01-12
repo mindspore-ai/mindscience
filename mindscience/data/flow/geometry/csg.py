@@ -76,7 +76,7 @@ class CSG(Geometry):
         set sampling info
 
         Args:
-            sampling_config (SamplingConfig): sampling configuration.
+            sampling_config (SamplingConfig): Sampling configuration.
 
         Raises:
             TypeError: If `sampling_config` is not instance of SamplingConfig.
@@ -147,9 +147,9 @@ class CSGDifference(CSG):
     CSG class for difference of geometries.
 
     Args:
-        geom1 (Geometry): a geometry object.
-        geom2 (Geometry): a geometry object to be subtracted from geom1.
-        sampling_config (SamplingConfig): sampling configuration. Default: ``None``.
+        geom1 (Geometry): A geometry object.
+        geom2 (Geometry): A geometry object to be subtracted from geom1.
+        sampling_config (SamplingConfig): Sampling configuration. Default: ``None``.
 
     Examples:
         >>> from mindscience.data import generate_sampling_config, Disk, Rectangle, CSGDifference
@@ -267,9 +267,9 @@ class CSGUnion(CSG):
     CSG class for union of geometries.
 
     Args:
-        geom1 (Geometry): a geometry object.
-        geom2 (Geometry): a geometry object to be subtracted from geom1.
-        sampling_config (SamplingConfig): sampling configuration. Default: ``None``.
+        geom1 (Geometry): A geometry object.
+        geom2 (Geometry): A geometry object to be subtracted from geom1.
+        sampling_config (SamplingConfig): Sampling configuration. Default: ``None``.
 
     Examples:
         >>> from mindscience.data import generate_sampling_config, Disk, Rectangle, CSGUnion
@@ -381,9 +381,9 @@ class CSGIntersection(CSG):
     CSG class for intersection of geometries.
 
     Args:
-        geom1 (Geometry): a geometry object.
-        geom2 (Geometry): a geometry object to be subtracted from geom1.
-        sampling_config (SamplingConfig): sampling configuration. Default: ``None``.
+        geom1 (Geometry): A geometry object.
+        geom2 (Geometry): A geometry object to be subtracted from geom1.
+        sampling_config (SamplingConfig): Sampling configuration. Default: ``None``.
 
     Examples:
         >>> from mindscience.data import generate_sampling_config, Disk, Rectangle, CSGIntersection
@@ -497,9 +497,9 @@ class CSGXOR(CSG):
     CSG class for xor of geometries.
 
     Args:
-        geom1 (Geometry): a geometry object.
-        geom2 (Geometry): a geometry object to be subtracted from geom1.
-        sampling_config (SamplingConfig): sampling configuration. Default: ``None``.
+        geom1 (Geometry): A geometry object.
+        geom2 (Geometry): A geometry object to be subtracted from geom1.
+        sampling_config (SamplingConfig): Sampling configuration. Default: ``None``.
 
     Examples:
         >>> from mindscience.data import generate_sampling_config, Disk, Rectangle, CSGXOR
