@@ -1,7 +1,7 @@
 mindspore==2.7.0
 pyyaml
 ml_collections
-biotite==1.0.1
+biotite==1.4.0
 pandas
 rdkit==2023.9.6
 optree

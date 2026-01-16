@@ -32,10 +32,8 @@ def need_msa_search(json_data: dict) -> bool:
     Check if MSA search is needed for the given JSON data.
     """
     need_msa = json_data.get("use_msa", True)
-    # TODO: add esm check
     if not need_msa:
         return need_msa
-    need_msa = False
     for sequence in json_data["sequences"]:
         if "proteinChain" in sequence.keys():
             protein_chain = sequence["proteinChain"]
@@ -44,7 +42,7 @@ def need_msa_search(json_data: dict) -> bool:
     return need_msa
 
 
-def msa_search(seqs: Sequence[str], msa_res_dir: str) -> Sequence[str]:
+def msa_search(seqs: Sequence[str], msa_res_dir: str, pdb_name: Sequence[str]=None) -> Sequence[str]:
     """
     do msa search with mmseqs and return result subdirs.
     """
@@ -54,6 +52,7 @@ def msa_search(seqs: Sequence[str], msa_res_dir: str) -> Sequence[str]:
         seqs_pending_msa=seqs,
         tmp_fasta_fpath=tmp_fasta_fpath,
         msa_res_dir=msa_res_dir,
+        q_name=pdb_name,
     )
     msa_res_subdirs = RequestParser.msa_postprocess(
         seqs_pending_msa=seqs,

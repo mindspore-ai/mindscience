@@ -17,6 +17,7 @@
 rm -rf msrun_log
 mkdir msrun_log
 export ASCEND_RT_VISIBLE_DEVICES=4,5
+export PARALLEL_MODE=DATA_PARALLEL
 echo "=============================================================================================================="
 echo "Please run the script as: "
 echo "bash run_parallel.sh"

@@ -252,13 +252,15 @@ class RequestParser:
         msa_res_dir: str,
         email: str = "",
         mode: str = "protenix",
+        q_name: Sequence[str] = None,
     ) -> List[str]:
         """
         Run MSA search.
         """
         lines = []
         for idx, seq in enumerate(seqs_pending_msa):
-            lines.append(f">query_{idx}\n")
+            query_name = f">query_{idx}\n" if q_name is None else f">{q_name[idx]}\n"
+            lines.append(query_name)
             lines.append(f"{seq}\n")
         if (last_line := lines[-1]).endswith("\n"):
             lines[-1] = last_line.rstrip("\n")

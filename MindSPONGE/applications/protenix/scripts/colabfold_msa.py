@@ -1,3 +1,4 @@
+# Copyright 2025 Huawei Technologies Co., Ltd
 # Copyright 2024 ByteDance and/or its affiliates.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -60,7 +61,8 @@ class A3MProcessor:
             lengths, oligomeric_state = first_line.split("\t")
 
             chain_lengths = [int(x) for x in lengths[1:].split(",")]
-            chain_names = [f"10{x+1}" for x in range(len(oligomeric_state.split(",")))]
+            chain_names = [
+                f"10{x+1}" for x in range(len(oligomeric_state.split(",")))]
 
             # Calculate sequence ranges for each chain
             seq_ranges = {}
@@ -223,7 +225,8 @@ def run_colabfold_search(search_config: LocalColabFoldConfig) -> str:
     # Return the first .a3m file found in results directory
     result_files = list(Path(search_config.results_dir).glob("*.a3m"))
     if not result_files:
-        raise FileNotFoundError(f"No .a3m files found in {search_config.results_dir}")
+        raise FileNotFoundError(
+            f"No .a3m files found in {search_config.results_dir}")
     return str(result_files[0])
 
 
@@ -246,7 +249,8 @@ def parse_args():
     parser.add_argument(
         "--mmseqs_path", help="Path to MMseqs2 binary", default="mmseqs"
     )
-    parser.add_argument("--db1", help="First database name", default="uniref30_2302_db")
+    parser.add_argument("--db1", help="First database name",
+                        default="uniref30_2302_db")
     parser.add_argument("--db2", help="Templates database")
     parser.add_argument(
         "--db3", help="Environmental database (default: colabfold_envdb_202108_db)"
@@ -254,7 +258,8 @@ def parse_args():
     parser.add_argument(
         "--use_env", help="Use environment settings", type=int, default=1
     )
-    parser.add_argument("--filter", help="Apply filtering", type=int, default=1)
+    parser.add_argument("--filter", help="Apply filtering",
+                        type=int, default=1)
     parser.add_argument(
         "--db_load_mode", help="Database load mode", type=int, default=0
     )

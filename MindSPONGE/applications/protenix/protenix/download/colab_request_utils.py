@@ -23,7 +23,6 @@ import time
 from typing import List, Tuple, Dict
 
 import requests
-from requests.auth import HTTPBasicAuth
 from tqdm import tqdm
 
 TQDM_BAR_FORMAT = "{l_bar}{bar}| {n_fmt}/{total_fmt} [elapsed: {elapsed} estimate remaining: {remaining}]"
@@ -45,17 +44,17 @@ def parse_fasta_string(fasta_string: str) -> Dict:
     return fasta_dict
 
 
-def _make_http_request_with_retry(url, method='get', data=None, timeout=6.02, headers=None, auth=None):
+def _make_http_request_with_retry(url, method='get', data=None, timeout=6.02, headers=None):
     """Make HTTP request with retry logic."""
     error_count = 0
     while True:
         try:
             if method == 'post':
                 res = requests.post(
-                    url, data=data, timeout=timeout, headers=headers, auth=auth)
+                    url, data=data, timeout=timeout, headers=headers, verify=False)
             else:
                 res = requests.get(url, timeout=timeout,
-                                   headers=headers, auth=auth)
+                                   headers=headers, verify=False)
             return res
         except requests.exceptions.Timeout:
             logger.warning(
@@ -84,7 +83,7 @@ def _parse_json_response(res):
     return out
 
 
-def _wait_for_job_completion(host_url, job_id, headers, auth, pbar):
+def _wait_for_job_completion(host_url, job_id, headers, pbar):
     """Wait for MSA job to complete."""
     elapsed_time = 0
     while True:
@@ -92,7 +91,6 @@ def _wait_for_job_completion(host_url, job_id, headers, auth, pbar):
             f"{host_url}/ticket/{job_id}",
             method='get',
             headers=headers,
-            auth=auth
         )
         out = _parse_json_response(res)
         pbar.set_description(out["status"])
@@ -111,7 +109,7 @@ def _wait_for_job_completion(host_url, job_id, headers, auth, pbar):
     return out
 
 
-def _submit_msa_job(host_url, submission_endpoint, seqs_unique, mode, num_sequences, email, headers, auth):
+def _submit_msa_job(host_url, submission_endpoint, seqs_unique, mode, num_sequences, email, headers):
     """Submit MSA job and handle retries."""
     n_seq, query = num_sequences, ""
     for seq in seqs_unique:
@@ -123,7 +121,6 @@ def _submit_msa_job(host_url, submission_endpoint, seqs_unique, mode, num_sequen
         method='post',
         data={"q": query, "mode": mode, "email": email},
         headers=headers,
-        auth=auth
     )
     return _parse_json_response(out)
 
@@ -137,7 +134,6 @@ def _handle_job_submission_errors(
     submission_endpoint,
     email,
     headers,
-    auth
 ):
     """Handle errors during job submission."""
     while out["status"] in ["UNKNOWN", "RATELIMIT"]:
@@ -145,7 +141,7 @@ def _handle_job_submission_errors(
         logger.error("Sleeping for %ss. Reason: %s", sleep_time, out["status"])
         time.sleep(sleep_time)
         out = _submit_msa_job(host_url, submission_endpoint,
-                              seqs_unique, mode, num_sequences, email, headers, auth)
+                              seqs_unique, mode, num_sequences, email, headers)
 
     if out["status"] == "ERROR":
         raise Exception(
@@ -251,7 +247,7 @@ def _process_sequences(seqs):
 
 
 def _submit_and_wait_for_job(host_url, submission_endpoint, seqs_unique, mode,
-                             num_sequences, email, headers, auth, pbar):
+                             num_sequences, email, headers, pbar):
     """Submit MSA job and wait for completion."""
     redo = True
     out = None
@@ -260,15 +256,15 @@ def _submit_and_wait_for_job(host_url, submission_endpoint, seqs_unique, mode,
 
         # Resubmit job until it goes through
         out = _submit_msa_job(
-            host_url, submission_endpoint, seqs_unique, mode, num_sequences, email, headers, auth)
+            host_url, submission_endpoint, seqs_unique, mode, num_sequences, email, headers)
         out = _handle_job_submission_errors(
-            out, seqs_unique, mode, num_sequences, host_url, submission_endpoint, email, headers, auth)
+            out, seqs_unique, mode, num_sequences, host_url, submission_endpoint, email, headers)
 
         # wait for job to finish
         job_id = out["id"]
         pbar.set_description(out["status"])
         out = _wait_for_job_completion(
-            host_url, job_id, headers, auth, pbar)
+            host_url, job_id, headers, pbar)
 
         if out["status"] == "COMPLETE":
             pbar.n = 100
@@ -285,14 +281,13 @@ def _submit_and_wait_for_job(host_url, submission_endpoint, seqs_unique, mode,
     return out["id"]
 
 
-def _download_and_extract_results(job_id, tar_gz_file, host_url, headers, auth):
+def _download_and_extract_results(job_id, tar_gz_file, host_url, headers):
     """Download and extract MSA results."""
     def download(job_id, path):
         res = _make_http_request_with_retry(
             f"{host_url}/result/download/{job_id}",
             method='get',
             headers=headers,
-            auth=auth
         )
         with open(path, "wb") as out:
             out.write(res.content)
@@ -376,8 +371,6 @@ def run_mmseqs2_service(
         use_filter, use_env, use_pairing, pairing_strategy, user_agent
     )
 
-    auth = HTTPBasicAuth(username, password)
-
     # process input x
     _, seqs_unique = _process_sequences(x)
 
@@ -397,12 +390,12 @@ def run_mmseqs2_service(
         with tqdm(total=time_estimate, bar_format=TQDM_BAR_FORMAT) as pbar:
             job_id = _submit_and_wait_for_job(
                 host_url, submission_endpoint, seqs_unique, mode,
-                num_sequences, email, headers, auth, pbar
+                num_sequences, email, headers, pbar
             )
 
             # Download results
             files = _download_and_extract_results(
-                job_id, tar_gz_file, host_url, headers, auth
+                job_id, tar_gz_file, host_url, headers
             )
 
             if server_mode == "protenix":

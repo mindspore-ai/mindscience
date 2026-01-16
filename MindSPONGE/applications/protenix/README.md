@@ -58,6 +58,14 @@ pip install -r requirements.txt
 
 Download the model [checkpoint](https://tools.mindspore.cn/dataset/workspace/mindspore_ckpt/ckpt/Protenix/ms_model_v0.5.0.ckpt).Then put the checkpoint in`./release_data/checkpoint`.
 
+### Step 4: Set Env Variable
+
+Run the following command to set PYTHONPATH：
+
+```bash
+source set_path.sh
+```
+
 ## 🚀 Inference
 
 ### Basic Usage
@@ -77,16 +85,19 @@ python inference.py \
 Create an input JSON file specifying your biomolecular system. Example:
 
 ```json
-{
-  "sequences": [
-    {
-      "protein": {
-        "id": "A",
-        "sequence": "MKKYTCTVCGYIYNPEDGDPDNGVNPGTP..."
+[
+  {
+    "sequences": [
+      {
+        "proteinChain": {
+          "sequence": "SEFEKLRQTGDELVQAFQRLREIFDKGDDDSLEQVLEEIEELIQKHRQLFDNRQEAADTEAAKQGDQWVQLFQRFREAIDKGDKDSLEQLLEELEQALQKIRELAEKKN",
+          "count": 1
+        }
       }
-    }
-  ]
-}
+    ],
+    "name": "5tgy"
+  }
+]
 ```
 
 ### Key Parameters
@@ -109,7 +120,7 @@ python inference.py \
   --seeds 42 \
   --dump_dir ./output \
   --input_json_path /PATH/TO/INPUT/FILE/input.json \
-  --n_samples 10
+  --n_sample 10
 ```
 
 **Running without MSA (Possibly Low Accuracy):**
@@ -144,6 +155,12 @@ Downloaded CIF-format data must be preprocessed before it can be used for model 
 python scripts/prepare_training_data.py -i /PATH/TO/MMCIF/FILES -o /PATH/TO/OUTPUT/DATA.csv.gz -b /PATH/TO/PROCESSED/DATA -d
 ```
 
+if use MSA:
+
+```bash
+python scripts/prepare_training_data.py -i /PATH/TO/MMCIF/FILES -o /PATH/TO/OUTPUT/DATA.csv.gz -b /PATH/TO/PROCESSED/DATA -d --use_msa
+```
+
 ### Data Preprocessing Parameter Descriptions
 
 | Parameter | Description | Default |
@@ -152,6 +169,8 @@ python scripts/prepare_training_data.py -i /PATH/TO/MMCIF/FILES -o /PATH/TO/OUTP
 | `-o` | CSV output file path | Required |
 | `-b` | Processed data output directory | Required |
 | `-d` | Whether to perform extra processing (e.g., removing water and hydrogen atoms) | No value needed |
+| `--use_msa` | Whether to perform msa search | No value needed |
+| `-m` | Path to MSA files | None |
 
 The training logic is contained in `train.py`.
 
@@ -174,6 +193,9 @@ python train.py --run_name protenix_train --seed 42 --base_dir ./output --diffus
 | `--load_checkpoint_path` | Path to checkpoint for fine-tuning | `""` |
 | `--data.train_sets` | Name of training dataset | `weightedPDB_before2109_wopb_nometalc_0925`, Details can be found in configs.configs_data |
 | `--data.test_sets` | Name of test dataset | `recentPDB_1536_sample384_0925`, Details can be found in configs.configs_data |
+| `--data.msa.enable` | Enable/disable MSA features | `True` |
+| `--data.msa.prot.pdb_mmseqs_dir` | Path to MSA Files | `DATA_ROOT_DIR/mmcif_msa` |
+| `--data.msa.prot.seq_to_pdb_idx_path` | Path to seq_to_pdb_idx.json | `DATA_ROOT_DIR/seq_to_pdb_index.json` |
 
 ### Dataset Path Configuration
 

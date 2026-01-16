@@ -25,7 +25,6 @@ import uuid
 from pathlib import Path
 from typing import List, Optional, Union
 
-import click
 import tqdm
 from Bio import SeqIO
 from rdkit import Chem
@@ -285,67 +284,6 @@ def inference_jsons(
     if len(infer_errors) > 0:
         logger.warning(f"run inference failed: {infer_errors}")
 
-
-@click.group()
-def protenix_cli():
-    return
-
-
-@click.command()
-@click.option("--input", "input_path", type=str, help="json files or dir for inference")
-@click.option("--out_dir", default="./output", type=str, help="infer result dir")
-@click.option(
-    "--seeds", type=str, default="101", help="the inference seed, split by comma"
-)
-@click.option("--cycle", type=int, default=10, help="pairformer cycle number")
-@click.option("--step", type=int, default=200, help="diffusion step")
-@click.option("--sample", type=int, default=5, help="sample number")
-@click.option("--use_msa_server", is_flag=True, help="do msa search or not")
-def predict(input_path, out_dir, seeds, cycle, step, sample, use_msa_server):
-    """
-    predict: Run predictions with protenix.
-    :param input, out_dir, use_msa_server
-    :return:
-    """
-    init_logging()
-    logger.info(
-        f"run infer with input={input_path}, out_dir={out_dir}, cycle={cycle}, "
-        f"step={step}, sample={sample}, use_msa_server={use_msa_server}"
-    )
-    seeds = list(map(int, seeds.split(",")))
-    inference_jsons(
-        input_path,
-        out_dir,
-        use_msa_server,
-        seeds=seeds,
-        n_cycle=cycle,
-        n_step=step,
-        n_sample=sample,
-    )
-
-
-@click.command()
-@click.option(
-    "--input",
-    "input_path",
-    type=str,
-    help="pdb or cif files to generate jsons for inference",
-)
-@click.option("--out_dir", type=str, default="./output", help="dir to save json files")
-@click.option(
-    "--altloc",
-    default="first",
-    type=str,
-    help=" Select the first altloc conformation of each residue in the input file, \
-        or specify the altloc letter for selection. For example, 'first', 'A', 'B', etc.",
-)
-@click.option(
-    "--assembly_id",
-    default=None,
-    type=str,
-    help="Extends the structure based on the Assembly ID in \
-                        the input file. The default is no extension",
-)
 def tojson(input_path, out_dir="./output", altloc="first", assembly_id=None):
     """
     tojson: convert pdb/cif files or dir to json files for predict.
@@ -412,11 +350,6 @@ def tojson(input_path, out_dir="./output", altloc="first", assembly_id=None):
     return output_jsons
 
 
-# @click.command()
-# @click.option(
-#     "--input", type=str, help="file to do msa search, support `json` or `fasta` format"
-# )
-# @click.option("--out_dir", type=str, default="./output", help="dir to save msa results")
 def msa(input_path, out_dir) -> Union[str, dict]:
     """
     msa: do msa search by mmseqs. If input is in `fasta`, it should all be proteinChain.
@@ -448,12 +381,3 @@ def msa(input_path, out_dir) -> Union[str, dict]:
 
     raise RuntimeError(
         f"only support `json` or `fasta` format, but got : {input_path}")
-
-
-# protenix_cli.add_command(predict)
-# protenix_cli.add_command(tojson)
-# protenix_cli.add_command(msa)
-
-
-if __name__ == "__main__":
-    predict()  # pylint: disable=no-value-for-parameter
