@@ -83,6 +83,21 @@ python exp_darcy.py --mode GRAPH --device_target Ascend --device_id 0 --epochs 5
 
 ![Darcy Flow Prediction](./images/result_darcy_hd.png)
 
+**训练日志**
+
+```bash
+Epoch 410/500 Loss: 0.02204 Time: 3.20s
+Epoch 420/500 Loss: 0.01997 Time: 3.07s
+Epoch 430/500 Loss: 0.02119 Time: 3.39s
+Epoch 440/500 Loss: 0.01882 Time: 3.16s
+Epoch 450/500 Loss: 0.01723 Time: 3.20s
+Epoch 460/500 Loss: 0.01679 Time: 3.07s
+Epoch 470/500 Loss: 0.01745 Time: 3.19s
+Epoch 480/500 Loss: 0.01576 Time: 3.06s
+Epoch 490/500 Loss: 0.01536 Time: 3.16s
+Epoch 500/500 Loss: 0.01488 Time: 3.17s
+```
+
 ### 性能
 
 | 参数 | Ascend | 备注 |
