@@ -18,7 +18,6 @@ import scipy
 import mindspore as ms
 import mindspore.common.dtype as mstype
 from mindspore import nn, ops, Tensor, mint
-from mindspore.common.initializer import Zero
 from mindspore.ops import operations as P
 
 from ...utils.check_func import check_param_no_greater, check_param_value
@@ -152,7 +151,7 @@ class _DFT1d(nn.Cell):
         # the zero matrix to fill the un-transformed modes
         m = self.n - (self.mode_upper + self.mode_lower)
         if m > 0:
-            self.mat = Tensor(shape=m, dtype=compute_dtype, init=Zero())
+            self.mat = mint.zeros(m, dtype=compute_dtype)
 
         self.concat = ops.Concat(axis=-1)
         self.cast = P.Cast()

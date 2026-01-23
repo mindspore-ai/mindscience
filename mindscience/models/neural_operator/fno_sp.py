@@ -18,7 +18,6 @@ import numpy as np
 
 import mindspore.common.dtype as mstype
 from mindspore import nn, ops, Tensor, Parameter, mint
-from mindspore.common.initializer import Zero
 from mindspore.ops import operations as P
 
 from ...sciops import RDFTn, IRDFTn
@@ -39,9 +38,8 @@ class SpectralConvDft(nn.Cell):
         self.resolutions = resolutions
         if len(self.n_modes) != len(self.resolutions):
             raise ValueError(
-                "The dimension of n_modes should be equal to that of resolutions, \
-                but got dimension of n_modes {} and dimension of resolutions {}".format(len(self.n_modes),
-                                                                                        len(self.resolutions)))
+                f"The dimension of n_modes should be equal to that of resolutions, but got dimension of n_modes \
+                 {len(self.n_modes)} and dimension of resolutions {len(self.resolutions)}")
         self.compute_dtype = compute_dtype
 
     def construct(self, x: Tensor):
@@ -59,7 +57,7 @@ class SpectralConv1dDft(SpectralConvDft):
 
     def __init__(self, in_channels, out_channels, n_modes, resolutions, compute_dtype=mstype.float32):
         super().__init__(in_channels, out_channels, n_modes, resolutions)
-        self._scale = (1. / (self.in_channels * self.out_channels))
+        self._scale = 1. / (self.in_channels * self.out_channels)
         w_re = Tensor(self._scale * np.random.rand(self.in_channels, self.out_channels, self.n_modes[0]),
                       dtype=mstype.float32)
         w_im = Tensor(self._scale * np.random.rand(self.in_channels, self.out_channels, self.n_modes[0]),
@@ -91,7 +89,7 @@ class SpectralConv2dDft(SpectralConvDft):
 
     def __init__(self, in_channels, out_channels, n_modes, resolutions, compute_dtype=mstype.float32):
         super().__init__(in_channels, out_channels, n_modes, resolutions)
-        self._scale = (1. / (self.in_channels * self.out_channels))
+        self._scale = 1. / (self.in_channels * self.out_channels)
         w_re1 = Tensor(
             self._scale * np.random.rand(self.in_channels, self.out_channels, self.n_modes[0], self.n_modes[1]),
             dtype=self.compute_dtype)
@@ -114,8 +112,8 @@ class SpectralConv2dDft(SpectralConvDft):
                                 modes=(self.n_modes[0], self.n_modes[1]), compute_dtype=self.compute_dtype)
         self._idft2_cell = IRDFTn(shape=(self.resolutions[0], self.resolutions[1]), norm='ortho',
                                   modes=(self.n_modes[0], self.n_modes[1]), compute_dtype=self.compute_dtype)
-        self._mat = Tensor(shape=(1, self.out_channels, self.resolutions[1] - 2 * self.n_modes[0], self.n_modes[1]),
-                           dtype=self.compute_dtype, init=Zero())
+        self._mat = mint.zeros((1, self.out_channels, self.resolutions[1] - 2 * self.n_modes[0], self.n_modes[1]),
+                               dtype=self.compute_dtype)
         self._concat = ops.Concat(-2)
 
     def construct(self, x: Tensor):
@@ -147,7 +145,7 @@ class SpectralConv3dDft(SpectralConvDft):
 
     def __init__(self, in_channels, out_channels, n_modes, resolutions, compute_dtype=mstype.float32):
         super().__init__(in_channels, out_channels, n_modes, resolutions)
-        self._scale = (1 / (self.in_channels * self.out_channels))
+        self._scale = 1 / (self.in_channels * self.out_channels)
 
         w_re1 = Tensor(
             self._scale * np.random.rand(self.in_channels, self.out_channels, self.n_modes[0], self.n_modes[1],
@@ -189,13 +187,12 @@ class SpectralConv3dDft(SpectralConvDft):
         self._idft3_cell = IRDFTn(shape=(self.resolutions[0], self.resolutions[1], self.resolutions[2]), norm='ortho',
                                   modes=(self.n_modes[0], self.n_modes[1], self.n_modes[2]),
                                   compute_dtype=self.compute_dtype)
-        self._mat_x = Tensor(
-            shape=(1, self.out_channels, self.resolutions[0] - 2 * self.n_modes[0], self.n_modes[1], self.n_modes[2]),
-            dtype=self.compute_dtype, init=Zero())
-        self._mat_y = Tensor(
-            shape=(1, self.out_channels, self.resolutions[0], self.resolutions[1] - 2 * self.n_modes[1],
-                   self.n_modes[2]),
-            dtype=self.compute_dtype, init=Zero())
+        self._mat_x = mint.zeros(
+            (1, self.out_channels, self.resolutions[0] - 2 * self.n_modes[0], self.n_modes[1], self.n_modes[2]),
+            dtype=self.compute_dtype)
+        self._mat_y = mint.zeros(
+            (1, self.out_channels, self.resolutions[0], self.resolutions[1] - 2 * self.n_modes[1], self.n_modes[2]),
+            dtype=self.compute_dtype)
         self._concat = ops.Concat(-2)
 
     def construct(self, x: Tensor):
