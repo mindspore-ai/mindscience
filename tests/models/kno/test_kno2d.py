@@ -45,7 +45,8 @@ test_data_path = '/home/workspace/mindspore_dataset/mindscience/kno2d'
 @pytest.mark.level0
 @pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
-def test_kno2d_forward_accuracy():
+@pytest.mark.parametrize('mode', [ms.GRAPH_MODE, ms.PYNATIVE_MODE])
+def test_kno2d_forward_accuracy(mode):
     """
     Feature: KNO2D forward accuracy test
     Description: Test the forward accuracy of the KNO2D model in GRAPH_MODE.
@@ -53,7 +54,7 @@ def test_kno2d_forward_accuracy():
                 tolerance values, ensuring the forward pass of the KNO2D model is accurate.
     """
     ms.set_device(device_target='Ascend')
-    ms.set_context(mode=ms.GRAPH_MODE)
+    ms.set_context(mode=mode)
     ckpt_path = os.path.join(test_data_path, 'kno2d.ckpt')
 
     model = KNO2D()
@@ -74,15 +75,16 @@ def test_kno2d_forward_accuracy():
 @pytest.mark.level0
 @pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
-def test_kno2d_grad_accuracy():
+@pytest.mark.parametrize('mode', [ms.GRAPH_MODE, ms.PYNATIVE_MODE])
+def test_kno2d_grad_accuracy(mode):
     """
     Feature: KNO2D gradient accuracy test
-    Description: Test the accuracy of the computed gradients for the KNO2D model. 
+    Description: Test the accuracy of the computed gradients for the KNO2D model.
     Expectation: The computed gradients should match the reference gradients within the specified relative and
                 absolute tolerance values, ensuring the gradient calculation is accurate.
     """
     ms.set_device(device_target='Ascend')
-    ms.set_context(mode=ms.GRAPH_MODE)
+    ms.set_context(mode=mode)
     ckpt_path = os.path.join(test_data_path, 'kno2d.ckpt')
 
     model = KNO2D()
