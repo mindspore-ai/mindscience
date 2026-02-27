@@ -2,7 +2,7 @@ mindscience.common.get_2d_sin_cos_pos_embed
 ============================================
 
 .. py:function:: mindscience.common.get_2d_sin_cos_pos_embed(embed_dim, grid_size)
-    
+
     在二维网格上构造二维正弦-余弦位置编码。
 
     参数：
