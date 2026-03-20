@@ -2,8 +2,13 @@
 
 import gc
 
-import torch
-import torch.nn.functional as F
+# import torch
+# import torch.nn.functional as F
+import mindspore
+from mindspore import mint
+
+import mindspore.mint.nn.functional as F
+
 
 try:
     pass
@@ -23,15 +28,16 @@ IIR_PREFILL_MODES = [
 
 
 def adjust_filter_shape_for_broadcast(u, h):
-    h = h.squeeze()  # Standardize to [D, L] from [1, D, L] and [D, 1, L]
-
+    #h = h.squeeze()  # Standardize to [D, L] from [1, D, L] and [D, 1, L]
+    h = mint.squeeze(h)
     # Case: u: [B, D, L], k_f: [D, L]
     if len(u.shape) > len(h.shape):
-        h = h.unsqueeze(0)
-
+        #h = h.unsqueeze(0)
+        h = mint.unsqueeze(h, 0)
     # Case: u: [B, D1, D2, L], k_f: [B, D, L]
     if len(u.shape) > 3:
-        h = h.unsqueeze(1)
+        #h = h.unsqueeze(1)
+        h = mint.unsqueeze(h, 1)
     return h
 
 
@@ -50,32 +56,35 @@ def fftconv_func(
     seqlen = u.shape[-1]
     fft_size = 2 * seqlen
 
-    k_f = torch.fft.rfft(k, n=fft_size) / fft_size
+    # k_f = torch.fft.rfft(k, n=fft_size) / fft_size
+    # 教程参考https://gitee.com/mindspore/mindspore/issues/IC6PAH?from=project-issue&search_text=torch.fft.rfft
+    k_f = mindspore.ops.rfft(k, n=fft_size) / fft_size
     k_f = adjust_filter_shape_for_broadcast(u, k_f)
-    k = k.squeeze()
+    #k = k.squeeze()
+    k = mint.squeeze(k)
 
     if bidirectional:
-        u_f = torch.fft.rfft(u.to(dtype=k.dtype), n=fft_size)
+        u_f = mindspore.ops.rfft(u.to(dtype=k.dtype), n=fft_size)
         k, k2 = k.split(k.shape[1] // 2, dim=1)
-        k2_f = torch.fft.rfft(k2, n=fft_size) / fft_size
+        k2_f = mindspore.ops.rfft(k2, n=fft_size) / fft_size
         y1 = u_f * k_f
         y2 = u_f.conj() * k2_f.conj()
 
-        y = torch.fft.irfft(y1 + y2, n=fft_size, norm="forward")[..., :seqlen]
+        y = mindspore.ops.irfft(y1 + y2, n=fft_size, norm="forward")[..., :seqlen]
 
     else:
         if k_rev is not None:
-            k_rev_f = torch.fft.rfft(k_rev, n=fft_size) / fft_size
+            k_rev_f = mindspore.ops.rfft(k_rev, n=fft_size) / fft_size
             k_f = k_f + k_rev_f.conj()
 
-        u_f = torch.fft.rfft(u.to(dtype=k.dtype), n=fft_size)
+        u_f = mindspore.ops.rfft(u.to(dtype=k.dtype), n=fft_size)
 
-        y = torch.fft.irfft(u_f * k_f, n=fft_size, norm="forward")[..., :seqlen]
+        y = mindspore.ops.irfft(u_f * k_f, n=fft_size, norm="forward")[..., :seqlen]
 
     if print_activations:
         activations_logger.info(f"post fftconv pre bias {y} {y.min()} {y.max()}")
 
-    out = y + u * D.unsqueeze(-1)
+    out = y + u * D.mint.unsqueeze(-1)
 
     if print_activations:
         activations_logger.info(f"post fftconv post bias {out} {out.min()} {out.max()}")
@@ -99,7 +108,7 @@ def canonicalize_modal_system(poles, residues):
 def list_tensors(idx):
     for obj in gc.get_objects():
         try:
-            if torch.is_tensor(obj) and isinstance(obj, torch.Tensor):
+            if mindspore.ops.is_tensor(obj) and isinstance(obj, mindspore.Tensor):
                 # dump to log
                 print(type(obj), obj.size())
                 el = obj[0]
@@ -153,7 +162,8 @@ class HyenaInferenceEngine:
             if column_split_hyena:
                 x2, x1, v = column_split(u, num_attention_heads, hidden_size_per_attention_head)
             else:
-                x2, x1, v = u.split([hidden_size, hidden_size, hidden_size], dim=1)
+                #x2, x1, v = u.split([hidden_size, hidden_size, hidden_size], dim=1)
+                x2, x1, v = mindspore.ops.split(tensor=u, split_size_or_sections=[hidden_size, hidden_size, hidden_size], axis=1)
             if self.hyena_flip_x1x2:
                 x1, x2 = x2, x1
             u = x1 * v
@@ -166,28 +176,28 @@ class HyenaInferenceEngine:
 
         # prepare input layout, dimensions and dispatch to fir kernel
         # Deprecated
-        if fir_fn != torch.nn.functional.conv1d:
+        if fir_fn != mindspore.nn.Conv1d:
             if dim_last:
-                u = u.permute(0, 2, 1)  # B, D, L
+                u = u.mint.permute(0, 2, 1)  # B, D, L
             z = fir_fn(u)[:, :L]  # B, L, D
 
         elif fir_length >= 128:
-            with torch.autocast("cuda"):
-                z = fftconv_func(
-                    u.to(torch.float32),
-                    weight[:, :, :L].to(torch.float32),
-                    bias,
-                    None,
-                    gelu=False,
-                    bidirectional=False,
-                    print_activations=self.print_activations,
-                    groups=groups,
-                    layer_idx=self.layer_idx,
-                )
-                z = z.to(u.dtype)
+            #with torch.autocast("cuda"):
+            z = fftconv_func(
+                u.to(mindspore.float32),
+                weight[:, :, :L].to(mindspore.float32),
+                bias,
+                None,
+                gelu=False,
+                bidirectional=False,
+                print_activations=self.print_activations,
+                groups=groups,
+                layer_idx=self.layer_idx,
+            )
+            z = z.to(u.dtype)
         else:
             if dim_last:
-                u = u.permute(0, 2, 1)  # B, D, L
+                u = u.mint.permute(0, 2, 1)  # B, D, L
 
             if groups is None:
                 g = u.shape[1]
@@ -195,8 +205,8 @@ class HyenaInferenceEngine:
                 g = groups
 
             z = fir_fn(
-                u.to(torch.float32),
-                weight.to(torch.float32),
+                u.to(mindspore.float32),
+                weight.to(mindspore.float32),
                 bias=None,
                 stride=1,
                 padding=fir_length - 1,
@@ -223,7 +233,7 @@ class HyenaInferenceEngine:
                     z = z + bias[None, :, None]
 
         # handle padding post fir, the only place with biases
-        if type(padding_mask) == torch.Tensor:
+        if type(padding_mask) == mindspore.Tensor:
             z = z * padding_mask[:, None]
 
         if gate:
@@ -304,8 +314,7 @@ class HyenaInferenceEngine:
                 v.reshape(v.shape[0], -1, v.shape[-1]),
             )
         else:
-            x2, x1, v = z_pre.split([hidden_size, hidden_size, hidden_size], dim=1)
-
+            x2, x1, v = mindspore.ops.split(tensor=z_pre, split_size_or_sections=[hidden_size, hidden_size, hidden_size], axis=1)
         if self.hyena_flip_x1x2:
             x1, x2 = x2, x1
 
@@ -323,18 +332,18 @@ class HyenaInferenceEngine:
         else:
             if use_flashfft and (L % 2) == 0:  # only works with even L
                 y = fftconv_fn(
-                    x1v.to(dtype=torch.bfloat16).contiguous(),
-                    h.to(dtype=torch.float32),
+                    x1v.to(dtype=mindspore.bfloat16).contiguous(),
+                    h.to(dtype=mindspore.float32),
                 )
                 X_s = None
 
             elif long_fir_threshold is None:
-                H = torch.fft.rfft(h.to(dtype=torch.float32), n=fft_size) / fft_size
-                X_s = torch.fft.fft(x1v.to(dtype=torch.float32), n=fft_size)
+                H = mindspore.ops.rfft(h.to(dtype=mindspore.float32), n=fft_size) / fft_size
+                X_s = mindspore.ops.fft(x1v.to(dtype=mindspore.float32), n=fft_size)
                 X = X_s[..., : H.shape[-1]]
                 if len(z_pre.shape) > 3:
-                    H = H.unsqueeze(1)
-                y = torch.fft.irfft(X * H, n=fft_size, norm="forward")[..., :L]
+                    H = H.mint.unsqueeze(1)
+                y = mindspore.ops.irfft(X * H, n=fft_size, norm="forward")[..., :L]
 
             else:
                 assert h.shape[0] == 1, "batch size must be 1 for long_fir_threshold"
@@ -350,7 +359,7 @@ class HyenaInferenceEngine:
         # if self.layer_idx == 2:
         #    breakpoint()
         y = y.to(dtype=x1v.dtype)
-        y = (y + x1v * D.unsqueeze(-1)) * x2
+        y = (y + x1v * D.mint.unsqueeze(-1)) * x2
 
         if self.print_activations:
             activations_logger.info(f"hyena filter: {h}, {h.min()}, {h.max()}")
@@ -399,9 +408,9 @@ class HyenaInferenceEngine:
             if self.low_mem_mode:
                 # TODO: smarter gc
                 del z_pre, x2, x1, v, x1v, h, poles, residues
-                torch.cuda.empty_cache()
+               # torch.cuda.empty_cache()
 
-        return y.permute(0, 2, 1)
+        return y.mint.permute(0, 2, 1)
 
     def step_fir(self, u, fir_state, weight, bias=None, gated_bias=False, flip_filter=False):
         """Steps forward FIR filters in the architecture.
@@ -414,24 +423,24 @@ class HyenaInferenceEngine:
             `fir_state` contains the last FIR filter length - 1 elements of `u`: `u_(L-2), u_{L-1), ...`
             We assume dimensions of `short_filter_weight` to be `[d, 1, short_filter_len]`.
         """
-        weight = weight.squeeze()
+        weight = weight.mint.squeeze()
 
         cache_size = fir_state.shape[-1]
         filter_length = weight.shape[-1]
         if flip_filter:
             weight = weight.flip(-1)
-            weight = weight[..., -cache_size - 1 :].unsqueeze(0)
+            weight = weight[..., -cache_size - 1 :].mint.unsqueeze(0)
         else:
-            weight = weight[..., : cache_size + 1].unsqueeze(0)
+            weight = weight[..., : cache_size + 1].mint.unsqueeze(0)
 
         input_dtype = u.dtype
-        weight = weight.to(torch.float32)
-        u = u.to(torch.float32)
-        fir_state = fir_state.to(torch.float32)
-        bias = bias.to(torch.float32) if bias is not None else None
+        weight = weight.to(mindspore.float32)
+        u = u.to(mindspore.float32)
+        fir_state = fir_state.to(mindspore.float32)
+        bias = bias.to(mindspore.float32) if bias is not None else None
 
         h0, h = weight[..., -1], weight[..., :-1]
-        y = h0 * u + torch.sum(fir_state * h, dim=-1)
+        y = h0 * u + mint.sum(fir_state * h, dim=-1)
 
         if bias is not None:
             if gated_bias:
@@ -441,9 +450,9 @@ class HyenaInferenceEngine:
 
         # Update the state
         if cache_size < filter_length - 1:
-            fir_state = torch.cat([fir_state, u[..., None]], dim=-1)
+            fir_state = mint.cat([fir_state, u[..., None]], dim=-1)
         else:
-            fir_state = torch.roll(fir_state, -1, dims=2)
+            fir_state = mint.roll(fir_state, -1, dims=2)
             fir_state[..., -1] = u
 
         return y.to(input_dtype), fir_state
@@ -451,12 +460,12 @@ class HyenaInferenceEngine:
     def step_iir(self, x2, x1, v, D, residues, poles, iir_state, iir_groups=1):
         # TODO: kernelize
         x1v = x1 * v
-        poles = torch.exp(poles)  # poles arg contains log_poles
+        poles = mint.exp(poles)  # poles arg contains log_poles
         poles = poles[..., 0][None]  # squeeze dummy seqlen dim and add dummy batch dim
         residues = residues[None]  # add dummy batch dim
         iir_state = poles * iir_state + x1v[..., None]
 
-        res_state = torch.sum(residues * iir_state, dim=-1)
+        res_state = mint.sum(residues * iir_state, dim=-1)
 
         if iir_groups > 1:
             raise NotImplementedError
@@ -497,9 +506,9 @@ class HyenaInferenceEngine:
         for i in range(L):
             state[..., 0] = poles[..., 0] * state[..., 0] - poles[..., 1] * state[..., 1] + x1v_[:, :, i, :, 0]
             state[..., 1] = poles[..., 0] * state[..., 1] + poles[..., 1] * state[..., 0] + x1v_[:, :, i, :, 1]
-            output[:, :, i] = torch.sum(residues * state, dim=-2)[..., 0]  # .real
+            output[:, :, i] = mint.sum(residues * state, dim=-2)[..., 0]  # .real
 
-        inference_params.state_dict[self.layer_idx] = state.to(dtype=torch.float32)
+        inference_params.state_dict[self.layer_idx] = state.to(dtype=mindspore.float32)
 
         return output
 
@@ -534,7 +543,7 @@ class HyenaInferenceEngine:
         X_s=None,
         use_flashfft=False,
         fftconv_fn=None,
-        state_dtype=torch.float32,
+        state_dtype=mindspore.float32,
         *args,
         **kwargs,
     ):
@@ -549,13 +558,13 @@ class HyenaInferenceEngine:
         bs = x1v.shape[0]
         fft_size = 2 * L
         # poles = torch.view_as_complex(poles.to(torch.float32))
-        state_s = (poles.to(torch.float32) * t).exp()
+        state_s = (poles.to(mindspore.float32) * t).exp()
 
         # state_s = poles**t
-        state_S = torch.fft.fft(state_s, n=fft_size).repeat(bs, 1, 1, 1)  # B, D, state_dim, 2 * L
+        state_S = mindspore.ops.fft(state_s, n=fft_size).repeat(bs, 1, 1, 1)  # B, D, state_dim, 2 * L
         if hyena_filter_groups > 1:
             state_S = state_S.repeat_interleave(hidden_size // hyena_filter_groups, 1)
-        state = torch.fft.ifft(X_s[..., None, :] * state_S, n=fft_size)
+        state = mindspore.ops.ifft(X_s[..., None, :] * state_S, n=fft_size)
         inference_params.state_dict[layer_idx] = state[..., L - 1].to(dtype=state_dtype)
 
     def _compute_state(self, log_poles, u, t, L, *args, **kwargs):
@@ -564,12 +573,12 @@ class HyenaInferenceEngine:
         """
         bs = u.shape[0]
         fft_size = 2 * L
-        U = torch.fft.rfft(u.to(torch.float32), n=fft_size)
+        U = mindspore.ops.rfft(u.to(mindspore.float32), n=fft_size)
         fft_size = 2 * L
         x = (log_poles * t).exp()
         # [batch, hidden_size, state_dim, 2 * seqlen]
-        X = torch.fft.fft(x, n=fft_size).repeat(bs, 1, 1, 1)
-        state = torch.fft.ifft(U[..., None, :] * X, n=fft_size)[..., :L]
+        X = mindspore.ops.fft(x, n=fft_size).repeat(bs, 1, 1, 1)
+        state = mindspore.ops.ifft(U[..., None, :] * X, n=fft_size)[..., :L]
         return state
 
 
@@ -587,9 +596,9 @@ class HyenaFilter:
         k_f = self._prepare_filter(k, u, fft_size)
         y = self._compute_fft_conv(u, k_f, fft_size, seqlen, **kwargs)
 
-        return y + u * D.unsqueeze(-1)
+        return y + u * D.mint.unsqueeze(-1)
 
     def _prepare_filter(self, k, u, fft_size):
         """Prepare filter for FFT convolution."""
-        k_f = torch.fft.rfft(k, n=fft_size) / fft_size
+        k_f = mindspore.ops.rfft(k, n=fft_size) / fft_size
         return adjust_filter_shape_for_broadcast(u, k_f)
