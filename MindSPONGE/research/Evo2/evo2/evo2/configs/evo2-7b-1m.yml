@@ -26,10 +26,10 @@ eps: 0.000001
 state_size: 16
 rotary_emb_base: 10000
 rotary_emb_scaling_factor: 128
-use_interpolated_rotary_pos_emb: True
+use_interpolated_rotary_pos_emb: False
 make_vocab_size_divisible_by: 8
 inner_size_multiple_of: 16  # force GLU inner_size to be a multiple of
-inner_mlp_size: 11264
+inner_mlp_size: 11008
 log_intermediate_values: False
 # Number of groups in GQA
 proj_groups: 1
@@ -49,11 +49,11 @@ mha_out_proj_bias: True
 hyena_out_proj_bias: True
 hyena_flip_x1x2: False
 qkv_proj_bias: False
-use_fp8_input_projections: True
+use_fp8_input_projections: False
 max_seqlen: 1048576
 max_batch_size: 1
 final_norm: True 
-use_flash_attn: True
+use_flash_attn: False
 use_flash_rmsnorm: False
 use_flash_depthwise: False
 use_flashfft: False

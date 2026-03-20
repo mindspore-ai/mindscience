@@ -1,29 +1,14 @@
-# Copyright 2025 Huawei Technologies Co., Ltd
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-# http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-# ============================================================================
-
-from mindspore import nn, Tensor, Parameter, mint, ops
-from mindspore.mint.nn import functional as F
-
+import torch
+from torch import nn, Tensor
+import torch.nn.functional as F
 from vortex.model.utils import grab_first_if_tuple
 
-class RMSNorm(nn.Cell):
+class RMSNorm(nn.Module):
     def __init__(self, config):
         super(RMSNorm, self).__init__()
         self.eps, self.hidden_size = config.eps, config.hidden_size
-        self.scale = Parameter(mint.ones(self.hidden_size, dtype=config.params_dtype))
-        #self.register_parameter("scale", self.scale)
+        self.scale = nn.Parameter(torch.ones(self.hidden_size, dtype=config.params_dtype))
+        self.register_parameter("scale", self.scale)
         self.use_flash_rmsnorm = config.get("use_flash_rmsnorm", False)
 
         if self.use_flash_rmsnorm:
@@ -35,12 +20,10 @@ class RMSNorm(nn.Cell):
         if self.use_flash_rmsnorm:
             return self.rmsnorm_func(x, self.scale, self.eps)
         else:
-            norm = mint.linalg.norm(x, ord=2, dim=-1, keepdim=True)
-            y = x / (norm * self.hidden_size ** (-1.0 / 2) + self.eps)
+            y = x / (x.norm(2, dim=-1, keepdim=True) * self.hidden_size ** (-1.0 / 2) + self.eps)
             return self.scale * y
 
-
-class ParallelGatedMLP(nn.Cell):
+class ParallelGatedMLP(nn.Module):
     def __init__(
         self,
         config,
@@ -101,7 +84,7 @@ class VocabParallelEmbedding(nn.Embedding):
         )
         self.process_group = process_group
         if process_group is not None:
-            world_size = mint.distributed.get_world_size(process_group)
+            world_size = torch.distributed.get_world_size(process_group)
             if vocab_size % world_size != 0:
                 raise ValueError(f"vocab_size ({vocab_size}) must be divisible by " f"world_size ({world_size})")
             if world_size > 1 and padding_idx is not None:
@@ -110,15 +93,15 @@ class VocabParallelEmbedding(nn.Embedding):
             world_size = 1
         super().__init__(
             vocab_size // world_size,
-            embedding_size=config.hidden_size,
+            embedding_dim=config.hidden_size,
             padding_idx=padding_idx,
         )
 
     def forward(self, input: Tensor) -> Tensor:
-        if self.process_group is None:  # single process
-            return super().construct(input)
+        if self.process_group is None:
+            return super().forward(input)
         else:
-            rank = mint.distributed.get_rank(self.process_group)
+            rank = torch.distributed.get_rank(self.process_group)
             vocab_size = self.num_embeddings
             vocab_start_index, vocab_end_index = (
                 rank * vocab_size,
@@ -131,12 +114,12 @@ class VocabParallelEmbedding(nn.Embedding):
             embeddings = self.forward(input)
             embeddings[input_ids_mask] = 0.0
             # Reduce to the global process group
-            mint.distributed.all_reduce(embeddings, group=self.process_group)
+            torch.distributed.all_reduce(embeddings, group=self.process_group)
             return embeddings
 
     def unembed(self, u: Tensor) -> Tensor:
         if self.process_group is None:
-            return u @ self.embedding_table.T
+            return u @ self.weight.T
         else:
             raise NotImplementedError
 

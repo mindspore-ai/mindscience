@@ -2,8 +2,9 @@ import numpy as np
 from typing import List, Tuple, Union
 from Bio.Seq import Seq
 from tqdm import tqdm
-
-import torch
+import mindspore 
+import mindspore.mint as mint
+from mindspore import Tensor, nn
 from vortex.model.model import StripedHyena
 
 
@@ -11,8 +12,8 @@ def prepare_batch(
         seqs: List[str],
         tokenizer: object,
         prepend_bos: bool = False,
-        device: str = 'cuda:0'
-) -> Tuple[torch.Tensor, List[int]]:
+        device: str = 'Ascend'
+) -> Tuple[Tensor, List[int]]:
     """
     Takes in a list of sequences, tokenizes them, and puts them in a tensor batch.
     If the sequences have differing lengths, then pad up to the maximum sequence length.
@@ -24,32 +25,32 @@ def prepare_batch(
     for seq in seqs:
         padding = [tokenizer.pad_id] * (max_seq_length - len(seq))
         input_ids.append(
-            torch.tensor(
+            Tensor(
                 ([tokenizer.eod_id] * int(prepend_bos)) + tokenizer.tokenize(seq) + padding,
-                dtype=torch.long,
+                dtype=mindspore.int64,
             ).to(device).unsqueeze(0)
         )
-    input_ids = torch.cat(input_ids, dim=0)
+    input_ids = mint.cat(input_ids, dim=0)
 
     return input_ids, seq_lengths
 
 
 def logits_to_logprobs(
-        logits: torch.Tensor,
-        input_ids: torch.Tensor,
-) -> torch.Tensor:
+        logits: Tensor,
+        input_ids: Tensor,
+) -> Tensor:
     """
     Takes in a tensor of logits of dimension (batch, length, vocab).
     Computes the log-likelihoods using a softmax along the vocab dimension.
     Uses the `input_ids` to index into the log-likelihoods and returns the likelihood
     of the provided sequence at each position with dimension (batch, length).
     """
-    softmax_logprobs = torch.log_softmax(logits, dim=-1)
+    softmax_logprobs = mint.nn.LogSoftmax(logits, dim=-1)
     softmax_logprobs = softmax_logprobs[:, :-1]
     input_ids = input_ids[:, 1:]
     assert softmax_logprobs.shape[1] == input_ids.shape[1]
 
-    logprobs = torch.gather(
+    logprobs = mint.gather(
         softmax_logprobs,       # Gather likelihoods...
         2,                      # along the vocab dimension...
         input_ids.unsqueeze(-1) # using the token ids to index.
@@ -64,17 +65,17 @@ def _score_sequences(
         tokenizer: object,
         prepend_bos: bool = False,
         reduce_method: str = 'mean',
-        device: str = 'cuda:0',
+        device: str = 'Ascend',
 ) -> List[float]:
     """Helper function to score a list of sequences based on their logprobs."""
     input_ids, seq_lengths = prepare_batch(seqs, tokenizer, device=device, prepend_bos=prepend_bos)
     assert len(seq_lengths) == input_ids.shape[0]
 
-    with torch.inference_mode():
-        logits, _ = model(input_ids) # (batch, length, vocab)
+    mindspore.set_context(grad_mode=False)
+    logits, _ = model(input_ids) # (batch, length, vocab)
 
     logprobs = logits_to_logprobs(logits, input_ids)
-    logprobs = logprobs.float().cpu().numpy()
+    logprobs = logprobs.float().asnumpy()
 
     if reduce_method == 'sum': # PLL
         reduce_func = np.sum
@@ -96,7 +97,7 @@ def score_sequences(
         batch_size: int = None,
         prepend_bos: bool = False,
         reduce_method: str = 'mean',
-        device: str = 'cuda:0',
+        device: str = 'Ascend',
 ) -> List[float]:
     """
     Computes the model log-likelihood scores for sequences in `seqs`.
@@ -131,7 +132,7 @@ def score_sequences_rc(
         batch_size: int,
         prepend_bos: bool = False,
         reduce_method: str = 'mean',
-        device: str = 'cuda:0',
+        device: str = 'Ascend',
 ) -> List[float]:
     """
     Computes the model log-likelihood scores for sequences in `seqs` and for their
@@ -175,7 +176,7 @@ def positional_entropies(
         model: StripedHyena,
         tokenizer: object,
         prepend_bos: bool = False,
-        device: str = 'cuda:0',
+        device: str = 'Ascend',
 ) -> List[np.array]:
     """
     Computes the positional entropies for sequences in `seqs`.
@@ -187,15 +188,15 @@ def positional_entropies(
     input_ids, seq_lengths = prepare_batch(seqs, tokenizer, device=device, prepend_bos=prepend_bos)
     assert len(seq_lengths) == input_ids.shape[0]
 
-    with torch.inference_mode():
-        logits, _ = model(input_ids) # (batch, length, vocab)
+    mindspore.set_context(grad_mode=False)
+    logits, _ = model(input_ids) # (batch, length, vocab)
     
-    softmax_logprobs = torch.log_softmax(logits, dim=-1)
+    softmax_logprobs = mint.nn.LogSoftmax(logits, dim=-1)
     if prepend_bos:
         softmax_logprobs = softmax_logprobs[:, 1:, :] # Remove BOS entropy.
 
-    entropies = -torch.sum(torch.exp(softmax_logprobs) * softmax_logprobs, dim=-1)
-    entropies = entropies.float().cpu().numpy()
+    entropies = -mint.sum(mint.exp(softmax_logprobs) * softmax_logprobs, dim=-1)
+    entropies = entropies.float().asnumpy()
 
     sequence_entropies = [
         entropies[idx][:seq_lengths[idx]] for idx in range(len(seq_lengths))
