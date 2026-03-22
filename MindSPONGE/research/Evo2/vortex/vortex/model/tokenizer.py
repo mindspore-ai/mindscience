@@ -5,7 +5,8 @@ from abc import ABC, abstractmethod
 from typing import List, Union
 
 import numpy as np
-import torch
+import mindspore 
+from mindspore import Tensor
 import tqdm
 
 class HFAutoTokenizer:
@@ -40,31 +41,30 @@ class HFAutoTokenizer:
                 data = json.loads(line.strip())
                 if "text" not in data.keys():
                     break
-                tokenized_data = self.tokenize(data["text"])
+                tokenized_data = self.tokenize(data["text"]).asnumpy().tolist()
                 fout.write(json.dumps({"tokens": tokenized_data}) + "\n")
 
     def tokenize(self, text: str, *args, **kwargs):
         ids = self.tokenizer.encode(text)
         if type(ids) == list:
-            return torch.tensor(ids)
+            return Tensor(ids,dtype=mindspore.int64)
         else:
-            return torch.tensor(ids.ids)
+            return Tensor(ids.ids,dtype=mindspore.int64)
 
     def tokenize_batch(self, text_batch):
         return self.tokenizer.encode_batch(text_batch)
 
     def detokenize(self, token_ids, skip_special_tokens=False):
+        if isinstance(token_ids, Tensor):
+            token_ids = token_ids.asnumpy().tolist()
         return self.tokenizer.decode(token_ids, skip_special_tokens=skip_special_tokens)
 
     def detokenize_batch(self, token_ids_batch, skip_special_tokens=False):
         out = []
         for token_ids in token_ids_batch:
-            out.append(
-                self.detokenize(
-                    [t.item() for t in token_ids],
-                    skip_special_tokens=skip_special_tokens,
-                )
-            )
+            if isinstance(token_ids, Tensor):
+                token_ids = token_ids.asnumpy().tolist()
+            out.append(self.detokenize(token_ids, skip_special_tokens=skip_special_tokens))
         return out
 
     @property
@@ -167,14 +167,23 @@ class CharLevelTokenizer(AbstractTokenizer):
             return self.tokenize(text_batch)
 
     def detokenize(self, token_ids):
-        return "".join(list(map(self.decode_token, token_ids)))
+        if isinstance(token_ids, Tensor):
+            token_ids = token_ids.asnumpy().tolist()
+        return "".join(map(self.decode_token, token_ids))
 
-    def detokenize_batch(self, token_ids: Union[List[str], str]):
+    def detokenize_batch(self, token_ids: Union[List[List[int]], List[int], Tensor]):
         if isinstance(token_ids, list):
-            return [self.detokenize(s) for s in token_ids]
+            if len(token_ids) > 0 and isinstance(token_ids[0], (list, Tensor)):
+                return [self.detokenize(s) for s in token_ids]
+            else:
+                return self.detokenize(token_ids)
         # elif if tensor, convert to list first
-        elif isinstance(token_ids, torch.Tensor):
-            return [self.detokenize(s) for s in token_ids.tolist()]
+        elif isinstance(token_ids, Tensor):
+            token_ids_list = token_ids.asnumpy().tolist()
+            if isinstance(token_ids_list[0], list):
+                return [self.detokenize(s) for s in token_ids_list]
+            else:
+                return self.detokenize(token_ids_list)
         else:
             return self.detokenize(token_ids)
 

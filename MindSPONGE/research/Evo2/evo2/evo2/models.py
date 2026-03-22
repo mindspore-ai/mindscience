@@ -3,7 +3,8 @@ import huggingface_hub
 from huggingface_hub import snapshot_download, constants, hf_hub_download
 import os
 import pkgutil
-import torch
+import mindspore.mint as mint
+from mindspore import Tensor, nn
 from typing import List, Tuple, Dict, Union
 import yaml
 
@@ -51,10 +52,10 @@ class Evo2:
     
     def forward(
         self,
-        input_ids: torch.Tensor,
+        input_ids: Tensor,
         return_embeddings: bool = False,
         layer_names=None,
-    ) -> Tuple[torch.Tensor, Dict[str, torch.Tensor]]:
+    ) -> Tuple[Tensor, Dict[str, Tensor]]:
         """
         Forward pass with optional embedding extraction.
         
@@ -69,7 +70,7 @@ class Evo2:
             Tuple of (logits, None) otherwise
         """
         embeddings = {}
-        handles = []
+        hooks = []
         
         if return_embeddings:
             if layer_names is None:
@@ -79,29 +80,29 @@ class Evo2:
                 )
                 
             def hook_fn(layer_name):
-                def hook(_, __, output):
+                def hook(cell: nn.Cell, inputs: Tuple[Tensor], output:Tensor):
                     if isinstance(output, tuple):
                         output = output[0]
-                    embeddings[layer_name] = output.detach()
+                    embeddings[layer_name] = output
                 return hook
                 
             # Register hooks for requested layers
             for name in layer_names:
-                layer = self.model.get_submodule(name)
-                handles.append(layer.register_forward_hook(hook_fn(name)))
+                submodule = self.model.get_submodule(name)
+                hook_id = submodule.register_forward_hook(hook_fn(name))
+                hooks.append((submodule,hook_id))
         
         try:
             # Original forward pass
-            with torch.no_grad():
-                logits = self.model.forward(input_ids)
+            logits = self.model(input_ids)
             
             if return_embeddings:
                 return logits, embeddings
             return logits, None
             
         finally:
-            for handle in handles:
-                handle.remove()
+            for submodule, hook_id in hooks:
+                submodule.remove_forward_hook(hook_id)
 
     def __call__(self, input_ids, return_embeddings=False, layer_names=None):
         return self.forward(input_ids, return_embeddings, layer_names)
@@ -123,11 +124,10 @@ class Evo2:
             reduce_method=reduce_method,
         )
 
-        with torch.no_grad():
-            try:
-                scores = scoring_func(seqs)
-            except Exception as e:
-                raise RuntimeError(f"Error during sequence scoring: {str(e)}") from e
+        try:
+            scores = scoring_func(seqs)
+        except Exception as e:
+            raise RuntimeError(f"Error during sequence scoring: {str(e)}") from e
 
         return scores
     
@@ -151,21 +151,20 @@ class Evo2:
         If force_prompt_threshold is none, sets default assuming 1xH100 (evo2_7b) and 2xH100 (evo2_40b) to help avoid OOM errors.
         """
 
-        with torch.no_grad():
-            output = vortex_generate(
-                prompt_seqs=prompt_seqs,
-                model=self.model,
-                tokenizer=self.tokenizer,
-                n_tokens=n_tokens,
-                temperature=temperature,
-                top_k=top_k,
-                top_p=top_p,
-                batched=batched,
-                cached_generation=cached_generation,
-                verbose=verbose,
-                force_prompt_threshold=force_prompt_threshold,
-            )
-            return output
+        output = vortex_generate(
+            prompt_seqs=prompt_seqs,
+            model=self.model,
+            tokenizer=self.tokenizer,
+            n_tokens=n_tokens,
+            temperature=temperature,
+            top_k=top_k,
+            top_p=top_p,
+            batched=batched,
+            cached_generation=cached_generation,
+            verbose=verbose,
+            force_prompt_threshold=force_prompt_threshold,
+        )
+        return output
 
 
     def load_evo2_model(
