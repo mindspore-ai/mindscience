@@ -116,7 +116,7 @@ class Generator:
         # )
         generation = mindspore.numpy.empty(
             (x.shape[0], num_tokens),
-            dtype=mindspore.int64,
+            dtype=mindspore.long,
         ).move_to(device)
 
         # scores = torch.empty(
@@ -128,7 +128,7 @@ class Generator:
         # )
         scores = mindspore.numpy.empty(
             (x.shape[0], num_tokens, self.tokenizer.vocab_size),
-            dtype=mindspore.float32,
+            dtype=mindspore.float,
         ).move_to(device)
 
         if inference_params_dict is not None:
@@ -216,17 +216,13 @@ class Generator:
                     inference_params_dict["hcm"].seqlen_offset += 1
                     inference_params_dict["hcs"].seqlen_offset += 1
 
-            # do forward pass with no gradient mindspore2.4官方文档中tensor默认仅参与，不进行梯度求导和parameter更新，这里先注释掉下面这行代码
+            # do forward pass with no gradient mindspore2.4官方文档中tensor默认仅参与晕眩，补进行梯度求导和parameter更新，这里先注释掉下面这行代码
             # with torch.inference_mode():
             #     logits, inference_params_dict = self.model(
             #         x,
             #         inference_params_dict=inference_params_dict,
             #     )
-            logits, inference_params_dict = self.model(
-                x,
-                inference_params_dict=inference_params_dict,
-            )
-            
+
             token_callback(i)
 
             last_logits = logits[:, -1]
@@ -263,7 +259,7 @@ class Generator:
                 x = new_idx[:, None]
             else:
                 #x = torch.cat([x, new_idx[:, None]], dim=-1)
-                x = mindspore.mint.cat([x, new_idx[:, None]], dim=-1)
+                x = mindspore.mint.cat([x, new_idx[:, None]], axis=-1)
 
         if verbose:
             y = self.tokenizer.detokenize_batch(generation[:, : i + 1])
@@ -301,11 +297,11 @@ def prepare_batch(
     tokens = [tokenizer.tokenize(seq) for seq in seqs]
     if isinstance(tokens[0], list):
         # tokens = [torch.tensor(t, dtype=torch.long) for t in tokens]
-        tokens = [mindspore.Tensor(t, dtype=mindspore.int64) for t in tokens]
+        tokens = [mindspore.Tensor(t, dtype=mindspore.long) for t in tokens]
 
     max_len = max(len(t) for t in tokens)
-    # batch = torch.zeros((len(tokens), max_len), dtype=torch.int64)
-    batch = mindspore.zeros((len(tokens), max_len), dtype=mindspore.int64)
+    # batch = torch.zeros((len(tokens), max_len), dtype=torch.long)
+    batch = mindspore.zeros((len(tokens), max_len), dtype=mindspore.long)
 
     for i, t in enumerate(tokens):
         batch[i, : len(t)] = t
@@ -404,7 +400,7 @@ def generate(
 
         logprobs = logits_to_logprobs(logits, output_ids)
         #logprobs = logprobs.float().cpu().numpy()
-        logprobs = logprobs.astype(mindspore.float32).asnumpy()
+        logprobs = logprobs.astype(mindspore.float).asnumpy()
 
         generated_scores += [np.mean(logprobs[idx]) for idx in range(batch_size)]
 

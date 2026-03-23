@@ -5,7 +5,7 @@ import gc
 # import torch
 # import torch.nn.functional as F
 import mindspore
-from mindspore import mint,ops
+from mindspore import mint
 
 import mindspore.mint.nn.functional as F
 
@@ -29,7 +29,7 @@ IIR_PREFILL_MODES = [
 
 def adjust_filter_shape_for_broadcast(u, h):
     #h = h.squeeze()  # Standardize to [D, L] from [1, D, L] and [D, 1, L]
-    h = ops.squeeze(h)
+    h = mint.squeeze(h)
     # Case: u: [B, D, L], k_f: [D, L]
     if len(u.shape) > len(h.shape):
         #h = h.unsqueeze(0)
@@ -61,7 +61,7 @@ def fftconv_func(
     k_f = mindspore.ops.rfft(k, n=fft_size) / fft_size
     k_f = adjust_filter_shape_for_broadcast(u, k_f)
     #k = k.squeeze()
-    k = ops.squeeze(k)
+    k = mint.squeeze(k)
 
     if bidirectional:
         u_f = mindspore.ops.rfft(u.to(dtype=k.dtype), n=fft_size)
@@ -84,7 +84,7 @@ def fftconv_func(
     if print_activations:
         activations_logger.info(f"post fftconv pre bias {y} {y.min()} {y.max()}")
 
-    out = y + u * ops.unsqueeze(D, -1)
+    out = y + u * D.mint.unsqueeze(-1)
 
     if print_activations:
         activations_logger.info(f"post fftconv post bias {out} {out.min()} {out.max()}")
@@ -178,7 +178,7 @@ class HyenaInferenceEngine:
         # Deprecated
         if fir_fn != mindspore.nn.Conv1d:
             if dim_last:
-                u = u.permute(0, 2, 1)  # B, D, L
+                u = u.mint.permute(0, 2, 1)  # B, D, L
             z = fir_fn(u)[:, :L]  # B, L, D
 
         elif fir_length >= 128:
@@ -197,7 +197,7 @@ class HyenaInferenceEngine:
             z = z.to(u.dtype)
         else:
             if dim_last:
-                u = u.permute(0, 2, 1)  # B, D, L
+                u = u.mint.permute(0, 2, 1)  # B, D, L
 
             if groups is None:
                 g = u.shape[1]
@@ -338,15 +338,11 @@ class HyenaInferenceEngine:
                 X_s = None
 
             elif long_fir_threshold is None:
-                h_in = h.to(dtype=mindspore.float32)
-                h_in = ops.squeeze(h_in)
-                
-                H = mindspore.ops.rfft(h_in, n=fft_size) / fft_size
-                
+                H = mindspore.ops.rfft(h.to(dtype=mindspore.float32), n=fft_size) / fft_size
                 X_s = mindspore.ops.fft(x1v.to(dtype=mindspore.float32), n=fft_size)
                 X = X_s[..., : H.shape[-1]]
                 if len(z_pre.shape) > 3:
-                    H = mint.unsqueeze(H, 1)
+                    H = H.mint.unsqueeze(1)
                 y = mindspore.ops.irfft(X * H, n=fft_size, norm="forward")[..., :L]
 
             else:
@@ -363,7 +359,7 @@ class HyenaInferenceEngine:
         # if self.layer_idx == 2:
         #    breakpoint()
         y = y.to(dtype=x1v.dtype)
-        y = (y + x1v * ops.unsqueeze(D, -1)) * x2
+        y = (y + x1v * D.mint.unsqueeze(-1)) * x2
 
         if self.print_activations:
             activations_logger.info(f"hyena filter: {h}, {h.min()}, {h.max()}")
@@ -414,7 +410,7 @@ class HyenaInferenceEngine:
                 del z_pre, x2, x1, v, x1v, h, poles, residues
                # torch.cuda.empty_cache()
 
-        return y.permute(0, 2, 1)
+        return y.mint.permute(0, 2, 1)
 
     def step_fir(self, u, fir_state, weight, bias=None, gated_bias=False, flip_filter=False):
         """Steps forward FIR filters in the architecture.
@@ -427,15 +423,15 @@ class HyenaInferenceEngine:
             `fir_state` contains the last FIR filter length - 1 elements of `u`: `u_(L-2), u_{L-1), ...`
             We assume dimensions of `short_filter_weight` to be `[d, 1, short_filter_len]`.
         """
-        weight = ops.squeeze(weight)
+        weight = weight.mint.squeeze()
 
         cache_size = fir_state.shape[-1]
         filter_length = weight.shape[-1]
         if flip_filter:
             weight = weight.flip(-1)
-            weight = mint.unsqueeze(weight[..., -cache_size - 1 :], 0)
+            weight = weight[..., -cache_size - 1 :].mint.unsqueeze(0)
         else:
-            weight = mint.unsqueeze(weight[..., : cache_size + 1], 0)
+            weight = weight[..., : cache_size + 1].mint.unsqueeze(0)
 
         input_dtype = u.dtype
         weight = weight.to(mindspore.float32)
