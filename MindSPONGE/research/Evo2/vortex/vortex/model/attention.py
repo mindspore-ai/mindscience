@@ -730,7 +730,9 @@ class MHA(nn.Cell):
                 mask_val = None
                 if 'key_padding_mask' in kwargs:
                     mask_val = kwargs.pop('key_padding_mask')
-                context = self.inner_attn.forward(q, k, v, key_padding_mask=mask_val, **kwargs)
+                    context = self.inner_attn.forward(q, k, v, key_padding_mask=mask_val, **kwargs)
+                else:
+                    context = self.inner_attn.forward(q, k, v, **kwargs)
         out = self.out_proj(rearrange(context, "... h d -> ... (h d)"))
         return out if not self.return_residual else (out, x)
 
