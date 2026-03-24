@@ -2,7 +2,8 @@
 
 from dataclasses import dataclass
 
-import mindspore
+import mindspore as ms
+from mindspore import Tensor, mint, ops
 import sys
 import numpy as np
 
@@ -24,7 +25,7 @@ class Generator:
         self,
         device: str,
         input_string: str = None,
-        input_ids: mindspore.Tensor = None,
+        input_ids: Tensor = None,
         num_tokens: int = 32,
         cached_generation: bool = True,
         force_prompt_threshold: int = None,
@@ -35,7 +36,7 @@ class Generator:
         stop_at_eos: bool = True,
         inference_params_dict: dict = None,
         token_callback=lambda i: None,
-    ) -> tuple[mindspore.Tensor, mindspore.Tensor, dict]:
+    ) -> tuple[Tensor, Tensor, dict]:
         """
         Generates using the model with optional cached sampling replay.
 
@@ -72,19 +73,19 @@ class Generator:
         """
         if isinstance(self.tokenizer.eos, int):
             #eos_token_ids = torch.LongTensor([self.tokenizer.eos]).to(device)
-            eos_token_ids = mindspore.Tensor([self.tokenizer.eos], dtype=mindspore.int64).move_to(device)
+            eos_token_ids = Tensor([self.tokenizer.eos], dtype=ms.int64)
         else:
             #eos_token_ids = self.tokenizer.tokenize(self.tokenizer.eos).to(device)
             eos_token_ids = self.tokenizer.tokenize(self.tokenizer.eos)
-            eos_token_ids = mindspore.Tensor(eos_token_ids, dtype=mindspore.int64).move_to(device)
+            eos_token_ids = Tensor(eos_token_ids, dtype=ms.int64)
         if input_ids is None:
             input = self.tokenizer.tokenize(input_string)
             if isinstance(input, list):
                 #input = torch.LongTensor(input).unsqueeze(0).to(device)
-                input = mindspore.Tensor(np.array(input)[None, :], dtype=mindspore.int64).move_to(device)
+                input = Tensor(np.array(input)[None, :], dtype=ms.int64)
             else:
                 #input = input.unsqueeze(0).to(device)
-                input = input.expand_dims(0).move_to(device)
+                input = input.expand_dims(0)
         else:
             input = input_ids
         x = input
@@ -108,52 +109,20 @@ class Generator:
             if max_seqlen > tot_length:
                 tot_length = max_seqlen
 
-        # generation = torch.empty(
-        #     x.shape[0],
-        #     num_tokens,
-        #     dtype=torch.long,
-        #     device=x.device,
-        # )
-        generation = mindspore.numpy.empty(
+        generation = mint.empty(
             (x.shape[0], num_tokens),
-            dtype=mindspore.long,
-        ).move_to(device)
+            dtype=ms.long,
+        )
 
-        # scores = torch.empty(
-        #     x.shape[0],
-        #     num_tokens,
-        #     self.tokenizer.vocab_size,
-        #     dtype=torch.float,
-        #     device=x.device,
-        # )
-        scores = mindspore.numpy.empty(
+        scores = mint.empty(
             (x.shape[0], num_tokens, self.tokenizer.vocab_size),
-            dtype=mindspore.float,
-        ).move_to(device)
+            dtype=ms.float,
+        )
 
         if inference_params_dict is not None:
             cached_generation = True
             prefilled = True
             # Ensure that the cached data is loaded on the correct device.
-            # if any(data.device != x.device for data in inference_params_dict["hcl"].fir_state_dict.values()):
-            #     for key, data in inference_params_dict["mha"].key_value_memory_dict.items():
-            #         inference_params_dict["mha"].key_value_memory_dict[key] = data.to(x.device)
-            #     for key, data in inference_params_dict["hcl"].fir_state_dict.items():
-            #         inference_params_dict["hcl"].fir_state_dict[key] = data.to(x.device)
-            #     for key, data in inference_params_dict["hcl"].state_dict.items():
-            #         inference_params_dict["hcl"].state_dict[key] = data.to(x.device)
-            #     for key, data in inference_params_dict["hcm"].fir_inner_state_dict.items():
-            #         inference_params_dict["hcm"].fir_inner_state_dict[key] = data.to(x.device)
-            #     for key, data in inference_params_dict["hcm"].fir_state_dict.items():
-            #         inference_params_dict["hcm"].fir_state_dict[key] = data.to(x.device)
-            #     for key, data in inference_params_dict["hcm"].state_dict.items():
-            #         inference_params_dict["hcm"].state_dict[key] = data.to(x.device)
-            #     for key, data in inference_params_dict["hcs"].fir_state_dict.items():
-            #         inference_params_dict["hcs"].fir_state_dict[key] = data.to(x.device)
-            #     for key, data in inference_params_dict["hcs"].fir_inner_state_dict.items():
-            #         inference_params_dict["hcs"].fir_inner_state_dict[key] = data.to(x.device)
-            #     for key, data in inference_params_dict["hcs"].state_dict.items():
-            #         inference_params_dict["hcs"].state_dict[key] = data.to(x.device)
             if any(data.device != x.device for data in inference_params_dict["hcl"].fir_state_dict.values()):
                 for key, data in inference_params_dict["mha"].key_value_memory_dict.items():
                     inference_params_dict["mha"].key_value_memory_dict[key] = data.move_to(x.device)
@@ -183,8 +152,7 @@ class Generator:
             prefilled = False
 
         if verbose:
-            #mem_after_tok = torch.cuda.memory_allocated(device=x.device) / 1e9
-            mem_after_tok = mindspore.runtime.memory_allocated() / 1e9  
+            mem_after_tok = ms.runtime.memory_allocated() / 1e9  
             print_rank_0(f"Memory after tokenization: {mem_after_tok} GB")
             print_rank_0("Starting generation...")
             if input_string is not None:
@@ -216,12 +184,8 @@ class Generator:
                     inference_params_dict["hcm"].seqlen_offset += 1
                     inference_params_dict["hcs"].seqlen_offset += 1
 
-            # do forward pass with no gradient mindspore2.4官方文档中tensor默认仅参与晕眩，补进行梯度求导和parameter更新，这里先注释掉下面这行代码
-            # with torch.inference_mode():
-            #     logits, inference_params_dict = self.model(
-            #         x,
-            #         inference_params_dict=inference_params_dict,
-            #     )
+            # TODO: [Mindspore] should support give in inference_params_dict
+            logits, _ = self.model.forward(x)
 
             token_callback(i)
 
@@ -258,61 +222,41 @@ class Generator:
             if post_prefill:
                 x = new_idx[:, None]
             else:
-                #x = torch.cat([x, new_idx[:, None]], dim=-1)
-                x = mindspore.mint.cat([x, new_idx[:, None]], axis=-1)
-
-        if verbose:
-            y = self.tokenizer.detokenize_batch(generation[:, : i + 1])
-
-            for until in self.untils:
-                if until in y:
-                    y = y.split(until)[0]
-                    break
-
-            print(f"\nInput: {input_string}, Output: {y}")
-
-            #mem_end = torch.cuda.memory_allocated(device=x.device) / 1e9
-            mem_end = mindspore.runtime.memory_allocated() / 1e9
-            print(f"Memory after generation: {mem_end} GB")
+               x = ms.mint.cat([x, new_idx[:, None]], dim=-1)
 
         return generation[:, : i + 1], scores[:, : i + 1], inference_params_dict
 
 
-def logits_to_logprobs(logits: mindspore.Tensor, tokens: mindspore.Tensor) -> mindspore.Tensor:
+def logits_to_logprobs(logits: Tensor, tokens: Tensor) -> Tensor:
     """Convert logits to log probabilities."""
-    #probs = torch.log_softmax(logits, dim=-1)
-    probs = mindspore.ops.LogSoftmax(axis=-1)(logits)
-    #return torch.gather(probs, -1, tokens.unsqueeze(-1)).squeeze(-1)
-    return mindspore.ops.gather_elements(probs, -1, tokens.expand_dims(-1)).squeeze(-1)
-    
+    probs = ops.LogSoftmax(axis=-1)(logits)
+    return ops.gather_elements(probs, -1, tokens.expand_dims(-1)).squeeze(-1)
 
 
 def prepare_batch(
     seqs: list[str], tokenizer: CharLevelTokenizer, prepend_bos: bool = False, device: str = "cuda:0"
-) -> tuple[mindspore.Tensor, list[int]]:
+) -> tuple[Tensor, list[int]]:
     """Prepare a batch of sequences for the model."""
     if prepend_bos:
         seqs = [tokenizer.bos + seq for seq in seqs]
 
     tokens = [tokenizer.tokenize(seq) for seq in seqs]
     if isinstance(tokens[0], list):
-        # tokens = [torch.tensor(t, dtype=torch.long) for t in tokens]
-        tokens = [mindspore.Tensor(t, dtype=mindspore.long) for t in tokens]
+        tokens = [Tensor(t, dtype=ms.long) for t in tokens]
 
     max_len = max(len(t) for t in tokens)
-    # batch = torch.zeros((len(tokens), max_len), dtype=torch.long)
-    batch = mindspore.zeros((len(tokens), max_len), dtype=mindspore.long)
+    batch = mint.zeros((len(tokens), max_len), dtype=ms.long)
 
     for i, t in enumerate(tokens):
         batch[i, : len(t)] = t
 
-    return batch.move_to(device), [len(t) for t in tokens]
+    return batch, [len(t) for t in tokens]
 
 
 @dataclass(kw_only=True)
 class GenerationOutput:
     sequences: list[str]
-    logits: list[mindspore.Tensor]
+    logits: list[Tensor]
     logprobs_mean: list[float]
 
 
@@ -330,7 +274,6 @@ def generate(
     force_prompt_threshold: int = 3000,
     cached_generation: bool = True,
     verbose: int = 1,
-    # device: str = "cuda:0",mindspore写法不同
     device: str = "GPU",
     **kwargs,
 ) -> GenerationOutput:
@@ -339,7 +282,7 @@ def generate(
     If all prompts are the same length, this can do batched generation.
     Also supports cached generation for efficient sampling.
     """
-    model.eval()
+    model.set_train(False)
 
     g = Generator(
         model,
@@ -399,8 +342,7 @@ def generate(
         logitss.append(logits)
 
         logprobs = logits_to_logprobs(logits, output_ids)
-        #logprobs = logprobs.float().cpu().numpy()
-        logprobs = logprobs.astype(mindspore.float).asnumpy()
+        logprobs = logprobs.astype(ms.float).asnumpy()
 
         generated_scores += [np.mean(logprobs[idx]) for idx in range(batch_size)]
 
