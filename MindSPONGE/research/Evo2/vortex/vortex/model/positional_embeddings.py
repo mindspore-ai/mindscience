@@ -1,26 +1,26 @@
-"""
-Armin Thomas, Jan 2023.  Modified by Eric Nguyen.
-
-Wrappers for linearly interpolated rope embeddings to use inside of MHA layers of Flash Attn.
-
-"""
-
 import mindspore as ms
-from mindspore import mint, nn, Tensor
+from mindspore import mint, nn, Tensor, Parameter
+from mindspore import ops as P
 from einops import rearrange
-from vortex.model.rotary import RotaryEmbedding
+from vortex.model.rotary import RotaryEmbedding  
 
-
-# simple wrapper for flash-attn RoPE with linear scaling:
+# ------------------------------------------------------------------
+#  线性缩放的 RoPE（MindSpore 版）
+# ------------------------------------------------------------------
 class LinearlyScaledRotaryEmbedding(RotaryEmbedding):
+    """
+    在已有 RotaryEmbedding 基础上，对 position index 做线性缩放：
+        t' = t / scaling_factor
+    其余逻辑与原版保持一致。
+    """
     def __init__(
         self,
         dim: int,
         scaling_factor: float = 1.0,
-        base: float = 10_000.0,
-        interleaved=False,
+        base: float = 10000.0,
+        interleaved: bool = False,
         scale_base=None,
-        pos_idx_in_fp32=True,
+        pos_idx_in_fp32: bool = True,
     ):
         super().__init__(
             dim=dim,
@@ -31,29 +31,29 @@ class LinearlyScaledRotaryEmbedding(RotaryEmbedding):
         )
         self._linear_scaling_factor = scaling_factor
 
-    # adpated from: https://github.com/Dao-AILab/flash-attention/blob/43ceab630bc6c27712428da5a33fc9cb5c369d91/flash_attn/layers/rotary.py#L368
-    def _update_cos_sin_cache(self, seqlen：int, dtype=None):
-        # Reset the tables if the sequence length has changed,
-        # if we're on a new device (possibly due to tracing for instance),
-        # or if we're switching from inference mode to training
+        # 缓存张量统一用 Parameter(requires_grad=False) 管理
+        self._seq_len_cached = 0
+        self._cos_cached = None
+        self._sin_cached = None
+        self._cos_k_cached = None
+        self._sin_k_cached = None
+
+    # ----------------------------------------------------------
+    #  重写缓存更新逻辑（全部用 MindSpore API）
+    # ----------------------------------------------------------
+    def _update_cos_sin_cache(self, seqlen: int, dtype=None):
+        # 各类需要刷新缓存的条件
         if (
-            seqlen > getattr(self, "_seq_len_cached", 0)
+            seqlen > self._seq_len_cached
             or self._cos_cached is None
             or self._cos_cached.dtype != dtype
-            or (self.training and getattr(self._cos_cached, "is_inference", lambda: False)())
         ):
             self._seq_len_cached = seqlen
-            # We want fp32 here, not self.inv_freq.dtype, since the model could be loaded in bf16
-            # And the output of arange can be quite large, so bf16 would lose a lot of precision.
-            # However, for compatibility reason, we add an option to use the dtype of self.inv_freq.
+
+            # 1. 生成 position index
             if self.pos_idx_in_fp32:
                 t = mint.arange(seqlen, dtype=ms.float32)
-                # linear scaling:
                 t = t / self._linear_scaling_factor
-                # We want fp32 here as well since inv_freq will be multiplied with t, and the output
-                # will be large. Having it in bf16 will lose a lot of precision and cause the
-                # cos & sin output to change significantly.
-                # We want to recompute self.inv_freq if it was not loaded in fp32
                 inv_freq = (
                     self._compute_inv_freq()
                     if self.inv_freq.dtype != ms.float32
@@ -61,39 +61,44 @@ class LinearlyScaledRotaryEmbedding(RotaryEmbedding):
                 )
             else:
                 t = mint.arange(seqlen, dtype=self.inv_freq.dtype)
-                # linear scaling:
                 t = t / self._linear_scaling_factor
                 inv_freq = self.inv_freq
-            # Don't do einsum, it converts fp32 to fp16 under AMP
-            # freqs = torch.einsum("i,j->ij", t, self.inv_freq)
-            freqs = mint.outer(t, inv_freq)
+
+            # 2. 计算 freqs = t @ inv_freq^T
+            freqs = P.outer(t, inv_freq)          # 等价于 torch.outer
+
+            # 3. 应用可选的 scale 因子（若使用 scale_base）
             if self.scale is None:
-                self._cos_cached = mint.cos(freqs).to(dtype)
-                self._sin_cached = mint.sin(freqs).to(dtype)
+                cos = mint.cos(freqs).astype(dtype)
+                sin = mint.sin(freqs).astype(dtype)
             else:
-                power = (
-                    mint.arange(seqlen, dtype=self.scale.dtype) - seqlen // 2
-                ) / self.scale_base
+                power = (mint.arange(seqlen, dtype=self.scale.dtype) - seqlen // 2) \
+                        / self.scale_base
                 scale = self.scale ** rearrange(power, "s -> s 1")
-                # We want the multiplication by scale to happen in fp32
-                self._cos_cached = (mint.cos(freqs) * scale).to(dtype)
-                self._sin_cached = (mint.sin(freqs) * scale).to(dtype)
-                self._cos_k_cached = (mint.cos(freqs) / scale).to(dtype)
-                self._sin_k_cached = (mint.sin(freqs) / scale).to(dtype)
+
+                cos = (mint.cos(freqs) * scale).astype(dtype)
+                sin = (mint.sin(freqs) * scale).astype(dtype)
+                cos_k = (mint.cos(freqs) / scale).astype(dtype)
+                sin_k = (mint.sin(freqs) / scale).astype(dtype)
+
+                self._cos_k_cached = Parameter(cos_k, requires_grad=False)
+                self._sin_k_cached = Parameter(sin_k, requires_grad=False)
+
+            # 4. 缓存结果
+            self._cos_cached = Parameter(cos, requires_grad=False)
+            self._sin_cached = Parameter(sin, requires_grad=False)
 
 
-# swap out RoPE of existing mha:
-def swap_mha_rope(
-    mha,
-    new_rope: type = LinearlyScaledRotaryEmbedding,
-    kwargs_new_rope: dict | None = None,
-):
-    # determine mha dtype and device:
-    if mha.cross_attn:
-        dtype = mha.Wq.weight.dtype
-    else:
-        dtype = mha.Wqkv.weight.dtype
-    # determine RoPE settings:
+# ------------------------------------------------------------------
+#  把已有 MHA 中的 RoPE 替换成新的 LinearlyScaledRotaryEmbedding
+# ------------------------------------------------------------------
+def swap_mha_rope(mha,
+                  new_rope: nn.Cell = LinearlyScaledRotaryEmbedding,
+                  kwargs_new_rope: dict = None):
+    """
+    将 mha 中的 rotary_emb 动态替换为支持线性缩放的新 RoPE。
+    """
+    # 1. 提取旧 RoPE 的关键参数
     kwargs_old_rope = dict(
         dim=mha.rotary_emb.dim,
         base=mha.rotary_emb.base,
@@ -101,13 +106,14 @@ def swap_mha_rope(
         scale_base=getattr(mha.rotary_emb, "scale_base", None),
         pos_idx_in_fp32=getattr(mha.rotary_emb, "pos_idx_in_fp32", True),
     )
-    # delete old RoPE:
-    del mha.rotary_emb
-    # create new RoPE:
-    kwargs_new = kwargs_new_rope or {"scaling_factor": 1.0}
 
-    # attach new RoPE to mha:
-    mha.rotary_emb = new_rope(**kwargs_new, **kwargs_old)
-    # make new sure RoPE is correctly registered:
+    # 2. 删除旧 RoPE
+    del mha.rotary_emb
+
+    # 3. 创建并挂载新 RoPE
+    kwargs_new_rope = kwargs_new_rope or {"scaling_factor": 1.0}
+    mha.rotary_emb = new_rope(**kwargs_old_rope, **kwargs_new_rope)
+
+    # 4. 简单校验
     assert isinstance(mha.rotary_emb, new_rope)
     return mha

@@ -1,21 +1,15 @@
 from functools import partial
-import huggingface_hub
-from huggingface_hub import snapshot_download, constants, hf_hub_download
-import os
-import pkgutil
-import mindspore.mint as mint
-from mindspore import Tensor, nn
-from typing import List, Tuple, Dict, Union
+from mindspore import Tensor, load_checkpoint, load_param_into_net
+from typing import List, Tuple, Dict
 import yaml
-
 
 from vortex.model.generation import generate as vortex_generate
 from vortex.model.model import StripedHyena
 from vortex.model.tokenizer import CharLevelTokenizer
-from vortex.model.utils import dotdict, print_rank_0, load_checkpoint
+from vortex.model.utils import dotdict
 
 from evo2.scoring import score_sequences, score_sequences_rc
-from evo2.utils import MODEL_NAMES, HF_MODEL_NAME_MAP, CONFIG_MAP
+from evo2.utils import MODEL_NAMES, CONFIG_MAP
 
 class Evo2:
     def __init__(self, model_name: str = MODEL_NAMES[1], local_path: str = None):
@@ -41,7 +35,7 @@ class Evo2:
                 f'{", ".join(MODEL_NAMES)}.'
             )
 
-        config_path = CONFIG_MAP[model_name]
+        config_path = CONFIG_MAP[model_name]  # evo2_7b: configs/evo2-7b-1m.yml    evo2_7b_base: configs/evo2-7b-8k.yml
 
         if local_path is not None:
             self.model = self.load_evo2_model(None, config_path, local_path)
@@ -70,9 +64,9 @@ class Evo2:
             Tuple of (logits, None) otherwise
         """
         embeddings = {}
-        hooks = []
+        handles = []
         
-        if return_embeddings:
+        if return_embeddings:  # False
             if layer_names is None:
                 raise ValueError(
                     "layer_names must be specified when return_embeddings=True. Look at "
@@ -80,7 +74,7 @@ class Evo2:
                 )
                 
             def hook_fn(layer_name):
-                def hook(cell: nn.Cell, inputs: Tuple[Tensor], output:Tensor):
+                def hook(_, __, output):
                     if isinstance(output, tuple):
                         output = output[0]
                     embeddings[layer_name] = output
@@ -88,21 +82,20 @@ class Evo2:
                 
             # Register hooks for requested layers
             for name in layer_names:
-                submodule = self.model.get_submodule(name)
-                hook_id = submodule.register_forward_hook(hook_fn(name))
-                hooks.append((submodule,hook_id))
-        
+                layer = self.model.get_sub_cell(name)
+                handles.append(layer.register_forward_hook(hook_fn(name)))
+
         try:
             # Original forward pass
-            logits = self.model(input_ids)
+            logits = self.model.forward(input_ids)
             
-            if return_embeddings:
+            if return_embeddings:  # False
                 return logits, embeddings
             return logits, None
-            
+
         finally:
-            for submodule, hook_id in hooks:
-                submodule.remove_forward_hook(hook_id)
+            for handle in handles:
+                handle.remove()
 
     def __call__(self, input_ids, return_embeddings=False, layer_names=None):
         return self.forward(input_ids, return_embeddings, layer_names)
@@ -130,7 +123,7 @@ class Evo2:
             raise RuntimeError(f"Error during sequence scoring: {str(e)}") from e
 
         return scores
-    
+
     def generate(
         self,
         prompt_seqs: List[str],
@@ -186,72 +179,9 @@ class Evo2:
             print(f"Loading config from {config_path}...")
             config = dotdict(yaml.load(open(config_path), Loader=yaml.FullLoader))
             model = StripedHyena(config)
-            load_checkpoint(model, local_path)
+            param_dict = load_checkpoint(local_path)
+            print(f"Loading param into net...")
+            param_not_load, _ = load_param_into_net(model, param_dict)
+            if len(param_not_load) > 0:
+                raise RuntimeError("The following parameters were not loaded successfully: " + str(param_not_load))
             return model
-        
-        hf_model_name = HF_MODEL_NAME_MAP[model_name]
-        filename = f"{model_name}.pt"
-        
-        final_weights_path = os.path.join(os.path.dirname(constants.HF_HUB_CACHE), filename)
-        if os.path.exists(final_weights_path):
-            print(f"Found existing merged file: {final_weights_path}")
-            weights_path = final_weights_path
-            
-            hf_hub_download(
-                repo_id=hf_model_name, 
-                filename="config.json"
-            )
-        else:
-            repo_dir = snapshot_download(
-                repo_id=hf_model_name,
-            )
-            
-            # Check if the complete file already exists in the repo
-            repo_weights_path = os.path.join(repo_dir, filename)
-            if os.path.exists(repo_weights_path):
-                print(f"Found complete file in repo: {filename}")
-                weights_path = repo_weights_path
-            else:
-                print(f"Looking for checkpoint shards for {filename}")
-                parts = []
-                part_num = 0
-
-                while True:
-                    part_path = os.path.join(repo_dir, f"{filename}.part{part_num}")
-                    if os.path.exists(part_path):
-                        parts.append(part_path)
-                        part_num += 1
-                    else:
-                        break
-                
-                if parts:
-                    print(f"Found {len(parts)} shards, merging them...")
-                    with open(final_weights_path, 'wb') as outfile:
-                        for part in parts:
-                            print(f"Merging shard: {os.path.basename(part)}")
-                            with open(part, 'rb') as infile:
-                                while True:
-                                    chunk = infile.read(8192*1024)
-                                    if not chunk: 
-                                        break
-                                    outfile.write(chunk)
-                    
-                    print(f"Successfully merged all shards into {final_weights_path}")
-                    weights_path = final_weights_path
-                    if remove_shards and os.path.exists(final_weights_path):
-                        for part in parts:
-                            real_path = os.path.realpath(part)
-                            if os.path.exists(real_path):
-                                os.remove(real_path)
-                            if os.path.exists(part):
-                                os.remove(part)
-                else:
-                    raise FileNotFoundError(f"Could not find {filename} or any of its shards in {repo_dir}")
-                
-        config = yaml.safe_load(pkgutil.get_data(__name__, config_path))
-        global_config = dotdict(config, Loader=yaml.FullLoader)
-
-        model = StripedHyena(global_config)
-        load_checkpoint(model, weights_path)
-
-        return model
