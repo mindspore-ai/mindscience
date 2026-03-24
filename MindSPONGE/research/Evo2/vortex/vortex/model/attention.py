@@ -320,6 +320,14 @@ class SelfAttention(nn.Cell):
         # q: (B, Hq, S, D), k: (B, Hk, S, D)
         H_q = q.shape[1]
         H_k = k.shape[1]
+
+        if H_q != H_k:
+             if H_q % H_k != 0:
+                 raise ValueError(f"Query heads {H_q} not divisible by Key heads {H_k}")
+             n_rep = H_q // H_k
+             # 复制 k, v
+             k = ops.tile(k.expand_dims(2), (1, 1, n_rep, 1, 1)).reshape(q.shape[0], H_q, k.shape[2], k.shape[3])
+             v = ops.tile(v.expand_dims(2), (1, 1, n_rep, 1, 1)).reshape(q.shape[0], H_q, v.shape[2], v.shape[3])
        
         # MatMul: (B, H, S, D) @ (B, H, D, S) -> (B, H, S, S)
         scale = self.softmax_scale if self.softmax_scale is not None else 1.0 / math.sqrt(D_head)
