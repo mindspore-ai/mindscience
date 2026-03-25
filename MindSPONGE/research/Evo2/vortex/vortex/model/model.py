@@ -41,106 +41,25 @@ from vortex.model.utils import (
 
 import logging
 from tqdm import tqdm
-from typing import Optional, Union
 
 from vortex.model.attention import MHA
-
-class RotaryEmbeddingMock(nn.Cell):
-    def __init__(
-        self,
-        dim: int,
-        base=10000.0,
-        interleaved=False,
-        scale_base=None,
-        pos_idx_in_fp32=True,
-        device=None,
-    ):
-        super().__init__()
-        self.base = float(base)
-        self.dim = dim
-        self.pos_idx_in_fp32 = pos_idx_in_fp32
-        inv_freq = self._compute_inv_freq(device)
-        self.register_buffer("inv_freq", inv_freq, persistent=False)
-
-    def _compute_inv_freq(self, device=None):
-        return 1.0 / (self.base ** (mint.arange(0, self.dim, 2, dtype=ms.float32) / self.dim))
-    
-    def forward(
-        self,
-        qkv: Tensor,
-        kv: Optional[Tensor] = None,
-        seqlen_offset: Union[int, Tensor] = 0,
-        max_seqlen: Optional[int] = None,
-        num_heads_q: Optional[int] = None,
-    ):
-        return qkv
-
-class MHAMock(nn.Cell):
-    def __init__(
-        self,
-        embed_dim,
-        num_heads,
-        num_heads_kv=None,
-        cross_attn=False,
-        qkv_proj_bias=True,
-        out_proj_bias=True,
-        dropout=0.0,
-        softmax_scale=None,
-        causal=False,
-        layer_idx=None,
-        dwconv=False,
-        rotary_emb_dim=0,
-        rotary_emb_base=10000.0,
-        rotary_emb_scale_base=None,
-        rotary_emb_interleaved=False,
-        use_alibi=False,
-        window_size=(-1, -1),
-        fused_bias_fc=False,
-        use_flash_attn=False,
-        return_residual=False,
-        checkpointing=False,
-        device=None,
-        dtype=None,
-    ) -> None:
-        super().__init__()
-        self.rotary_emb_dim = rotary_emb_dim
-        self.rotary_emb = RotaryEmbeddingMock(
-            dim=rotary_emb_dim,
-            base=rotary_emb_base,
-            scale_base=rotary_emb_scale_base,
-            interleaved=rotary_emb_interleaved,
-            device=device,
-        )
-
-    def forward(
-        self,
-        x,
-        x_kv=None,
-        key_padding_mask=None,
-        cu_seqlens=None,
-        max_seqlen=None,
-        mixer_subset=None,
-        inference_params=None,
-        **kwargs,
-    ):
-        return x
 
 class AttentionBlock(nn.Cell):
     def __init__(self, config, layer_idx) -> None:
         super().__init__()
         self.config = config
-        self.pre_norm, self.post_norm = RMSNorm(config), RMSNorm(config)
         self.layer_idx = layer_idx
         self.print_activations = config.get("print_activations", False)
         self.proj_groups = config.get("proj_groups", 1)
         dtype = config.get("attn_block_dtype", ms.bfloat16)
-        mlp_dtype = config.get("mlp_dtype", ms.bfloat16)
+        self.mlp_dtype = config.get("mlp_dtype", ms.bfloat16)
+        self.pre_norm, self.post_norm = RMSNorm(config).to_float(dtype), RMSNorm(config).to_float(dtype)
         self.num_attention_heads = config.num_attention_heads
         self.hidden_size = config.hidden_size
         self.hidden_size_per_attention_head = config.hidden_size // config.num_attention_heads
 
         self.counter = 0
-        self.inner_mha_cls = MHAMock(
+        self.inner_mha_cls = MHA(
             embed_dim=config.hidden_size,
             num_heads=config.num_attention_heads,
             num_heads_kv=config.num_attention_heads // self.proj_groups,
@@ -165,11 +84,8 @@ class AttentionBlock(nn.Cell):
 
         if self.config.get("smeared_gqa", False):
             self.inner_mha_cls.num_heads_kv = self.inner_mha_cls.num_heads
-        
-        if self.inner_mha_cls.rotary_emb_dim > 0:
-            self.inner_mha_cls.rotary_emb.register_buffer("inv_freq", self.inner_mha_cls.rotary_emb.inv_freq)
 
-        self.mlp = ParallelGatedMLP(config, layer_idx).to_float(mlp_dtype)
+        self.mlp = ParallelGatedMLP(config, layer_idx).to_float(self.mlp_dtype)
 
     def forward(self, u, inference_params=None, padding_mask=None, *args, **kwargs):
         if (
@@ -179,7 +95,7 @@ class AttentionBlock(nn.Cell):
             u = u * padding_mask[..., None]
         u = (
             self.inner_mha_cls.forward(
-                self.pre_norm.forward(u),
+                self.pre_norm.forward(u, self.layer_idx, extend="pre_norm_mha"),
                 inference_params=inference_params,
             )
             + u
@@ -188,7 +104,8 @@ class AttentionBlock(nn.Cell):
         if type(padding_mask) == Tensor:  # guard against bias
             u = u * padding_mask[..., None]
 
-        u = self.mlp.forward(self.post_norm.forward(u)) + u
+        u_post_norm = self.post_norm.forward(u, self.layer_idx, extend="post_norm_mlp")
+        u = self.mlp.forward(u_post_norm.astype(self.mlp_dtype)) + u
         return u, None
 
 
@@ -280,6 +197,7 @@ class HyenaCascade(nn.Cell):
             return self.sequential_forward(u, inference_params)
 
         else:
+            # 走这里
             return self.parallel_forward(u, inference_params, padding_mask)
 
     def parallel_forward(self, u, inference_params=None, padding_mask=None):
@@ -423,7 +341,7 @@ class HyenaCascade(nn.Cell):
             )
             inference_params.state_dict[self.layer_idx] = iir_state
 
-        y = y.to(self.data_dtype)
+        y = y.astype(self.data_dtype)
         return y[:, None], inference_params
 
     def update_time(self, L, device):
@@ -460,49 +378,45 @@ class ParallelGatedConvBlock(nn.Cell):
         self.low_mem_mode = config.get("low_mem_mode", False)
         self.fir_inner_filter_length = fir_inner_filter_length
         self.hyena_filter_groups = hyena_filter_groups if hyena_filter_groups is not None else config.hidden_size
-        dtype = config.get("hyena_block_dtype", ms.bfloat16)
-        mlp_dtype = config.get("mlp_dtype", ms.bfloat16)
+        self.hyena_dtype = config.get("hyena_block_dtype", ms.bfloat16)
+        self.mlp_dtype = config.get("mlp_dtype", ms.bfloat16)
         self.pre_norm, self.post_norm = (
-            RMSNorm(config).to_float(dtype),
-            RMSNorm(config).to_float(dtype),
+            RMSNorm(config).to_float(self.hyena_dtype),
+            RMSNorm(config).to_float(self.hyena_dtype),
         )
         self.filter = HyenaCascade(
             config,
             layer_idx,
             hyena_filter_groups=self.hyena_filter_groups,
             fir_inner_filter_length=fir_inner_filter_length,
-        ).to_float(dtype)
+        ).to_float(self.hyena_dtype)
 
-        # For posterity/debugging: TELinear can be easily replaced by
-        # nn.Linear(config.hidden_size, 3 * config.hidden_size, bias=config.qkv_proj_bias).to(dtype=dtype)
-        # which sometimes is very useful when debugging FP8.
         self.projections = nn.Dense(
             config.hidden_size,
             3 * config.hidden_size,
             has_bias=config.qkv_proj_bias,
-        ).to_float(dtype)
+        ).to_float(self.hyena_dtype)
 
-        self.out_filter_dense = nn.Linear(
+        self.out_filter_dense = nn.Dense(
             config.hidden_size,
             config.hidden_size,
-            bias=config.hyena_out_proj_bias
-        ).to_float(dtype)
-        self.mlp = ParallelGatedMLP(config, layer_idx).to_float(mlp_dtype)
+            has_bias=config.hyena_out_proj_bias,
+        ).to_float(self.hyena_dtype)
+        self.mlp = ParallelGatedMLP(config, layer_idx).to_float(self.mlp_dtype)
 
     def pad_to_multiple(self, x, multiple=16):
         """Pad input tensor to multiple of 16 only when FP8 is enabled"""
         if not self.config.get("use_fp8_input_projections", False):
             return x
 
-        batch_size, seq_len, hidden_dim = ops.shape(x)
-        print("--- batch_size, seq_len, hidden_dim: ", batch_size, seq_len, hidden_dim)
+        _, seq_len, _ = ops.shape(x)
         pad_len = (multiple - (seq_len % multiple)) % multiple
         if pad_len == 0:
             return x
         return F.pad(x, (0, 0, 0, pad_len))
 
     def proj_norm(self, x):
-        normalized = self.pre_norm.forward(x)
+        normalized = self.pre_norm.forward(x, self.layer_idx, "pre_norm_proj_norm")
         normalized = self.pad_to_multiple(normalized)
         projected = self.projections(normalized)
 
@@ -513,11 +427,12 @@ class ParallelGatedConvBlock(nn.Cell):
         # Slice back to original sequence length if padding was added
         if ops.shape(projected)[1] > original_seq_len:
             projected = projected[:, :original_seq_len, :]
-
         return projected
 
     def res_mlp_norm(self, x):
-        return self.mlp.forward(self.post_norm.forward(x)) + x
+        post_norm_out = self.post_norm.forward(x, self.layer_idx, "post_norm")
+        mlp_out = self.mlp.forward(post_norm_out.astype(self.mlp_dtype))
+        return mlp_out + x
 
     def forward(self, u, inference_params=None, padding_mask=None, *args, **kwargs):
         z = self.proj_norm(u)
@@ -527,10 +442,7 @@ class ParallelGatedConvBlock(nn.Cell):
 
         z, inference_params = self.filter.forward(z, inference_params=inference_params, padding_mask=padding_mask)
 
-        z_in = self.out_filter_dense(z) + u
-
-        # if self.layer_idx == 0:
-        #    z_in = z_savanna.squeeze() + u + self.out_filter_dense.bias
+        z_in = self.out_filter_dense(z.astype(self.hyena_dtype)) + u.astype(self.hyena_dtype)
 
         if type(padding_mask) == Tensor:  # guard against bias
             z_in = z_in * padding_mask[..., None]
@@ -580,7 +492,7 @@ class StripedHyena(nn.Cell):
         self.ground_truth_activations_path = config.get("ground_truth_activations_path", None)
         self.logger.info(f"Initializing StripedHyena with config: {config}")
 
-        self.embedding_layer = VocabParallelEmbedding(config)  # under single process, forward nn.Embedding
+        self.embedding_layer = VocabParallelEmbedding(config, dtype=ms.bfloat16)  # under single process, forward nn.Embedding
 
         if config.get("use_flashfft", "True"):
             try:
@@ -597,7 +509,7 @@ class StripedHyena(nn.Cell):
                 "⚠️ Set 'evo2_style_activations: True' in config if you are using Evo 2 checkpoints ⚠️"
             )
         self.logger.info(f"Initializing {config.num_layers} blocks...")
-        self.blocks = nn.CellList()
+        self.block_list = []
         self.block_idx_to_device = {}
 
         # Calculate layers per GPU
@@ -614,12 +526,13 @@ class StripedHyena(nn.Cell):
 
             block = get_block(config, layer_idx, flash_fft=self.flash_fft)
 
-            self.blocks.append(block)
+            self.block_list.append(block)
             self.block_idx_to_device[layer_idx] = device
-            self.logger.info(f"Assigned {layer_idx=} to {device=}")
+            self.logger.info(f"Assigned {layer_idx} to {device}")
             self.logger.info(
-                f"block parameters type: {type(self.blocks[-1].get_parameters())}"
+                f"block parameters type: {type(self.block_list[-1].get_parameters())}"
             )
+            self.blocks = nn.CellList(self.block_list)
 
         self.norm = RMSNorm(config) if config.get("final_norm", True) else None
         if config.tie_embeddings:
@@ -637,21 +550,16 @@ class StripedHyena(nn.Cell):
         self.logger.info("Initialized model")
 
     def forward(self, x, inference_params_dict=None, padding_mask=None):
-        x = self.embedding_layer(x)
-
+        x = self.embedding_layer.forward(x)
         if inference_params_dict is not None:
-            print("--- stateful_forward")
             x, inference_params_dict_out = self.stateful_forward(
                 x,
                 inference_params_dict=inference_params_dict,
             )
         else:
-            print("--- stateless_forward")
             x, inference_params_dict_out = self.stateless_forward(x, padding_mask=padding_mask)
-
-        x = self.norm(x)
-
-        x = self.unembed(x)
+        x = self.norm.forward(x)
+        x = self.unembed.forward(x.astype(ms.float32))
         return x, inference_params_dict_out
 
     def block_idx_to_name(self, block_idx):
@@ -668,14 +576,13 @@ class StripedHyena(nn.Cell):
 
     def cross_device_transfer(self, x, block_idx):
         if self.block_idx_to_device[max(block_idx - 1, 0)] != self.block_idx_to_device[block_idx]:
-            x = x.to(self.block_idx_to_device[block_idx])
+            x = x.astype(self.block_idx_to_device[block_idx])
         return x
 
     def stateful_forward(self, x, inference_params_dict=None):
         for block_idx, block in enumerate(self.blocks):
             inference_params = inference_params_dict[self.block_idx_to_name(block_idx)]
 
-            x = self.cross_device_transfer(x, block_idx)
             x, _ = block.forward(x, inference_params=inference_params)
 
         return x, inference_params_dict
@@ -685,7 +592,6 @@ class StripedHyena(nn.Cell):
             x = x * padding_mask[..., None]
 
         for block_idx, block in enumerate(self.blocks):
-            x = self.cross_device_transfer(x, block_idx)
             x, _ = block.forward(x, inference_params=None, padding_mask=padding_mask)
 
         return x, None
@@ -725,24 +631,6 @@ class StripedHyena(nn.Cell):
             ),
         }
         return inference_params_dict
-
-    def precompute_filters(self, L, device):
-        for _, block in enumerate(self.blocks):
-            if type(block) == ParallelGatedConvBlock:
-                if type(block.filter) == HyenaCascade:
-                    L = block.filter.long_fir_threshold or L
-                    print_rank_0(f"Precomputing filters, L={L}...")
-
-                    filter_dtype = ms.float16 if L >= 2048 else ms.float32
-
-                    block.filter._set_time(L, device)
-                    residues, poles = (
-                        block.filter.residues.to_float(ms.float16),
-                        block.filter.poles.to_float(ms.float16),
-                    )
-
-                    block.filter.h = (residues * poles**block.filter.t).real.sum(1)[None]
-                    block.filter.h = block.filter.h.to_float(filter_dtype)
 
     def custom_load_state_dict(self, state_dict, strict=True):
         """
@@ -816,7 +704,7 @@ class StripedHyena(nn.Cell):
                     Wqkv = Wqkv.permute(1, 0)
 
                     # Single device transfer at the end
-                    block.inner_mha_cls.Wqkv.weight.data = Wqkv.to(target_device)
+                    block.inner_mha_cls.Wqkv.weight.data = Wqkv.astype(target_device)
 
                     if bias is not None:
                         bias = bias.cpu()  # Process on CPU
@@ -827,7 +715,7 @@ class StripedHyena(nn.Cell):
                         bias_v = bias_v.reshape(block.hidden_size)
                         bias = mint.cat([bias_q, bias_k, bias_v], dim=0)
                         try:
-                            block.inner_mha_cls.Wqkv.bias.data = bias.to(target_device)
+                            block.inner_mha_cls.Wqkv.bias.data = bias.astype(target_device)
                         except:
                             pass
 

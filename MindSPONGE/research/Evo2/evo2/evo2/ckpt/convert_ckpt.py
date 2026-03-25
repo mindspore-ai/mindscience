@@ -18,23 +18,29 @@ for k, v in state_dict.items():
     for i in range(include_layers, 32):
         if f"blocks.{i}" in k:
             key_to_del.add(k)
-print(key_to_del)
 
 # delete keys
 for key in key_to_del:
     state_dict.pop(key, None)
 
-# Convert the remained items to mindspore instances.
-type_set = set()
-for k, v in state_dict.items():
-    if v.dtype is torch.bfloat16:
+def update_ms_dict(ms_dict, k, v):
+    if v.dtype is ms.bfloat16:
         v = v.float()
-        state_dict[k] = ms.Tensor(v.detach().cpu().numpy()).astype(ms.bfloat16)
+        ms_dict[k] = ms.Tensor(v.detach().cpu().numpy()).astype(ms.bfloat16)
     else:
-        state_dict[k] = ms.Tensor(v.detach().cpu().numpy())
-    type_set.add(type(state_dict[k]))
+        ms_dict[k] = ms.Tensor(v.detach().cpu().numpy())
 
-param_dict = {k: ms.Parameter(v, name=k) for k, v in state_dict.items()}
+# Convert the remained items to mindspore instances.
+ms_dict = {}
+for k, v in state_dict.items():
+    if k == "embedding_layer.weight":
+        update_ms_dict(ms_dict, "embedding_layer.embedding_table", v)
+    else:
+        update_ms_dict(ms_dict, k, v)
+
+param_dict = {k: ms.Parameter(v, name=k) for k, v in ms_dict.items()}
 
 # Save as mindspore checkpoint
-ms.save_checkpoint(param_dict, './evo2_7b_base_ms.ckpt')
+ms.save_checkpoint(param_dict, './ckpt/evo2_7b_base_ms.ckpt')
+print("Saved to ckpt/evo2_7b_base_ms.ckpt")
+
