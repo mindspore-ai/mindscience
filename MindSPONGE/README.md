@@ -39,6 +39,8 @@ MindSpore SPONGE (Simulation Package tOwards Next GEneration molecular modelling
 ## News
 
 - 🙌`[Pinned]` `[In Progress]` [**2025 MindScience Open-source Internship**](https://atomgit.com/mindspore/community/issues/2027) is now open! Come apply your tasks! [[Link]](https://mp.weixin.qq.com/s/R-t8-u4ak2fN4gxe13m3Gw)
+- 🔥 `2026.3.28` MindSpore-based Evo2-7B inference released, supporting single-card forward, embedding, and generation inference; performance optimization is in progress.  
+[[Code]](https://atomgit.com/mindspore-lab/mindscience/tree/master/MindSPONGE/research/Evo2)
 - 🔥`2025.12.23` Protenix inference & training on MindSPore released, support 2K sequence length! [[Code]](https://atomgit.com/mindspore-lab/mindscience/tree/master/MindSPONGE/applications/protenix)
 - 🔥`2025.12.16` Alphafold3 inference on MindSPore updated，now support 2K sequence length，performance improved over 300%! [[Code]](https://atomgit.com/mindspore-lab/mindscience/tree/master/MindSPONGE/applications/AlphaFold3)
 - 🔥`2025.11.6` RFdiffusion inference on MindSpore released, supports antibody design, performance continuously improving! [[Code]](https://atomgit.com/mindspore-lab/mindscience/tree/master/MindSPONGE/applications/rf_diffusion)
@@ -99,7 +101,7 @@ MindSpore SPONGE (Simulation Package tOwards Next GEneration molecular modelling
 
 ### Genome/Transcriptome Language Model
 
-- 🔥Evo2 `In Progress`
+- 🔥Evo2 [[Available]](https://atomgit.com/mindspore-lab/mindscience/tree/master/MindSPONGE/research/Evo2)
 - DNABERT [[Available]](https://atomgit.com/mindspore-lab/mindscience/blob/legacy-master/MindSPONGE/applications/model_cards/DNABERT.MD)
 - Geneformer[[Available]](https://atomgit.com/mindspore-lab/mindscience/tree/legacy-master/MindSPONGE/applications/research/Geneformer)
 

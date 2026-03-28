@@ -4,13 +4,6 @@ from typing import Optional, Tuple, Union
 
 import torch
 
-import flash_attn_2_cuda as flash_attn_gpu
-
-
-def maybe_contiguous(x):
-    return x.contiguous() if x is not None and x.stride(-1) != 1 else x
-
-
 def round_multiple(x, m):
     return (x + m - 1) // m * m
 

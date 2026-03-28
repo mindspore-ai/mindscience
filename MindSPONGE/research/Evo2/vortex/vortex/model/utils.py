@@ -1,5 +1,6 @@
-import torch
+from mindspore import ops, mint, nn, Tensor
 import logging
+from einops import rearrange as ein_rearrange
 
 log = logging.getLogger(__name__)
 
@@ -28,13 +29,13 @@ def interleave(z_pre):
         x1 = z_pre[:, 0::3, :]
         x2 = z_pre[:, 1::3, :]
         v = z_pre[:, 2::3, :]
-        z_pre = torch.cat([x1, x2, v], dim=1)
+        z_pre = mint.cat([x1, x2, v], dim=1)
         return z_pre
     else:
         x1 = z_pre[..., 0::3]
         x2 = z_pre[..., 1::3]
         v = z_pre[..., 2::3]
-        z_pre = torch.concat([x1, x2, v], dim=-1)
+        z_pre = mint.cat([x1, x2, v], dim=-1)
         return z_pre
 
 
@@ -84,45 +85,6 @@ def column_split(x, num_heads, head_size):
         )
         return x2, x1, v
 
-
-def load_checkpoint(model, checkpoint_path):
-    if checkpoint_path is None:
-        log.warning("Using random weights (dry-run)")
-        return
-    log.info(f"Loading {checkpoint_path}")
-
-    # We must allowlist BytesIO, as fp8-enabled checkpoints store this type
-    # in Transformer Engine layers' _extra keys. If not, weights_only=True
-    # will not be happy.
-    import io
-    from transformer_engine.common.recipe import DelayedScaling, Format, _FormatHelper
-
-    torch.serialization.add_safe_globals([io.BytesIO, DelayedScaling, Format, _FormatHelper])
-
-    with torch.inference_mode():
-        state = torch.load(
-            checkpoint_path,
-            # Make sure we override device location that is specified in the
-            # checkpoint dictionary (e.g. checkpoints may have "cuda:0"
-            # as a location for all layers, which then wouldn't work for
-            # multi-GPU case.)
-            map_location="cpu",
-            # This is an optimization: with that, we don't actually read
-            # whole checkpoints dictionary from disk to CPU memory in one
-            # go; instead, pytorch would only load relevant layers to CPU
-            # memory when we are about to copy them to GPU.
-            mmap=True,
-            # Make sure PyTorch is not issuing a warning regarding potential
-            # security issues.
-            weights_only=True,
-        )
-        model.to_bfloat16_except_pr_lc(to_float32=True)
-
-        model.custom_load_state_dict(state)
-
-        model.to_bfloat16_except_pr_lc()
-
-
 def move_to_device(module, device):
     """Recursively moves all parameters and buffers to the specified device."""
     for child in module.children():
@@ -137,66 +99,6 @@ def move_to_device(module, device):
             buf.data = buf.data.to(device)
 
     module.to(device)
-
-
-def fixup_fp8_extra_states(module):
-    """Recursively fixes device location of TE's Linear fp8 extra states."""
-    for child in module.children():
-        fixup_fp8_extra_states(child)
-    if hasattr(module, "fp8_meta"):
-        log.debug(f"Reloading fp8 extra state to a proper device for {module}")
-
-        # Must set to false, otherwise set_extra_state will be no-op
-        module.fp8_meta_tensors_initialized = False
-
-        # TE Linear uses default "cuda" device to load extra state, which causes
-        # trouble when the layer is moved to another GPU. Instead, this is how
-        # TE Linear should load extra_state: using parameters' device.
-        device = next(module.parameters()).device
-        with torch.cuda.device(device):
-            module.set_extra_state(module.get_extra_state())
-
-        # Make sure we actually fixed everything we wanted.
-        for k in ["scaling_fwd", "scaling_bwd"]:
-            for attr in ["amax_history", "scale"]:
-                tensor = getattr(module.fp8_meta[k], attr)
-                assert tensor.device == device, (k, tensor, device)
-
-
-def fixup_te_workspace():
-    """TE uses single workspace tensor for all calls, disregarding that inputs
-    may be on separate GPUs. This patches TE's Linear module to use per-device
-    workspaces."""
-    from functools import lru_cache
-
-    @lru_cache
-    def te_cublas_get_workspace_per_device(device):
-        log.info(f"Fixup applied: Allocating cublas workspace for {device=}")
-        import transformer_engine.pytorch.module.base as tebase
-
-        with torch.cuda.device(device):
-            tebase._cublas_workspace = None  # Force get_workspace() to reallocate tensor
-            return tebase.get_workspace()
-
-    def get_workspace():
-        return te_cublas_get_workspace_per_device(torch.cuda.current_device())
-
-    import transformer_engine.pytorch.module.linear as telinear
-
-    telinear.get_workspace = get_workspace
-
-
-def get_init_from_string(init_str):
-    if type(init_str) == str:
-        if init_str == "torch.nn.init.zeros_":
-            return torch.nn.init.zeros_
-        elif init_str == "torch.nn.init.xavier_uniform_":
-            return torch.nn.init.xavier_uniform_
-        elif init_str == "torch.nn.init.xavier_normal_":
-            return torch.nn.init.xavier_normal_
-        else:
-            raise ValueError(f"Unrecognized init {init_str}")
-
 
 def print_rank_0(message, debug=False, end="\n"):
     """Print from rank 0 only."""
@@ -227,7 +129,7 @@ def divide(numerator, denominator):
     return numerator // denominator
 
 
-class Lambda(torch.nn.Module):
+class Lambda(nn.Cell):
     def __init__(self, func):
         super().__init__()
         self.func = func
@@ -251,3 +153,19 @@ class VocabUtility:
     def vocab_range_from_global_vocab_size(global_vocab_size, rank, world_size):
         per_partition_vocab_size = divide(global_vocab_size, world_size)
         return VocabUtility.vocab_range_from_per_partition_vocab_size(per_partition_vocab_size, rank, world_size)
+
+def trim_pad_tensor(tensor, n, dim=-1):
+    dim_size = tensor.shape[dim]
+    if n > dim_size:
+        return ops.pad(tensor, (0, n - dim_size))
+    elif n < dim_size:
+        return ops.narrow(tensor, dim, 0, n)
+    else:
+        return tensor
+
+def ms_rearrange(tensor, pattern, **args):
+    ms_tensor = tensor.asnumpy()
+    return Tensor.from_numpy(ein_rearrange(ms_tensor, pattern, **args))
+
+def maybe_contiguous(x):
+    return x.contiguous() if x is not None and x.stride(-1) != 1 else x

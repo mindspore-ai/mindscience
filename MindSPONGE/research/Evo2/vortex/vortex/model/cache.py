@@ -4,7 +4,7 @@
 from dataclasses import dataclass, field
 from typing import Optional
 
-from torch import Tensor
+from mindspore import Tensor
 
 
 # https://github.com/Dao-AILab/flash-attention/blob/main/flash_attn/utils/generation.py

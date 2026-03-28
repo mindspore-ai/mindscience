@@ -13,6 +13,7 @@
 # limitations under the License.
 # ============================================================================
 
+import mindspore as ms
 from mindspore import nn, Tensor, Parameter, mint, ops
 from mindspore.mint.nn import functional as F
 
@@ -23,7 +24,6 @@ class RMSNorm(nn.Cell):
         super(RMSNorm, self).__init__()
         self.eps, self.hidden_size = config.eps, config.hidden_size
         self.scale = Parameter(mint.ones(self.hidden_size, dtype=config.params_dtype))
-        #self.register_parameter("scale", self.scale)
         self.use_flash_rmsnorm = config.get("use_flash_rmsnorm", False)
 
         if self.use_flash_rmsnorm:
@@ -31,13 +31,14 @@ class RMSNorm(nn.Cell):
 
             self.rmsnorm_func = rmsnorm_func
 
-    def forward(self, x):
+    def forward(self, x, layer_idx="100", extend=""):
         if self.use_flash_rmsnorm:
             return self.rmsnorm_func(x, self.scale, self.eps)
         else:
             norm = mint.linalg.norm(x, ord=2, dim=-1, keepdim=True)
             y = x / (norm * self.hidden_size ** (-1.0 / 2) + self.eps)
-            return self.scale * y
+            out = (self.scale * y).astype(ms.bfloat16)
+            return out
 
 
 class ParallelGatedMLP(nn.Cell):
@@ -67,20 +68,20 @@ class ParallelGatedMLP(nn.Cell):
         inner_size = self.multiple_of * ((inner_size + self.multiple_of - 1) // self.multiple_of)
         inner_size = config.get("inner_mlp_size", inner_size)
 
-        self.l1 = nn.Linear(
-            in_features=config.hidden_size,
-            out_features=inner_size,
-            bias=False,
+        self.l1 = nn.Dense(
+            in_channels=config.hidden_size,
+            out_channels=inner_size,
+            has_bias=False
         )
-        self.l2 = nn.Linear(
-            in_features=config.hidden_size,
-            out_features=inner_size,
-            bias=False,
+        self.l2 = nn.Dense(
+            in_channels=config.hidden_size,
+            out_channels=inner_size,
+            has_bias=False
         )
-        self.l3 = nn.Linear(
-            in_features=inner_size,
-            out_features=config.hidden_size,
-            bias=False,
+        self.l3 = nn.Dense(
+            in_channels=inner_size,
+            out_channels=config.hidden_size,
+            has_bias=False
         )
 
     def forward(self, z):
@@ -93,7 +94,7 @@ class ParallelGatedMLP(nn.Cell):
 class VocabParallelEmbedding(nn.Embedding):
     "Adapted from https://github.com/Dao-AILab/flash-attention/blob/main/flash_attn/modules/embedding.py"
 
-    def __init__(self, config):
+    def __init__(self, config, dtype):
         vocab_size, process_group, padding_idx = (
             config.vocab_size,
             config.get("process_group", None),
@@ -112,11 +113,12 @@ class VocabParallelEmbedding(nn.Embedding):
             vocab_size // world_size,
             embedding_size=config.hidden_size,
             padding_idx=padding_idx,
+            dtype=dtype,
         )
 
     def forward(self, input: Tensor) -> Tensor:
         if self.process_group is None:  # single process
-            return super().construct(input)
+            return super().construct(input).astype(ms.bfloat16)
         else:
             rank = mint.distributed.get_rank(self.process_group)
             vocab_size = self.num_embeddings
@@ -136,7 +138,7 @@ class VocabParallelEmbedding(nn.Embedding):
 
     def unembed(self, u: Tensor) -> Tensor:
         if self.process_group is None:
-            return u @ self.embedding_table.T
+            return ops.matmul(u, self.embedding_table.T)
         else:
             raise NotImplementedError
 

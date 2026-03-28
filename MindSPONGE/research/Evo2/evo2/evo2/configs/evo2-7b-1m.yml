@@ -20,8 +20,6 @@ num_layers: 32
 short_filter_length: 3 
 num_attention_heads: 32
 short_filter_bias: false # add bias to FIR
-mlp_init_method: torch.nn.init.zeros_
-mlp_output_init_method: torch.nn.init.zeros_
 eps: 0.000001
 state_size: 16
 rotary_emb_base: 10000
@@ -53,7 +51,7 @@ use_fp8_input_projections: False
 max_seqlen: 1048576
 max_batch_size: 1
 final_norm: True 
-use_flash_attn: False
+use_flash_attn: True # TODO: [MindSpore] Throw exception when False
 use_flash_rmsnorm: False
 use_flash_depthwise: False
 use_flashfft: False
