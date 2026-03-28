@@ -9,7 +9,7 @@
 
 GraphDTA(drug-target affinity)就是一个蛋白质-配体亲和性预测模型。模型结构如下图所示：
 
-![GraphDTA](../../docs/doc_imag/GraphDTA.JPG)
+![GraphDTA](../docs/doc_imag/GraphDTA.JPG)
 
 GraphDTA以小分子SMILE式与蛋白质氨基酸序列作为输入，使用rdkit读取小分子的二级结构信息后利用GNN网络来提取小分子的特征向量，使用三层CNN层提取蛋白质的特征向量，最后根据所得特征向量预测两者间亲和性。
 

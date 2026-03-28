@@ -7,11 +7,11 @@ GROVER是一个自监督预训练GNN模型，能够对小分子进行编码，�
 
 GROVER由两个模块组成，节点transformer和边transformer，两者有类似的结构。节点GTransformer结构如下图所示：
 
-![GTransformer](../../docs/doc_imag/node_gtransformer.png)
+![GTransformer](../docs/doc_imag/node_gtransformer.png)
 
 GROVER提出了两个预训练自监督任务，一个是在节点/边层级的上下文属性预测任务，另一个是图级别的motif预测任务。
 
-![GROVER](../../docs/doc_imag/GROVER.PNG)
+![GROVER](../docs/doc_imag/GROVER.PNG)
 
 分子指纹是一种分子的抽象表征，它将分子编码为一系列比特向量，有助于进行两个化合物之间相似性的比较，Open Babel，RDkit等多种软件均可生成分子指纹，用于后续的虚拟筛选。通过多个自监督任务的训练，GROVER也能够生成原子的特征向量以及小分子的分子指纹，完成分子指纹生成这一下游任务。
 

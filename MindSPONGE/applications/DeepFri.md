@@ -8,7 +8,7 @@ DeepFRI是一种图形卷积网络，通过利用从蛋白质语言模型和蛋�
 
 - EC编号或EC号是酶学委员会（Enzyme Commission）为酶所制作的一套编号分类法，是以每种酶所催化的化学反应为分类基础。 这套分类法亦同时会为各种酶给予一个建议的名称，所以亦称为酶学委员会命名法。 针对EC，DeepFRI将直接输出其EC编号。
 
-![DeepFRI](../../docs/doc_imag/DeepFRI.PNG)
+![DeepFRI](../docs/doc_imag/DeepFRI.PNG)
 
 ## 数据集
 
