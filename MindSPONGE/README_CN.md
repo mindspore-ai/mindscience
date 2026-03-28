@@ -39,6 +39,7 @@ MindSpore SPONGE(Simulation Package tOwards Next GEneration molecular modelling)
 ## 重要消息
 
 - 🙌`[置顶]` `[进行中]` [**2025 MindScience开源实习任务**](https://atomgit.com/mindspore/community/issues/2027)火热进行中！持续发布新任务，欢迎大家认领~！！[[活动详情]](https://mp.weixin.qq.com/s/R-t8-u4ak2fN4gxe13m3Gw)
+- 🔥`2026.3.28` 基于MindSpore的Evo2-7b推理发布，支持单卡forward、embedding、generation推理能力，性能优化中。[[代码]](https://atomgit.com/mindspore-lab/mindscience/tree/master/MindSPONGE/research/Evo2)
 - 🔥`2025.12.23` 基于MindSpore的Protenix推理及训练发布，支持2K序列！[[代码]](https://atomgit.com/mindspore-lab/mindscience/tree/master/MindSPONGE/applications/protenix)
 - 🔥`2025.11.6` 基于MindSpore的RFdiffusion推理发布，支持抗体设计，性能持续提升中！[[代码]](https://atomgit.com/mindspore-lab/mindscience/tree/master/MindSPONGE/applications/rf_diffusion)
 - 🔥`2025.09.15` 昌平实验室、北京大学高毅勤、刘思睿团队发表基于MindSpore训练的[**GRASP**](https://www.nature.com/articles/s41592-025-02820-1)模型收录《Nature Methods》。该模型整合多源实验信息实现复合物建模，抗体预测超越 AlphaFold3。[[相关新闻]](https://mp.weixin.qq.com/s/OyqGvoIbtZaOTgEM5UFXJw)
@@ -100,7 +101,7 @@ MindSpore SPONGE(Simulation Package tOwards Next GEneration molecular modelling)
 
 ### 基因组/转录组语言模型
 
-- 🔥Evo2 `In Progress`
+- 🔥Evo2 [[Available]](https://atomgit.com/mindspore-lab/mindscience/tree/master/MindSPONGE/research/Evo2)
 - DNABERT [[Available]](https://atomgit.com/mindspore-lab/mindscience/blob/legacy-master/MindSPONGE/applications/model_cards/DNABERT.MD)
 - Geneformer[[Available]](https://atomgit.com/mindspore-lab/mindscience/tree/legacy-master/MindSPONGE/applications/research/Geneformer)
 
