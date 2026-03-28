@@ -17,7 +17,7 @@ Geneformer是一个基于大规模人类组织单细胞转录组数据预训练�
 
 如下图所示，在初始自监督大规模预训练的迁移学习时需将预训练的权重复制到每个微调任务的模型中，添加微调层，并使用有限的数据对特定的每个下游任务进行微调。通过在可推广的学习目标上进行单一的初始自监督大规模预训练，该模型获得了学习领域的基本知识，然后将其应用于与预训练学习目标不同的大量下游应用，将知识迁移到新任务中。
 
-<img alt="computation_domain" src="../docs/doc_imag/model.png" width="800"/>
+<img alt="computation_domain" src="../docs/doc_imag/geneformer_model.png" width="800"/>
 
 在预训练的Geneformer架构。每个单细胞转录组被编码成排序值编码[秩编码]，然后通过6层transformer编码器单元进行编码，参数如下：输入大小为2048（完全代表Geneformer-30M中排序值编码的93%），256个嵌入维度，每层四个注意力头，前馈大小为512。Geneformer在2048的输入大小上使用full dense 自注意力。可提取的输出包括上下文基因和细胞嵌入编码、上下文注意力权重和上下文预测。[排序值编码，基因是根据其在该细胞中的表达进行排序]。
 
@@ -125,7 +125,7 @@ cd scripts && bash run.sh  #单卡使用
 
 将loss数据保存绘图后得到loss曲线如下所示：
 
-<img alt="computation_domain" src="../docs/doc_imag/loss.png" width="450"/>
+<img alt="computation_domain" src="../docs/doc_imag/geneformer_loss.png" width="450"/>
 
 ### 性能指标
 

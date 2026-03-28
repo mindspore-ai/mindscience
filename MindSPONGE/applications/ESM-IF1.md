@@ -4,7 +4,7 @@
 
 ESM-IF1为反向折叠模型，通过蛋白质骨架的原子坐标预测蛋白质序列。论文将逆向折叠定义为sequence-to-sequence问题，并使用自回归的编码解码架构进行建模，论文中模型的任务是从蛋白质骨架坐标中预测出它的蛋白质序列，流程如下图所示：
 
-![ESM-IF1](../../docs/doc_imag/illustration.png)
+![ESM-IF1](../docs/doc_imag/illustration.png)
 
 设计出具有所需特性的蛋白质的氨基酸序列，称为从头蛋白质设计，是生物工程的核心挑战。近期，业界出现了一系列基于神经网络生成式模型来预测结构的序列或直接建模序列的方法。但是由于实验确定的蛋白质结构数量较少，已确定的结构对已知蛋白质序列空间的覆盖率不足0.1%，导致深度学习方法受到了很大的限制。
 
@@ -12,7 +12,7 @@ ESM-IF1为反向折叠模型，通过蛋白质骨架的原子坐标预测蛋白�
 
 论文中使用Geometric Vector Perceptron(GVP)层来学习向量特征的等变转换和标量特征的不变变换。共提供了GVP-GNN，GVP-GNN-large，由GVP-GNN结构编码器和通用Transformer组成的混合模型三种模型，GVP-GNN和GVP-Transformer都满足以下特征：给定输入坐标的旋转平移变换T，输出应该关于这些变换不变，GVP可参考[论文](https://arxiv.org/abs/2009.01411)，GVP模型结构如下：
 
-![GVP](../../docs/doc_imag/GVP.PNG)
+![GVP](../docs/doc_imag/GVP.PNG)
 
 ## 数据集
 

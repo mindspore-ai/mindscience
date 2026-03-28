@@ -7,7 +7,7 @@ MG-BERT(Molecular-Graph-BERT)是分子性质预测模型。MG-BERT将GNN集成�
 
 图神经网络存在一个缺陷，在学习时容易变得过平滑，即无论特征矩阵的初始状态如何，多次卷积后，同一连通分量内所有节点的特征都趋于一致。在模型中将GNN与BERT结合，克服了过平滑的问题，使得模型具备提取深层特征的能力。并且MG-BERT可以通过BERT的attention机制关注目标性质相关的原子和子结构。MG-BERT的网络架构如下所示：
 
-![MG-BERT](../../docs/doc_imag/MGBERT.PNG)
+![MG-BERT](../docs/doc_imag/MGBERT.PNG)
 
 MG-BERT与BERT存在一些不同点：
 

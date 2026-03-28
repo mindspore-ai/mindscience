@@ -237,7 +237,7 @@ RASP模型支持三种模式的输入:
 ```
 
 <div align=center>
-<img src="../docs/doc_imag/A.png" alt="FAASTresult" width="300"/>
+<img src="../docs/doc_imag/FAAST_A.png" alt="FAASTresult" width="300"/>
 </div>
 
 图A分别是原始PDB、AlphaFold、MEGA-Fold、RASP 的结果，可以看出在多域蛋白6XMV上RASP模型推理得到结果更接近真实结构。
@@ -345,7 +345,7 @@ Protein name是该蛋白的名字。，number of input restraint pair是有效�
 #### **结果对比**
 
 <div align=center>
-<img src="../docs/doc_imag/B.png" alt="FAAST-TIME" width="600"/>
+<img src="../docs/doc_imag/FAAST_B.png" alt="FAAST-TIME" width="600"/>
 </div>
 
 上图是FAAST方法和传统方法的解析时间及精度的对比，以ARM+Ascend910平台为例，在一台硬件驱动包已经安装好的环境，单条序列NOESY峰指认平均耗时半个小时，且解析出的约束数量与约束-结构符合率持平人工解析。
