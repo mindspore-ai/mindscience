@@ -1,126 +1,119 @@
-# [WIP] MindSpore-Evo2
+# Evo2-7B-MindSpore
 
-## 介绍
+## Introduction
+[Evo2](https://github.com/arcinstitute/evo2) is the world’s largest open-source AI model for biology, jointly developed by Arc Institute, NVIDIA, Stanford University, UC Berkeley, and UCSF. It is known as the “DeepSeek of biology”. Evo2 introduces the generative AI paradigm to sequence-level modeling, complementing AlphaFold (structure-level modeling) to form a full-scale computational foundation for “gene-protein-function” research, providing universal infrastructure for precision medicine, synthetic biology, and gene therapy.
 
-[Evo2](https://github.com/arcinstitute/evo2) 是由 Arc Institute 联合 NVIDIA、斯坦福大学、加州大学伯克利分校与旧金山分校推出的 全球最大开源生物学 AI 模型，被誉为“生物界的 DeepSeek”。Evo2 首次把“生成式 AI”范式带到 序列层面，与 AlphaFold（结构层面）互补，构成“基因-蛋白-功能”全尺度计算基石，为精准医疗、合成生物学、基因治疗提供通用基础设施。
+![Evo2coverpic](./docs/img/evo2.jpg)
 
-本项目支持使用MindSpore训推Evo2。
+This project supports Evo2-7B inference using MindSpore.
 
-### RoadMap
+### Hardware Requirements
+- Atlas 800T2 A2
 
-- 支持Evo2 7b推理 [WIP]
-- 支持Evo2训练 [PENDING]
-
-## 环境 
-
-### Ascend + MindSpore
-
-1. 基础依赖
+### Software Requirements
 - Python >= 3.12
-- CANN >= 8.2.rc1 （注意需要安装nnal包）
-- MindSpore >= 2.7.1
+- CANN >= 8.2.rc1 (nnal package required)
+- MindSpore >= 2.8.0
 
-2. Pip依赖
-```bash
-> pip install -r requirements.txt
+## Preparation
+### Clone Repository
+```
+git clone https://atomgit.com/mindspore-lab/mindscience.git
+cd mindscience/MindSPONGE/research/Evo2
 ```
 
-3. MindSpore FFT依赖
-- 克隆MindScience仓库
-```bash
-> git clone https://gitee.com/mindspore/mindscience.git
+### Install Dependencies
+1. Create a new conda environment and install dependencies:
+```shell
+conda install -c conda-forge binutils=2.38 --yes
+pip install pytest ninja sympy matplotlib pyyaml tqdm einops rich torch biopython
 ```
-- 昇腾FFT算子接入MindSpore特性issue：
+
+2. Install MindSpore >= 2.7.1:
+```shell
+pip install mindspore==2.7.1 -i https://repo.mindspore.cn/pypi/simple --trusted-host repo.mindspore.cn --extra-index-url https://repo.huaweicloud.com/repository/pypi/simple --force-reinstall
+```
+
+3. MindSpore FFT Dependencies
+- Install CANN >= 8.2.rc1 nnal run package and set atb and asdsip environment variables:
+```shell
+# {PATH} is the CANN installation path
+source {PATH}/nnal/atb/set_env.sh
+source {PATH}/nnal/asdsip/set_env.sh
+```
+
+- Test FFT operator availability
+```shell
+# Clone MindScience repository
+git clone https://gitee.com/mindspore/mindscience.git
+
+# Verify FFT operator functionality; all cases should pass (show PASS)
+cd mindscience/tests/sciops
+pytest test_asd_fft.py
+```
+Appendix: Ascend FFT operator integration with MindSpore issue:
 https://gitee.com/mindspore/mindscience/issues/ICX22I
-- 测试FFT算子是否正常运行，用例应全部正常通过：
-```
-> cd mindscience/tests/sciops
-> pytest test_asd_fft.py
-```
 
-
-4. 映射环境变量
+4. Set Environment Variables
 ```bash
-> export PYTHONPATH=$PWD/evo2:$PWD/vortex:$PWD/mindscience
+# {PATH} is the root directory of mindscience/MindSPONGE/research/Evo2
+export PYTHONPATH={PATH}/evo2:{PATH}/vortex:{PATH}/mindscience
 ```
 
-### GPU + Torch [[ref]](https://github.com/arcinstitute/evo2) （torch-gpu分支）
+## Weight Acquisition
+Two methods are provided to obtain MindSpore-compatible Evo2-7B checkpoint files.
 
-1. Python 3.12+
-2. CUDA: 12.1+
-3. cuDNN: 9.3+
-4. GCC 9+
+- Online Download
+Download `evo2_7b_base_ms.ckpt` from the Modelers community:
+https://modelers.cn/models/chen25/evo2-7b
 
-注意：transformer_engine的fp8相关功能不在当前项目考虑范围内
+Note: Only `evo2_7b_base` (7B parameters, 8K context) is uploaded on Modelers. For the 7B-parameter, 1M-context version, use the weight conversion method below.
 
-## 权重获取
+- Weight Conversion
+Obtain `evo2_7b_base.pt` from [HuggingFace](https://huggingface.co/arcinstitute/evo2_7b_base), place it in the `evo2/evo2/ckpt` directory, and convert the PyTorch `.pt` file to a MindSpore `.ckpt` file (some layers can be excluded to control model scale; see `convert_ckpt.py` for details).
 
-从[HuggingFace](https://huggingface.co/arcinstitute/evo2_7b_base)上获取evo2_7b_base.pt，放到evo2/evo2/ckpt文件夹：
 ```bash
-> ls evo2/evo2/ckpt
-evo2_7b_base.pt
+cd ckpt/
+python convert_ckpt.py
 ```
 
-### MindSpore + Ascend
-进行权重转换将pt文件转化为MindSpore支持的ckpt（可在convert_ckpt.py中去掉一些层数加载）。
+After conversion, the `ckpt/` directory should contain three files:
+```shell
+evo2_7b_base.pt evo2_7b_base_ms.ckpt convert_ckpt.py
+```
+
+## Run Inference
+Run commands under the `evo2/evo2/` directory:
 ```bash
-> python convert_ckpt.py 
-> ls
-evo2_7b_base.pt evo2_7b_base_ms.ckpt
+cd evo2/evo2/
 ```
 
-### Torch + GPU
-无需其他操作
-
-## 运行推理
-
-需要在evo2/evo2/文件夹下运行
-```bash
-> cd evo2/evo2/
+### Forward
+Evo2 computes and outputs the probability (likelihood) of each base at every position on a given DNA sequence, enabling sequence scoring.
+```shell
+python ../../examples/test_evo2_forward.py
 ```
 
-### 1. forward
-```bash
-> python ../../examples/test_evo2_forward.py
-```
-成功返回
-```
-Logits:  tensor([[[ -8.0625, -28.1250, -28.1250,  ..., -28.1250, -28.1250, -28.1250],
-         [ -5.2812, -27.2500, -27.2500,  ..., -27.2500, -27.2500, -27.2500],
-         [ -5.3438, -27.2500, -27.2500,  ..., -27.2500, -27.2500, -27.2500],
-         [ -5.6250, -27.8750, -27.8750,  ..., -27.8750, -27.8750, -27.8750]]],
-       device='cuda:0', dtype=torch.bfloat16)
-Shape (batch, length, vocab):  torch.Size([1, 4, 512])
+### Embeddings
+Embeddings from Evo2 can be saved for downstream tasks. The paper reports that embeddings from middle layers perform better than those from the final layer; see the paper for details.
+```shell
+python ../../examples/test_evo2_embeddings.py
 ```
 
-### 2. embeddings
-```bash
-> python ../../examples/test_evo2_embeddings.py
-```
-成功返回
-```
-Embeddings shape:  torch.Size([1, 4, 4096])
+### Generation
+Evo2 can generate DNA sequences based on a prompt.
+```shell
+python ../../examples/test_evo2_generation.py
 ```
 
-### 3. generation
-```bash
-> python ../../examples/test_evo2_generation.py
-```
-成功返回
-```
-Initializing inference params with max_seqlen=404
-/ms_test2/lyy/Evo2/vortex/vortex/model/engine.py:559: UserWarning: Casting complex values to real discards the imaginary part (Triggered internally at /pytorch/aten/src/ATen/native/Copy.cpp:308.)
-  inference_params.state_dict[layer_idx] = state[..., L - 1].to(dtype=state_dtype)
-Prompt: "ACGT",	Output: "TATGTAATTTGCAAGCATTTATCGAAGCGTTTATCAATCAGAAAGGTGAAGCTTTAAAACTCCTCCAATGGCCTATCGGAAATTTCAGATATTGTCATACAAATTCCAGCATTCACATTACGCAACAAGCAAGAGAATCACGATACAGCAAGACTGTATATTGGAAGCCAGAGGTTAAAATTAACAATCATAAGTCAATGCTTAAAAATCACAGGGTCAATGCGGTCAAAAGTGCTCGTAATAAAAGACGAAGGTTTCAATCGATGAATTCACTTGCGTGGATGGGAGGAGCGCGCTCGTGACGTGTGTAGCCTATAGTGTGACAAAAGCCAAATAAAAGACATTCATGACAGTTAACAAGCAGCCCATAGCGAAGATTCTCGTGGTAGGTACTGTACCA",	Score: -1.3534809350967407
-TATGTAATTTGCAAGCATTTATCGAAGCGTTTATCAATCAGAAAGGTGAAGCTTTAAAACTCCTCCAATGGCCTATCGGAAATTTCAGATATTGTCATACAAATTCCAGCATTCACATTACGCAACAAGCAAGAGAATCACGATACAGCAAGACTGTATATTGGAAGCCAGAGGTTAAAATTAACAATCATAAGTCAATGCTTAAAAATCACAGGGTCAATGCGGTCAAAAGTGCTCGTAATAAAAGACGAAGGTTTCAATCGATGAATTCACTTGCGTGGATGGGAGGAGCGCGCTCGTGACGTGTGTAGCCTATAGTGTGACAAAAGCCAAATAAAAGACATTCATGACAGTTAACAAGCAGCCCATAGCGAAGATTCTCGTGGTAGGTACTGTACCA
-```
+### License
+See the LICENSE file for details.
 
-## 参与贡献
+### References
+- Brixi, G., Durrant, M.G., Ku, J. et al. Genome modelling and design across all domains of life with Evo 2. Nature (2026). https://doi.org/10.1038/s41586-026-10176-5
 
-1. Fork 本仓库
-2. 提交代码
-3. 新建 Pull Request
+### Implementation Reference
+- https://github.com/arcinstitute/evo2
 
-### 贡献者
-
-longyangyang, wujunchi2025, wenziyi2025, chenzhihui2025, wuruifang2025
+### Contributors
+longyangyang, wenziyi2025, wuruifang2025, wujunchi2025, chenzhihui2025
