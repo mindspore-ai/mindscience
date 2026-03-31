@@ -37,6 +37,7 @@ The synergy between AI and chemistry offers unprecedented opportunities to overc
 
 ## Latest News
 
+- `2026.03.31` Added generative foundation model(ReactGen) for chemical reactions.
 - `2025.07.07` Added Orb model support.
 - `2025.04.16` Added CrystalFlow model support.
 - `2025.03.30` MindChemistry 0.2.0 has been released, featuring several applications including NequIP, DeephE3nn, Matformer, and DiffCSP.
@@ -68,6 +69,12 @@ Below is an overview of the currently supported main models and their purposes, 
 |-------|--------|---------|------|
 | [DiffCSP](https://atomgit.com/mindspore-lab/mindscience/tree/master/MindChem/applications/diffcsp/) | Crystalline materials | Stable crystal structure datasets (MP-20, MPTS-52, Carbon-24) | Crystal structure prediction/generation via joint diffusion |
 | [CrystalFlow](https://atomgit.com/mindspore-lab/mindscience/tree/master/MindChem/applications/crystalflow/) | Crystalline materials | Materials database crystal structure datasets (MP-20, Carbon-24, MPTS-52) | Flow-based crystal structure generation |
+
+### Foundation Model
+
+| Model | Domain | Dataset | Task |
+|-------|--------|-------------|------|
+| [ReactGen](https://atomgit.com/mindspore-lab/mindscience/tree/master/MindChem/applications/reactgen/) | Chemical reaction generation | ORD and USPTO  | Forward reaction generation, retrosynthesis, and solvent prediction |
 
 ## Community
 

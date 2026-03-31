@@ -1,0 +1,78 @@
+# Full多卡训练配置文件
+# 包含模型配置、训练参数、并行配置等
+
+# 数据配置
+data:
+  data_path: "./data/forward"
+  output_dir: "./logs/forward/full_multi_output/qwen2.5-1.5b"
+  task_type: "forward"  # 正向反应预测: forward, 逆向: retrosynthesis
+  max_length: 256
+  rxn_max_length: 256
+  use_cls_token: true # 和model保持一致 
+
+# 模型配置
+model:
+  qwen_model_name: "Qwen/Qwen2.5-1.5B-Instruct"
+  rxn_model_name: "./module/reactionbert"
+  model_path: "./logs/forward/full_multi_output/qwen2.5-1.5b/1.5B_forward_bs12_lr1e-5_20251105_234257/final_full_model"  # 训练好的全量微调模型路径
+  proj_dropout: 0.1
+  freeze_backbones: false
+  freeze_qwen: false
+  freeze_reactionbert: false
+  use_extended_vocab: true
+  extended_vocab_path: "./tokenizer/qwen2.5-1.5b"
+  sentinel_token: "<SMI_TOKEN>"
+  use_cls_token: true # 和data保持一致
+
+
+# 训练配置
+training:
+  epochs: 4
+  batch_size: 12  # 1.5B模型较大，减小batch_size
+  gradient_accumulation_steps: 2  # 增加梯度累积步数以保持有效batch_size
+  fp16: false
+  learning_rate: 1e-6  # 较大模型使用较小学习率
+  lr_scheduler_type: cosine
+  warmup_ratio: 0.1  # warmup步数比例
+  weight_decay: 0.01
+  evaluation_strategy: "steps"
+  eval_steps: 200
+  save_strategy: "steps"
+  save_steps: 200
+  save_total_limit: 5
+  logging_strategy: "steps"
+  logging_steps: 10
+  load_best_model_at_end: true
+  metric_for_best_model: "eval_loss"
+  greater_is_better: false
+  early_stopping_patience: 5
+
+# 并行配置
+parallel:
+  enabled: true
+  parallel_mode: "DATA_PARALLEL"
+  gradients_mean: true
+  parameter_broadcast: true
+  worker_num: 8  # 工作进程数
+  local_worker_num: 8  # 本地工作进程数
+  master_addr: "127.0.0.1"
+  master_port: 8118
+  log_dir: "./logs/forward/full_multi_logs/qwen2.5-1.5b"
+
+# 评估配置
+evaluation:
+  skip_final_eval: false  # 是否跳过最终评估
+
+# 生成配置
+generation:
+  max_new_tokens: 256      # 最大生成token数
+  do_sample: false        # 是否使用采样
+  num_beams: 1
+
+# 随机种子
+random_seed: 42
+
+# 设备配置
+device:
+  device_target: "Ascend"
+  # device_id 由并行环境自动分配，无需手动设置

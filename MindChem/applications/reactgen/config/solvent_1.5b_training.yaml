@@ -1,0 +1,85 @@
+# 溶剂预测任务全量训练配置文件
+# 基于forward任务配置结构，适配溶剂预测任务
+
+# 数据配置
+data:
+  data_path: "./data/solvent"  # 溶剂预测数据路径
+  output_dir: "./logs/solvent/full_multi_output/qwen2.5-1.5b"
+  task_type: "solvent"  # 溶剂预测任务
+  max_length: 128
+  rxn_max_length: 128
+  use_cls_token: false
+  language: "zh"
+  sentinel_token: "<SMI_TOKEN>"
+
+# 模型配置
+model:
+  qwen_model_name: "Qwen/Qwen2.5-1.5B-Instruct"  # 修正为1.5B模型
+  rxn_model_name: "./module/reactionbert"
+  proj_dropout: 0.3
+  freeze_backbones: false  # 全量训练不冻结
+  freeze_qwen: false
+  freeze_reactionbert: false
+  use_extended_vocab: true
+  extended_vocab_path: "./tokenizer/qwen2.5-1.5b"
+  sentinel_token: "<SMI_TOKEN>"
+  use_cls_token: false
+  
+  # 溶剂预测特有的分类头配置
+  classifier_head:
+    num_solvent_labels: 51
+    loss_weight_multi_label: 1.0
+    loss_weight_count: 1.0
+    pooling_type: "mean"
+    pos_weight_value: 1.0
+
+# 训练配置
+training:
+  epochs: 12
+  batch_size: 24  # 溶剂预测任务可以使用较小的batch_size
+  gradient_accumulation_steps: 4
+  fp16: false
+  learning_rate: 1e-5
+  lr_scheduler_type: cosine
+  warmup_ratio: 0.1
+  weight_decay: 0.01
+  evaluation_strategy: "steps"
+  eval_steps: 200
+  save_strategy: "steps"
+  save_steps: 200
+  save_total_limit: 5
+  logging_strategy: "steps"
+  logging_steps: 10
+  load_best_model_at_end: true
+  metric_for_best_model: "eval_loss"
+  greater_is_better: false
+  early_stopping_patience: 5
+
+# 并行配置
+parallel:
+  enabled: true
+  parallel_mode: "DATA_PARALLEL"
+  gradients_mean: true
+  parameter_broadcast: true
+  worker_num: 8
+  local_worker_num: 8
+  master_addr: "127.0.0.1"
+  master_port: 8119  # 使用不同端口避免冲突
+  log_dir: "./logs/solvent/full_multi_logs/qwen2.5-1.5b"
+
+# 评估配置
+evaluation:
+  skip_final_eval: false
+
+# 生成配置（溶剂预测不需要生成，但保留兼容性）
+generation:
+  max_new_tokens: 256
+  do_sample: false
+  num_beams: 1
+
+# 随机种子
+random_seed: 42
+
+# 设备配置
+device:
+  device_target: "Ascend"
