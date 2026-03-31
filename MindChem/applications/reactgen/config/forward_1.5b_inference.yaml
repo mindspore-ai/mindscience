@@ -1,0 +1,56 @@
+# ===== 模型配置（与训练保持一致）=====
+model:
+  qwen_model_name: "Qwen/Qwen2.5-1.5B-Instruct"  # 基础模型名称
+  rxn_model_name: "./module/reactionbert"  # 反应指纹模型
+  proj_dropout: 0.1
+  freeze_backbones: false
+  freeze_qwen: false
+  freeze_reactionbert: false
+  use_extended_vocab: true
+  extended_vocab_path: "./tokenizer/qwen2.5-1.5b"  # 扩展词表路径
+  sentinel_token: "<SMI_TOKEN>"
+  use_cls_token: true
+
+# ===== 推理核心配置 =====
+inference:
+  model_path: "./logs/forward/full_multi_output/qwen2.5-1.5b/1.5B_forward_bs12_lr1e-6_20251107_110237/checkpoint-7000"  # 训练好的全量微调模型路径
+  output_dir: "./logs/forward/full_inference_results/qwen2.5-1.5b/bs12_lr1e-6_20251107_110237_test"  # 推理结果保存路径
+  max_samples: 200 # 测试全部样本（设为具体数值可限制样本数）
+
+# ===== 生成参数（比训练更灵活）=====
+generation:
+  max_new_tokens: 256      # 最大生成长度（与训练一致）
+  do_sample: false         # 使用贪心解码（与训练一致）
+  temperature: 0           # 采样温度（控制随机性）
+  # top_p: 0.9              # 核采样概率（平衡多样性与质量）
+  num_beams: 1            # 束搜索宽度（与训练一致）
+  repetition_penalty: 1.0  # 重复惩罚（与训练一致）
+
+# ===== 数据配置（与训练一致）=====
+data:
+  test_data_path: "./data/forward/test.txt"  # 测试集路径
+  task_type: "forward"    # 必须与训练任务一致
+  max_length: 256       # 文本最大长度
+  rxn_max_length: 256   # 反应指纹最大长度
+
+# ===== 并行配置（按需调整）=====
+parallel:
+  enabled: true         # 启用多卡推理
+  parallel_mode: "DATA_PARALLEL"
+  gradients_mean: true
+  parameter_broadcast: true
+  worker_num: 8         # 推理通常不需要全量卡（按显存需求调整）
+  local_worker_num: 8
+  master_addr: "127.0.0.1"
+  master_port: 8119     # 需与训练时不同端口（如8119）
+  log_dir: "./logs/forward/full_inference_logs/qwen2.5-1.5b"
+
+# ===== 评估配置 =====
+evaluation:
+  save_detailed_results: true  # 保存每个样本的预测细节
+  compute_molecular_props: true  # 计算分子性质（如分子量、LogP）
+
+# ===== 设备配置 =====
+device:
+  device_target: "Ascend"  # 与训练一致
+  device_id: 7

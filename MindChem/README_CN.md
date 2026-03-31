@@ -38,6 +38,7 @@
 
 ## 最新消息
 
+- `2026.03.31` 增加化学反应生成基础模型reactgen；
 - `2025.07.07` 增加Orb模型支持；
 - `2025.04.16` 增加CrystalFlow模型支持；
 - `2025.03.30` MindChemistry 0.2.0版本发布，包括多个应用案例，支持NequIP、DeephE3nn、Matformer以及DiffCSP模型；
@@ -71,6 +72,13 @@
 |---------|------|------|------|
 | [DiffCSP](https://atomgit.com/mindspore-lab/mindscience/tree/master/MindChem/applications/diffcsp/) | 晶体材料体系 | 稳定晶体结构数据集（MP-20、MPTS-52、Carbon-24等） | 基于联合扩散的晶体结构预测/生成 |
 | [CrystalFlow](https://atomgit.com/mindspore-lab/mindscience/tree/master/MindChem/applications/crystalflow/) | 晶体材料体系 | 材料数据库晶体结构数据集（MP-20、Carbon-24、MPTS-52等） | 基于归一化流的晶体结构生成 |
+
+### 基础模型
+
+| 模型 | 领域 | 数据 | 任务 |
+|---------|------|------|------|
+| [ReactGen](https://atomgit.com/mindspore-lab/mindscience/tree/master/MindChem/applications/reactgen/) | 化学反应生成 | ORD与USPTO数据集 | 可用于正向反应生成、逆合成以及溶剂预测 |
+
 
 ## 社区
 
