@@ -28,34 +28,60 @@ AlphaFold 2主要是通过添加连接子(Linker)将多链进行连接或残基�
 
 ### 基础依赖：
 
-```text
-python >= 3.9
-mindspore >= 2.7.1
+```txt
+python == 3.9
+mindspore == 2.8.0
+mindformers == 1.0.0
 CANN >= 8.2.RC1
 ```
 
-### 克隆仓库：
-
+### 运行指南
+#### 克隆代码
+请注意拉取r0.7分支代码
 ```bash
 git clone -b r0.7 https://gitee.com/mindspore/mindscience.git
+```
+
+#### 配置环境变量
+```bash
 cd mindscience/
 export PYTHONPATH=$PYTHONPATH:$PWD/MindSPONGE/src
 ```
 
+#### 安装其他依赖
+```
+pip install rdkit==2024.3.1 pyyaml sckit-learn pyparsing biopython
+```
+注意拉取rdkit版本范围在2024年及以前，否则可能报core dumped.
+
+
+### 运行示例
+
+#### 权重下载
 ```bash
+wget https://download.mindspore.cn/mindscience/mindsponge/Multimer/checkpoint/Multimer_Model_1.ckpt
+```
+放到运行目录。
+
+#### 示例特征pickle下载
+```bash
+wget https://download.mindspore.cn/mindscience/mindsponge/Multimer/examples/6T36.pkl
+```
+放到运行目录。
+
+### 示例代码
+
+```python
 import os
 import stat
 import pickle
 from mindsponge.common.protein import to_pdb_v2, from_prediction_v2
 
-cmd = "wget https://download.mindspore.cn/mindscience/mindsponge/Multimer/examples/6T36.pkl"
-os.system(cmd)
-
 pipe = PipeLine(name="Multimer")
 pipe.set_device_id(0)
 config_path = os.path.abspath("./MindSPONGE/applications/model_configs/Multimer/predict_256.yaml")
 pipe.initialize(config_path=config_path)
-pipe.model.from_pretrained()
+pipe.model.from_pretrained("./")  # 如果没有事先下载权重，此处不传路径可默认下载。
 with open("./6T36.pkl", "rb") as f:
     raw_feature = pickle.load(f)
 final_atom_positions, final_atom_mask, confidence, b_factors = pipe.predict(raw_feature)
