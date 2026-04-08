@@ -1,0 +1,12 @@
+%Chk=water_sp.chk
+%Mem=4GB
+%NProcShared=4
+#p B3LYP/6-31G(d) SP
+
+Water single point
+
+0 1
+O   0.000000   0.000000   0.000000
+H   0.000000   0.757160   0.586260
+H   0.000000  -0.757160   0.586260
+

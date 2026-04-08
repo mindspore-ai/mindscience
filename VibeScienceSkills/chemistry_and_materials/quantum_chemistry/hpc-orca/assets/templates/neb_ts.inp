@@ -1,0 +1,12 @@
+! B3LYP def2-SVP NEB-TS FREQ RIJCOSX TightSCF
+
+%maxcore 4000
+%pal nprocs 8 end
+
+%geom
+  NEB_TS_True  # Use NEB-TS method
+end
+
+* xyzfile 0 1 reactant.xyz *
+****
+* xyzfile 0 1 product.xyz *

@@ -1,0 +1,8 @@
+Host hpc-login
+  HostName login.example.edu
+  User your-user
+
+Host hpc-compute
+  HostName compute-node-name
+  User your-user
+  ProxyJump hpc-login

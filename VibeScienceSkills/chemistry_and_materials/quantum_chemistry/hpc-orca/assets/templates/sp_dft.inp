@@ -1,0 +1,6 @@
+! B3LYP def2-SVP RIJCOSX TightSCF
+
+%maxcore 4000
+%pal nprocs 8 end
+
+* xyzfile 0 1 molecule.xyz *

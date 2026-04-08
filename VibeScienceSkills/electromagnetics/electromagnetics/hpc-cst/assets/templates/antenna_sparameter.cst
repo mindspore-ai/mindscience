@@ -1,0 +1,75 @@
+# CST Antenna S-Parameter Template
+# This is a VBA macro template for antenna S-parameter simulation
+
+# Project: Antenna S-Parameter Simulation
+# Purpose: Template for antenna design and S-parameter extraction
+
+# === Parameters ===
+# freq_center = 2.4e9       # Center frequency (Hz)
+# substrate_eps = 4.4       # Substrate dielectric constant
+# substrate_height = 1.6e-3 # Substrate thickness (m)
+# patch_length = 30e-3      # Patch length (m)
+# patch_width = 40e-3       # Patch width (m)
+# feed_position = 10e-3     # Feed position from edge (m)
+
+# === VBA Commands ===
+# Create new project
+NewProject
+
+# Set units
+SetUnit "mm"
+
+# Define frequency range
+SetFrequencyRange 2e9, 3e9
+
+# Create substrate
+Brick "substrate", "patch_width+10", "patch_length+10", "substrate_height"
+Material "substrate", "FR4"
+MaterialProperty "substrate", "Epsilon", "substrate_eps"
+
+# Create ground plane
+Brick "ground", "patch_width+10", "patch_length+10", "0.035"
+Material "ground", "PEC"
+Translate "ground", 0, 0, -0.035
+
+# Create patch
+Brick "patch", "patch_width", "patch_length", "0.035"
+Material "patch", "PEC"
+Translate "patch", 0, 0, "substrate_height"
+
+# Create feed (microstrip line)
+Brick "feed", "2", "feed_position", "0.035"
+Material "feed", "PEC"
+Translate "feed", 0, -"patch_length"/2, "substrate_height"
+
+# Add discrete port for feed
+Port "Feed", "feed", "gap"
+PortType "Discrete"
+PortImpedance 50
+
+# Set boundary conditions (open for radiation)
+Boundary "xmin", "Open"
+Boundary "xmax", "Open"
+Boundary "ymin", "Open"
+Boundary "ymax", "Open"
+Boundary "zmin", "Electric"  # Ground plane
+Boundary "zmax", "Open"
+
+# Add open boundary padding
+OpenAddSpace 0.25  # λ/4 at center frequency
+
+# Set solver
+Solver "Transient"
+SolverAccuracy -50
+
+# Mesh settings
+MeshCellsPerWavelength 20
+
+# Enable far-field monitor
+FarfieldMonitor "farfield", "freq_center"
+
+# === Notes ===
+# 1. Adjust patch dimensions for target frequency
+# 2. Optimize feed position for impedance matching
+# 3. Check S11 < -10 dB at target frequency
+# 4. Extract gain and radiation pattern from far-field
