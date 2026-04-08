@@ -7,10 +7,10 @@
 # The rules are applied from top to bottom, and the last matching rule will take effect.
 
 # If the file in PR does not match rule, the default maintainer @novigad @yi-zhang95 will be designated to conduct code review.
-/ @novigrad @yi-zhang95
+/ @novigrad @yi-zhang95 @hong-ye-zhou @yingtonghu
 
 # The maintainer of MindScience
-/mindscience/ @wuzhf9 @novigrad @yi-zhang95
+/mindscience/ @wuzhf9 @novigrad @yi-zhang95 @hong-ye-zhou @yingtonghu
 
 # The maintainer of MindChemistry
 /MindChem/ @birfied @novigrad @yi-zhang95
