@@ -1,0 +1,22 @@
+echo "MP2 calculation"
+start molecule
+
+memory total 8 gb
+
+geometry units angstrom
+ N    0.0000    0.0000    0.0000
+ H    0.0000    0.0000    1.0080
+ H    1.0080    0.0000   -0.3360
+ H   -0.5040    0.8730   -0.3360
+end
+
+basis
+ * library cc-pvdz
+end
+
+scf
+ rhf
+end
+
+task scf energy
+task mp2 energy

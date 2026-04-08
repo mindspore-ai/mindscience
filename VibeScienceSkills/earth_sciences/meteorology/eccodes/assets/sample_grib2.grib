@@ -1,0 +1,48 @@
+# Sample GRIB2 File
+
+This is a placeholder for a sample GRIB2 file.
+
+## Description
+
+A sample GRIB2 file containing meteorological data for testing and demonstration purposes.
+
+## Typical Contents
+
+- Surface fields: 2m temperature, 10m wind components, surface pressure
+- Pressure level fields: Temperature, geopotential, wind components
+- Multiple time steps: Analysis and forecast steps
+- Grid: Regular latitude-longitude grid
+
+## File Size
+
+Typical size: 1-10 MB depending on resolution and number of fields
+
+## How to Obtain
+
+Sample GRIB files can be obtained from:
+- ECMWF Public Dataset: https://www.ecmwf.int/en/forecasts/datasets
+- NCEP GFS: https://www.nco.ncep.noaa.gov/pmb/data/gfs/
+- NOAA NOMADS: https://nomads.ncep.noaa.gov/
+
+## Example Usage
+
+```python
+import eccodes
+
+with open('sample_grib2.grib', 'rb') as f:
+    msg_id = eccodes.codes_grib_new_from_file(f)
+    
+    shortName = eccodes.codes_get(msg_id, 'shortName')
+    values = eccodes.codes_get_values(msg_id)
+    
+    print(f"Field: {shortName}")
+    print(f"Number of values: {len(values)}")
+    
+    eccodes.codes_release(msg_id)
+```
+
+## Notes
+
+- This is a text placeholder file
+- Actual GRIB files are binary and cannot be represented as text
+- Replace this file with an actual GRIB2 file for testing

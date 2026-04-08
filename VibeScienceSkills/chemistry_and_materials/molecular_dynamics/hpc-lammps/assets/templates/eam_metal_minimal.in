@@ -1,0 +1,21 @@
+units           metal
+dimension       3
+boundary        p p p
+atom_style      atomic
+
+read_data       structure.data
+
+pair_style      eam/alloy
+pair_coeff      * * potential.eam.alloy Cu
+
+neighbor        2.0 bin
+neigh_modify    delay 0 every 1 check yes
+
+minimize        1.0e-4 1.0e-6 1000 10000
+timestep        0.001
+fix             1 all nvt temp 300 300 0.1
+
+thermo          100
+thermo_style    custom step temp pe ke etotal press vol
+dump            1 all custom 100 traj.lammpstrj id type x y z
+run             10000

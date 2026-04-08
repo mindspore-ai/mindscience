@@ -1,0 +1,212 @@
+# cfgrib Configuration Template
+# This file contains configuration options for cfgrib operations
+
+[xarray]
+# xarray configuration options
+
+# Display options
+display_width = 80
+display_max_rows = 12
+display_max_cols = 12
+
+# Arithmetic options
+arithmetic_join = 'inner'
+
+# File encoding options
+file_cache_maxsize = 1073741824  # 1 GB
+
+[cfgrib]
+# cfgrib backend configuration
+
+# Index file options
+indexpath = ''  # Empty string disables index creation
+index_cache_size = 100  # Maximum number of cached indexes
+
+# CF encoding options
+encode_cf = ['time', 'geography', 'vertical']
+
+# Error handling
+errors = 'warn'
+grib_errors = 'warn'
+
+# Data loading options
+squeeze = True
+decode_times = True
+decode_times_units = True
+decode_cf = True
+decode_cf_units = True
+
+# Time dimension options
+time_dims = {
+    'name': 'time',
+    'calendar': 'gregorian'
+}
+
+[performance]
+# Performance optimization options
+
+# Chunking options
+chunks = 'auto'  # 'auto', None, or dict
+chunk_size = {
+    'time': 10,
+    'latitude': 90,
+    'longitude': 180
+}
+
+# Memory options
+memory_limit = 1073741824  # 1 GB
+cache_size = 536870912  # 512 MB
+
+# Parallel processing
+use_dask = False
+dask_scheduler = 'threads'
+num_workers = 4
+
+[data_selection]
+# Data selection options
+
+# Spatial selection
+default_region = {
+    'lat_north': 90.0,
+    'lat_south': -90.0,
+    'lon_west': -180.0,
+    'lon_east': 180.0
+}
+
+# Temporal selection
+default_time_range = {
+    'start': None,
+    'end': None
+}
+
+# Level selection
+default_levels = None  # None for all levels, or list of levels
+
+[output]
+# Output options
+
+# Default output format
+default_format = 'netcdf'  # 'netcdf', 'zarr', 'csv'
+
+# NetCDF options
+netcdf_compression = True
+netcdf_compression_level = 5
+netcdf_shuffle = True
+
+# Zarr options
+zarr_consolidate = True
+zarr_compressor = 'default'
+
+# CSV options
+csv_date_format = '%Y-%m-%d %H:%M:%S'
+csv_float_format = '%.6f'
+
+[visualization]
+# Visualization options
+
+# Plotting options
+figure_size = {
+    'width': 12,
+    'height': 8
+}
+
+# Map projection options
+default_projection = 'PlateCarree'
+map_resolution = '50m'
+
+# Colormap options
+default_colormap = 'coolwarm'
+colormap_levels = 20
+use_robust_scaling = True
+
+# Feature options
+draw_coastlines = True
+draw_borders = True
+draw_gridlines = True
+
+[logging]
+# Logging options
+
+# Enable logging
+enable_logging = True
+
+# Log file
+log_file = 'cfgrib.log'
+
+# Log level
+log_level = 'INFO'  # 'DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'
+
+# Log format
+log_format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+
+# Log rotation
+log_max_size = 10485760  # 10 MB
+log_backup_count = 5
+
+[validation]
+# Data validation options
+
+# Enable validation
+enable_validation = True
+
+# Value range checks
+validate_ranges = True
+
+# Temperature range (K)
+temp_min = 150.0
+temp_max = 400.0
+
+# Pressure range (Pa)
+pressure_min = 10000.0
+pressure_max = 150000.0
+
+# Wind speed range (m/s)
+wind_min = 0.0
+wind_max = 200.0
+
+# Check for missing values
+check_missing = True
+
+# Check for outliers
+check_outliers = True
+outlier_threshold = 3.0  # Number of standard deviations
+
+[coordinates]
+# Coordinate handling options
+
+# Latitude options
+latitude_name = 'latitude'
+latitude_units = 'degrees_north'
+
+# Longitude options
+longitude_name = 'longitude'
+longitude_units = 'degrees_east'
+
+# Time options
+time_name = 'time'
+time_units = 'days since 1900-01-01'
+
+# Level options
+level_name = 'level'
+level_units = 'hPa'
+
+[metadata]
+# Metadata handling options
+
+# Preserve GRIB metadata
+preserve_grib_keys = True
+
+# Custom metadata keys to read
+read_keys = [
+    'centre',
+    'subCentre',
+    'generatingProcessIdentifier',
+    'edition',
+    'gridType',
+    'typeOfLevel',
+    'level'
+]
+
+# Add processing history
+add_history = True
+history_format = 'Processed by cfgrib on %Y-%m-%d %H:%M:%S'

@@ -1,0 +1,11 @@
+! wB97X-D def2-TZVP TDDFT RIJCOSX TightSCF
+
+%maxcore 4000
+%pal nprocs 8 end
+
+%tddft
+  nroots 10  # Number of excited states to calculate
+  triplets false
+end
+
+* xyzfile 0 1 molecule.xyz *

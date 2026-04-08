@@ -1,0 +1,16 @@
+# VASP KPOINTS Template: Gamma-Only Mesh
+# Use for Gamma-centered k-point mesh
+# Suitable for bulk materials, large supercells
+# Gamma-only mode reduces computational cost significantly
+
+# Automatic Gamma-centered mesh generation
+# VASP will automatically generate Gamma-centered mesh
+# Set grid dimensions in INCAR: KPOINTS 0 0 0
+# For manual specification, uncomment and modify below:
+
+# Example manual Gamma mesh:
+# 0 0 0
+# 0.5 0.5 0.5
+# 1.0 1.0 1.0
+# 1.5 1.5 1.5
+# 2.0 2.0 2.0

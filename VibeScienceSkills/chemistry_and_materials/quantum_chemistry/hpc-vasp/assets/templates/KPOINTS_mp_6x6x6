@@ -1,0 +1,22 @@
+# VASP KPOINTS Template: Monkhorst-Pack 6x6x6 Mesh
+# Use for Monkhorst-Pack k-point generation
+# Suitable for bulk materials with moderate k-point density
+# Provides good balance between accuracy and computational cost
+
+# Monkhorst-Pack mesh for 6x6x6 grid
+# 6 divisions in each direction, shifted to avoid Gamma point
+# Good for metallic systems and moderate accuracy requirements
+
+# Automatic mesh generation
+# VASP will generate Monkhorst-Pack mesh automatically
+# Set grid dimensions in INCAR: KPOINTS 6 6 6
+# For manual specification, uncomment and modify below:
+
+# Example manual Monkhorst-Pack mesh:
+# 6 6 6
+# 0.0 0.0 0.0
+# 0.166667 0.166667 0.166667
+# 0.333333 0.333333 0.333333
+# 0.5 0.5 0.5
+# 0.666667 0.666667 0.666667
+# 0.833333 0.833333 0.833333

@@ -1,0 +1,22 @@
+echo "Geometry optimization and frequency"
+start molecule
+
+memory total 8 gb
+
+geometry units angstrom
+ O    0.0000    0.0000    0.0000
+ H    0.7586    0.0000    0.5042
+ H    0.7586    0.0000   -0.5042
+end
+
+basis
+ * library def2-tzvp
+end
+
+dft
+ xc b3lyp
+ mult 1
+end
+
+task dft optimize
+task dft frequencies

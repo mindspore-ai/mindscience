@@ -1,0 +1,12 @@
+%Chk=water_opt.chk
+%Mem=4GB
+%NProcShared=4
+#p B3LYP/6-31G(d) Opt Freq
+
+Water optimization and frequencies
+
+0 1
+O   0.000000   0.000000   0.000000
+H   0.000000   0.757160   0.586260
+H   0.000000  -0.757160   0.586260
+

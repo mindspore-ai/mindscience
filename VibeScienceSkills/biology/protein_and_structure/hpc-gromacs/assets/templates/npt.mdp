@@ -1,0 +1,17 @@
+integrator              = md
+dt                      = 0.002
+nsteps                  = 50000
+cutoff-scheme           = Verlet
+coulombtype             = PME
+rcoulomb                = 1.0
+rvdw                    = 1.0
+tcoupl                  = V-rescale
+tc-grps                 = System
+tau-t                   = 0.1
+ref-t                   = 300
+pcoupl                  = Parrinello-Rahman
+tau-p                   = 2.0
+ref-p                   = 1.0
+compressibility         = 4.5e-5
+constraints             = h-bonds
+pbc                     = xyz
