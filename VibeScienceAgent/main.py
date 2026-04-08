@@ -38,6 +38,12 @@ async def main() -> None:
         default=1,
         help="",
     )
+    parser.add_argument(
+        "--prompt",
+        type=str,
+        default=None,
+        help="Prompt to pass to the agent. If provided, overrides the default prompt.",
+    )
     args = parser.parse_args()
 
     # create and validate config
@@ -56,21 +62,9 @@ async def main() -> None:
     )
 
     # set a prompt
-    prompt = (
-        "Question: A researcher is interested in studying insects in the family Micromalthidae. "
-        "They develop a lab colony where larvae are supplied with decaying wood to feed on.\n"
-        "\n"
-        "Suppose an adult male is found in the colony. Upon its death, what will be the only "
-        "thing that this individual will have fed on?\n"
-        "\n"
-        "Answer Choices:\n"
-        "A. Its mother\n"
-        "B. Fungus\n"
-        "C. Decaying wood\n"
-        "D. Cellulose\n"
-        "E. Nothing"
-    )
-    # the right answer is A. Its mother
+    default_prompt = 'Chlorine perchlorate (Cl2O4) is an interesting oxide of chlorine. The chlorine atoms have different oxidation states. What is the product of their oxidation states (e.g. If the oxidation states are +3 and +5, provide "15" as your answer)?'
+
+    prompt = args.prompt if args.prompt else default_prompt
 
     # run workflow
     await agent.run(prompt)
