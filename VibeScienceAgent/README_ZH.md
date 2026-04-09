@@ -69,8 +69,8 @@ VibeScienceAgent 提供了信息搜索、文献调研等工具能力，部分工
 
 | 环境变量 | 说明 | 获取方式 |
 |---------|------|----------|
-| `DASHSCOPE_API_KEY` | `advanced_web_search_qwen`工具通过调用`qwen3.5-plus` API实现信息搜索与汇总，因此需要配置阿里云 DashScope API Key | 登录 [DashScope 控制台](https://dashscope.console.aliyun.com/)，在"API-KEY管理"中创建并获取 |
-| `S2_API_KEY` | Semantic Scholar API Key，Survey Agent需使用，若不调用Survey Agent可忽略 | 登录 [Semantic Scholar](https://www.semanticscholar.org/)，在账户设置中申请 API Key |
+| `DASHSCOPE_API_KEY`（可选）| `advanced_web_search_qwen`工具通过调用`qwen3.5-plus` API实现信息搜索与汇总，因此需要配置阿里云`DashScope API Key` | 登录 [DashScope 控制台](https://dashscope.console.aliyun.com/)，在"API-KEY管理"中创建并获取 |
+| `S2_API_KEY`（可选）| `Semantic Scholar API Key`，Survey Agent需使用，若不调用`Survey Agent`可忽略 | 登录 [Semantic Scholar](https://www.semanticscholar.org/)，在账户设置中申请 API Key |
 
 ### 3. 配置文件
 
@@ -183,7 +183,9 @@ One equivalent of <INCHI>InChI=1S/C10H18O4/c1-5(7(3)9(11)12)6(2)8(4)10(13)14/h5-
 本案例由 VibeScienceAgent 与中国科大智能科学家团队合作开发，基于真实物理实验工作站进行化学实验方案的设计与执行。我们以聚苯胺薄膜的合成为例，依据工作站的skills生成实验方案，并下发至智能科学家平台执行。
 
 生成的实验方案内容如下图所示：
-![聚苯胺薄膜实验方案内容](examples/experiments_design/聚苯胺薄膜实验方案设计-方案内容.png)
+<div align=center>
+  <img src="examples/experiments_design/聚苯胺薄膜实验方案设计-方案内容.png" alt="experiments_design_result" width="600"/>
+</div>
 
 更多详细内容请参考：[实验设计详情目录](examples/experiments_design/)
 
