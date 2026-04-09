@@ -15,18 +15,17 @@
 """
 Integration tests for ExperimentWorkflow.
 
-Tests:: initialization and enable_critic toggle.
+Tests:: initialization, enable_critic toggle, and workflow.run execution.
 """
-
+import re
 import pytest
+from unittest.mock import Mock, AsyncMock, patch, MagicMock
 from vibescience_agent.workflow import ExperimentWorkflow
 from vibescience_agent.config import VibeScienceConfig
-
 
 # =============================================================================
 # Initialization Tests
 # =============================================================================
-
 class TestExperimentWorkflowInitialization:
     """Test suite for ExperimentWorkflow initialization."""
 
@@ -40,40 +39,72 @@ class TestExperimentWorkflowInitialization:
         assert hasattr(workflow, 'plan_agent')
         assert hasattr(workflow, 'execute_agent')
 
-
 # =============================================================================
 # Enable Critic Toggle Tests
 # =============================================================================
-
-class TestExperimentWorkflowEnableCritic:
-    """Test suite for enable_critic toggle functionality."""
-
+class TestExperimentWorkflowRun:
+    """Test suite for ExperimentWorkflow.run method."""
     @pytest.mark.integration
-    def test_enable_critic_true(self, mock_full_config):
-        """Test enable_critic=True creates workflow with critic node."""
-        config = VibeScienceConfig._parse_config_data(mock_full_config)     # pylint: disable=W0212
-        workflow = ExperimentWorkflow(config=config, enable_critic=True)
-
-        # Verify enable_critic=True creates critic_agent and workflow contains critic node
-        assert workflow.enable_critic is True
-        assert hasattr(workflow, 'critic_agent')
-        assert workflow.critic_agent is not None    # pylint: disable=E1101
-
-        # Verify workflow nodes contain critic
-        workflow_nodes = list(workflow.app.nodes.keys())
-        assert "critic" in workflow_nodes
-
-    @pytest.mark.integration
-    def test_enable_critic_false(self, mock_full_config):
-        """Test enable_critic=False creates workflow without critic node."""
-        config = VibeScienceConfig._parse_config_data(mock_full_config)     # pylint: disable=W0212
+    @pytest.mark.asyncio
+    async def test_run_without_critic(self, mock_full_config):
+        """Test workflow.run without critic enabled - full workflow execution."""
+        config = VibeScienceConfig._parse_config_data(mock_full_config)
         workflow = ExperimentWorkflow(config=config, enable_critic=False)
-
-        # Verify enable_critic=False has critic_agent but workflow doesn't contain critic node
-        assert workflow.enable_critic is False
-        assert hasattr(workflow, 'critic_agent')
-        assert workflow.critic_agent is not None    # pylint: disable=E1101
-
-        # Verify workflow nodes don't contain critic
-        workflow_nodes = list(workflow.app.nodes.keys())
-        assert "critic" not in workflow_nodes
+        
+        plan_call_count = [0]
+        plan_responses = [
+            {"role": "assistant", "content": "I'll execute a test command\n<execute>print('test')</execute>"},
+            {"role": "assistant", "content": "Task completed successfully\n<solution>Test solution result</solution>"}
+        ]
+        
+        async def mock_plan_execute(messages):
+            response = plan_responses[plan_call_count[0]]
+            plan_call_count[0] += 1
+            return response
+        
+        workflow.plan_agent.execute = AsyncMock(side_effect=mock_plan_execute)
+        workflow.execute_agent.execute = AsyncMock(
+            return_value={"role": "assistant", "content": "Command executed successfully"}
+        )
+        
+        result = await workflow.run("Test task")    
+        solution = re.search(r"<solution>(.*?)</solution>", result, re.DOTALL | re.IGNORECASE).group(1)
+        
+        assert solution == "Test solution result"
+        assert workflow.plan_agent.execute.call_count == 2
+        assert workflow.execute_agent.execute.call_count == 1
+    
+    @pytest.mark.integration
+    @pytest.mark.asyncio
+    async def test_run_with_critic(self, mock_full_config):
+        """Test workflow.run with critic enabled - full workflow execution."""
+        config = VibeScienceConfig._parse_config_data(mock_full_config)
+        workflow = ExperimentWorkflow(config=config, enable_critic=True, test_time_scale_round=1)
+        
+        plan_call_count = [0]
+        plan_responses = [
+            {"role": "assistant", "content": " <think> Let me think about this</think> \n"},
+            {"role": "assistant", "content": "Now I'll execute\n<execute>print('test')</execute>"},
+            {"role": "assistant", "content": "Final solution\n<solution>Test solution with critic</solution>"}
+        ]
+        
+        async def mock_plan_execute(messages):
+            response = plan_responses[plan_call_count[0]]
+            plan_call_count[0] += 1
+            return response
+        
+        workflow.plan_agent.execute = AsyncMock(side_effect=mock_plan_execute)
+        workflow.critic_agent.execute = AsyncMock(
+            return_value={"role": "assistant", "content": "The plan looks good, proceed"}
+        )
+        workflow.execute_agent.execute = AsyncMock(
+            return_value={"role": "assistant", "content": "Execution completed"}
+        )
+        
+        result = await workflow.run("Test task")
+        solution = re.search(r"<solution>(.*?)</solution>", result, re.DOTALL | re.IGNORECASE).group(1)
+        
+        assert solution == "Test solution with critic"
+        assert workflow.plan_agent.execute.call_count == 3
+        assert workflow.critic_agent.execute.call_count == 1
+        assert workflow.execute_agent.execute.call_count == 1
