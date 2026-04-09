@@ -2,7 +2,7 @@
 
 # 配置
 SOURCE_DIR="."
-TARGET_DIR="your_dir"
+TARGET_DIR="flatten_VibeScienceSkills"
 PREFIX_LEVEL=1  # 0: 无前缀, 1: 使用第二级前缀, 2: 使用第一级+第二级前缀
 
 # 创建目标目录
