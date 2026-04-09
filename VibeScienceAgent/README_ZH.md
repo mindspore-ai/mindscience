@@ -52,8 +52,8 @@ VibeScienceAgent采用多Agent协作架构，包含以下七个核心sub-agent�
 ### 1. 安装依赖
 
 ```bash
-# 推荐使用Python3.11+版本
-conda create -n VibeScienceAgent python=3.11
+# 推荐使用Python3.12版本
+conda create -n VibeScienceAgent python=3.12
 conda activate VibeScienceAgent
 
 git clone https://gitcode.com/mindspore-lab/mindscience.git

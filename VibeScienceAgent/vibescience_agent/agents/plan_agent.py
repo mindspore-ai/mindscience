@@ -83,10 +83,8 @@ class PlanAgent(BaseAgent):
     #: ``None`` means all built-in tool description modules.
     TOOL_DESCRIPTION_MODULES: frozenset[str] | None = None
 
-    def __init__(self, model, config: AgentConfig, tool_config: Dict[str, ToolConfig] = None, **kwargs):
+    def __init__(self, model, config: AgentConfig, tool_config: Dict[str, ToolConfig] = None):
         super().__init__(model, config, tool_config)
-        self.sciencedata_with_desc = kwargs.get("sciencedata_with_desc", [])
-        self.sciencedata_path = kwargs.get("sciencedata_path", "")
 
         self.ctx = self._build_agent_tool_context(self.TOOL_DESCRIPTION_MODULES)
 
@@ -101,9 +99,11 @@ class PlanAgent(BaseAgent):
             Dict with ``content`` (str) – the raw plan text from the LLM.
         """
         survey_results = params.get("survey_results", None)
+        enable_critic = params.get("enable_critic", False)
+
         user_query = messages[0]["content"]
 
-        self._build_system_prompt(user_query, survey_results)
+        self._build_system_prompt(user_query, survey_results, enable_critic)
 
         logger.debug(f"PlanAgent call model inputs:\n{serialize_agent_messages(messages)}")
 
@@ -122,14 +122,20 @@ class PlanAgent(BaseAgent):
             content += "</think>"
         return create_assistant_msg(content)
 
-    def _build_system_prompt(self, user_query, survey_results):
+    def _build_system_prompt(self, user_query, survey_results, enable_critic):
         """Build the planner system prompt with environment resources."""
         if self.system_prompt:
             return
         self.run_tool_retrieval_if_enabled(user_query)
 
+        base_prompt = _PLAN_BASE_PROMPT
+        if enable_critic:
+            base_prompt += """
+You may or may not receive feedbacks from human. If so, address the feedbacks by following the same procedure of multiple rounds of thinking, execution, and then coming up with a new solution.
+"""
+
         self.system_prompt = generate_prompt(
-            base_prompt=_PLAN_BASE_PROMPT,
+            base_prompt=base_prompt,
             tool_desc=self.ctx["tool_desc"],
             library_content_list=self.ctx["library_content_list"],
             use_tool_retriever=self.use_tool_retriever,
@@ -137,9 +143,8 @@ class PlanAgent(BaseAgent):
             custom_data=self.ctx["custom_data"],
             custom_software=self.ctx["custom_software"],
             survey_results=survey_results,
-            sciencedata_path=self.sciencedata_path,
-            sciencedata_content=self.sciencedata_with_desc,
-            skill_path=self.skill_path
+            skill_path=self.skill_path,
+            skills=self.ctx["skills"]
         ) + (
                 "\n\nIMPORTANT FOR GPT MODELS: You MUST use XML tags <think> or "
                 "<solution> in EVERY response. Do not use markdown code blocks "

@@ -17,7 +17,7 @@ from vibescience_agent.config.base_config import BaseConfig
 from vibescience_agent.config.model_config import ModelConfig
 from vibescience_agent.utils import logger
 
-SUPPORTED_AGENT_LIST = ["survey", "plan", "critic", "execute"]
+SUPPORTED_AGENT_LIST = ["survey", "plan", "critic", "execute", "ranking", "idea", "idea_critic"]
 TOOL_RETRIEVER_SUPPORTED_AGENTS = ["plan", "execute"]
 SKILL_SUPPORTED_AGENTS = ["plan", "execute"]
 
@@ -93,7 +93,7 @@ class SurveyAgentConfig(AgentConfig):
         max_papers = 5,
         **kwargs,
     ):
-        super().__init__(**kwargs)
+        super().__init__(agent_type="survey", **kwargs)
 
         self.max_papers = max_papers
 
@@ -104,3 +104,29 @@ def validate_max_papers(config_instance: SurveyAgentConfig, max_papers):  # pyli
     validator.check_type("max_papers", value=max_papers, expected_type=int)
     validator.check_number_range("max_papers", value=max_papers, min_value=1)
     return max_papers
+
+
+class IdeaAgentConfig(AgentConfig):
+    """
+    Configuration for IdeaAgent.
+
+    Args:
+        minimal_ideas (int, optional): Minimum number of ideas to generate. Default: ``5``.
+    """
+
+    def __init__(
+        self,
+        minimal_ideas = 5,
+        **kwargs,
+    ):
+        super().__init__(agent_type="idea", **kwargs)
+
+        self.minimal_ideas = minimal_ideas
+
+
+@IdeaAgentConfig.validator("minimal_ideas")
+def validate_minimal_ideas(config_instance: IdeaAgentConfig, minimal_ideas):  # pylint: disable=W0613
+    """Validate minimal_ideas."""
+    validator.check_type("minimal_ideas", value=minimal_ideas, expected_type=int)
+    validator.check_number_range("minimal_ideas", value=minimal_ideas, min_value=1)
+    return minimal_ideas

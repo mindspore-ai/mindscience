@@ -68,7 +68,7 @@ class TestExecuteAgentExecute:
 
         with patch('vibescience_agent.agents.execute_agent.ExecuteAgent._build_execute_subgraph'):
             agent = ExecuteAgent(mock_base_model, _create_execute_config())
-            agent._invoke_execute_subgraph = AsyncMock(return_value=mock_final_state)   # pylint: disable=W0212
+            agent._invoke_subgraph = AsyncMock(return_value=mock_final_state)   # pylint: disable=W0212
 
             messages = [
                 create_user_msg("Execute code"),
@@ -101,7 +101,7 @@ class TestExecuteAgentToolRetrieverToggle:
             agent = ExecuteAgent(mock_base_model, _create_execute_config(use_tool_retriever=True))
             agent.tool_registry = mock_tool_registry
             agent.retriever = mock_tool_retriever
-            agent._invoke_execute_subgraph = AsyncMock(return_value=mock_final_state)   # pylint: disable=W0212
+            agent._invoke_subgraph = AsyncMock(return_value=mock_final_state)   # pylint: disable=W0212
 
             messages = [
                 create_user_msg("Execute code"),
@@ -123,7 +123,7 @@ class TestExecuteAgentToolRetrieverToggle:
 
         with patch('vibescience_agent.agents.execute_agent.ExecuteAgent._build_execute_subgraph'):
             agent = ExecuteAgent(mock_base_model, _create_execute_config(use_tool_retriever=False))
-            agent._invoke_execute_subgraph = AsyncMock(return_value=mock_final_state)   # pylint: disable=W0212
+            agent._invoke_subgraph = AsyncMock(return_value=mock_final_state)   # pylint: disable=W0212
 
             messages = [
                 create_user_msg("Execute code"),

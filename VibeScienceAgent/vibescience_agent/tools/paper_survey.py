@@ -207,7 +207,7 @@ def fetch_arxiv_papers(query: str, max_results: int = 20, sort: str = "relevance
         return papers
 
     except Exception as e:
-        logger.error("paper_survey", f"Error searching arXiv: {e}")
+        logger.error(f"Error searching arXiv: {e}")
         return []
 
 def select_papers(paper_bank, max_papers, rag_read_depth):

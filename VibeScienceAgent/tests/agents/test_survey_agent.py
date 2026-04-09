@@ -28,7 +28,7 @@ from vibescience_agent.config import ModelConfig, SurveyAgentConfig, PaperSurvey
 def _create_survey_config():
     """Helper to create minimal SurveyAgent config."""
     model_config = ModelConfig(model_name="test-model", base_url="http://test-model-api.com", api_key="test-api-key")
-    return SurveyAgentConfig(agent_type="survey", model_config=model_config, max_papers=5)
+    return SurveyAgentConfig(model_config=model_config, max_papers=5)
 
 def _create_tool_config():
     return {"paper_survey": PaperSurveyConfig(max_results=10, sources=["pubmed", "arxiv", "semantic_scholar"])}

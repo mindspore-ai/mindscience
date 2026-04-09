@@ -21,6 +21,8 @@ import threading
 from langchain_core.messages import HumanMessage
 from langchain_openai import ChatOpenAI
 
+from vibescience_agent.utils import logger
+
 
 class ToolRetriever:
     """Retrieve tools from the tool registry."""
@@ -33,7 +35,7 @@ class ToolRetriever:
 
         Args:
             query: The user's query
-            resources: A dictionary with keys 'tools', 'sciencedata', and 'libraries',
+            resources: A dictionary with keys 'tools', and 'libraries',
                       each containing a list of available resources
             llm: Optional LLM instance to use for retrieval (if None, will create a new one)
 
@@ -41,8 +43,8 @@ class ToolRetriever:
             A dictionary with the same keys, but containing only the most relevant resources
 
         """
+        skills = resources.get("skills") or []
         tools_r = resources.get("tools") or []
-        sciencedata_r = resources.get("sciencedata") or []
         libraries_r = resources.get("libraries") or []
 
         prompt_sections = []
@@ -55,34 +57,34 @@ Below are the available resources. For each category, select items that are dire
 Be generous in your selection - include resources that might be useful for the task, even if they're not explicitly mentioned in the query.
 It's better to include slightly more resources than to miss potentially useful ones.
 
+AVAILABLE SKILLS:
+{self._format_resources_for_prompt(skills)}
+
 AVAILABLE TOOLS:
 {self._format_resources_for_prompt(tools_r)}
-
-AVAILABLE SCIENCEDATA ITEMS:
-{self._format_resources_for_prompt(sciencedata_r)}
 
 AVAILABLE SOFTWARE LIBRARIES:
 {self._format_resources_for_prompt(libraries_r)}""")
 
         response_format = """
 For each category, respond with ONLY the indices of the relevant items in the following format:
+SKILLS: [list of indices]
 TOOLS: [list of indices]
-SCIENCEDATA: [list of indices]
 LIBRARIES: [list of indices]
 
 For example:
+SKILLS: [0, 2]
 TOOLS: [0, 3, 5, 7, 9]
-SCIENCEDATA: [1, 2, 4]
 LIBRARIES: [0, 2, 4, 5, 8]
 
-If a category has no relevant items, use an empty list, e.g., SCIENCEDATA: [] or LIBRARIES: []
+If a category has no relevant items, use an empty list, e.g., TOOLS: [] or LIBRARIES: []
 
 IMPORTANT GUIDELINES:
 1. Be generous but not excessive - aim to include all potentially relevant resources
-2. ALWAYS prioritize database tools for general queries - include as many database tools as possible
-3. Include all literature search tools
-4. For wet lab sequence type of queries, ALWAYS include molecular biology tools
-5. For sciencedata items, include datasets that could provide useful information
+2. ALWAYS prioritize skills over tools and libraries - if a skill provides functionality that overlaps with TOOLS or LIBRARIES, prefer the skill
+3. ALWAYS prioritize database tools for general queries - include as many database tools as possible
+4. Include all literature search tools
+5. For wet lab sequence type of queries, ALWAYS include molecular biology tools
 6. For libraries, include those that provide functions needed for analysis
 7. Don't exclude resources just because they're not explicitly mentioned in the query
 8. When in doubt about a database tool or molecular biology tool, include it rather than exclude it
@@ -92,6 +94,8 @@ IMPORTANT GUIDELINES:
 
         if llm is None:
             llm = ChatOpenAI(model="gpt-4o")
+
+        logger.debug(f"tool retriever prompt: {prompt}")
 
         if hasattr(llm, "invoke"):
             response = llm.invoke([HumanMessage(content=prompt)])
@@ -103,15 +107,15 @@ IMPORTANT GUIDELINES:
         else:
             response_content = str(llm(prompt))
 
+        logger.debug(f"tool retriever response_content: {response_content}")
+
         selected_indices = self._parse_llm_response(response_content)
 
+        logger.debug(f"tool retriever selected_indices: {selected_indices}")
+
         return {
+            "skills": [skills[i] for i in selected_indices.get("skills", []) if i < len(skills)],
             "tools": [tools_r[i] for i in selected_indices.get("tools", []) if i < len(tools_r)],
-            "sciencedata": [
-                sciencedata_r[i]
-                for i in selected_indices.get("sciencedata", [])
-                if i < len(sciencedata_r)
-            ],
             "libraries": [libraries_r[i] for i in selected_indices.get("libraries", []) if i < len(libraries_r)],
         }
 
@@ -175,19 +179,17 @@ IMPORTANT GUIDELINES:
             response = "\n".join([p for p in parts if p])
         elif not isinstance(response, str):
             response = str(response)
-        selected_indices = {"tools": [], "sciencedata": [], "libraries": []}
+        selected_indices = {"skills": [], "tools": [], "libraries": []}
+
+        skills_match = re.search(r"SKILLS:\s*\[(.*?)\]", response, re.IGNORECASE)
+        if skills_match and skills_match.group(1).strip():
+            with contextlib.suppress(ValueError):
+                selected_indices["skills"] = [int(idx.strip()) for idx in skills_match.group(1).split(",") if idx.strip()]
 
         tools_match = re.search(r"TOOLS:\s*\[(.*?)\]", response, re.IGNORECASE)
         if tools_match and tools_match.group(1).strip():
             with contextlib.suppress(ValueError):
                 selected_indices["tools"] = [int(idx.strip()) for idx in tools_match.group(1).split(",") if idx.strip()]
-
-        sciencedata_match = re.search(r"SCIENCEDATA:\s*\[(.*?)\]", response, re.IGNORECASE)
-        if sciencedata_match and sciencedata_match.group(1).strip():
-            with contextlib.suppress(ValueError):
-                selected_indices["sciencedata"] = [
-                    int(idx.strip()) for idx in sciencedata_match.group(1).split(",") if idx.strip()
-                ]
 
         libraries_match = re.search(r"LIBRARIES:\s*\[(.*?)\]", response, re.IGNORECASE)
         if libraries_match and libraries_match.group(1).strip():

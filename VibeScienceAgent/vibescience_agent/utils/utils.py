@@ -152,3 +152,27 @@ def load_env(env_path: str = ".env") -> None:
                     value = value[1:-1]
 
                 os.environ[key] = value
+
+
+def extract_skill_description(markdown_path):
+    with open(markdown_path, 'r', encoding='utf-8') as file:
+        content = file.read()
+
+        # 匹配所有 YAML 块
+        pattern = r'---\n(.*?)\n---'
+        yaml_blocks = re.findall(pattern, content, re.DOTALL)
+
+        for block in yaml_blocks:
+            # 提取 name
+            name_match = re.search(r'^name:\s*(.*?)$', block, re.MULTILINE)
+            # 提取 description（可能跨越多行）
+            desc_match = re.search(r'^description:\s*(.*?)(?=\n\w+:|$)', block, re.MULTILINE | re.DOTALL)
+
+            if name_match and desc_match:
+                name = name_match.group(1).strip()
+                # 清理描述文本（移除多余空格和换行）
+                description = desc_match.group(1).strip()
+                description = re.sub(r'\n\s*', ' ', description)
+
+                return name, description
+    return None

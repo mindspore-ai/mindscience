@@ -110,7 +110,6 @@ class OpenAIModel(BaseModel):
         temperature = temperature if temperature is not None else self.temperature
         max_tokens = max_tokens if max_tokens is not None else self.max_tokens
 
-        logger.debug(f"chat.completions request messages: {json.dumps(messages, ensure_ascii=False)}")
         response = await self.client.chat.completions.create(
             model=self.model_name,
             messages=messages,
@@ -120,7 +119,6 @@ class OpenAIModel(BaseModel):
             **kwargs
         )
         content = response.choices[0].message.content
-        logger.debug(f"chat.completions response: {content}")
         return content
 
     async def generate_with_json_output(self,
@@ -161,10 +159,7 @@ class OpenAIModel(BaseModel):
                 req_messages += prompt
             else:
                 req_messages.append({"role": "user", "content": prompt})
-            logger.debug(
-                "chat.completions json request messages",
-                json.dumps(req_messages, ensure_ascii=False),
-            )
+
             response = await self.client.chat.completions.create(
                 model=self.model_name,
                 messages=req_messages,
@@ -174,7 +169,7 @@ class OpenAIModel(BaseModel):
             )
 
             result_text = response.choices[0].message.content
-            logger.debug("chat.completions json response", result_text or "")
+
             try:
                 result_dict = json.loads(result_text)
             except json.JSONDecodeError as exc:

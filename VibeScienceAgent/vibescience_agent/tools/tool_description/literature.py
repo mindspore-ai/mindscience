@@ -82,32 +82,6 @@ description = [
         ],
     },
     {
-        "description": "Search using Google search and return formatted results.",
-        "name": "search_google",
-        "optional_parameters": [
-            {
-                "default": 3,
-                "description": "Number of results to return",
-                "name": "num_results",
-                "type": "int",
-            },
-            {
-                "default": "en",
-                "description": "Language code for search results",
-                "name": "language",
-                "type": "str",
-            },
-        ],
-        "required_parameters": [
-            {
-                "default": None,
-                "description": 'The search query (e.g., "protocol text or search question")',
-                "name": "query",
-                "type": "str",
-            }
-        ],
-    },
-    {
         "description": "Extract the text content of a webpage using requests and BeautifulSoup.",
         "name": "extract_url_content",
         "optional_parameters": [],

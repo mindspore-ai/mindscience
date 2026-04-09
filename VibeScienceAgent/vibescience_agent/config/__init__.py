@@ -16,7 +16,7 @@
 
 from vibescience_agent.config.base_config import BaseConfig
 from vibescience_agent.config.model_config import ModelConfig
-from vibescience_agent.config.agent_config import AgentConfig, SurveyAgentConfig
+from vibescience_agent.config.agent_config import AgentConfig, SurveyAgentConfig, IdeaAgentConfig
 from vibescience_agent.config.tool_config import ToolConfig, PaperSurveyConfig
 from vibescience_agent.config.log_config import LogConfig
 from vibescience_agent.config.vibescience_config import VibeScienceConfig
@@ -26,6 +26,7 @@ __all__ = [
     "ModelConfig",
     "AgentConfig",
     "SurveyAgentConfig",
+    "IdeaAgentConfig",
     "ToolConfig",
     "PaperSurveyConfig",
     "LogConfig",

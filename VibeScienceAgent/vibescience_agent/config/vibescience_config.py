@@ -37,7 +37,6 @@ class VibeScienceConfig(BaseConfig):
     and provides initialization from YAML file.
 
     Attributes:
-        version: Configuration version
         model_defaults: Default model settings
         agents: Dictionary of agent configurations
         tools: Dictionary of tool configurations
@@ -46,7 +45,6 @@ class VibeScienceConfig(BaseConfig):
 
     def __init__(
         self,
-        version: str = "1.0.0",
         model_defaults: Optional[ModelConfig] = None,
         agents: Optional[Dict[str, AgentConfig]] = None,
         tools: Optional[Dict[str, ToolConfig]] = None,
@@ -54,7 +52,6 @@ class VibeScienceConfig(BaseConfig):
     ):
         super().__init__(config_name="vibescience")
 
-        self.version = version
         self.model_defaults = model_defaults
         self.agents = agents or {}
         self.tools = tools or {}
@@ -103,9 +100,6 @@ class VibeScienceConfig(BaseConfig):
         Returns:
             VibeScienceConfig: The configuration object
         """
-        # Parse version
-        version = config_data.get("version", "1.0.0")
-
         # Parse logging
         logging_data = config_data.get("logging", {})
         logging_config = cls._parse_log_config(logging_data)
@@ -131,7 +125,6 @@ class VibeScienceConfig(BaseConfig):
             tools[tool_name] = cls._parse_tool_config(tool_name, tool_data)
 
         config = cls(
-            version=version,
             model_defaults=model_defaults,
             agents=agents,
             tools=tools,
@@ -289,7 +282,6 @@ class VibeScienceConfig(BaseConfig):
         """Log the current configuration in a tree format."""
         # Build config dict dynamically
         config_dict = {
-            "version": self.version,
             "agents": self._get_config_dict(self.agents) if self.agents else {},
             "tools": self._get_config_dict(self.tools) if self.tools else {},
             "logging_config": self._get_config_dict(self.logging_config) if self.logging_config else {},
