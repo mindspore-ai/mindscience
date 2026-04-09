@@ -214,7 +214,7 @@ class SurveyAgent(BaseAgent):
                     flattened_papers.extend(papers["data"])
 
             paper_bank = {str(i): paper for i, paper in enumerate(flattened_papers)}
-            logger.debug("init paper bank size: ", len(paper_bank))
+            logger.debug(f"init paper bank size: {len(paper_bank)}")
         else:
             logger.debug("No papers found for the initial query")
             paper_bank = {}
@@ -355,7 +355,7 @@ class SurveyAgent(BaseAgent):
                 prompt=paper_score_prompt,
                 schema=output_schema_paper_score
             )
-            logger.debug("SurveyAgent scoring call model output:\n", response)
+            logger.debug(f"SurveyAgent scoring call model output:\n{response}")
 
             for key, score in response.items():
                 # actual_paper_id = batch_index + int(key)
@@ -365,7 +365,7 @@ class SurveyAgent(BaseAgent):
                 else:
                     logger.warning(f"Index '{actual_paper_id}' out of range in paper_bank.")
 
-        logger.debug("Final paper_bank", paper_bank)
+        logger.debug(f"Final paper_bank: {paper_bank}")
 
         rag_read_depth = 3
         selected_for_deep_read = select_papers(paper_bank, self.max_papers, rag_read_depth)
@@ -379,7 +379,7 @@ class SurveyAgent(BaseAgent):
                 if paper.get('isOpenAccess', False):
                     url = paper['openAccessPdf']['url']
 
-            logger.debug("deep read paper_id:", paper_id, "url:", url)
+            logger.debug(f"deep read paper_id: {paper_id}, url: {url}")
             base_dir = 'tmp'
             if url:
                 pdf_dir = os.path.join(base_dir, "pdf")
@@ -435,6 +435,6 @@ class SurveyAgent(BaseAgent):
             paper_bank.sort(key=lambda x: (x.get('is_deep_read', False), x.get('score', 0)), reverse=True)
             # select top papers based on max_papers limit
             paper_bank = paper_bank[:self.max_papers]
-            logger.debug(f"Number of papers after filter: {len(paper_bank)}", flush=True)
+            logger.debug(f"Number of papers after filter: {len(paper_bank)}")
 
         return paper_bank

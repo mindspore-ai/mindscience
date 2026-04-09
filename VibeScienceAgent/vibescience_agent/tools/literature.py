@@ -172,38 +172,6 @@ def query_pubmed(query: str, max_papers: int = 10, max_retries: int = 3) -> str:
         return f"Error querying PubMed: {e}"
 
 
-def search_google(query: str, num_results: int = 3, language: str = "en") -> list[dict]:
-    """Search using Google search.
-
-    Args:
-        query (str): The search query (e.g., "protocol text or seach question")
-        num_results (int): Number of results to return (default: 10)
-        language (str): Language code for search results (default: 'en')
-        pause (float): Pause between searches to avoid rate limiting (default: 2.0 seconds)
-
-    Returns:
-        List[dict]: List of dictionaries containing search results with title and URL
-
-    """
-    try:
-        results_string = ""
-        search_query = f"{query}"
-
-        logger.debug(f"Searching for {search_query} with {num_results} results and {language} language")
-
-        for res in search(search_query, num_results=num_results, lang=language, advanced=True):
-            logger.debug(f"Found result: {res.title}")
-            title = res.title
-            url = res.url
-            description = res.description
-
-            results_string += f"Title: {title}\nURL: {url}\nDescription: {description}\n\n"
-
-    except Exception as e:
-        logger.warning(f"Error performing search: {str(e)}")
-    return results_string
-
-
 def advanced_web_search_qwen(
     query: str,
     max_retries: int = 3,

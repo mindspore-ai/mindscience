@@ -20,6 +20,9 @@ from vibescience_agent.agents.plan_agent import PlanAgent
 from vibescience_agent.agents.survey_agent import SurveyAgent
 from vibescience_agent.agents.critic_agent import CriticAgent
 from vibescience_agent.agents.execute_agent import ExecuteAgent
+from vibescience_agent.agents.ranking_agent import RankingAgent
+from vibescience_agent.agents.idea_agent import IdeaAgent
+from vibescience_agent.agents.idea_agent import IdeaCriticAgent
 
 __all__ = [
     "BaseAgent",
@@ -28,4 +31,7 @@ __all__ = [
     "SurveyAgent",
     "CriticAgent",
     "ExecuteAgent",
+    "RankingAgent",
+    "IdeaAgent",
+    "IdeaCriticAgent",
 ]

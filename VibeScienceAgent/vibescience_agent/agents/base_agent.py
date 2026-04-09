@@ -33,21 +33,34 @@ from __future__ import annotations
 
 import abc
 import asyncio
+import os
 from typing import Any, Dict, Optional, Union
+
+from langchain_core.tools import Tool
+from deepagents import create_deep_agent
+from deepagents.backends import FilesystemBackend
+try:
+    from langchain_experimental.utilities import PythonREPL
+    python_repl_func = PythonREPL().run
+except ImportError as e:
+    from vibescience_agent.tools.support_tools import run_python_repl
+    python_repl_func = run_python_repl
 
 from vibescience_agent.model.base_model import BaseModel
 from vibescience_agent.tools.tool_registry import ToolRegistry
 from vibescience_agent.tools.tool_retriever import ToolRetriever
-from vibescience_agent.tools.env_desc import library_content_dict, sciencedata_dict
+from vibescience_agent.tools.env_desc import library_content_dict
 from vibescience_agent.utils.utils import (
     read_module2api,
     subset_module2api,
     build_tool_desc,
-    library_names_for_prompt
+    library_names_for_prompt,
+    extract_skill_description
 )
 from vibescience_agent.utils import logger
 from vibescience_agent.config.agent_config import AgentConfig
 from vibescience_agent.config.tool_config import ToolConfig
+from vibescience_agent.config.vibescience_config import PROJECT_ROOT
 
 
 class AgentExecutionError(Exception):
@@ -119,6 +132,41 @@ class BaseAgent(abc.ABC):
             self.retriever = ToolRetriever()
         self.ctx = {}
         self.system_prompt = ""
+        self._compiled_subgraph = None
+
+    def _build_deep_agent(self):
+        """Build a DeepAgent instance for tool execution."""
+        chat_model = self.model.to_chat_openai()
+
+        python_skill_tool = Tool(
+            name="python_executor",
+            func=python_repl_func,
+            description=(
+                "Execute Python code to process data, analyze results, or perform computations. "
+                "Input should be a valid Python code snippet. Use this tool for tasks that require "
+                "data manipulation, analysis, or any computation that can be done in Python."
+            ),
+        )
+
+        backend = FilesystemBackend(root_dir=str(PROJECT_ROOT))
+        execute_node = create_deep_agent(
+            chat_model,
+            backend=backend,
+            tools=[python_skill_tool],
+        )
+        return execute_node
+
+    async def _invoke_subgraph(self, input_msg: list[tuple[str, str]]) -> dict:
+        if not hasattr(self, "_compiled_subgraph"):
+            raise AgentExecutionError(
+                "Subgraph not compiled. Ensure _build_execute_subgraph "
+                "is called during initialization."
+            )
+        if hasattr(self._compiled_subgraph, "ainvoke"):
+            return await self._compiled_subgraph.ainvoke({"messages": input_msg})
+        return await asyncio.to_thread(
+            self._compiled_subgraph.invoke, {"messages": input_msg}
+        )
 
     @abc.abstractmethod
     async def execute(self, messages, **params) -> Dict[str, Any]:
@@ -229,8 +277,23 @@ class BaseAgent(abc.ABC):
             Dict with keys ``tool_desc``, ``library_content_list``, ``custom_tools``,
             ``custom_data``, ``custom_software``.
         """
+
+        skills = []
+        if self.skill_path and os.path.exists(self.skill_path):
+            for root, _, files in os.walk(self.skill_path):
+                if 'SKILL.md' in files:
+                    markdown_path = os.path.join(root, 'SKILL.md')
+                    extract_info = extract_skill_description(markdown_path)
+                    if extract_info:
+                        name, description = extract_info
+                        dir_name = os.path.basename(root)
+                        if name != dir_name:
+                            continue
+                        skills.append({"name": name, "description": description, "path": markdown_path})
+
         subset = subset_module2api(self.module2api, class_tool_modules)
         return {
+            "skills": skills,
             "tool_desc": build_tool_desc(subset),
             "library_content_list": library_names_for_prompt(),
             # Currently not supported
@@ -240,7 +303,7 @@ class BaseAgent(abc.ABC):
         }
 
     def _update_selected_resources(self, selected_resources: Optional[Dict[str, Any]]) -> None:
-        """Apply tool-retriever output (``tools`` / ``sciencedata`` / ``libraries`` keys)."""
+        """Apply tool-retriever output (``tools`` / ``libraries`` keys)."""
         # Extract tool descriptions for the selected tools
         tool_desc = {}
         for tool in selected_resources["tools"]:
@@ -295,12 +358,7 @@ class BaseAgent(abc.ABC):
                 }
                 tool_desc[module_name].append(tool_dict)
 
-        # Prepare science data items with descriptions
-        self.sciencedata_with_desc = []  # pylint: disable=W0201
-        for item in selected_resources["sciencedata"]:
-            description = sciencedata_dict.get(item, f"Science Data item: {item}")
-            self.sciencedata_with_desc.append({"name": item, "description": description})
-
+        self.ctx["skills"] = selected_resources["skills"]
         self.ctx["tool_desc"] = tool_desc
         self.ctx["library_content_list"] = selected_resources["libraries"]
 
@@ -314,16 +372,11 @@ class BaseAgent(abc.ABC):
             dict: Dictionary containing selected resource names for tools, science_data, and libraries
         """
         # Gather all available resources
+
         # 1. Tools from the registry
         all_tools = self.tool_registry.tools if hasattr(self, "tool_registry") else []
 
-        # 2. Science Data items with descriptions
-        # Add custom data items to retrieval if they exist
-        if self.ctx.get("custom_data", None):
-            for name, info in self.ctx["custom_data"].items():
-                self.sciencedata_with_desc.append({"name": name, "description": info["description"]})
-
-        # 3. Libraries with descriptions - use library_content_dict directly
+        # 2. Libraries with descriptions - use library_content_dict directly
         library_descriptions = []
         for lib_name, lib_desc in library_content_dict.items():
             library_descriptions.append({"name": lib_name, "description": lib_desc})
@@ -337,8 +390,8 @@ class BaseAgent(abc.ABC):
 
         # Use retrieval to get relevant resources
         resources = {
+            "skills": self.ctx.get("skills", []),
             "tools": all_tools,
-            "sciencedata": self.sciencedata_with_desc,
             "libraries": library_descriptions,
         }
 
@@ -351,29 +404,19 @@ class BaseAgent(abc.ABC):
 
         # Extract the names from the selected resources for the system prompt
         selected_resources_names = {
+            "skills": selected_resources["skills"],
             "tools": selected_resources["tools"],
-            "sciencedata": [],
             "libraries": [lib["name"] if isinstance(lib, dict) else lib for lib in selected_resources["libraries"]],
         }
-
-        # Process science data items to extract just the names
-        for item in selected_resources["sciencedata"]:
-            if isinstance(item, dict):
-                selected_resources_names["sciencedata"].append(item["name"])
-            elif isinstance(item, str) and ": " in item:
-                # If the item already has a description, extract just the name
-                name = item.split(": ")[0]
-                selected_resources_names["sciencedata"].append(name)
-            else:
-                selected_resources_names["sciencedata"].append(item)
 
         # Print summary of what was retrieved
         logger.info("-" * 60)
         logger.info("📊 RETRIEVAL SUMMARY:")
 
+        if self.ctx.get("skills", []):
+            logger.info(f"  🧠 Skills: {len(selected_resources_names['skills'])} selected")
         logger.info(f"  🔧 Tools: {len(selected_resources_names['tools'])} selected")
-        logger.info(f"  📊 Science Data: {len(selected_resources_names['sciencedata'])} selected")
-        logger.info(f"  ⚙️  Libraries: {len(selected_resources_names['libraries'])} selected")
+        logger.info(f"  ⚙️ Libraries: {len(selected_resources_names['libraries'])} selected")
         logger.info("=" * 60)
 
         return selected_resources_names

@@ -30,7 +30,6 @@ class TestVibeScienceConfig:
     def test_creation_with_defaults(self):
         """Test creating VibeScienceConfig with default values."""
         config = VibeScienceConfig()
-        assert config.version == "1.0.0"
         assert config.model_defaults is None
         assert config.agents == {}
         assert config.tools == {}
@@ -41,18 +40,15 @@ class TestVibeScienceConfig:
         model_defaults = ModelConfig(model_name="gpt-4")
         logging_config = LogConfig(level="DEBUG")
         config = VibeScienceConfig(
-            version="2.0.0",
             model_defaults=model_defaults,
             logging_config=logging_config,
         )
-        assert config.version == "2.0.0"
         assert config.model_defaults == model_defaults
         assert config.logging_config == logging_config
 
     def test_parse_config_data_full(self):
         """Test parsing full configuration data."""
         config_data = {
-            "version": "1.0.0",
             "model_defaults": {
                 "model_name": "gpt-4",
                 "api_key": "test-key",
@@ -82,7 +78,6 @@ class TestVibeScienceConfig:
         }
         config = VibeScienceConfig._parse_config_data(config_data)
 
-        assert config.version == "1.0.0"
         assert config.model_defaults is not None
         assert config.model_defaults.model_name == "gpt-4"
         assert "survey" in config.agents
@@ -93,12 +88,9 @@ class TestVibeScienceConfig:
 
     def test_parse_config_data_minimal(self):
         """Test parsing minimal configuration data."""
-        config_data = {
-            "version": "1.0.0",
-        }
+        config_data = {}
         config = VibeScienceConfig._parse_config_data(config_data)
 
-        assert config.version == "1.0.0"
         assert isinstance(config.model_defaults, ModelConfig)
         assert config.agents == {}
         assert config.tools == {}
@@ -218,7 +210,6 @@ class TestVibeScienceConfig:
     def test_init_config_from_yaml(self):
         """Test initializing configuration from YAML file."""
         yaml_content = """
-version: "1.0.0"
 model_defaults:
   model_name: "gpt-4"
   api_key: "test-key"
@@ -244,7 +235,6 @@ logging:
 
         try:
             config = VibeScienceConfig.init_config_from_yaml(yaml_path)
-            assert config.version == "1.0.0"
             assert config.model_defaults is not None
             assert config.model_defaults.model_name == "gpt-4"
             assert "survey" in config.agents

@@ -1,5 +1,5 @@
 # Copyright 2026 Huawei Technologies Co., Ltd
-# Copyright 2025 InternAgent
+# Copyright 2025 Biomni
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,9 +14,8 @@
 # limitations under the License.
 # ============================================================================
 import os
-import re
 
-from vibescience_agent.tools.env_desc import sciencedata_dict, library_content_dict
+from vibescience_agent.tools.env_desc import library_content_dict
 
 
 def textify_api_dict(api_dict):
@@ -55,30 +54,6 @@ def textify_api_dict(api_dict):
         lines.append("")  # Extra empty line after each category
 
     return "\n".join(lines)
-
-
-def extract_skill_description(markdown_path):
-    with open(markdown_path, 'r', encoding='utf-8') as file:
-        content = file.read()
-
-        # 匹配所有 YAML 块
-        pattern = r'---\n(.*?)\n---'
-        yaml_blocks = re.findall(pattern, content, re.DOTALL)
-
-        for block in yaml_blocks:
-            # 提取 name
-            name_match = re.search(r'^name:\s*(.*?)$', block, re.MULTILINE)
-            # 提取 description（可能跨越多行）
-            desc_match = re.search(r'^description:\s*(.*?)(?=\n\w+:|$)', block, re.MULTILINE | re.DOTALL)
-
-            if name_match and desc_match:
-                name = name_match.group(1).strip()
-                # 清理描述文本（移除多余空格和换行）
-                description = desc_match.group(1).strip()
-                description = re.sub(r'\n\s*', ' ', description)
-
-                return name, description
-    return None
 
 
 def format_item_with_description(name, description):
@@ -121,16 +96,15 @@ def format_item_with_description(name, description):
 
 def generate_prompt(
     base_prompt,
-    tool_desc,
-    library_content_list,
+    tool_desc=None,
+    library_content_list=None,
     use_tool_retriever=False,
     custom_tools=None,
     custom_data=None,
     custom_software=None,
     survey_results=None,
-    sciencedata_path: str = "",
-    sciencedata_content=None,
-    skill_path=None
+    skill_path: str = "",
+    skills=None
 ):
     """
     Generate a system prompt for the plan and execute agent based on the provided context.
@@ -142,98 +116,56 @@ def generate_prompt(
         custom_data: Optional list of custom datasets available
         custom_software: Optional list of custom software available
         survey_results: Optional list of survey results to include in the prompt
-        selected_resources: Optional dict from tool retriever (tools, sciencedata, libraries)
-        sciencedata_path: Root path to the local sciencedata directory (empty if disabled).
-        sciencedata_content: List of sciencedata entries (dicts with name/description or strings).
+        selected_resources: Optional dict from tool retriever (tools, libraries)
     """
     prompt_modifier = base_prompt
     # Separate custom and default resources
-    default_sciencedata_content = []
     default_library_content_list = []
 
     # Filter out custom items from default lists
-    custom_data_names = set()
     custom_software_names = set()
 
-    if custom_data:
-        custom_data_names = {item.get("name") if isinstance(item, dict) else item for item in custom_data}
     if custom_software:
         custom_software_names = {item.get("name") if isinstance(item, dict) else item for item in custom_software}
 
-    # Separate default science data items
-    for item in sciencedata_content:
-        if isinstance(item, dict):
-            name = item.get("name", "")
-            if name not in custom_data_names:
-                default_sciencedata_content.append(item)
-        elif item not in custom_data_names:
-            default_sciencedata_content.append(item)
-
     # Separate default library items
-    for lib in library_content_list:
-        if isinstance(lib, dict):
-            name = lib.get("name", "")
-            if name not in custom_software_names:
-                default_library_content_list.append(lib)
-        elif lib not in custom_software_names:
-            default_library_content_list.append(lib)
-
-    # Format default science data content
-    if isinstance(default_sciencedata_content, list) and all(
-        isinstance(item, str) for item in default_sciencedata_content
-    ):
-        # Simple list of strings - check if they already have descriptions
-        sciencedata_formatted = []
-        for item in default_sciencedata_content:
-            # Check if the item already has a description (contains a colon)
-            if ": " in item:
-                sciencedata_formatted.append(item)
-            else:
-                description = sciencedata_dict.get(item, f"Sciencedata item: {item}")
-                sciencedata_formatted.append(format_item_with_description(item, description))
-    else:
-        # List with descriptions
-        sciencedata_formatted = []
-        for item in default_sciencedata_content:
-            if isinstance(item, dict):
-                name = item.get("name", "")
-                description = sciencedata_dict.get(name, f"Sciencedata item: {name}")
-                sciencedata_formatted.append(format_item_with_description(name, description))
-            # Check if the item already has a description (contains a colon)
-            elif isinstance(item, str) and ": " in item:
-                sciencedata_formatted.append(item)
-            else:
-                description = sciencedata_dict.get(item, f"Sciencedata item: {item}")
-                sciencedata_formatted.append(format_item_with_description(item, description))
-
-    # Format default library content
-    if isinstance(default_library_content_list, list) and all(
-        isinstance(item, str) for item in default_library_content_list
-    ):
-        if (
-            len(default_library_content_list) > 0
-            and isinstance(default_library_content_list[0], str)
-            and "," not in default_library_content_list[0]
-        ):
-            # Simple list of strings
-            libraries_formatted = []
-            for lib in default_library_content_list:
-                description = library_content_dict.get(lib, f"Software library: {lib}")
-                libraries_formatted.append(format_item_with_description(lib, description))
-        else:
-            # Already formatted string
-            libraries_formatted = default_library_content_list
-    else:
-        # List with descriptions
-        libraries_formatted = []
-        for lib in default_library_content_list:
+    if library_content_list:
+        for lib in library_content_list:
             if isinstance(lib, dict):
                 name = lib.get("name", "")
-                description = library_content_dict.get(name, f"Software library: {name}")
-                libraries_formatted.append(format_item_with_description(name, description))
+                if name not in custom_software_names:
+                    default_library_content_list.append(lib)
+            elif lib not in custom_software_names:
+                default_library_content_list.append(lib)
+
+        # Format default library content
+        if isinstance(default_library_content_list, list) and all(
+            isinstance(item, str) for item in default_library_content_list
+        ):
+            if (
+                len(default_library_content_list) > 0
+                and isinstance(default_library_content_list[0], str)
+                and "," not in default_library_content_list[0]
+            ):
+                # Simple list of strings
+                libraries_formatted = []
+                for lib in default_library_content_list:
+                    description = library_content_dict.get(lib, f"Software library: {lib}")
+                    libraries_formatted.append(format_item_with_description(lib, description))
             else:
-                description = library_content_dict.get(lib, f"Software library: {lib}")
-                libraries_formatted.append(format_item_with_description(lib, description))
+                # Already formatted string
+                libraries_formatted = default_library_content_list
+        else:
+            # List with descriptions
+            libraries_formatted = []
+            for lib in default_library_content_list:
+                if isinstance(lib, dict):
+                    name = lib.get("name", "")
+                    description = library_content_dict.get(name, f"Software library: {name}")
+                    libraries_formatted.append(format_item_with_description(name, description))
+                else:
+                    description = library_content_dict.get(lib, f"Software library: {lib}")
+                    libraries_formatted.append(format_item_with_description(lib, description))
 
     # Format custom resources with highlighting
     custom_tools_formatted = []
@@ -255,7 +187,7 @@ def generate_prompt(
                 desc = item.get("description", "")
                 custom_data_formatted.append(f"📊 {format_item_with_description(name, desc)}")
             else:
-                desc = sciencedata_dict.get(item, f"Custom data: {item}")
+                desc = f"Custom data: {item}"
                 custom_data_formatted.append(f"📊 {format_item_with_description(item, desc)}")
 
     custom_software_formatted = []
@@ -291,18 +223,12 @@ def generate_prompt(
 
     # skill description
     skill_desc_formatted = []
-    if skill_path and os.path.exists(skill_path):
-        for root, _, files in os.walk(skill_path):
-            if 'SKILL.md' in files:
-                markdown_path = os.path.join(root, 'SKILL.md')
-                extract_info = extract_skill_description(markdown_path)
-                if extract_info:
-                    name, description = extract_info
-                    dir_name = os.path.basename(root)
-                    if name != dir_name:
-                        continue
-                    skill_info = f"- **{name}**: {description}\n  -> Read `{markdown_path}` for full instructions"
-                    skill_desc_formatted.append(skill_info)
+    if skills:
+        for skill in skills:
+            name = skill["name"]
+            description = skill["description"]
+            skill_info = f"- **{skill["name"]}**: {skill["description"]}\n  -> Read `{skill["path"]}` for full instructions"
+            skill_desc_formatted.append(skill_info)
 
     # Add custom resources section first (highlighted)
     has_custom_resources = any(
@@ -354,13 +280,13 @@ IMPORTANT: The following custom resources have been specifically added for plann
 {survey_results}
 
 IMPORTANT: These papers have been collected through literature survey and are directly relevant to your task.
-Use these papers as references for methodology, experimental design, and problem-solving approaches.
 
 ===============================
 """
 
     # Add environment resources
-    prompt_modifier += """
+    if skill_desc_formatted or tool_desc or library_content_list:
+        prompt_modifier += """
 
 Environment Resources:
 """
@@ -401,7 +327,8 @@ User: \"Can you research the latest developments in quantum computing?\"
 Remember: Skills make you more capable and consistent. When in doubt, check if a skill exists for the task!
 ---
 """
-    prompt_modifier += """
+    if tool_desc:
+        prompt_modifier += """
 - Function Dictionary:
 {function_intro}
 ---
@@ -409,17 +336,8 @@ Remember: Skills make you more capable and consistent. When in doubt, check if a
 ---
 {import_instruction}
 """
-    if sciencedata_content:
+    if library_content_list:
         prompt_modifier += """
-- Science Data
-You can access a series of science data at the following path: {sciencedata_path}.
-{sciencedata_intro}
-Each item is listed with its description to help you understand its contents.
-----
-{sciencedata_content}
-----
-"""
-    prompt_modifier += """
 - Software Library:
 {library_intro}
 Each library is listed with its description to help you understand its functionality.
@@ -435,7 +353,6 @@ Each library is listed with its description to help you understand its functiona
             "Based on your query, I've identified the following most relevant functions "
             "that you can use in your code:"
         )
-        sciencedata_intro = "Based on your query, I've identified the following most relevant datasets:"
         library_intro = (
             "Based on your query, I've identified the following most relevant libraries "
             "that you can use:"
@@ -449,44 +366,37 @@ Each library is listed with its description to help you understand its functiona
             "In your code, you will need to import the function location using the following "
             "dictionary of functions:"
         )
-        sciencedata_intro = (
-            "You can write code to understand the data, process and utilize it for the task. "
-            "Here is the list of datasets:"
-        )
         library_intro = (
             "The environment supports a list of libraries that can be directly used. "
             "Do not forget the import statement:"
         )
         import_instruction = ""
 
-    # Format the content consistently
-    library_content_formatted = "\n".join(libraries_formatted)
-    sciencedata_content_formatted = "\n".join(sciencedata_formatted)
-
     # Format the prompt with appropriate values
-    format_dict = {
-        "function_intro": function_intro,
-        "tool_desc": textify_api_dict(tool_desc) if isinstance(tool_desc, dict) else tool_desc,
-        "import_instruction": import_instruction,
-        "sciencedata_path": sciencedata_path,
-        "sciencedata_intro": sciencedata_intro,
-        "sciencedata_content": sciencedata_content_formatted,
-        "library_intro": library_intro,
-        "library_content_formatted": library_content_formatted,
-    }
+    format_dict = {}
 
-    # Add custom resources to format dict if they exist
+    if tool_desc:
+        format_dict["tool_desc"] = textify_api_dict(tool_desc) if isinstance(tool_desc, dict) else tool_desc
+        format_dict["function_intro"] = function_intro
+        format_dict["import_instruction"] = import_instruction
+    if library_content_list:
+        # Format the content consistently
+        library_content_formatted = "\n".join(libraries_formatted)
+        format_dict["library_content_formatted"] = library_content_formatted
+        format_dict["library_intro"] = library_intro
+    if survey_results_formatted:
+        format_dict["survey_results"] = "\n".join(survey_results_formatted)
+    if skill_desc_formatted:
+        format_dict["skill_desc"] = "\n".join(skill_desc_formatted)
+        format_dict["skill_path"] = skill_path
+
+    # Add custom resources to format dict
     if custom_tools_formatted:
         format_dict["custom_tools"] = "\n".join(custom_tools_formatted)
     if custom_data_formatted:
         format_dict["custom_data"] = "\n".join(custom_data_formatted)
     if custom_software_formatted:
         format_dict["custom_software"] = "\n".join(custom_software_formatted)
-    if survey_results_formatted:
-        format_dict["survey_results"] = "\n".join(survey_results_formatted)
-    if skill_desc_formatted:
-        format_dict["skill_desc"] = "\n".join(skill_desc_formatted)
-        format_dict["skill_path"] = skill_path
 
     formatted_prompt = prompt_modifier.format(**format_dict)
 

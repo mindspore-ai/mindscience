@@ -16,7 +16,7 @@
 import pytest
 
 from vibescience_agent.config.model_config import ModelConfig
-from vibescience_agent.config.agent_config import AgentConfig, SurveyAgentConfig
+from vibescience_agent.config.agent_config import AgentConfig, SurveyAgentConfig, IdeaAgentConfig
 
 
 class TestAgentConfig:
@@ -157,7 +157,6 @@ class TestSurveyAgentConfig:
         """Test creating SurveyAgentConfig with default values."""
         model_config = self._create_model_config()
         config = SurveyAgentConfig(
-            agent_type="survey",
             model_config=model_config,
         )
         assert config.max_papers == 5
@@ -166,7 +165,6 @@ class TestSurveyAgentConfig:
         """Test creating SurveyAgentConfig with custom values."""
         model_config = self._create_model_config()
         config = SurveyAgentConfig(
-            agent_type="survey",
             model_config=model_config,
             max_papers=10,
         )
@@ -175,20 +173,88 @@ class TestSurveyAgentConfig:
     def test_validate_max_papers_valid(self):
         """Test max_papers validation with valid value."""
         model_config = self._create_model_config()
-        config = SurveyAgentConfig(agent_type="survey", model_config=model_config)
+        config = SurveyAgentConfig(model_config=model_config)
         config.max_papers = 8
         assert config.max_papers == 8
 
     def test_validate_max_papers_below_min(self):
         """Test max_papers validation with value below minimum."""
         model_config = self._create_model_config()
-        config = SurveyAgentConfig(agent_type="survey", model_config=model_config)
+        config = SurveyAgentConfig(model_config=model_config)
         with pytest.raises(ValueError, match="is below minimum allowed value"):
             config.max_papers = 0
 
     def test_validate_max_papers_invalid_type(self):
         """Test max_papers validation with invalid type."""
         model_config = self._create_model_config()
-        config = SurveyAgentConfig(agent_type="survey", model_config=model_config)
+        config = SurveyAgentConfig(model_config=model_config)
         with pytest.raises(ValueError, match="is not an instance of"):
             config.max_papers = "5"
+
+
+class TestIdeaAgentConfig:
+    """Test cases for IdeaAgentConfig."""
+
+    def _create_model_config(self):
+        """Helper to create a ModelConfig for testing."""
+        return ModelConfig(
+            model_name="gpt-4",
+            api_key="test-key",
+            base_url="https://api.openai.com/v1",
+        )
+
+    def test_creation_with_defaults(self):
+        """Test creating IdeaAgentConfig with default values."""
+        model_config = self._create_model_config()
+        config = IdeaAgentConfig(
+            model_config=model_config,
+        )
+        assert config.agent_type == "idea"
+        assert config.minimal_ideas == 5
+
+    def test_creation_with_custom_values(self):
+        """Test creating IdeaAgentConfig with custom values."""
+        model_config = self._create_model_config()
+        config = IdeaAgentConfig(
+            model_config=model_config,
+            minimal_ideas=10,
+            max_retries=3,
+        )
+        assert config.minimal_ideas == 10
+        assert config.max_retries == 3
+
+    def test_validate_minimal_ideas_valid(self):
+        """Test minimal_ideas validation with valid value."""
+        model_config = self._create_model_config()
+        config = IdeaAgentConfig(model_config=model_config)
+        config.minimal_ideas = 8
+        assert config.minimal_ideas == 8
+
+    def test_validate_minimal_ideas_below_min(self):
+        """Test minimal_ideas validation with value below minimum."""
+        model_config = self._create_model_config()
+        config = IdeaAgentConfig(model_config=model_config)
+        with pytest.raises(ValueError, match="is below minimum allowed value"):
+            config.minimal_ideas = 0
+
+    def test_validate_minimal_ideas_invalid_type(self):
+        """Test minimal_ideas validation with invalid type."""
+        model_config = self._create_model_config()
+        config = IdeaAgentConfig(model_config=model_config)
+        with pytest.raises(ValueError, match="is not an instance of"):
+            config.minimal_ideas = "5"
+
+    def test_validate_minimal_ideas_equal_to_min(self):
+        """Test minimal_ideas validation with minimum valid value."""
+        model_config = self._create_model_config()
+        config = IdeaAgentConfig(model_config=model_config, minimal_ideas=1)
+        assert config.minimal_ideas == 1
+
+    def test_inherits_from_agent_config(self):
+        """Test IdeaAgentConfig inherits from AgentConfig."""
+        model_config = self._create_model_config()
+        config = IdeaAgentConfig(model_config=model_config)
+        assert isinstance(config, AgentConfig)
+        assert hasattr(config, 'max_retries')
+        assert hasattr(config, 'use_tool_retriever')
+        assert hasattr(config, 'skill_path')

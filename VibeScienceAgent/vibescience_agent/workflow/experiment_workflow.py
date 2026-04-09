@@ -21,8 +21,6 @@ All agents are created through AgentFactory with unified configuration from Vibe
 """
 
 import re
-import os
-import glob
 import uuid
 from typing import Literal, TypedDict
 
@@ -30,12 +28,10 @@ from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import END, START, StateGraph
 
 from vibescience_agent.config.vibescience_config import VibeScienceConfig
-from vibescience_agent.tools.env_desc import sciencedata_dict
 from vibescience_agent.utils.message import create_user_msg, create_assistant_msg
 from vibescience_agent.utils.utils import extract_between_regex
 from vibescience_agent.utils import logger
 from vibescience_agent.workflow.base_workflow import BaseWorkflow
-from vibescience_agent.agents.agent_factory import AgentFactory
 from vibescience_agent.context.simple_context import SimpleContext
 
 
@@ -56,58 +52,20 @@ class ExperimentWorkflow(BaseWorkflow):
     def __init__(
         self,
         config: VibeScienceConfig,
-        sciencedata_path: str = "",
         enable_critic: bool = False,
         test_time_scale_round: int = 1,
     ):
         super().__init__(config=config)
-        logger.info(f"ExperimentWorkflow inputs: sciencedata_path={sciencedata_path}, "
+        logger.info(f"ExperimentWorkflow inputs: "
                     f"enable_critic={enable_critic}, test_time_scale_round={test_time_scale_round}")
-        self.sciencedata_path = sciencedata_path
         self.enable_critic = enable_critic
         self.test_time_scale_round = test_time_scale_round
         if self.enable_critic:
             self.critic_count = 0
 
-        if self.sciencedata_path and os.path.exists(self.sciencedata_path):
-            self._load_data()
-
         self._init_model()
         self._create_agents()
         self._create_workflow()
-
-    # =========================================================================
-    # Data
-    # =========================================================================
-
-    def _load_data(self) -> None:
-        sciencedata_glob = glob.glob(os.path.join(self.sciencedata_path, "*"))
-        sciencedata_items = [os.path.basename(x) for x in sciencedata_glob]
-
-        self.sciencedata_with_desc = []
-        for item in sciencedata_items:
-            description = sciencedata_dict.get(item, f"Sciencedata item: {item}")
-            self.sciencedata_with_desc.append({"name": item, "description": description})
-        logger.info(f"Loaded {len(self.sciencedata_with_desc)} sciencedata.")
-
-    # =========================================================================
-    # Agents
-    # =========================================================================
-
-    def _create_agents(self):
-        """Create all agents via AgentFactory."""
-        sciencedata_info = {
-            "sciencedata_path": self.sciencedata_path,
-            "sciencedata_with_desc": self.sciencedata_with_desc
-        } if self.sciencedata_path else {}
-        for agent_type in self.AGENT_TYPES:
-            agent = AgentFactory.create_agent(
-                agent_type=agent_type,
-                config=self.config.get_agent_config(agent_type),
-                model_factory=self.model_factory,
-                **sciencedata_info
-            )
-            setattr(self, f"{agent_type}_agent", agent)
 
     # =========================================================================
     # Workflow

@@ -46,7 +46,6 @@ def mock_base_model():
 def mock_full_config():
     """Create a mock full configuration for testing."""
     return {
-        "version": "1.0.0",
         "model_defaults": {
             "provider": "openai",
             "api_key": "test-api-key",
@@ -116,8 +115,8 @@ def mock_tool_retriever():
     """Create a mock tool retriever for testing."""
     retriever = Mock()
     retriever.prompt_based_retrieval = Mock(return_value={
+        "skills": [],
         "tools": [],
-        "sciencedata": [],
         "libraries": [],
     })
     return retriever

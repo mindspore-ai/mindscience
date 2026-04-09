@@ -1,5 +1,3 @@
-version: "1.0.0"
-
 model_defaults:
   model_name: "your-model-id"
   provider: "openai"
@@ -13,24 +11,6 @@ model_defaults:
 
 # agent configurations; each agent can override model defaults and has its own settings
 agents:
-  survey:
-    model:
-      # model settings
-      model_name: null
-      provider: null
-      base_url: null
-      api_key: null
-      temperature: 0.2
-      max_tokens: 4096
-      timeout: 60
-      max_retries: 2
-      max_connections: 8
-    agent:
-      # general agent settings
-      max_retries: 2
-      # survey-specific settings
-      max_papers: 5
-
   plan:
     model:
       # model settings
@@ -82,11 +62,6 @@ agents:
       max_retries: 2
       use_tool_retriever: true
       skill_path: "./skills"
-
-tools:
-  paper_survey:
-    max_results: 10
-    sources: ["pubmed", "arxiv", "semantic_scholar"]
 
 logging:
   level: "INFO"
