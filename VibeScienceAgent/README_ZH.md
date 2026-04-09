@@ -4,7 +4,7 @@ VibeScienceAgent是一个面向科研全流程的开源科研智能体，通过�
 
 ## 🔥🔥News
 
-🚀🚀**coming soon**：中国科学技术大学智能科学家团队开源发布ScienceClaw
+🚀🚀**coming soon**：中国科学技术大学智能科学家团队发布并上线ScienceClaw
 
 🚀🚀**2026.04.14**：科研智能体VibeScienceAgent preview版本发布，覆盖端到端科研全流程
 
@@ -52,6 +52,10 @@ VibeScienceAgent采用多Agent协作架构，包含以下七个核心sub-agent�
 ### 1. 安装依赖
 
 ```bash
+# 推荐使用Python3.11+版本
+conda create -n VibeScienceAgent python=3.11
+conda activate VibeScienceAgent
+
 git clone https://gitcode.com/mindspore-lab/mindscience.git
 cd mindscience/VibeScienceAgent
 pip install -r requirements.txt
@@ -66,7 +70,7 @@ VibeScienceAgent 提供了信息搜索、文献调研等工具能力，部分工
 | 环境变量 | 说明 | 获取方式 |
 |---------|------|----------|
 | `DASHSCOPE_API_KEY` | `advanced_web_search_qwen`工具通过调用`qwen3.5-plus` API实现信息搜索与汇总，因此需要配置阿里云 DashScope API Key | 登录 [DashScope 控制台](https://dashscope.console.aliyun.com/)，在"API-KEY管理"中创建并获取 |
-| `S2_API_KEY` | Semantic Scholar API Key | 登录 [Semantic Scholar](https://www.semanticscholar.org/)，在账户设置中申请 API Key |
+| `S2_API_KEY` | Semantic Scholar API Key，Survey Agent需使用，若不调用Survey Agent可忽略 | 登录 [Semantic Scholar](https://www.semanticscholar.org/)，在账户设置中申请 API Key |
 
 ### 3. 配置文件
 
@@ -94,6 +98,9 @@ agents:                                             # Agent级别配置（可选
       max_retries: 2                                # Agent执行失败时的最大重试次数
       use_tool_retriever: true                      # 是否启用工具筛选
       skill_path: ""                                # skill文件路径，指定Agent可使用的skills
+
+logging:                                            # 日志配置项
+  level: "INFO"                                     # 设置日志等级，INFO级日志打印所有Agent的输出，DEBUG级日志打印所有Agent的执行中间结果
 ```
 
 ### 4. 运行 Experiment Workflow
@@ -181,7 +188,7 @@ One equivalent of <INCHI>InChI=1S/C10H18O4/c1-5(7(3)9(11)12)6(2)8(4)10(13)14/h5-
 更多详细内容请参考：[实验设计详情目录](examples/experiments_design/)
 
 ## 致谢
-本项目与中国科学技术大学江俊教授带领的智能科学家团队联合构建，感谢所有专家在专业领域的深度指导与合作！
+本项目与中国科学技术大学智能科学家团队联合构建，感谢所有专家在专业领域的深度指导与合作！
 
 VibeScienceAgent 的部分组件集成并优化了以下开源社区的优秀成果，对这些开源项目表达诚挚感谢：
 
