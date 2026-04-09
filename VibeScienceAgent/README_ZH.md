@@ -1,12 +1,12 @@
-# 科研智能体VibeScienceAgent：搭建你的专属AI科研助手
+# 科研智能体VibeScienceAgent-preview：搭建你的专属AI科研助手
 
 VibeScienceAgent是一个面向科研全流程的开源科研智能体，通过将耗时且繁琐的科学全流程（文献阅读、假设提出、代码编写、实验试错和调优等）Agent化，消除了科研环节之间的“人工衔接成本”，大幅压缩科研周期。
 
 ## 🔥🔥News
 
-**🚀🚀coming soon：**中国科学技术大学智能科学家团队开源发布ScienceClaw
+🚀🚀**coming soon**：中国科学技术大学智能科学家团队开源发布ScienceClaw
 
-🚀🚀**2026.04.14**：搭建你的专属科研助手——科研智能体系统VibeScience v0.1发布，覆盖端到端科研全流程【超链接】
+🚀🚀**2026.04.14**：科研智能体VibeScienceAgent preview版本发布，覆盖端到端科研全流程
 
 ## 整体设计
 
@@ -35,9 +35,9 @@ VibeScienceAgent采用多Agent协作架构，包含以下七个核心sub-agent�
 | **Idea Critic Agent** | 假设批评Agent，负责对假设和方法进行关键评判，多维度评估逻辑一致性、科学可行性、可测试性、新颖性，提供可操作的改进建议。 |
 
 
-当前preview版本内置实验设计与执行Experiment workflow ：
+当前preview版本内置实验设计与执行工作流(Experiment workflow)：
 <div align=center>
-  <img src="../docs/images/exp_workflow.png" alt="Experiment workflow" width="600"/>
+  <img src="../docs/images/exp_workflow.png" alt="Experiment workflow" width="1000"/>
 </div>
 
 该Experiment workflow参考[Biomni](https://github.com/snap-stanford/Biomni)的实现，并进行了以下优化：
@@ -167,7 +167,9 @@ One equivalent of <INCHI>InChI=1S/C10H18O4/c1-5(7(3)9(11)12)6(2)8(4)10(13)14/h5-
 详细代码与步骤请参阅示例 Notebook：[materials_simulation.ipynb](examples/materials_simulation/materials_simulation.ipynb)
 
 最终的 XRD 对比结果如下图所示：
-![xrd表征结果](examples/materials_simulation/results/XRD_comparison_corrected.png)
+<div align=center>
+  <img src="examples/materials_simulation/results/XRD_comparison_corrected.png" alt="XRD_comparison_corrected" width="600"/>
+</div>
 
 ### 三、湿实验类任务：聚苯胺薄膜合成实验方案设计
 
