@@ -1,0 +1,149 @@
+[
+  {
+    "name": "Suzuki",
+    "smarts": "[c:1][Br:2].[c:3][B]([c:4])(O)O>>[c:1][c:3].[Br:2].[B]([c:4])(O)O",
+    "yield": 95,
+    "cond": "Pd cat, base, dioxane 80C 4h",
+    "refs": ["PubChem"]
+  },
+  {
+    "name": "Heck",
+    "smarts": "[c:1][Br:2].[C:3]=[C:4][H]>>[c:1][C:3]=[C:4].[H][Br:2]",
+    "yield": 85,
+    "cond": "Pd(OAc)2, Et3N, DMF 100C 6h",
+    "refs": ["PubChem"]
+  },
+  {
+    "name": "Buchwald-Hartwig",
+    "smarts": "[c:1][Br:2].[NH2:3][c:4]>>[c:1][NH:3][c:4].[HBr]",
+    "yield": 90,
+    "cond": "Pd2dba3, BINAP, NaOtBu, toluene 100C",
+    "refs": ["PubChem"]
+  },
+  {
+    "name": "Amide Formation",
+    "smarts": "[C:1](=O)[Cl:2].[N:3]>>[C:1](=O)[N:3].[HCl]",
+    "yield": 92,
+    "cond": "Et3N, DCM rt 2h",
+    "refs": ["PubChem"]
+  },
+  {
+    "name": "Esterification",
+    "smarts": "[C:1](=O)O.[CO:2]>>[C:1](=O)O[C:2].H2O",
+    "yield": 80,
+    "cond": "H2SO4 cat, EtOH reflux 12h",
+    "refs": ["PubChem"]
+  },
+  {
+    "name": "Grignard Addition",
+    "smarts": "[C:1][MgBr].[C:2]=O>>[C:1][C:2]O",
+    "yield": 95,
+    "cond": "THF, 0C-rt, then H3O+",
+    "refs": ["PubChem"]
+  },
+  {
+    "name": "Wittig",
+    "smarts": "[C:1]=O.[P+](=C)(c)c>>[C:1]=C.[OP+](c)(c)",
+    "yield": 85,
+    "cond": "THF, rt 1h",
+    "refs": ["PubChem"]
+  },
+  {
+    "name": "Diels-Alder",
+    "smarts": "[C:1]=CC=C[C:2].[C:3]=[C:4]>>C1C=CC[C@H]2[C@@H]1C=C[C@H]2C3",
+    "yield": 90,
+    "cond": "toluene, 110C 24h",
+    "refs": ["PubChem"]
+  },
+  {
+    "name": "Saponification",
+    "smarts": "[C:1](=O)OC>>[C:1](=O)O.[HO]",
+    "yield": 98,
+    "cond": "NaOH, MeOH/H2O reflux 2h",
+    "refs": ["PubChem"]
+  },
+  {
+    "name": "NaBH4 Reduction",
+    "smarts": "[C:1](=[O:2])>>[C:1]([O:2])[H]",
+    "yield": 99,
+    "cond": "NaBH4, MeOH 0C 1h",
+    "refs": ["PubChem"]
+  },
+  {
+    "name": "Epoxidation",
+    "smarts": "[C:1]=[C:2]>>[C@H]1[C@H]2O1",
+    "yield": 88,
+    "cond": "mCPBA, DCM rt 12h",
+    "refs": ["PubChem"]
+  },
+  {
+    "name": "LAH Reduction",
+    "smarts": "[C:1](=O)O[C]>>CO",
+    "yield": 92,
+    "cond": "LiAlH4, THF reflux, H3O",
+    "refs": ["PubChem"]
+  },
+  {
+    "name": "Click Azide-Alkyne",
+    "smarts": "[N-]=[N+]=N[C].[C]#C[C]>>c1ccc2c(c1)nnn2CC",
+    "yield": 95,
+    "cond": "CuSO4, ascorbate, tBuOH/H2O rt",
+    "refs": ["PubChem"]
+  },
+  {
+    "name": "SNAr",
+    "smarts": "[c:1][Cl:2].[N:3]>>[c:1][N:3].[Cl-]",
+    "yield": 85,
+    "cond": "K2CO3, DMF 80C",
+    "refs": ["PubChem"]
+  },
+  {
+    "name": "Aldol Condensation",
+    "smarts": "[C:1]CC=O.CC=O>>[C:1]C=CC=O",
+    "yield": 75,
+    "cond": "NaOH, EtOH rt",
+    "refs": ["PubChem"]
+  },
+  {
+    "name": "Hydrogenation",
+    "smarts": "[C:1]=[C:2]>>[CH2:1][CH2:2]",
+    "yield": 99,
+    "cond": "Pd/C, H2 1atm MeOH rt",
+    "refs": ["PubChem"]
+  },
+  {
+    "name": "Nitro Reduction",
+    "smarts": "[N+](=O)[O-]>>[NH2]",
+    "yield": 95,
+    "cond": "SnCl2, EtOH reflux",
+    "refs": ["PubChem"]
+  },
+  {
+    "name": "PCC Oxidation",
+    "smarts": "[C:1]CO>>[C:1]C=O",
+    "yield": 90,
+    "cond": "PCC, DCM rt",
+    "refs": ["PubChem"]
+  },
+  {
+    "name": "Sonogashira",
+    "smarts": "[c:1][Br:2].[C:3]#[C:4]>>[c:1][C:3]#[C:4].[HBr]",
+    "yield": 92,
+    "cond": "PdCl2(PPh3)2, CuI, Et3N 60C",
+    "refs": ["PubChem"]
+  },
+  {
+    "name": "Stille Coupling",
+    "smarts": "[c:1][Br].[c:2][Sn](c)(c)c>>[c:1][c:2].[BrSn(c)(c)c",
+    "yield": 88,
+    "cond": "Pd(PPh3)4, dioxane 80C",
+    "refs": ["PubChem"]
+  },
+  {
+    "name": "Negishi",
+    "smarts": "[c:1][Br].[c:2][Zn]Br>>[c:1][c:2].[ZnBr2]",
+    "yield": 94,
+    "cond": "Pd PEPPSI, THF rt",
+    "refs": ["PubChem"]
+  }
+]
