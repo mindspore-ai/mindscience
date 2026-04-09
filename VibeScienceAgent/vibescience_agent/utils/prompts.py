@@ -227,7 +227,7 @@ def generate_prompt(
         for skill in skills:
             name = skill["name"]
             description = skill["description"]
-            skill_info = f"- **{skill["name"]}**: {skill["description"]}\n  -> Read `{skill["path"]}` for full instructions"
+            skill_info = f'- **{skill["name"]}**: {skill["description"]}\n  -> Read `{skill["path"]}` for full instructions'
             skill_desc_formatted.append(skill_info)
 
     # Add custom resources section first (highlighted)
