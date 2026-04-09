@@ -28,7 +28,7 @@ VibeScienceSkills 可以与 OpenClaw、Claude Code、JiuwenClaw等智能体无�
 ## 💡 主要特性
 
 
-### 1. 300+专业Skills：覆盖”分析-仿真-实验”科研全流程
+### 1. 300+专业Skills：覆盖“分析-仿真-实验”科研全流程
 
 覆盖100+生物、70+医学与药学、30+化学材料、10+地球科学、10+流体、5+电磁等领域Skills，其他领域（数学、天文、量子等）持续完善中：
 
@@ -294,7 +294,7 @@ VibeScienceSkills 可以与 OpenClaw、Claude Code、JiuwenClaw等智能体无�
 
 | skill | 子领域 | skill类型 | 支持的硬件 |
 |:------|:------|:---------|:-----------|
-| [centrifuge-workstation](chemistry_and_materials/real_world_workstations/centrifuge-workstation) | real_world_workstations | know-how | CPU |
+| [centrifuge-workstation](chemistry_and_materials/real_world_workstations/centrifuge-workstation) | real_world_workstations | laboratory automation | / |
 | [chgnet](chemistry_and_materials/molecular_dynamics/chgnet) | molecular_dynamics | AI model | NPU |
 | [chemistry-query](chemistry_and_materials/general_tools/chemistry-query/) | general_tools | know-how | CPU |
 | [chemprop](chemistry_and_materials/cheminformatics/chemprop) | cheminformatics | AI model | NPU |
@@ -303,9 +303,9 @@ VibeScienceSkills 可以与 OpenClaw、Claude Code、JiuwenClaw等智能体无�
 | [deephe3nn](chemistry_and_materials/molecular_dynamics/deephe3nn) | molecular_dynamics | AI model | NPU |
 | [diffcsp](chemistry_and_materials/molecular_dynamics/diffcsp) | molecular_dynamics | AI model | NPU |
 | [doped-perovskite-structure-analysis](chemistry_and_materials/quantum_chemistry/doped-perovskite-structure-analysis) | quantum_chemistry | know-how | CPU |
-| [dryer-workstation](chemistry_and_materials/real_world_workstations/dryer-workstation) | real_world_workstations | know-how | CPU |
-| [dual-station-electrochemical-workstation](chemistry_and_materials/real_world_workstations/dual-station-electrochemical-workstation) | real_world_workstations | know-how | CPU |
-| [elec-chem-storage-workstation](chemistry_and_materials/real_world_workstations/elec-chem-storage-workstation) | real_world_workstations | know-how | CPU |
+| [dryer-workstation](chemistry_and_materials/real_world_workstations/dryer-workstation) | real_world_workstations |  laboratory automation | / |
+| [dual-station-electrochemical-workstation](chemistry_and_materials/real_world_workstations/dual-station-electrochemical-workstation) | real_world_workstations | laboratory automation | / |
+| [elec-chem-storage-workstation](chemistry_and_materials/real_world_workstations/elec-chem-storage-workstation) | real_world_workstations |  laboratory automation | / |
 | [gptff](chemistry_and_materials/molecular_dynamics/gptff) | molecular_dynamics | AI model | NPU |
 | [hpc-cp2k](chemistry_and_materials/quantum_chemistry/hpc-cp2k) | quantum_chemistry | HPC software | CPU/GPU |
 | [hpc-feff](chemistry_and_materials/quantum_chemistry/hpc-feff) | quantum_chemistry | HPC software | CPU |
@@ -318,9 +318,9 @@ VibeScienceSkills 可以与 OpenClaw、Claude Code、JiuwenClaw等智能体无�
 | [hpc-quantum-espresso](chemistry_and_materials/quantum_chemistry/hpc-quantum-espresso) | quantum_chemistry | HPC software | CPU/GPU |
 | [hpc-vasp](chemistry_and_materials/quantum_chemistry/hpc-vasp) | quantum_chemistry | HPC software | CPU/GPU |
 | [hpc-xtb](chemistry_and_materials/quantum_chemistry/hpc-xtb) | quantum_chemistry | HPC software | CPU |
-| [liquid-dispensing-workstation](chemistry_and_materials/real_world_workstations/liquid-dispensing-workstation) | real_world_workstations | know-how | CPU |
-| [magnetic-stirring-workstation](chemistry_and_materials/real_world_workstations/magnetic-stirring-workstation) | real_world_workstations | know-how | CPU |
-| [material-workstation](chemistry_and_materials/real_world_workstations/material-workstation) | real_world_workstations | know-how | CPU |
+| [liquid-dispensing-workstation](chemistry_and_materials/real_world_workstations/liquid-dispensing-workstation) | real_world_workstations |  laboratory automation | / |
+| [magnetic-stirring-workstation](chemistry_and_materials/real_world_workstations/magnetic-stirring-workstation) | real_world_workstations |  laboratory automation | / |
+| [material-workstation](chemistry_and_materials/real_world_workstations/pure-workstation)| real_world_workstations |  laboratory automation | / |
 | [matformer](chemistry_and_materials/molecular_dynamics/matformer) | molecular_dynamics | AI model | NPU |
 | [mattergen](chemistry_and_materials/molecular_dynamics/mattergen) | molecular_dynamics | AI model | NPU |
 | [mattersim](chemistry_and_materials/molecular_dynamics/mattersim) | molecular_dynamics | AI model | NPU |
@@ -329,6 +329,7 @@ VibeScienceSkills 可以与 OpenClaw、Claude Code、JiuwenClaw等智能体无�
 | [nequip](chemistry_and_materials/molecular_dynamics/nequip) | molecular_dynamics | AI model | NPU |
 | [orb](chemistry_and_materials/molecular_dynamics/orb) | molecular_dynamics | AI model | NPU |
 | [pubchem-database](chemistry_and_materials/database_and_knowledge/pubchem-database) | database_and_knowledge | api | CPU |
+| [pure-workstation](chemistry_and_materials/real_world_workstations/pure-workstation) | real_world_workstations  |   laboratory automation | / |
 | [pymatgen](chemistry_and_materials/general_tools/pymatgen) | general_tools | python package | CPU |
 | [quip](chemistry_and_materials/quantum_chemistry/quip) | quantum_chemistry | AI model | NPU |
 | [rdkit](chemistry_and_materials/cheminformatics/rdkit) | cheminformatics | python package | CPU |
@@ -340,7 +341,7 @@ VibeScienceSkills 可以与 OpenClaw、Claude Code、JiuwenClaw等智能体无�
 | [tooluniverse-chemical-sourcing](chemistry_and_materials/general_tools/tooluniverse-chemical-sourcing) | general_tools | know-how | CPU |
 | [tooluniverse-electron-microscopy](chemistry_and_materials/general_tools/tooluniverse-electron-microscopy) | general_tools | know-how | CPU |
 | [tooluniverse-small-molecule-discovery](chemistry_and_materials/cheminformatics/tooluniverse-small-molecule-discovery) | cheminformatics | know-how | CPU |
-| [ultrasonic-cleaning-workstation](chemistry_and_materials/real_world_workstations/ultrasonic-cleaning-workstation) | real_world_workstations | know-how | CPU |
+| [ultrasonic-cleaning-workstation](chemistry_and_materials/real_world_workstations/ultrasonic-cleaning-workstation) | real_world_workstations |  laboratory automation | / |
 | [zinc-database](chemistry_and_materials/database_and_knowledge/zinc-database) | database_and_knowledge | api | CPU |
 
 </details>
@@ -623,7 +624,7 @@ cp -r VibeScienceSkills/<领域>/<子领域>/* ~/.openclaw/workspace/skills
 |  NVIDIA/biomeno                                |    https://github.com/NVIDIA/bionemo-framework                                                    |
 |  NVIDIA/physicsnemo                            |    https://github.com/NVIDIA/physicsnemo                                                 |
 
-
+本项目化学、生物等领域专业技能库等特性，与中国科学技术大学江俊教授团队、四川大学曹洋教授团队联合构建，昇思、昇腾模型类skills集成了诸多合作团队的原创成果和生态贡献，感谢所有共创团队在专业领域的深度指导与合作。
 
 ## 🤝 参与贡献
 
