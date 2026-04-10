@@ -33,6 +33,7 @@ LOG_LEVEL_MAP = {
     "ERROR": logging.ERROR
 }
 
+
 def _get_logger():
     """Get logger instance."""
     if GLOBAL_LOGGER:
@@ -40,11 +41,13 @@ def _get_logger():
 
     raise ValueError("logger is not initialized, please call init_logger(logging_config) first to initialize it.")
 
+
 def _get_stack_info(frame):
     """Get stack information."""
     stack_prefix = 'Stack (most recent call last):\n'
     sinfo = stack_prefix + "".join(traceback.format_stack(frame))
     return sinfo
+
 
 def _find_caller(stack_info=False, stacklevel=1):   # pylint: disable=W0613
     """Find caller information from stack frames."""
@@ -66,11 +69,13 @@ def _find_caller(stack_info=False, stacklevel=1):   # pylint: disable=W0613
         break
     return rv
 
+
 def _get_formatter():
     """Get string of log formatter."""
     formatter = '[%(levelname)s] %(asctime)s ' \
                 '[%(filepath)s:%(lineno)d] %(message)s'
     return formatter
+
 
 def _clear_handler(logger):
     """Clear the handlers that has been set, avoid repeated loading"""
@@ -112,6 +117,7 @@ class _DataFormatter(logging.Formatter):
         else:
             record.filepath = record.pathname
         return super().format(record)
+
 
 def init_logger(config):
     """Init logger"""
@@ -155,17 +161,21 @@ def init_logger(config):
         _setup_logger_lock.release()
     return GLOBAL_LOGGER
 
+
 def debug(msg, *args, **kwargs):
     """Debug level log."""
     _get_logger().debug(msg, *args, **kwargs)
+
 
 def info(msg, *args, **kwargs):
     """Info level log."""
     _get_logger().info(msg, *args, **kwargs)
 
+
 def warning(msg, *args, **kwargs):
     """Warning level log."""
     _get_logger().warning(msg, *args, **kwargs)
+
 
 def error(msg, *args, **kwargs):
     """Error level log."""

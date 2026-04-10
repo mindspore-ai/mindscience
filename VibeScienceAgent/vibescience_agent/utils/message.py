@@ -21,9 +21,11 @@ class Message(TypedDict):
     role: str  # "user" or "assistant"
     content: str
 
+
 def create_user_msg(content: str) -> Message:
     """Create a user message."""
     return Message(role="user", content=content)
+
 
 def create_assistant_msg(content: str) -> Message:
     """Create an assistant message."""

@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
+"""Descriptions for literature-related tools used by agents."""
 description = [
     {
         "description": "Fetches supplementary information for a paper given its DOI "

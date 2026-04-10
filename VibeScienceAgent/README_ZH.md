@@ -133,7 +133,6 @@ python main.py
 
 支持以下参数：
 - `--config-path`: 配置文件路径（默认 `./vibescience_agent.yaml`）
-- `--sciencedata-path`: 科学数据路径（可选）
 - `--enable-critic`: 启用 critic agent 进行迭代优化
 - `--test-time-scale-round`: critic 迭代轮数（默认 1）
 - `--prompt`: 直接传入 prompt 内容（可选，若不传入则使用内置默认 prompt）

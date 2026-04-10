@@ -26,7 +26,6 @@ from pymed import PubMed
 import PyPDF2
 import requests
 from bs4 import BeautifulSoup
-from googlesearch import search
 from openai import OpenAI
 
 from vibescience_agent.utils import logger
@@ -139,6 +138,7 @@ def query_pubmed(query: str, max_papers: int = 10, max_retries: int = 3) -> str:
         return "No papers found on PubMed after multiple query attempts."
     except Exception as e:
         return f"Error querying PubMed: {e}"
+
 
 def advanced_web_search_qwen(
     query: str,

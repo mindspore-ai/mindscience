@@ -35,7 +35,6 @@ class ToolRetriever:
         """Use prompt-based approach to retrieve most relevant resources for a query."""
         skills = resources.get("skills") or []
         tools_r = resources.get("tools") or []
-        libraries_r = resources.get("libraries") or []
 
         prompt_sections = []
         prompt_sections.append(f"""
@@ -51,31 +50,25 @@ AVAILABLE SKILLS:
 {self._format_resources_for_prompt(skills)}
 
 AVAILABLE TOOLS:
-{self._format_resources_for_prompt(tools_r)}
-
-AVAILABLE SOFTWARE LIBRARIES:
-{self._format_resources_for_prompt(libraries_r)}""")
+{self._format_resources_for_prompt(tools_r)}""")
 
         response_format = """
 For each category, respond with ONLY the indices of the relevant items in the following format:
 SKILLS: [list of indices]
 TOOLS: [list of indices]
-LIBRARIES: [list of indices]
 
 For example:
 SKILLS: [0, 2]
 TOOLS: [0, 3, 5, 7, 9]
-LIBRARIES: [0, 2, 4, 5, 8]
 
-If a category has no relevant items, use an empty list, e.g., TOOLS: [] or LIBRARIES: []
+If a category has no relevant items, use an empty list, e.g., SKILLS: [] or TOOLS: []
 
 IMPORTANT GUIDELINES:
 1. Be generous but not excessive - aim to include all potentially relevant resources
-2. ALWAYS prioritize skills over tools and libraries - if a skill provides functionality that overlaps with TOOLS or LIBRARIES, prefer the skill
+2. ALWAYS prioritize skills over tools - if a skill provides functionality that overlaps with TOOLS, prefer the SKILLS
 3. ALWAYS prioritize database tools for general queries - include as many database tools as possible
 4. Include all literature search tools
 5. For wet lab sequence type of queries, ALWAYS include molecular biology tools
-6. For libraries, include those that provide functions needed for analysis
 7. Don't exclude resources just because they're not explicitly mentioned in the query
 8. When in doubt about a database tool or molecular biology tool, include it rather than exclude it
 """
@@ -104,8 +97,7 @@ IMPORTANT GUIDELINES:
 
         return {
             "skills": [skills[i] for i in selected_indices.get("skills", []) if i < len(skills)],
-            "tools": [tools_r[i] for i in selected_indices.get("tools", []) if i < len(tools_r)],
-            "libraries": [libraries_r[i] for i in selected_indices.get("libraries", []) if i < len(libraries_r)],
+            "tools": [tools_r[i] for i in selected_indices.get("tools", []) if i < len(tools_r)]
         }
 
     def _run_async(self, coro):
@@ -167,23 +159,19 @@ IMPORTANT GUIDELINES:
             response = "\n".join([p for p in parts if p])
         elif not isinstance(response, str):
             response = str(response)
-        selected_indices = {"skills": [], "tools": [], "libraries": []}
+        selected_indices = {"skills": [], "tools": []}
 
         skills_match = re.search(r"SKILLS:\s*\[(.*?)\]", response, re.IGNORECASE)
         if skills_match and skills_match.group(1).strip():
             with contextlib.suppress(ValueError):
-                selected_indices["skills"] = [int(idx.strip()) for idx in skills_match.group(1).split(",") if idx.strip()]
+                indices = skills_match.group(1).split(",")
+                selected_indices["skills"] = [
+                    int(idx.strip()) for idx in indices if idx.strip()
+                ]
 
         tools_match = re.search(r"TOOLS:\s*\[(.*?)\]", response, re.IGNORECASE)
         if tools_match and tools_match.group(1).strip():
             with contextlib.suppress(ValueError):
                 selected_indices["tools"] = [int(idx.strip()) for idx in tools_match.group(1).split(",") if idx.strip()]
-
-        libraries_match = re.search(r"LIBRARIES:\s*\[(.*?)\]", response, re.IGNORECASE)
-        if libraries_match and libraries_match.group(1).strip():
-            with contextlib.suppress(ValueError):
-                selected_indices["libraries"] = [
-                    int(idx.strip()) for idx in libraries_match.group(1).split(",") if idx.strip()
-                ]
 
         return selected_indices

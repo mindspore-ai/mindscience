@@ -71,29 +71,27 @@ In each response, you must include EITHER <execute> or <solution> tag. Not both 
 
 class PlanAgent(BaseAgent):
     """
-    Plan Agent analyzes tasks, creates structured execution plans, and generates responses with <execute>or <solution>tags to guide subsequent execution steps.
-    
+    Plan Agent analyzes tasks, creates structured execution plans, and generates
+    responses with <execute>or <solution>tags to guide subsequent execution steps.
+
     Args:
         model (BaseModel): LLM backend.
         config (Dict[str, Any]): Agent section from unified config.
         tool_config (Dict[str, ToolConfig]): Tool configuration dict.
-        kwargs (Any, optional): May include sciencedata_with_desc and sciencedata_path.    
-    
+
     Inputs:
-        - messages (list): Conversation history (list[BaseMessage] or equivalent message dicts); the user task is taken from messages[0].
-        - params (Dict[str, Any]): Optional keyword arguments; may include survey_results (literature survey payload for the system prompt).
-    
+        - messages (list): Conversation history (list[BaseMessage] or equivalent
+          message dicts); the user task is taken from messages[0].
+        - params (Dict[str, Any]): Optional keyword arguments; may include survey_results
+          (literature survey payload for the system prompt).
+
     Outputs:
         - Dict message suitable for :class:`~vibescience_agent.utils.message.Message` storage.
     """
-    #: Subset of read_module2api fields, e.g. frozenset({"literature", "support_tools"}).
-    #: None means all built-in tool description modules.
-    TOOL_DESCRIPTION_MODULES: frozenset[str] | None = None
-
     def __init__(self, model, config: AgentConfig, tool_config: Dict[str, ToolConfig] = None):
         super().__init__(model, config, tool_config)
 
-        self.ctx = self._build_agent_tool_context(self.TOOL_DESCRIPTION_MODULES)
+        self.ctx = self._build_agent_tool_context()
 
     async def execute(self, messages, **params):
         """Generate a plan based on message history and survey results."""
@@ -131,17 +129,15 @@ class PlanAgent(BaseAgent):
         base_prompt = _PLAN_BASE_PROMPT
         if enable_critic:
             base_prompt += """
-You may or may not receive feedbacks from human. If so, address the feedbacks by following the same procedure of multiple rounds of thinking, execution, and then coming up with a new solution.
+You may or may not receive feedbacks from human. If so, address the
+feedbacks by following the same procedure of multiple rounds of thinking,
+execution, and then coming up with a new solution.
 """
 
         self.system_prompt = generate_prompt(
             base_prompt=base_prompt,
             tool_desc=self.ctx["tool_desc"],
-            library_content_list=self.ctx["library_content_list"],
             use_tool_retriever=self.use_tool_retriever,
-            custom_tools=self.ctx["custom_tools"],
-            custom_data=self.ctx["custom_data"],
-            custom_software=self.ctx["custom_software"],
             survey_results=survey_results,
             skill_path=self.skill_path,
             skills=self.ctx["skills"]

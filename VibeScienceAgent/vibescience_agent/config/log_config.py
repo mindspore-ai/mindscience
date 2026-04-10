@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
+"""Logging configuration module for VibeScienceAgent."""
+
 from vibescience_agent.config.base_config import BaseConfig
 from vibescience_agent.config import validator
 from vibescience_agent.utils import logger
@@ -23,7 +25,7 @@ class LogConfig(BaseConfig):
 
     Args:
         level (str, optional): Logging level for the application. Defaults to "INFO".
-            Valid values: "DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL".
+            Valid values: "DEBUG", "INFO", "WARNING", "ERROR".
         **kwargs: Additional keyword arguments passed to `update_attrs` for dynamic configuration.
     """
     def __init__(

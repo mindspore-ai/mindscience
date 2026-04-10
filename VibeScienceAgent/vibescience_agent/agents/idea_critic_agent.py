@@ -71,16 +71,14 @@ class IdeaCriticAgent(BaseAgent):
     Outputs:
         - Dict containing criticism for previous generated ideas.
     """
-
     def __init__(self, model, config: AgentConfig,
                  tool_config: Dict[str, ToolConfig] = None):
-        """Initialize IdeaCriticAgent with model and config."""
         super().__init__(model, config, tool_config)
         self.system_prompt = _IDEA_CRITIC_SYSTEM_PROMPT
         logger.debug("IdeaCriticAgent initialized with system prompt")
 
     async def execute(self, messages, **params) -> Dict[str, Any]:
-        """Execute the idea analysis and enhancement task."""
+        """ Execute the idea analysis and enhancement task. """
         if not messages:
             raise AgentExecutionError("IdeaCriticAgent requires non-empty message history")
 
@@ -98,6 +96,6 @@ class IdeaCriticAgent(BaseAgent):
         return create_assistant_msg(content)
 
     def _process_output(self, content):
-        """Format the critic feedback with header."""
+        """ Format the critic feedback with header. """
         feedback = "# Previous Feedback from Idea Critic Agent\n" + content
         return create_assistant_msg(feedback)

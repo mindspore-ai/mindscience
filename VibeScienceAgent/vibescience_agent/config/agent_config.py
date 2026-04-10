@@ -19,8 +19,8 @@ from vibescience_agent.config.model_config import ModelConfig
 from vibescience_agent.utils import logger
 
 SUPPORTED_AGENT_LIST = ["survey", "plan", "critic", "execute", "ranking", "idea", "idea_critic"]
-TOOL_RETRIEVER_SUPPORTED_AGENTS = ["plan", "execute"]
-SKILL_SUPPORTED_AGENTS = ["plan", "execute"]
+TOOL_RETRIEVER_SUPPORTED_AGENTS = ["plan", "execute", "idea"]
+SKILL_SUPPORTED_AGENTS = ["plan", "execute", "idea"]
 
 
 class AgentConfig(BaseConfig):

@@ -38,7 +38,9 @@ class _ExecuteSubgraphState(TypedDict):
 
 
 _EXECUTE_BASE_PROMPT = """
-You are a precise Code Extraction, Troubleshooting, and Execution Specialist. Your ONLY job is to extract Python code provided by the previous agent, execute it, and debug it if necessary.
+You are a precise Code Extraction, Troubleshooting, and Execution Specialist.
+Your ONLY job is to extract Python code provided by the previous agent, execute it,
+and debug it if necessary.
 
 # Workflow & Execution Guidelines
 You MUST strictly follow this step-by-step process:
@@ -67,30 +69,28 @@ When calling the `python_executor` tool, your internal thought process should lo
 
 class ExecuteAgent(BaseAgent):
     """
-    Execute Agent runs planner <execute>code via python_executorinside a deep agent subgraph and returns the result wrapped in <observation>.
+    Execute Agent runs <execute> code via python_executor
+    inside a deep agent subgraph and returns the result wrapped in <observation>.
 
     Args:
-        model (BaseModel): Typically :class:~vibescience_agent.model.openai_model.OpenAIModel(needs to_chat_openai).
-        config (Dict[str, Any]): Agent config; must include _global_configwith logging.
+        model (BaseModel): LLM model.
+        config (Dict[str, Any]): Agent config.
         tool_config (Dict[str, ToolConfig]): Tool configuration dict.
-        kwargs (Any, optional): May include sciencedata_pathand sciencedata_with_desc.
 
     Inputs:
         - messages (list): Full history; last message contentmust include <execute>...</execute>.
         - params (Dict[str, Any]): Unused; reserved for extensions.
 
     Outputs:
-        - Dict[str, Any]: Assistant message with <observation>...</observation>, or {"messages": []}after retries exhausted.
+        - Dict[str, Any]: Assistant message wrapped in <observation>.
     """
-    TOOL_DESCRIPTION_MODULES: frozenset[str] | None = None
-
     def __init__(self, model, config: AgentConfig, tool_config: Dict[str, ToolConfig] = None):
         super().__init__(model, config, tool_config)
         self.debug = logger.LOG_LEVEL == logger.LOG_LEVEL_MAP["DEBUG"]
 
         self._compiled_subgraph = self._build_execute_subgraph()
-        self.ctx = self._build_agent_tool_context(self.TOOL_DESCRIPTION_MODULES)
-        self.ctx["skills"] = []     # skills slready passed to deep agent
+        self.ctx = self._build_agent_tool_context()
+        self.ctx["skills"] = []     # skills already passed to deep agent
 
     def _build_execute_subgraph(self):
         """Build a single-node LangGraph: START → deep agent with python_executor and skills."""
@@ -171,7 +171,7 @@ class ExecuteAgent(BaseAgent):
         )
 
     def _build_system_prompt(self, user_query: str):
-        """Set :attr:~vibescience_agent.agents.base_agent.BaseAgent.system_prompt once (tool retrieval + env block)."""
+        """Build system prompt for execute agent."""
         if self.system_prompt:
             return
         self.run_tool_retrieval_if_enabled(user_query)
@@ -179,11 +179,7 @@ class ExecuteAgent(BaseAgent):
         self.system_prompt = generate_prompt(
             base_prompt=_EXECUTE_BASE_PROMPT,
             tool_desc=self.ctx["tool_desc"],
-            library_content_list=self.ctx["library_content_list"],
             use_tool_retriever=self.use_tool_retriever,
-            custom_tools=self.ctx["custom_tools"],
-            custom_data=self.ctx["custom_data"],
-            custom_software=self.ctx["custom_software"],
         )
 
         logger.debug("ExecuteAgent system prompt:\n" + self.system_prompt)

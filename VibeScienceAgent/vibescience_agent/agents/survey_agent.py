@@ -57,14 +57,14 @@ class SurveyAgent(BaseAgent):
         config: Configuration dictionary
         tool_config: Tool configuration dictionary
 
-    Inputs:  
+    Inputs:
         - messages (list): Conversation history; the user task is taken from messages[0].
         - params (Dict[str, Any]): Unused; reserved for extensions.
-            
-    Outputs:    
+
+    Outputs:
         - Dict[str, Any]: List of papers with metadata, scores, and deep reading analysis.
     """
-    def __init__(self, model, config: SurveyAgentConfig, tool_config: Dict[str, ToolConfig] = None):     
+    def __init__(self, model, config: SurveyAgentConfig, tool_config: Dict[str, ToolConfig] = None):
         super().__init__(model, config, tool_config)
 
         # Load agent-specific configuration

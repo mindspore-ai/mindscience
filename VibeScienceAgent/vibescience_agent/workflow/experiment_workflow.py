@@ -35,6 +35,7 @@ from vibescience_agent.context.simple_context import SimpleContext
 
 
 class AgentState(TypedDict):
+    """State dictionary for the experiment workflow."""
     context: SimpleContext
     next_step: str | None
 
@@ -48,7 +49,6 @@ class ExperimentWorkflow(BaseWorkflow):
 
     Args:
         config (VibeScienceConfig): Unified configuration instance for the entire workflow.
-        sciencedata_path (str, optional): Local path to science data files. Defaults to "".
         enable_critic (bool, optional): Whether to enable critic agent for feedback. Defaults to False.
         test_time_scale_round (int, optional): Number of critic rounds allowed. Defaults to 1.
 
@@ -180,7 +180,7 @@ class ExperimentWorkflow(BaseWorkflow):
         return state
 
     async def execute(self, state: AgentState) -> AgentState:
-        """Execute agent to run tools and get results."""
+        """Execute execute agent to run tools and get results."""
         logger.info("Executing...")
         result = await self.execute_agent.execute(     # pylint: disable=E1101
             messages=state["context"].get_context("messages")

@@ -49,7 +49,7 @@ class PaperSurveyConfig(ToolConfig):
 
     Args:
         max_results (int, optional): Maximum number of results. Defaults to 10.
-        sources (List[str], optional): List of paper sources. Defaults to SUPPORTED_PAPER_SOURCES.
+        sources (List[str], optional): List of paper sources. Defaults to ["pubmed", "arxiv", "semantic_scholar"].
         **kwargs: Additional configuration parameters.
     """
     def __init__(   # pylint: disable=W0102

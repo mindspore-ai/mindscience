@@ -60,7 +60,6 @@ class PaperMetadata:
         }
 
 
-# Search tools
 def fetch_semantic_papers(keyword, max_results=20, api_key: Optional[str] = None):
     """Fetch papers from Semantic Scholar based on keyword."""
     search_url = "https://api.semanticscholar.org/graph/v1/paper/search"
@@ -96,6 +95,7 @@ def fetch_semantic_papers(keyword, max_results=20, api_key: Optional[str] = None
 
     logger.debug(f"KeywordQuery: {response.status_code}")
     return []
+
 
 def fetch_pubmed_papers(query: str, max_results: int = 20, sort: str = "relevance") -> list:
     """Fetch papers from PubMed based on the query."""
@@ -188,6 +188,7 @@ def fetch_arxiv_papers(query: str, max_results: int = 20, sort: str = "relevance
         logger.error(f"Error searching arXiv: {e}")
         return []
 
+
 def select_papers(paper_bank, max_papers, rag_read_depth):
     """Select papers for deep reading based on scores and availability."""
     selected_for_deep_read = []
@@ -214,6 +215,7 @@ def select_papers(paper_bank, max_papers, rag_read_depth):
 
     selected_for_deep_read = selected_for_deep_read[:max_papers]
     return selected_for_deep_read
+
 
 def parse_arxiv_xml(xml_data: str) -> list:
     """Parse arXiv XML response to extract paper metadata."""
@@ -358,7 +360,7 @@ def parse_pubmed_xml(xml_data: str) -> list:
 
     return papers
 
-# IO tools
+
 def parse_io_description(output):
     """Parse input and output descriptions from string."""
     match_input = re.match(r'Input\("([^"]+)"\)', output)
@@ -495,7 +497,6 @@ def paper_details(paper_id, fields=(
     'title,year,abstract,authors,citationCount,venue,citations,references,tldr'
 ), api_key: Optional[str] = None):
     """Get paper details based on paper ID."""
-    ## get paper details based on paper id
     paper_data_query_params = {'fields': fields}
     headers = {'x-api-key': api_key}
     response = requests.get(url=GRAPH_URL + paper_id, params=paper_data_query_params,
@@ -570,6 +571,7 @@ def is_valid_paper(paper):
 
     return True
 
+
 def paper_filter(paper_lst):
     """Filter out papers based on basic heuristics."""
     filtered_paper_lst = {}
@@ -582,6 +584,7 @@ def paper_filter(paper_lst):
             filtered_paper_lst[source] = papers
 
     return filtered_paper_lst
+
 
 def multi_source_search(
     query: str,
@@ -613,12 +616,16 @@ def multi_source_search(
 
 
 class PaperSurvey:
-    """Routes literature queries to search and Semantic Scholar helper APIs."""
+    """
+    Routes literature queries to search and Semantic Scholar helper APIs.
+
+    Args:
+        config (PaperSurveyConfig): config for paper survey tool
+    """
     def __init__(
         self,
         config,
     ):
-        """Initialize PaperSurvey with configuration."""
         self.max_results = config.max_results
         self.sources = config.sources
 
@@ -629,6 +636,7 @@ class PaperSurvey:
             self.max_results,
             self.sources,
         )
+
 
 def parse_and_execute(
     output,

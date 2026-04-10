@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
+"""Support tools for VibeScienceAgent providing various utility functions."""
+
 import base64
 import io
 import sys

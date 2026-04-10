@@ -19,10 +19,10 @@ import os
 from pathlib import Path
 from typing import Any
 
-from vibescience_agent.tools.env_desc import library_content_dict
 
 TOOL_MODULE_PREFIX = "vibescience_agent.tools."
 _EXCLUDED_FROM_PROMPTS = frozenset({"run_python_repl"})
+
 
 def read_module2api():
     """Read module API descriptions from tool_description modules."""
@@ -37,6 +37,7 @@ def read_module2api():
         module = importlib.import_module(module_name)
         module2api[f"vibescience_agent.tools.{field}"] = module.description
     return module2api
+
 
 def extract_between_regex(text, start_keyword, end_keyword):
     """Extract text between two keywords using regex."""
@@ -56,15 +57,6 @@ def serialize_agent_messages(messages: list) -> str:
         chunks.append(f"{role}: {content}")
     return "\n----------------\n".join(chunks)
 
-def subset_module2api(
-    module2api: dict[str, Any],
-    description_modules: frozenset[str] | None,
-) -> dict[str, Any]:
-    """Keep only tool API entries whose module key matches the chosen short names."""
-    if description_modules is None:
-        return dict(module2api)
-    wanted = {f"{TOOL_MODULE_PREFIX}{m}" for m in description_modules}
-    return {k: v for k, v in module2api.items() if k in wanted}
 
 def build_tool_desc(module2api: dict[str, Any]) -> dict[str, Any]:
     """Build structured tool specs for generate_prompt (drops REPL from text)."""
@@ -72,6 +64,7 @@ def build_tool_desc(module2api: dict[str, Any]) -> dict[str, Any]:
         mod: [t for t in tools if t.get("name") not in _EXCLUDED_FROM_PROMPTS]
         for mod, tools in module2api.items()
     }
+
 
 def normalize_custom_tools(raw: Any) -> list[dict[str, Any]]:
     """Normalize custom tools input to consistent format."""
@@ -93,6 +86,7 @@ def normalize_custom_tools(raw: Any) -> list[dict[str, Any]]:
         return out
     return []
 
+
 def normalize_named_items(raw: Any) -> list[dict[str, str]]:
     """Normalize named items input to consistent format."""
     if not raw:
@@ -106,15 +100,6 @@ def normalize_named_items(raw: Any) -> list[dict[str, str]]:
         ]
     return []
 
-def library_names_for_prompt() -> list[str]:
-    """Built-in env library keys plus extra names declared under custom_software."""
-    names = list(library_content_dict.keys())
-    custom_software = []  # Currently not supported
-    for item in custom_software:
-        n = item.get("name")
-        if n and n not in names:
-            names.append(n)
-    return names
 
 def load_env(env_path: str = ".env") -> None:
     """Read .env file and set environment variables."""
@@ -141,6 +126,7 @@ def load_env(env_path: str = ".env") -> None:
                     value = value[1:-1]
 
                 os.environ[key] = value
+
 
 def extract_skill_description(markdown_path):
     """Extract skill description."""
