@@ -1,6 +1,6 @@
 ---
 name: satpy
-description: Python library for reading, manipulating, and writing data from remote-sensing earth-observing satellite instruments. Use when working with satellite data for: (1) Reading various satellite file formats (HDF5, NetCDF, GeoTIFF, etc.), (2) Creating RGB images from multiple bands, (3) Resampling satellite data to different grids, (4) Applying atmospheric corrections (cloud detection, etc.), (5) Creating geographic projections, (6) Writing to multiple output formats (PNG, GeoTIFF, NetCDF), or (7) Processing data from specific satellites (MODIS, VIIRS, SEVIRI, Landsat, GOES, etc.)
+description: Python library for reading, manipulating, and writing data from remote-sensing earth-observing satellite instruments. Use when working with satellite data for:(1) Reading various satellite file formats (HDF5, NetCDF, GeoTIFF, etc.), (2) Creating RGB images from multiple bands, (3) Resampling satellite data to different grids, (4) Applying atmospheric corrections (cloud detection, etc.), (5) Creating geographic projections, (6) Writing to multiple output formats (PNG, GeoTIFF, NetCDF), or (7) Processing data from specific satellites (MODIS, VIIRS, SEVIRI, Landsat, GOES, etc.)
 license: BSD-3-Clause
 metadata:
     skill-author: K-Dense Inc.

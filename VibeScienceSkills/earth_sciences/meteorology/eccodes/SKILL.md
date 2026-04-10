@@ -1,6 +1,6 @@
 ---
 name: eccodes
-description: Comprehensive skill for working with ECMWF ecCodes library to handle GRIB and BUFR meteorological data files. Use when Claude needs to: (1) Read, decode, and analyze GRIB/BUFR files, (2) Extract and manipulate meteorological data fields, (3) Convert between different meteorological data formats, (4) Inspect metadata and keys from GRIB/BUFR messages, (5) Write or modify GRIB/BUFR files, (6) Work with ECMWF forecast model outputs, (7) Process satellite or reanalysis data in GRIB format, (8) Handle meteorological data from various weather services
+description: Comprehensive skill for working with ECMWF ecCodes library to handle GRIB and BUFR meteorological data files. Use when Claude needs to:(1) Read, decode, and analyze GRIB/BUFR files, (2) Extract and manipulate meteorological data fields, (3) Convert between different meteorological data formats, (4) Inspect metadata and keys from GRIB/BUFR messages, (5) Write or modify GRIB/BUFR files, (6) Work with ECMWF forecast model outputs, (7) Process satellite or reanalysis data in GRIB format, (8) Handle meteorological data from various weather services
 ---
 
 # ecCodes

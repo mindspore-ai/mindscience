@@ -1,6 +1,6 @@
 ---
 name: hpc-openblas
-description: OpenBLAS optimized BLAS/LAPACK library for HPC. High-performance linear algebra operations used as backend for scientific computing. Use when users need: (1) Matrix-matrix multiplication (GEMM), (2) Linear system solving, (3) Eigenvalue computation, (4) Optimizing scientific code performance, (5) Building GROMACS, LAMMPS, TensorFlow, PyTorch, or SciPy backends.
+description: OpenBLAS optimized BLAS/LAPACK library for HPC. High-performance linear algebra operations used as backend for scientific computing. Use when users need:(1) Matrix-matrix multiplication (GEMM), (2) Linear system solving, (3) Eigenvalue computation, (4) Optimizing scientific code performance, (5) Building GROMACS, LAMMPS, TensorFlow, PyTorch, or SciPy backends.
 ---
 
 # HPC-OpenBLAS Skill

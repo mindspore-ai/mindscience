@@ -1,6 +1,6 @@
 ---
 name: fipy
-description: Finite volume PDE solver for diffusion, convection, phase field, and coupled equations. Use when solving partial differential equations with: (1) Diffusion processes, (2) Convection-diffusion problems, (3) Phase field models (Allen-Cahn, Cahn-Hilliard), (4) Level set methods, (5) Coupled PDE systems, (6) Moving boundary problems, (7) Fluid flow (Stokes, Navier-Stokes), or (8) Multi-physics simulations requiring adaptive meshing or parallel solving
+description: Finite volume PDE solver for diffusion, convection, phase field, and coupled equations. Use when solving partial differential equations with:(1) Diffusion processes, (2) Convection-diffusion problems, (3) Phase field models (Allen-Cahn, Cahn-Hilliard), (4) Level set methods, (5) Coupled PDE systems, (6) Moving boundary problems, (7) Fluid flow (Stokes, Navier-Stokes), or (8) Multi-physics simulations requiring adaptive meshing or parallel solving
 license: https://github.com/usnistgov/fipy/blob/main/LICENSE
 metadata:
     skill-author: K-Dense Inc.

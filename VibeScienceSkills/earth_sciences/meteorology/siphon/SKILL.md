@@ -1,6 +1,6 @@
 ---
 name: siphon
-description: Comprehensive Python library for accessing remote meteorological and atmospheric data through THREDDS Data Servers and various web services. Use when Claude needs to: (1) Access THREDDS catalog data and datasets, (2) Query NetCDF Subset Service (NCSS) for gridded data subsetting, (3) Retrieve radar data from THREDDS radar servers, (4) Download upper air sounding data from Wyoming/Iowa State/IGRA2 archives, (5) Get buoy data from NDBC, (6) Access climate data from ACIS web services, or (7) Work with remote meteorological datasets in netCDF format
+description: Comprehensive Python library for accessing remote meteorological and atmospheric data through THREDDS Data Servers and various web services. Use when Claude needs to:(1) Access THREDDS catalog data and datasets, (2) Query NetCDF Subset Service (NCSS) for gridded data subsetting, (3) Retrieve radar data from THREDDS radar servers, (4) Download upper air sounding data from Wyoming/Iowa State/IGRA2 archives, (5) Get buoy data from NDBC, (6) Access climate data from ACIS web services, or (7) Work with remote meteorological datasets in netCDF format
 ---
 
 # Siphon

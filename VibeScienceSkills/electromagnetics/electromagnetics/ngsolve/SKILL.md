@@ -1,6 +1,6 @@
 ---
 name: ngsolve
-description: High-performance multiphysics finite element software for electromagnetic, solid mechanics, and fluid dynamics. Use for: (1) Electromagnetic wave propagation and antenna modeling, (2) RF/microwave circuit simulation, (3) Scattering and diffraction problems, (4) Material modeling and electromagnetic properties, (5) Coupled electromagnetic-structural problems, (6) Waveguide and resonator analysis, (7) Finite element analysis of complex geometries, (8) Time-domain and frequency-domain simulations, (9) Multiphysics coupling and fluid-structure interaction, (10) Python scripting for flexible simulation workflows, (11) High-order accurate numerical methods with adaptive meshing, (12) Parallel computing with OpenMP/MPI support.
+description: High-performance multiphysics finite element software for electromagnetic, solid mechanics, and fluid dynamics. Use for:(1) Electromagnetic wave propagation and antenna modeling, (2) RF/microwave circuit simulation, (3) Scattering and diffraction problems, (4) Material modeling and electromagnetic properties, (5) Coupled electromagnetic-structural problems, (6) Waveguide and resonator analysis, (7) Finite element analysis of complex geometries, (8) Time-domain and frequency-domain simulations, (9) Multiphysics coupling and fluid-structure interaction, (10) Python scripting for flexible simulation workflows, (11) High-order accurate numerical methods with adaptive meshing, (12) Parallel computing with OpenMP/MPI support.
 ---
 
 # NGsolve: High-Performance Multiphysics Finite Element Software

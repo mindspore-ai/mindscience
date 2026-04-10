@@ -1,6 +1,6 @@
 ---
 name: fenics
-description: Finite element computing platform for solving PDEs with FEniCSx. Use when solving partial differential equations with: (1) Poisson/Helmholtz equations, (2) Stokes/Navier-Stokes fluid flow, (3) Linear/nonlinear elasticity, (4) Cahn-Hilliard phase field, (5) Mixed formulations, (6) Complex geometries with Gmsh, (7) High-performance parallel computing, (8) Custom finite elements, or (9) Multi-physics problems requiring FEM
+description: Finite element computing platform for solving PDEs with FEniCSx. Use when solving partial differential equations with:(1) Poisson/Helmholtz equations, (2) Stokes/Navier-Stokes fluid flow, (3) Linear/nonlinear elasticity, (4) Cahn-Hilliard phase field, (5) Mixed formulations, (6) Complex geometries with Gmsh, (7) High-performance parallel computing, (8) Custom finite elements, or (9) Multi-physics problems requiring FEM
 license: LGPL-3.0
 metadata:
     skill-author: K-Dense Inc.
