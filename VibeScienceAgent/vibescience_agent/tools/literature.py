@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
+"""Literature search and web scraping utilities for academic papers."""
 import os
 import random
 import re
@@ -32,16 +33,7 @@ from vibescience_agent.utils import logger
 
 
 def fetch_supplementary_info_from_doi(doi: str, output_dir: str = "supplementary_info"):
-    """Fetches supplementary information for a paper given its DOI and returns a research log.
-
-    Args:
-        doi: The paper DOI.
-        output_dir: Directory to save supplementary files.
-
-    Returns:
-        dict: A dictionary containing a research log and the downloaded file paths.
-
-    """
+    """Fetch supplementary information for a paper given its DOI."""
     research_log = []
     research_log.append(f"Starting process for DOI: {doi}")
 
@@ -109,18 +101,7 @@ def fetch_supplementary_info_from_doi(doi: str, output_dir: str = "supplementary
 
 
 def query_arxiv(query: str, max_papers: int = 10) -> str:
-    """Query arXiv for papers based on the provided search query.
-
-    Parameters
-    ----------
-    - query (str): The search query string.
-    - max_papers (int): The maximum number of papers to retrieve (default: 10).
-
-    Returns
-    -------
-    - str: The formatted search results or an error message.
-
-    """
+    """Query arXiv for papers based on the provided search query."""
     try:
         client = arxiv.Client()
         search_res = arxiv.Search(query=query, max_results=max_papers, sort_by=arxiv.SortCriterion.Relevance)
@@ -133,19 +114,7 @@ def query_arxiv(query: str, max_papers: int = 10) -> str:
 
 
 def query_pubmed(query: str, max_papers: int = 10, max_retries: int = 3) -> str:
-    """Query PubMed for papers based on the provided search query.
-
-    Parameters
-    ----------
-    - query (str): The search query string.
-    - max_papers (int): The maximum number of papers to retrieve (default: 10).
-    - max_retries (int): Maximum number of retry attempts with modified queries (default: 3).
-
-    Returns
-    -------
-    - str: The formatted search results or an error message.
-
-    """
+    """Query PubMed for papers based on the provided search query."""
     try:
         pubmed = PubMed(tool="MyTool", email="your-email@example.com")  # Update with a valid email address
 
@@ -171,7 +140,6 @@ def query_pubmed(query: str, max_papers: int = 10, max_retries: int = 3) -> str:
     except Exception as e:
         return f"Error querying PubMed: {e}"
 
-
 def advanced_web_search_qwen(
     query: str,
     max_retries: int = 3,
@@ -180,43 +148,7 @@ def advanced_web_search_qwen(
     enable_thinking: bool = True,
     timeout: int = 60,
 ) -> str:
-    """
-    Advanced web search using Qwen API with built-in web_search tool.
-
-    This function uses Qwen's OpenAI-compatible Responses API with built-in
-    web_search and web_extractor tools to perform comprehensive web searches
-    and extract relevant information.
-
-    Parameters
-    ----------
-    query : str
-        The search query to process.
-    max_searches : int, optional
-        Maximum number of web searches to perform (default: 3).
-    max_retries : int, optional
-        Maximum number of retry attempts (default: 3).
-    api_key : str, optional
-        DashScope API key. If None, uses environment variable.
-    base_url : str, optional
-        DashScope API base URL for Responses API.
-    model : str, optional
-        Qwen model to use (default: "qwen3.5-plus").
-    enable_thinking : bool, optional
-        Enable thinking mode for better reasoning (default: True).
-    timeout : int, optional
-        Request timeout in seconds (default: 60).
-
-    Returns
-    -------
-    str
-        Formatted search results with synthesized information and citations.
-
-    Raises
-    ------
-    ValueError
-        If API key is not provided or found in environment variables.
-    """
-
+    """Advanced web search using Qwen API with built-in web_search tool."""
     if not query or not query.strip():
         raise ValueError("Query cannot be empty")
 
@@ -288,17 +220,8 @@ def advanced_web_search_qwen(
     return f"Error performing web search after {max_retries} attempts: {str(last_error)}"
 
 
-
 def extract_url_content(url: str) -> str:
-    """Extract the text content of a webpage using requests and BeautifulSoup.
-
-    Args:
-        url: Webpage URL to extract content from
-
-    Returns:
-        Text content of the webpage
-
-    """
+    """Extract the text content of a webpage using requests and BeautifulSoup."""
     response = requests.get(url, headers={"User-Agent": "Mozilla/5.0"}, timeout=30)
 
     # Check if the response is in text format
@@ -330,15 +253,7 @@ def extract_url_content(url: str) -> str:
 
 
 def extract_pdf_content(url: str) -> str:
-    """Extract the text content of a PDF file given its URL.
-
-    Args:
-        url: URL of the PDF file to extract text from
-
-    Returns:
-        The extracted text content from the PDF
-
-    """
+    """Extract text content of a PDF file given its URL."""
     try:
         # Check if the URL ends with .pdf
         if not url.lower().endswith(".pdf"):
@@ -397,29 +312,7 @@ def query_semantic_scholar(
     fields_of_study: str = "",
     year: str = ""
 ) -> str:
-    """
-    Query Semantic Scholar for academic papers and research articles.
-
-    Semantic Scholar provides free, AI-powered search for scientific literature
-    across all fields of study. This function searches for papers and returns
-    formatted results with title, authors, abstract, and citation information.
-
-    Parameters
-    ----------
-    query : str
-        The search query for academic papers or research topics.
-    max_papers : int, optional
-        Maximum number of papers to retrieve (default: 10).
-    fields_of_study : str, optional
-        Filter results by field of study (default: "").
-    year : str, optional
-        Filter results by year (default: "").
-
-    Returns
-    -------
-    str
-        Formatted search results or an error message.
-    """
+    """Query Semantic Scholar for academic papers and research articles."""
     try:
         semantic_scholar_key = os.environ.get("S2_API_KEY", None)
         if not semantic_scholar_key:

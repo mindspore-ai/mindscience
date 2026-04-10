@@ -13,14 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""
-Model Provider Factory
-
-A dynamic system for managing and instantiating language model backends.
-Enables seamless switching between different LLM providers and handles
-configuration, caching, and fallback strategies.
-"""
-
+"""Model provider factory for creating and managing language model instances."""
 import importlib
 from typing import Dict
 
@@ -32,25 +25,17 @@ MODEL_PROVIDER_MAP = {
 
 
 class ModelFactory:
-    """Central factory for creating and managing language model instances."""
+    """Factory for creating and managing language model instances.
 
+    Args:
+        config: Configuration dictionary for model creation.
+    """
     registered_models = {}
     _model_cache = {}
 
     @staticmethod
     def create_model(config):
-        """
-        Create a model instance based on provided configuration.
-
-        Args:
-            config: Configuration dictionary for model creation
-
-        Returns:
-            Configured model instance
-
-        Raises:
-            ValueError: For unsupported providers or configuration errors
-        """
+        """Create a model instance based on provided configuration."""
         provider = config.provider
 
         cache_key = ModelFactory._create_cache_key(provider, config)
@@ -98,12 +83,7 @@ class ModelFactory:
 
     @staticmethod
     def _create_cache_key(provider: str, config) -> str:
-        """
-        Generate a unique identifier for model instance caching.
-
-        Different configurations of the same provider are treated as
-        separate instances to ensure correct behavior.
-        """
+        """Generate a unique identifier for model instance caching."""
         model_name = config.model_name
         base_url = config.base_url
         return f"{provider}:{model_name}:{base_url}"

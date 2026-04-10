@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
+"""Model configuration classes for VibeScienceAgent."""
 from vibescience_agent.config.base_config import BaseConfig
 from vibescience_agent.model.model_factory import ModelFactory
 from vibescience_agent.utils import logger
@@ -19,6 +20,20 @@ from vibescience_agent.config import validator
 
 
 class ModelConfig(BaseConfig):
+    """Configuration class for model settings and API parameters.
+
+    Args:
+        model_name (str, optional): Name of the model to use. Defaults to None.
+        api_key (str, optional): API key for authentication. Defaults to None.
+        base_url (str, optional): Base URL for API. Defaults to None.
+        provider (str, optional): Model provider name. Defaults to "openai".
+        temperature (float, optional): Temperature for generation. Defaults to 0.2.
+        max_tokens (int, optional): Maximum tokens per request. Defaults to 4096.
+        timeout (int, optional): Request timeout in seconds. Defaults to 60.
+        max_retries (int, optional): Maximum retry attempts. Defaults to 2.
+        max_connections (int, optional): Maximum concurrent connections. Defaults to 8.
+        **kwargs: Additional configuration parameters.
+    """
     def __init__(
         self,
         model_name: str = None,

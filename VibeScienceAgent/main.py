@@ -13,7 +13,6 @@
 # limitations under the License.
 # ============================================================================
 """Run VibeScienceAgent from the command line.
-
 This module lives next to ``vibescience_agent.yaml`` at the repository root. Run from the
 ``VibeScienceAgent`` root directory or set PYTHONPATH:
     python main.py
@@ -22,7 +21,6 @@ This module lives next to ``vibescience_agent.yaml`` at the repository root. Run
     python main.py --prompt "Your custom prompt here"  # Run with custom prompt
     python main.py --enable-critic --test-time-scale-round 3 # Enable critic and set 3 test rounds
 """
-
 from __future__ import annotations
 
 import os

@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
+"""Agent configuration classes for VibeScienceAgent."""
 from vibescience_agent.config import validator
 from vibescience_agent.config.base_config import BaseConfig
 from vibescience_agent.config.model_config import ModelConfig
@@ -23,6 +24,15 @@ SKILL_SUPPORTED_AGENTS = ["plan", "execute"]
 
 
 class AgentConfig(BaseConfig):
+    """Configuration class for agent settings and model integration.
+
+    Args:
+        agent_type (str): Type of agent (survey, plan, critic, execute).
+        model_config (ModelConfig): Model configuration for the agent.
+        max_retries (int, optional): Maximum number of retry attempts. Defaults to 2.
+        use_tool_retriever (bool, optional): Whether to use tool retriever. Defaults to False.
+        skill_path (str, optional): Path to skill file. Defaults to "".
+    """
     def __init__(
         self,
         agent_type: str,
@@ -77,6 +87,7 @@ def validate_use_tool_retriever(config_instance: AgentConfig, use_tool_retriever
         return False
     return use_tool_retriever
 
+
 @AgentConfig.validator("skill_path")
 def validate_skill_path(config_instance: AgentConfig, skill_path):
     """Validate skill_path."""
@@ -88,6 +99,11 @@ def validate_skill_path(config_instance: AgentConfig, skill_path):
 
 
 class SurveyAgentConfig(AgentConfig):
+    """Configuration class for survey agent with paper search settings.
+
+    Args:
+        max_papers (int, optional): Maximum number of papers to return. Defaults to 5.
+    """
     def __init__(
         self,
         max_papers = 5,

@@ -13,7 +13,6 @@
 # limitations under the License.
 # ============================================================================
 """Configuration management for VibeScienceAgent."""
-
 from vibescience_agent.config.base_config import BaseConfig
 from vibescience_agent.config.model_config import ModelConfig
 from vibescience_agent.config.agent_config import AgentConfig, SurveyAgentConfig, IdeaAgentConfig

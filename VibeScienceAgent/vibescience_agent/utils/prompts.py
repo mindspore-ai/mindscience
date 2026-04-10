@@ -13,10 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
+"""Prompt generation utilities for VibeScienceAgent agents."""
 import os
 
 from vibescience_agent.tools.env_desc import library_content_dict
-
 
 def textify_api_dict(api_dict):
     """Convert a nested API dictionary to a nicely formatted string."""
@@ -55,7 +55,6 @@ def textify_api_dict(api_dict):
 
     return "\n".join(lines)
 
-
 def format_item_with_description(name, description):
     """Format an item with its description in a readable way."""
     # Handle None or empty descriptions
@@ -93,7 +92,6 @@ def format_item_with_description(name, description):
 
     return f"{name}: {description}"
 
-
 def generate_prompt(
     base_prompt,
     tool_desc=None,
@@ -106,18 +104,7 @@ def generate_prompt(
     skill_path: str = "",
     skills=None
 ):
-    """
-    Generate a system prompt for the plan and execute agent based on the provided context.
-
-    Args:
-        tool_desc: Description of available tools
-        library_content_list: List of library contents available
-        custom_tools: Optional list of custom tools available
-        custom_data: Optional list of custom datasets available
-        custom_software: Optional list of custom software available
-        survey_results: Optional list of survey results to include in the prompt
-        selected_resources: Optional dict from tool retriever (tools, libraries)
-    """
+    """Generate a system prompt for plan and execute agent based on provided context."""
     prompt_modifier = base_prompt
     # Separate custom and default resources
     default_library_content_list = []
@@ -237,7 +224,6 @@ def generate_prompt(
 
     if has_custom_resources:
         prompt_modifier += """
-
 PRIORITY CUSTOM RESOURCES
 ===============================
 IMPORTANT: The following custom resources have been specifically added for planning use.
@@ -245,26 +231,20 @@ IMPORTANT: The following custom resources have been specifically added for plann
     Always consider these FIRST and in the meantime using default resources.
 
 """
-
         if custom_tools_formatted:
             prompt_modifier += """
-
 🔧 CUSTOM TOOLS (USE THESE FIRST):
 {custom_tools}
 
 """
-
         if custom_data_formatted:
             prompt_modifier += """
-
 📊 CUSTOM DATA (PRIORITIZE THESE DATASETS):
 {custom_data}
 
 """
-
         if custom_software_formatted:
             prompt_modifier += """
-
 ⚙️  CUSTOM SOFTWARE (USE THESE LIBRARIES):
 {custom_software}
 
@@ -272,10 +252,8 @@ IMPORTANT: The following custom resources have been specifically added for plann
 
         prompt_modifier += """===============================
 """
-
     if survey_results_formatted:
         prompt_modifier += """
-
 📄 SURVEY RESULTS (RELEVANT LITERATURE):
 {survey_results}
 

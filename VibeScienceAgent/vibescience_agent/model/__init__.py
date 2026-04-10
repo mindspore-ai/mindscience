@@ -13,7 +13,6 @@
 # limitations under the License.
 # ============================================================================
 """Model providers and adapters for VibeScienceAgent."""
-
 from vibescience_agent.model.base_model import BaseModel
 from vibescience_agent.model.model_factory import ModelFactory
 from vibescience_agent.model.openai_model import OpenAIModel

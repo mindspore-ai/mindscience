@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
+"""Tool configuration classes for VibeScienceAgent."""
 from typing import List
 
 from vibescience_agent.config.base_config import BaseConfig
@@ -21,6 +22,12 @@ SUPPORTED_PAPER_SOURCES = ["pubmed", "arxiv", "semantic_scholar"]
 
 
 class ToolConfig(BaseConfig):
+    """Base configuration class for tool settings.
+
+    Args:
+        tool_name (str): Name identifier for the tool.
+        **kwargs: Additional tool-specific configuration parameters.
+    """
     def __init__(
         self,
         tool_name,
@@ -33,10 +40,18 @@ class ToolConfig(BaseConfig):
         self.update_attrs(**kwargs)
 
     def get_tool_name(self):
+        """Get tool name."""
         return self._tool_name
 
 
 class PaperSurveyConfig(ToolConfig):
+    """Configuration class for paper survey tool settings.
+
+    Args:
+        max_results (int, optional): Maximum number of results. Defaults to 10.
+        sources (List[str], optional): List of paper sources. Defaults to SUPPORTED_PAPER_SOURCES.
+        **kwargs: Additional configuration parameters.
+    """
     def __init__(   # pylint: disable=W0102
         self,
         max_results: int = 10,

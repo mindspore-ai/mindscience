@@ -13,7 +13,6 @@
 # limitations under the License.
 # ============================================================================
 """VibeScience configuration management."""
-
 from pathlib import Path
 from typing import Dict, Optional
 
@@ -31,18 +30,15 @@ PROJECT_ROOT = Path(__file__).parent.parent.parent
 
 
 class VibeScienceConfig(BaseConfig):
-    """Main configuration class for VibeScienceAgent.
-
-    Aggregates all sub-configurations (model, agent, tool, logging)
-    and provides initialization from YAML file.
-
-    Attributes:
-        model_defaults: Default model settings
-        agents: Dictionary of agent configurations
-        tools: Dictionary of tool configurations
-        logging_config: Logging configuration
     """
+    Main configuration class for VibeScienceAgent that aggregates all sub-configurations and provides initialization from YAML file.
 
+    Args:
+        model_defaults (Optional[ModelConfig], optional): Default model settings. Defaults to None.
+        agents (Optional[Dict[str, AgentConfig]], optional): Dictionary of agent configurations. Defaults to None.
+        tools (Optional[Dict[str, ToolConfig]], optional): Dictionary of tool configurations. Defaults to None.
+        logging_config (Optional[LogConfig], optional): Logging configuration. Defaults to None.
+    """
     def __init__(
         self,
         model_defaults: Optional[ModelConfig] = None,
@@ -62,15 +58,7 @@ class VibeScienceConfig(BaseConfig):
         cls,
         yaml_path: str,
     ):
-        """Initialize configuration from yaml file.
-
-        Args:
-            yaml_path: Path to the YAML configuration file.
-            use_env_overrides: Whether to allow environment variable overrides
-
-        Returns:
-            VibeScienceConfig: The initialized configuration object
-        """
+        """Initialize configuration from YAML file."""
         yaml_path = Path(yaml_path)
 
         if not yaml_path.exists():
@@ -90,16 +78,7 @@ class VibeScienceConfig(BaseConfig):
         cls,
         config_data: dict,
     ):
-        """Parse configuration data from dictionary.
-
-        Args:
-            config_data: Parsed YAML data
-            yaml_path: Path to the YAML file
-            use_env_overrides: Whether to allow env var overrides
-
-        Returns:
-            VibeScienceConfig: The configuration object
-        """
+        """Parse configuration data from dictionary."""
         # Parse logging
         logging_data = config_data.get("logging", {})
         logging_config = cls._parse_log_config(logging_data)
@@ -135,15 +114,7 @@ class VibeScienceConfig(BaseConfig):
 
     @classmethod
     def _parse_model_config(cls, data: dict) -> ModelConfig:
-        """Parse model configuration from data.
-
-        Args:
-            data: Model configuration data
-            model_name: Name identifier for the model
-
-        Returns:
-            ModelConfig: The model configuration
-        """
+        """Parse model configuration from data."""
         return ModelConfig(**data)
 
     @classmethod
@@ -153,16 +124,7 @@ class VibeScienceConfig(BaseConfig):
         data: dict,
         model_defaults: ModelConfig,
     ) -> AgentConfig:
-        """Parse agent configuration from data.
-
-        Args:
-            agent_type: Type of agent (survey, plan, critic, execute)
-            data: Agent configuration data (contains 'model' and 'agent' sub-keys)
-            model_defaults: Default model settings to use as fallback
-
-        Returns:
-            AgentConfig: The agent configuration
-        """
+        """Parse agent configuration from data."""
         # Extract model config from 'model' sub-key
         model_data = data.get("model", {})
         # Extract agent config from 'agent' sub-key
@@ -185,15 +147,7 @@ class VibeScienceConfig(BaseConfig):
 
     @classmethod
     def _parse_tool_config(cls, tool_name: str, data: dict) -> ToolConfig:
-        """Parse tool configuration from data.
-
-        Args:
-            tool_name: Name of the tool
-            data: Tool configuration data
-
-        Returns:
-            ToolConfig: The tool configuration
-        """
+        """Parse tool configuration from data."""
         tool_class = TOOL_CONFIG_CLASSES.get(tool_name, ToolConfig)
 
         if tool_class is ToolConfig:
@@ -203,25 +157,11 @@ class VibeScienceConfig(BaseConfig):
 
     @classmethod
     def _parse_log_config(cls, data: dict) -> LogConfig:
-        """Parse logging configuration from data.
-
-        Args:
-            data: Logging configuration data
-
-        Returns:
-            LogConfig: The logging configuration
-        """
+        """Parse logging configuration from data."""
         return LogConfig(**data)
 
     def get_agent_config(self, agent_type: str) -> Optional[AgentConfig]:
-        """Get configuration for a specific agent type.
-
-        Args:
-            agent_type: Type of agent (survey, plan, critic, execute)
-
-        Returns:
-            AgentConfig or None if not found
-        """
+        """Get configuration for a specific agent type."""
         return self.agents.get(agent_type)
 
     def _format_config_tree(self, data: dict, prefix: str = "") -> list:
@@ -241,16 +181,7 @@ class VibeScienceConfig(BaseConfig):
         return lines
 
     def _get_config_dict(self, obj, depth: int = 0, max_depth: int = 3) -> dict:
-        """Recursively get config object's attributes as dictionary.
-
-        Args:
-            obj: Configuration object
-            depth: Current recursion depth
-            max_depth: Maximum recursion depth to avoid infinite loops
-
-        Returns:
-            Dictionary of config attributes
-        """
+        """Recursively get config object's attributes as dictionary."""
         if depth >= max_depth:
             return {"<max_depth>": "..."}
 

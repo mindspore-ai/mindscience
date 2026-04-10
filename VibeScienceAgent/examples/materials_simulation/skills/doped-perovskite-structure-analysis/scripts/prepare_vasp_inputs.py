@@ -5,7 +5,6 @@ Prepare VASP input files from a structure file.
 Usage:
     python prepare_vasp_inputs.py --input Ba_STO.cif --encut 520 --kpoints 4x4x4
 """
-
 import argparse
 import os
 from pymatgen.core import Structure

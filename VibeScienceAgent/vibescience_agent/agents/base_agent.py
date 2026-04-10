@@ -25,10 +25,9 @@ The module includes:
 - BaseAgent: Abstract base class with template methods for agent operations
 - AgentExecutionError: Custom exception for agent-specific failures
 - Common utilities for model calls and retry logic
-- Tool / library context and **per-agent tool retriever** (``run_tool_retrieval_once_if_enabled``,
+- Tool / library context and **per-agent tool retriever** (run_tool_retrieval_once_if_enabled,
   etc.); see section after :class:`BaseAgent`.
 """
-
 from __future__ import annotations
 
 import abc
@@ -77,47 +76,20 @@ class BaseAgent(abc.ABC):
     """
     Abstract base class defining the interface and common functionality for all agents.
 
-    BaseAgent establishes a standardized architecture for specialized agents within
-    the VibeScienceAgent multi-agent system. Each agent encapsulates a specific cognitive
-    task (e.g., hypothesis generation, critical evaluation, method development) and
-    interacts with language models to perform that task.
+    Args:
+        model (BaseModel): Language model instance for text generation.
+        config (AgentConfig): Configuration object containing agent-specific settings.
+        tool_config (Dict[str, ToolConfig], optional): Tool configuration dictionary.
 
-    Key Responsibilities:
-        - Define the contract that all concrete agents must implement
-        - Provide model interaction utilities with automatic retry logic
-        - Handle errors gracefully with configurable retry policies
+    Inputs:
+        - messages (list): Conversation history (list of message dicts).
+        - params (Dict[str, Any]): Task-specific parameters that control execution behavior.
 
-    Attributes:
-        model (BaseModel): Language model instance for text generation
-        config (Dict[str, Any]): Configuration parameters for the agent
-        name (str): Human-readable name for the agent
-        description (str): Brief description of agent's purpose
-        system_prompt (str): Default system-level instructions for the model
-        max_retries (int): Maximum number of retry attempts on failures
-
-    Abstract Methods:
-        execute: Must be implemented by subclasses to define agent-specific logic
-
-    Usage:
-        Subclass BaseAgent and implement the execute() method to create a new
-        specialized agent. Use _call_model() for all language model interactions
-        to benefit from automatic retries and error handling.
+    Outputs:
+        - Dict[str, Any]: Execution results in a standardized dictionary format.
     """
-
     def __init__(self, model: BaseModel, config: AgentConfig,
                  tool_config: Dict[str, ToolConfig] = None):
-        """
-        Initialize a new agent instance with model and configuration.
-
-        Args:
-            model (BaseModel): Language model instance for text generation.
-            config (Dict[str, Any]): Configuration dictionary containing agent-specific
-                settings. Common keys include:
-                - name (str): Agent's display name
-                - description (str): Purpose and capabilities description
-                - system_prompt (str): Default system-level instructions
-                - max_retries (int): Maximum retry attempts on failures (default: 10)
-        """
         self.model = model
         self.config = config
         self.tool_config = tool_config
@@ -158,6 +130,7 @@ class BaseAgent(abc.ABC):
         return execute_node
 
     async def _invoke_subgraph(self, input_msg: list[tuple[str, str]]) -> dict:
+        """Invoke the compiled subgraph with input messages and return results."""
         if not hasattr(self, "_compiled_subgraph"):
             raise AgentExecutionError(
                 "Subgraph not compiled. Ensure _build_execute_subgraph "
@@ -171,65 +144,13 @@ class BaseAgent(abc.ABC):
 
     @abc.abstractmethod
     async def execute(self, messages, **params) -> Dict[str, Any]:
-        """
-        Execute the agent's primary task (must be implemented by subclasses).
-
-        Args:
-            context (Dict[str, Any]): Contextual information needed for task execution.
-            params (Dict[str, Any]): Task-specific parameters that control execution behavior.
-
-        Returns:
-            Dict[str, Any]: Execution results in a standardized dictionary format.
-
-        Raises:
-            AgentExecutionError: When execution fails after retries.
-        """
-
+        """Execute the agent's primary task (must be implemented by subclasses)."""
     async def _call_model(self,
                         prompt: str | list,
                         system_prompt: Optional[str] = None,
                         schema: Optional[Dict[str, Any]] = None,
                         temperature: Optional[float] = None) -> Union[str, Dict[str, Any]]:
-        """
-        Protected method to call the language model with automatic retry logic.
-
-        This is the primary interface for agents to interact with their language model.
-        It provides robust error handling with exponential backoff retries, automatic
-        selection between text and structured (JSON) generation based on the schema
-        parameter, and comprehensive logging of failures.
-
-        All concrete agent implementations should use this method rather than calling
-        the model directly to benefit from standardized error handling.
-
-        Args:
-            prompt (str): The main user prompt describing the task for the model.
-                Should be clear, specific, and include all necessary context.
-            system_prompt (Optional[str]): System-level instructions that guide the
-                model's behavior and response style. If ``None``, uses the agent's
-                default ``system_prompt`` from configuration. Pass ``""`` to send no
-                separate system message (provider may omit the system role). Defaults
-                to None.
-            schema (Optional[Dict[str, Any]]): JSON Schema definition for structured
-                output. When provided, enforces the model to return JSON matching this
-                schema. When None, returns freeform text. Defaults to None.
-            temperature (Optional[float]): Sampling temperature for model generation.
-                Higher values (e.g., 0.8-1.0) increase creativity, lower values
-                (e.g., 0.1-0.3) increase determinism. If None, uses model default.
-
-        Returns:
-            Union[str, Dict[str, Any]]: Model's response in one of two formats:
-                - str: Freeform text response when schema is None
-                - Dict[str, Any]: Structured JSON response when schema is provided
-
-        Raises:
-            AgentExecutionError: When model calls fail consistently after exhausting
-                all retry attempts (max_retries). Contains details of the final error.
-
-        Note:
-            The method sleeps for 1 second between retry attempts to avoid hammering
-            the API and potentially triggering rate limits. Consider this latency when
-            designing time-sensitive operations.
-        """
+        """Protected method to call the language model with automatic retry logic."""
         if system_prompt is None:
             system_prompt = self.system_prompt
         remaining_retries = self.max_retries
@@ -267,18 +188,7 @@ class BaseAgent(abc.ABC):
         self,
         class_tool_modules: frozenset[str] | None,
     ) -> dict[str, Any]:
-        """Assemble the resource bundle PlanAgent / ExecuteAgent store on ``self``.
-
-        Combines:
-        - filtered built-in tools (from ``read_module2api``),
-        - library name list for the prompt,
-        - normalized ``custom_tools`` / ``custom_data`` / ``custom_software``,
-
-        Returns:
-            Dict with keys ``tool_desc``, ``library_content_list``, ``custom_tools``,
-            ``custom_data``, ``custom_software``.
-        """
-
+        """Assemble the resource bundle PlanAgent / ExecuteAgent store on self."""
         skills = []
         if self.skill_path and os.path.exists(self.skill_path):
             for root, _, files in os.walk(self.skill_path):
@@ -304,7 +214,7 @@ class BaseAgent(abc.ABC):
         }
 
     def _update_selected_resources(self, selected_resources: Optional[Dict[str, Any]]) -> None:
-        """Apply tool-retriever output (``tools`` / ``libraries`` keys)."""
+        """Apply tool-retriever output (tools / sciencedata / libraries keys)."""
         # Extract tool descriptions for the selected tools
         tool_desc = {}
         for tool in selected_resources["tools"]:
@@ -364,14 +274,7 @@ class BaseAgent(abc.ABC):
         self.ctx["library_content_list"] = selected_resources["libraries"]
 
     def _prepare_resources_for_retrieval(self, prompt: str) -> Optional[Dict[str, Any]]:
-        """Prepare resources for retrieval and return selected resource names.
-
-        Args:
-            prompt: The user's query
-
-        Returns:
-            dict: Dictionary containing selected resource names for tools, science_data, and libraries
-        """
+        """Prepare resources for retrieval and return selected resource names."""
         # Gather all available resources
 
         # 1. Tools from the registry

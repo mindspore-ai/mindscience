@@ -19,7 +19,6 @@ Experiment workflow for VibeScienceAgent
 Orchestrates the multi-agent pipeline: plan -> [critic] -> execute.
 All agents are created through AgentFactory with unified configuration from VibeScienceConfig.
 """
-
 import re
 import uuid
 from typing import Literal, TypedDict
@@ -41,10 +40,23 @@ class AgentState(TypedDict):
 
 
 class ExperimentWorkflow(BaseWorkflow):
-    """Orchestrator for the VibeScienceAgent experiment pipeline.
+    """
+    Orchestrator for the VibeScienceAgent experiment pipeline.
 
-    All configuration comes from a single ``VibeScienceConfig`` instance.
-    Constructor parameters serve as highest-priority overrides.
+    This workflow manages the multi-agent pipeline: plan -> [critic] -> execute.
+    All agents are created through AgentFactory with unified configuration from VibeScienceConfig.
+
+    Args:
+        config (VibeScienceConfig): Unified configuration instance for the entire workflow.
+        sciencedata_path (str, optional): Local path to science data files. Defaults to "".
+        enable_critic (bool, optional): Whether to enable critic agent for feedback. Defaults to False.
+        test_time_scale_round (int, optional): Number of critic rounds allowed. Defaults to 1.
+
+    Inputs:
+        - prompt (str): User query that initiates the experiment workflow.
+
+    Outputs:
+        - str: Final solution extracted from the workflow execution.
     """
     AGENT_TYPES = ("plan", "critic", "execute")
     REQUIRED_MODEL_AGENT_TYPES = ("plan", "execute")
@@ -70,8 +82,8 @@ class ExperimentWorkflow(BaseWorkflow):
     # =========================================================================
     # Workflow
     # =========================================================================
-
     def _create_workflow(self):
+        """Create workflow graph with nodes and edges."""
         workflow = StateGraph(AgentState)
 
         workflow.add_node("plan", self.plan)
@@ -104,8 +116,8 @@ class ExperimentWorkflow(BaseWorkflow):
     # =========================================================================
     # Workflow Nodes
     # =========================================================================
-
     async def plan(self, state: AgentState) -> AgentState:
+        """Execute plan agent and parse output to determine next step."""
         logger.info("Planning...")
         result = await self.plan_agent.execute(     # pylint: disable=E1101
             messages=state["context"].get_context("messages"),
@@ -156,6 +168,7 @@ class ExperimentWorkflow(BaseWorkflow):
         return state
 
     async def critic(self, state: AgentState) -> AgentState:
+        """Execute critic agent to provide feedback on plan."""
         logger.info("Criticing...")
         result = await self.critic_agent.execute(       # pylint: disable=E1101
             messages=state["context"].get_context("messages")
@@ -167,6 +180,7 @@ class ExperimentWorkflow(BaseWorkflow):
         return state
 
     async def execute(self, state: AgentState) -> AgentState:
+        """Execute agent to run tools and get results."""
         logger.info("Executing...")
         result = await self.execute_agent.execute(     # pylint: disable=E1101
             messages=state["context"].get_context("messages")
@@ -179,10 +193,10 @@ class ExperimentWorkflow(BaseWorkflow):
     # =========================================================================
     # Routing
     # =========================================================================
-
     def routing_function(
         self, state: AgentState,
     ) -> Literal["plan", "execute", "end", "critic"]:
+        """Determine next workflow step based on state."""
         next_step = state.get("next_step")
         valid = {"plan", "execute", "end", "critic"}
         if next_step in valid:
@@ -192,7 +206,6 @@ class ExperimentWorkflow(BaseWorkflow):
     # =========================================================================
     # Main Entry Point
     # =========================================================================
-
     async def run(self, prompt):
         """Execute the agent pipeline with the given prompt."""
         logger.info("Workflow run started with user query:\n" + prompt)

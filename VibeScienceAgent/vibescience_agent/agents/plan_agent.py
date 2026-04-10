@@ -14,11 +14,9 @@
 # limitations under the License.
 # ============================================================================
 """Plan Agent for VibeScienceAgent
-
 Handles task decomposition and structured plan generation. Wraps the original
 planner() function into a BaseAgent subclass for unified agent management.
 """
-
 from typing import Dict
 
 from vibescience_agent.agents.base_agent import BaseAgent
@@ -70,17 +68,26 @@ Otherwise the system will not be able to know what has been done.
 In each response, you must include EITHER <execute> or <solution> tag. Not both at the same time. Do not respond with messages without any tags. No empty messages.
 """
 
+
 class PlanAgent(BaseAgent):
-    """Plan Agent: analyses tasks and creates structured execution plans.
-
-    Tool and library context is built inside this agent (see ``TOOL_DESCRIPTION_MODULES``
-    and optional ``custom_*`` keys). When ``use_tool_retriever`` is enabled,
-    the first ``execute`` runs :func:`run_tool_retrieval_once_if_enabled` and
-    updates :meth:`update_selected_resources`.
     """
-
-    #: Subset of ``read_module2api`` fields, e.g. ``frozenset({"literature", "support_tools"})``.
-    #: ``None`` means all built-in tool description modules.
+    Plan Agent analyzes tasks, creates structured execution plans, and generates responses with <execute>or <solution>tags to guide subsequent execution steps.
+    
+    Args:
+        model (BaseModel): LLM backend.
+        config (Dict[str, Any]): Agent section from unified config.
+        tool_config (Dict[str, ToolConfig]): Tool configuration dict.
+        kwargs (Any, optional): May include sciencedata_with_desc and sciencedata_path.    
+    
+    Inputs:
+        - messages (list): Conversation history (list[BaseMessage] or equivalent message dicts); the user task is taken from messages[0].
+        - params (Dict[str, Any]): Optional keyword arguments; may include survey_results (literature survey payload for the system prompt).
+    
+    Outputs:
+        - Dict message suitable for :class:`~vibescience_agent.utils.message.Message` storage.
+    """
+    #: Subset of read_module2api fields, e.g. frozenset({"literature", "support_tools"}).
+    #: None means all built-in tool description modules.
     TOOL_DESCRIPTION_MODULES: frozenset[str] | None = None
 
     def __init__(self, model, config: AgentConfig, tool_config: Dict[str, ToolConfig] = None):
@@ -89,15 +96,7 @@ class PlanAgent(BaseAgent):
         self.ctx = self._build_agent_tool_context(self.TOOL_DESCRIPTION_MODULES)
 
     async def execute(self, messages, **params):
-        """Generate a plan based on message history.
-
-        Args:
-            context: Must contain ``messages`` (list[BaseMessage]).
-            params: May contain ``survey_results``.
-
-        Returns:
-            Dict with ``content`` (str) – the raw plan text from the LLM.
-        """
+        """Generate a plan based on message history and survey results."""
         survey_results = params.get("survey_results", None)
         enable_critic = params.get("enable_critic", False)
 
@@ -114,6 +113,7 @@ class PlanAgent(BaseAgent):
         return self._process_output(content)
 
     def _process_output(self, content):
+        """Close unterminated XML-style tags and wrap model text as an assistant message."""
         if "<execute>" in content and "</execute>" not in content:
             content += "</execute>"
         if "<solution>" in content and "</solution>" not in content:
