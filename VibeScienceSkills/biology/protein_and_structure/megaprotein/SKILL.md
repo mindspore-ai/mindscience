@@ -1,6 +1,6 @@
 ---
 name: megaprotein
-description: megaprotein is a comprehensive protein structure prediction toolkit developed by MindSpore scientific computing team. It consists of three components: MEGA-Fold (protein structure prediction), MEGA-EvoGen (MSA generation), and MEGA-Assessment (structure quality assessment). Use this model when you need to predict 3D protein structures, generate multiple sequence alignments, or evaluate protein structure quality on Ascend NPU.
+description: megaprotein is a comprehensive protein structure prediction toolkit developed by MindSpore scientific computing team. It consists of three components:MEGA-Fold (protein structure prediction), MEGA-EvoGen (MSA generation), and MEGA-Assessment (structure quality assessment). Use this model when you need to predict 3D protein structures, generate multiple sequence alignments, or evaluate protein structure quality on Ascend NPU.
 license: Apache License 2.0
 metadata:
     skill-author: MindSpore Science Team

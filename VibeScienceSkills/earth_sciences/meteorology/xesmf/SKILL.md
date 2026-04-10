@@ -1,6 +1,6 @@
 ---
 name: xesmf
-description: Comprehensive skill for working with xesmf (xarray extensions for large datasets) to efficiently process meteorological data. Use when Claude needs to: (1) Process large GRIB/NetCDF files that don't fit in memory, (1) Process large GRIB/NetCDF files that don't fit in memory, (2) Read and process datasets in chunks, (3) Use out-of-core computation for large arrays, (4) Apply operations to large datasets efficiently, (5) Handle datasets larger than available RAM, (6) Perform parallel processing on large datasets, (7) Optimize I/O for large datasets, (8) Work with time series data efficiently, (9) Process multi-dimensional arrays efficiently, (10) Use lazy evaluation for large datasets
+description: Comprehensive skill for working with xesmf (xarray extensions for large datasets) to efficiently process meteorological data. Use when Claude needs to:(1) Process large GRIB/NetCDF files that don't fit in memory, (1) Process large GRIB/NetCDF files that don't fit in memory, (2) Read and process datasets in chunks, (3) Use out-of-core computation for large arrays, (4) Apply operations to large datasets efficiently, (5) Handle datasets larger than available RAM, (6) Perform parallel processing on large datasets, (7) Optimize I/O for large datasets, (8) Work with time series data efficiently, (9) Process multi-dimensional arrays efficiently, (10) Use lazy evaluation for large datasets
 ---
 
 # xesmf

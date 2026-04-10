@@ -1,6 +1,6 @@
 ---
 name: cantera
-description: Open-source chemical kinetics, thermodynamics, and transport library. Use when solving problems involving: (1) Chemical kinetics and reaction mechanisms, (2) Thermodynamic properties and phase equilibria, (3) Transport properties and multicomponent diffusion, (4) Combustion and flame modeling, (5) Electrochemical systems, (6) Fuel cells and batteries, (7) Plasma chemistry, (8) Thin film deposition, or (9) Multiphase chemical systems
+description: Open-source chemical kinetics, thermodynamics, and transport library. Use when solving problems involving:(1) Chemical kinetics and reaction mechanisms, (2) Thermodynamic properties and phase equilibria, (3) Transport properties and multicomponent diffusion, (4) Combustion and flame modeling, (5) Electrochemical systems, (6) Fuel cells and batteries, (7) Plasma chemistry, (8) Thin film deposition, or (9) Multiphase chemical systems
 license: BSD-3-Clause
 metadata:
     skill-author: K-Dense Inc.

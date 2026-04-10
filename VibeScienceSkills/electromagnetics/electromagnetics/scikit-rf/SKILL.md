@@ -1,6 +1,6 @@
 ---
 name: scikit-rf
-description: Open-source Python package for RF/Microwave engineering. Use for: (1) Network analysis and simulation (S-parameters, Z-parameters, ABCD, T-parameters), (2) VNA calibration and error correction (OnePort, TwoPort, SOLT, EightTerm), (3) Vector network analyzer (VNA) control and data acquisition, (4) Transmission line media modeling (CPW, coax, waveguide), (5) Network set statistical analysis and uncertainty bounds, (6) Quality factor calculations and resonator analysis, (7) Circuit and system-level RF design, (8) Touchstone file I/O for network parameter data.
+description: Open-source Python package for RF/Microwave engineering. Use for:(1) Network analysis and simulation (S-parameters, Z-parameters, ABCD, T-parameters), (2) VNA calibration and error correction (OnePort, TwoPort, SOLT, EightTerm), (3) Vector network analyzer (VNA) control and data acquisition, (4) Transmission line media modeling (CPW, coax, waveguide), (5) Network set statistical analysis and uncertainty bounds, (6) Quality factor calculations and resonator analysis, (7) Circuit and system-level RF design, (8) Touchstone file I/O for network parameter data.
 ---
 
 # scikit-rf: RF/Microwave Engineering Toolkit

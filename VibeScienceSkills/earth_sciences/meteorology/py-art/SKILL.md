@@ -1,6 +1,6 @@
 ---
 name: py-art
-description: Comprehensive skill for working with Py-ART (Python ARM Radar Toolkit) to process and analyze meteorological radar data. Use when Claude needs to: (1) Read and process ARM radar data files, (2) Analyze radar reflectivity and Doppler velocity, (3) Apply radar quality control and filtering, (4) Perform radar calibration and corrections, (5) Extract radar moments and derived quantities, (6) Process polarimetric radar data, (7) Convert radar data to Cartesian coordinates, (8) Apply radar retrieval algorithms, (9) Work with ARM netCDF radar data formats, (10) Visualize radar data fields and products
+description: Comprehensive skill for working with Py-ART (Python ARM Radar Toolkit) to process and analyze meteorological radar data. Use when Claude needs to:(1) Read and process ARM radar data files, (2) Analyze radar reflectivity and Doppler velocity, (3) Apply radar quality control and filtering, (4) Perform radar calibration and corrections, (5) Extract radar moments and derived quantities, (6) Process polarimetric radar data, (7) Convert radar data to Cartesian coordinates, (8) Apply radar retrieval algorithms, (9) Work with ARM netCDF radar data formats, (10) Visualize radar data fields and products
 ---
 
 # Py-ART

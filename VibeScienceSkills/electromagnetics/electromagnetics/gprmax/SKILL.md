@@ -1,6 +1,6 @@
 ---
 name: gprmax
-description: Open-source FDTD electromagnetic wave propagation simulator for Ground Penetrating Radar (GPR). Use for: (1) 2D/3D electromagnetic simulations using Finite-Difference Time-Domain (FDTD) method, (2) GPR antenna modeling and ground penetration analysis, (3) Material modeling including dielectric, magnetic, and dispersive media, (4) Source excitation including Hertzian dipoles and Gaussian pulses, (5) PML absorbing boundary conditions, (6) Field output and visualization, (7) Parallel computing with OpenMP/MPI/GPU support, (8) Python scripting for complex simulation workflows.
+description: Open-source FDTD electromagnetic wave propagation simulator for Ground Penetrating Radar (GPR). Use for:(1) 2D/3D electromagnetic simulations using Finite-Difference Time-Domain (FDTD) method, (2) GPR antenna modeling and ground penetration analysis, (3) Material modeling including dielectric, magnetic, and dispersive media, (4) Source excitation including Hertzian dipoles and Gaussian pulses, (5) PML absorbing boundary conditions, (6) Field output and visualization, (7) Parallel computing with OpenMP/MPI/GPU support, (8) Python scripting for complex simulation workflows.
 license: MIT License
 metadata:
     skill-author: Mindspore Science Team

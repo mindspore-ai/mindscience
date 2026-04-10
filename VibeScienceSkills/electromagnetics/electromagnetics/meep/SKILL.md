@@ -1,6 +1,6 @@
 ---
 name: meep
-description: MIT's open-source FDTD electromagnetic simulation solver. Use for time-domain Maxwell's equations simulation including: (1) Waveguide and photonic-crystal simulations, (2) Transmission/reflection spectra computation, (3) Resonant mode analysis, (4) Scattering problems, (5) Nonlinear and dispersive materials, (6) Near-to-far field transformations. Supports Python, Scheme, and C++ interfaces with 1D/2D/3D simulations, PML boundaries, symmetries, and parallel computing via MPI.
+description: MIT's open-source FDTD electromagnetic simulation solver. Use for time-domain Maxwell's equations simulation including:(1) Waveguide and photonic-crystal simulations, (2) Transmission/reflection spectra computation, (3) Resonant mode analysis, (4) Scattering problems, (5) Nonlinear and dispersive materials, (6) Near-to-far field transformations. Supports Python, Scheme, and C++ interfaces with 1D/2D/3D simulations, PML boundaries, symmetries, and parallel computing via MPI.
 ---
 
 # Meep: MIT Electromagnetic Equation Propagation

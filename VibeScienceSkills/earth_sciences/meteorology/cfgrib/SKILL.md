@@ -1,6 +1,6 @@
 ---
 name: cfgrib
-description: Comprehensive skill for working with cfgrib (CF-compliant GRIB reader) to access GRIB meteorological data as xarray Datasets. Use when Claude needs to: (1) Read GRIB files as xarray Datasets, (2) Work with labeled multidimensional arrays with CF-compliant metadata, (3) Perform data analysis using xarray and pandas, (4) Handle multi-message GRIB files with automatic grouping, (5) Access GRIB data with coordinate-based selection, (6) Perform time series analysis on meteorological data, (7) Work with ensemble forecast data, (8) Convert GRIB data to other formats (NetCDF, Zarr), (9) Apply xarray operations to GRIB data, (10) Visualize meteorological data with matplotlib/cartopy
+description: Comprehensive skill for working with cfgrib (CF-compliant GRIB reader) to access GRIB meteorological data as xarray Datasets. Use when Claude needs to:(1) Read GRIB files as xarray Datasets, (2) Work with labeled multidimensional arrays with CF-compliant metadata, (3) Perform data analysis using xarray and pandas, (4) Handle multi-message GRIB files with automatic grouping, (5) Access GRIB data with coordinate-based selection, (6) Perform time series analysis on meteorological data, (7) Work with ensemble forecast data, (8) Convert GRIB data to other formats (NetCDF, Zarr), (9) Apply xarray operations to GRIB data, (10) Visualize meteorological data with matplotlib/cartopy
 ---
 
 # cfgrib

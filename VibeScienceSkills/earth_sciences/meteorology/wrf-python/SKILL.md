@@ -1,6 +1,6 @@
 ---
 name: wrf-python
-description: Diagnostic and interpolation routines for WRF-ARW model output. Use when working with Weather Research and Forecasting (WRF-ARW) model data for: (1) Computing meteorological diagnostics (CAPE, storm relative helicity, etc.), (2) Interpolating model output to different grids, (3) Creating cross sections and vertical profiles, (4) Mapping between model levels and pressure levels, (5) Plotting model data with cartopy/basemap/PyNGL, (6) Processing netCDF files, or (7) Analyzing model output for verification and visualization
+description: Diagnostic and interpolation routines for WRF-ARW model output. Use when working with Weather Research and Forecasting (WRF-ARW) model data for:(1) Computing meteorological diagnostics (CAPE, storm relative helicity, etc.), (2) Interpolating model output to different grids, (3) Creating cross sections and vertical profiles, (4) Mapping between model levels and pressure levels, (5) Plotting model data with cartopy/basemap/PyNGL, (6) Processing netCDF files, or (7) Analyzing model output for verification and visualization
 license: Apache-2.0
 metadata:
     skill-author: K-Dense Inc.

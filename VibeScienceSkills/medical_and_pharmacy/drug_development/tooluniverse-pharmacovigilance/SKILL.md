@@ -4,7 +4,8 @@ description: Analyze drug safety signals from FDA adverse event reports, label w
 
 license: MIT License
 metadata:
-    skill-author: ToolUniverse (https://github.com/mims-harvard/TxAgent)---
+    skill-author: ToolUniverse (https://github.com/mims-harvard/TxAgent)
+---
 
 # Pharmacovigilance Safety Analyzer
 
