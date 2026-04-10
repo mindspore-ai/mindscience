@@ -2,11 +2,32 @@
 
 VibeScienceAgent是一个面向科研全流程的开源科研智能体，通过将耗时且繁琐的科学全流程（文献阅读、假设提出、代码编写、实验试错和调优等）Agent化，消除了科研环节之间的“人工衔接成本”，大幅压缩科研周期。
 
+
 ## 🔥🔥News
 
 🚀🚀**coming soon**：中国科学技术大学智能科学家团队发布并上线ScienceClaw
 
 🚀🚀**2026.04.14**：科研智能体VibeScienceAgent preview版本发布，覆盖端到端科研全流程
+
+## 目录
+- [整体设计](#整体设计)
+- [快速开始](#快速开始)
+  - [1. 安装依赖](#1-安装依赖)
+  - [2. 设置 API Key](#2-设置-api-key)
+  - [3. 配置文件](#3-配置文件)
+  - [4. 运行 Experiment Workflow](#4-运行-experiment-workflow)
+- [VibeScience应用案例](#vibescience应用案例)
+  - [一、调研分析类任务：FrontierScience Benchmark](#一调研分析类任务frontierscience-benchmark)
+  - [二、计算仿真类任务：化学材料计算仿真](#二计算仿真类任务化学材料计算仿真)
+  - [三、湿实验类任务：聚苯胺薄膜合成实验方案设计](#三湿实验类任务聚苯胺薄膜合成实验方案设计)
+- [致谢](#致谢)
+- [Roadmap](#roadmap)
+- [社区](#社区)
+- [许可证](#许可证)
+
+
+
+
 
 ## 整体设计
 
@@ -45,6 +66,7 @@ VibeScienceAgent采用多Agent协作架构，包含以下七个核心sub-agent�
 1. **实验相关Sub-Agent优化**：重点优化实验相关Sub-Agent的Prompt与Skills配置，强化其任务理解与执行能力；
 
 2. **自我纠错能力提升**：通过改进错误处理机制与调试策略，显著提升实验执行Sub-Agent的自我纠错能力，减少报错信息带来的上下文污染。
+
 
 
 ## 快速开始
