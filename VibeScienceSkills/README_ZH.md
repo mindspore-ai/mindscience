@@ -517,9 +517,6 @@ cp -r mindscience/skills/* ~/.openclaw/workspace/skills
 }
 ```
 
-**Step 3：在OpenClaw中使用skills**
-[添加视频]
-
 > [!NOTE]
 > JiuwenClaw、deepagents等框架暂不支持 `skills` 目录下嵌套层级，可以直接运行脚本`flatten_skills.sh`将`skill`目录展平。
 
