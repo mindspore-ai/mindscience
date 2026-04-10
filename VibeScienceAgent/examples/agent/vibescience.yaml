@@ -20,10 +20,10 @@ agents:
   survey:
     model:
       # model settings
-      model_name: kimi-k2.5
-      provider: openai
-      base_url: "https://your-api-endpoint.example/v1"
-      api_key: "YOUR_API_KEY"
+      model_name: null
+      provider: null
+      base_url: null
+      api_key: null
       temperature: 0.2
       max_tokens: 4096
       timeout: 60
