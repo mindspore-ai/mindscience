@@ -585,7 +585,7 @@ cp -r VibeScienceSkills/<领域>/<子领域>/* ~/.openclaw/workspace/skills
 ```
 
 > [!NOTE]
-> JiuwenClaw、deepagents等框架暂不支持 `skills` 目录下嵌套层级，可以直接运行脚本[flatten_skills.sh](flatten_skills.sh)将`skill`目录展平。
+> JiuwenClaw、deepagents、VibeScienceAgent等框架暂不支持 `skills` 目录下嵌套层级，可以直接运行脚本[flatten_skills.sh](flatten_skills.sh)将`skill`目录展平。
 
 
 ## ⚙️ 应用案例

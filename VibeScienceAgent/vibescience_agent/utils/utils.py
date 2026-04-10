@@ -18,6 +18,8 @@ import re
 import os
 from pathlib import Path
 from typing import Any
+import sys
+import certifi
 
 
 TOOL_MODULE_PREFIX = "vibescience_agent.tools."
@@ -151,3 +153,15 @@ def extract_skill_description(markdown_path):
 
                 return name, description
     return None
+
+
+def set_ssl_cert_file_path():
+    """Set SSL certificate file path on Windows."""
+    if sys.platform.startswith("win"):
+        # Reset SSL-related environment variables on Windows
+        os.environ['SSL_CERT_FILE'] = certifi.where()
+        os.environ['REQUESTS_CA_BUNDLE'] = certifi.where()
+
+        cert_path = os.environ['SSL_CERT_FILE'].replace('/', '\\')
+        os.environ['SSL_CERT_FILE'] = cert_path
+        os.environ['REQUESTS_CA_BUNDLE'] = cert_path
