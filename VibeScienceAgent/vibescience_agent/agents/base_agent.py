@@ -153,6 +153,7 @@ class BaseAgent(abc.ABC):
             chat_model,
             backend=backend,
             tools=[python_skill_tool],
+            skills=self.skill_path
         )
         return execute_node
 

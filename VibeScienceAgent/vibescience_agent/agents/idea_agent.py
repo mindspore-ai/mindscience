@@ -153,8 +153,7 @@ class IdeaAgent(BaseAgent):
 
         self.system_prompt = generate_prompt(
             base_prompt=base_prompt,
-            survey_results=survey_results,
-            skill_path=self.skill_path
+            survey_results=survey_results
         )
 
         logger.debug("IdeaAgent system prompt:\n" + self.system_prompt)
