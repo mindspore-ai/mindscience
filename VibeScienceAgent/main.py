@@ -26,7 +26,7 @@ from __future__ import annotations
 import os
 import argparse
 import asyncio
-from vibescience_agent.utils import load_env
+from vibescience_agent.utils import load_env, set_ssl_cert_file_path
 from vibescience_agent.workflow import ExperimentWorkflow
 from vibescience_agent.config import VibeScienceConfig
 
@@ -61,6 +61,9 @@ async def main() -> None:
     # set env variables
     if os.path.exists(".env"):
         load_env(".env")
+	
+    set_ssl_cert_file_path()
+
 
     # init workflow
     agent = ExperimentWorkflow(

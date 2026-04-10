@@ -119,7 +119,7 @@ agents:                                             # Agent级别配置（可选
     agent:                                          # Agent配置项
       max_retries: 2                                # Agent执行失败时的最大重试次数
       use_tool_retriever: true                      # 是否启用工具筛选
-      skill_path: ""                                # skill文件路径，指定Agent可使用的skills
+      skill_path: ""                                # skill文件路径，指定Agent可使用的skills，注意Windows建议给绝对路径
 
 logging:                                            # 日志配置项
   level: "INFO"                                     # 设置日志等级，INFO级日志打印所有Agent的输出，DEBUG级日志打印所有Agent的执行中间结果

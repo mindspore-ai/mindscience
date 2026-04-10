@@ -15,11 +15,12 @@
 """Utilities for VibeScienceAgent."""
 from vibescience_agent.utils.logger import init_logger
 from vibescience_agent.utils.message import create_assistant_msg, create_user_msg
-from vibescience_agent.utils.utils import load_env
+from vibescience_agent.utils.utils import load_env, set_ssl_cert_file_path
 
 __all__ = [
     "init_logger",
     "create_assistant_msg",
     "create_user_msg",
-    "load_env"
+    "load_env",
+	"set_ssl_cert_file_path"
 ]
