@@ -27,7 +27,7 @@ agents:
       # general agent settings
       max_retries: 2
       use_tool_retriever: true
-      skill_path: ""
+      skill_path: "" # Note: Windows recommends using absolute paths
 
   critic:
     model:
@@ -61,7 +61,7 @@ agents:
       # general agent settings
       max_retries: 2
       use_tool_retriever: true
-      skill_path: ""
+      skill_path: "" # Note: Windows recommends using absolute paths
 
 logging:
   level: "INFO"
