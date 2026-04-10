@@ -24,9 +24,9 @@ class ModelConfig(BaseConfig):
 
     Args:
         model_name (str, optional): Name of the model to use. Defaults to None.
-        api_key (str, optional): API key for authentication. Defaults to None.
-        base_url (str, optional): Base URL for API. Defaults to None.
         provider (str, optional): Model provider name. Defaults to "openai".
+        base_url (str, optional): Base URL for API. Defaults to None.
+        api_key (str, optional): API key for authentication. Defaults to None.
         temperature (float, optional): Temperature for generation. Defaults to 0.2.
         max_tokens (int, optional): Maximum tokens per request. Defaults to 4096.
         timeout (int, optional): Request timeout in seconds. Defaults to 60.
@@ -37,9 +37,9 @@ class ModelConfig(BaseConfig):
     def __init__(
         self,
         model_name: str = None,
-        api_key: str = None,
-        base_url: str = None,
         provider: str = "openai",
+        base_url: str = None,
+        api_key: str = None,
         temperature: float = 0.2,
         max_tokens: int = 4096,
         timeout: int = 60,
@@ -50,9 +50,9 @@ class ModelConfig(BaseConfig):
         super().__init__(config_name=f"{model_name}_model")
 
         self.model_name = model_name
-        self.api_key = api_key
-        self.base_url = base_url
         self.provider = provider
+        self.base_url = base_url
+        self.api_key = api_key
         self.temperature = temperature
         self.max_tokens = max_tokens
         self.timeout = timeout

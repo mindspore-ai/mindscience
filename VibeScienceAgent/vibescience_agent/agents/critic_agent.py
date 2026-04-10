@@ -30,19 +30,18 @@ from vibescience_agent.config.tool_config import ToolConfig
 class CriticAgent(BaseAgent):
     """
     Critic Agent simulates a demanding end-user to force the system evolving towards a more robust solution.
-    
+
     Args:
         model (BaseModel): Critic LLM.
         config (Dict[str, Any]): Agent configuration dict.
         tool_config (Dict[str, ToolConfig]): Tool configuration dict.
-        kwargs (Any, optional): Passed to :class: BaseAgent (unused here).
 
-    Inputs:  
+    Inputs:
         - messages (list): Full history; will be appended to in place.
         - params (Dict[str, Any]): Unused; reserved for extensions.
-            
-    Outputs:    
-        - Dict[str, Any]: :func: ~vibescience_agent.utils.create_user_msg with prefixed feedback text.
+
+    Outputs:
+        - Dict[str, Any]: prefixed feedback text.
     """
     def __init__(self, model, config: AgentConfig, tool_config: Dict[str, ToolConfig] = None):
         super().__init__(model, config, tool_config)

@@ -81,18 +81,18 @@ class IdeaAgent(BaseAgent):
     Outputs:
         - Dict containing the generated ideas in a structured format, ready for further analysis and refinement.
     """
-
     def __init__(self, model, config: IdeaAgentConfig,
                  tool_config: Dict[str, ToolConfig] = None):
-        """Initialize IdeaAgent with model, config and optional tool config."""
         super().__init__(model, config, tool_config)
 
         self.minimal_ideas = config.minimal_ideas
         self.debug = logger.LOG_LEVEL == logger.LOG_LEVEL_MAP["DEBUG"]
         self._compiled_subgraph = self._build_idea_subgraph()
+        self.ctx = self._build_agent_tool_context()
+        self.ctx["skills"] = []     # skills already passed to deep agent
 
     def _build_idea_subgraph(self):
-        """Build the LangGraph workflow for idea generation."""
+        """ Build the LangGraph workflow for idea generation. """
         deep_agent = self._build_deep_agent()
         workflow = StateGraph(_IdeaSubgraphState)
         workflow.add_node("idea_agent", deep_agent)
@@ -102,12 +102,13 @@ class IdeaAgent(BaseAgent):
     async def execute(self, messages, **params) -> Dict[str, Any]:
         """ Execute the idea generation task. """
         if not messages:
-            raise AgentExecutionError("IdeaAgent requires non-empty message history")\
+            raise AgentExecutionError("IdeaAgent requires non-empty message history")
 
+        user_query = messages[0]["content"]
         enable_idea_critic = params.get("enable_idea_critic", False)
         survey_results = params.get("survey_results", None)
 
-        self._build_system_prompt(survey_results, enable_idea_critic)
+        self._build_system_prompt(user_query, survey_results, enable_idea_critic)
 
         processed_input = self._process_input(messages, enable_idea_critic)
         logger.debug(f"IdeaAgent call model inputs:\n{processed_input}")
@@ -139,10 +140,12 @@ class IdeaAgent(BaseAgent):
         # Process and return the output
         return self._process_output(final_state)
 
-    def _build_system_prompt(self, survey_results, enable_idea_critic):
-        """Build the system prompt with survey results and critic feedback instructions."""
+    def _build_system_prompt(self, user_query, survey_results, enable_idea_critic):
+        """ Build the system prompt with survey results and critic feedback instructions. """
         if self.system_prompt:
             return
+
+        self.run_tool_retrieval_if_enabled(user_query)
 
         base_prompt = _IDEA_GENERATION_SYSTEM_PROMPT.format(minimal_ideas=self.minimal_ideas)
         if enable_idea_critic:
@@ -154,13 +157,15 @@ class IdeaAgent(BaseAgent):
 
         self.system_prompt = generate_prompt(
             base_prompt=base_prompt,
+            tool_desc=self.ctx["tool_desc"],
+            use_tool_retriever=self.use_tool_retriever,
             survey_results=survey_results
         )
 
         logger.debug("IdeaAgent system prompt:\n" + self.system_prompt)
 
     def _process_input(self, messages, enable_idea_critic):
-        """Build the prompt for idea generation."""
+        """ Build the prompt for idea generation. """
         # Start with the goal
         user_query = messages[0]["content"]
         prompt = f"# Research Goal\n{user_query}\n"
@@ -171,7 +176,7 @@ class IdeaAgent(BaseAgent):
         return prompt
 
     def _process_output(self, final_state: dict) -> dict:
-        """Extract and format the generated ideas from the final state."""
+        """ Extract and format the generated ideas from the final state. """
         messages = final_state.get("messages", [])
         if len(messages) > 0:
             return create_assistant_msg(str(messages[-1].content).strip())

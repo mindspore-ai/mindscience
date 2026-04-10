@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
+"""Descriptions for support tools used by agents."""
 description = [
     {
         "description": "Executes the provided Python command in the notebook environment and returns the output.",

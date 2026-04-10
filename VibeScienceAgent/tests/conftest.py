@@ -116,8 +116,7 @@ def mock_tool_retriever():
     retriever = Mock()
     retriever.prompt_based_retrieval = Mock(return_value={
         "skills": [],
-        "tools": [],
-        "libraries": [],
+        "tools": []
     })
     return retriever
 

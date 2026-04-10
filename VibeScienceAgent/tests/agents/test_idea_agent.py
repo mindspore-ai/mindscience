@@ -22,9 +22,9 @@ from unittest.mock import Mock, AsyncMock, patch
 import pytest
 
 from vibescience_agent.agents.idea_agent import IdeaAgent
-from vibescience_agent.config import AgentConfig, ModelConfig
+from vibescience_agent.config import ModelConfig
 from vibescience_agent.config.agent_config import IdeaAgentConfig
-from vibescience_agent.utils import create_user_msg, create_assistant_msg
+from vibescience_agent.utils import create_user_msg
 
 
 def _create_idea_agent_config(minimal_ideas=3, max_retries=3):
@@ -143,11 +143,11 @@ class TestIdeaAgentExecute:
         """Test IdeaAgent retry mechanism on error."""
         call_count = 0
 
-        async def mock_invoke(*args, **kwargs):
+        async def mock_invoke(*args, **kwargs):  # pylint: disable=W0613
             nonlocal call_count
             call_count += 1
             if call_count < 2:
-                raise Exception("Simulated error")
+                raise Exception("Simulated error")  # pylint: disable=W0719
             mock_message = Mock()
             mock_message.content = "Success after retry"
             return {"messages": [mock_message]}
@@ -177,7 +177,10 @@ class TestIdeaAgentInternalMethods:
         with patch('vibescience_agent.agents.idea_agent.IdeaAgent._build_idea_subgraph'):
             agent = IdeaAgent(mock_base_model, _create_idea_agent_config())
 
-            agent._build_system_prompt(survey_results=None, enable_idea_critic=False)
+            user_query = "Improve AI reasoning"
+
+            # pylint: disable=W0212
+            agent._build_system_prompt(user_query=user_query, survey_results=None, enable_idea_critic=False)
 
             assert agent.system_prompt is not None
             assert "scientific idea generator" in agent.system_prompt.lower()
@@ -188,7 +191,10 @@ class TestIdeaAgentInternalMethods:
         with patch('vibescience_agent.agents.idea_agent.IdeaAgent._build_idea_subgraph'):
             agent = IdeaAgent(mock_base_model, _create_idea_agent_config())
 
-            agent._build_system_prompt(survey_results=None, enable_idea_critic=True)
+            user_query = "Improve AI reasoning"
+
+            # pylint: disable=W0212
+            agent._build_system_prompt(user_query=user_query, survey_results=None, enable_idea_critic=True)
 
             assert agent.system_prompt is not None
 
@@ -199,6 +205,7 @@ class TestIdeaAgentInternalMethods:
             agent = IdeaAgent(mock_base_model, _create_idea_agent_config())
 
             messages = [create_user_msg("Research goal: Improve AI reasoning")]
+            # pylint: disable=W0212
             prompt = agent._process_input(messages, enable_idea_critic=False)
 
             assert "Research Goal" in prompt
@@ -211,6 +218,7 @@ class TestIdeaAgentInternalMethods:
             agent = IdeaAgent(mock_base_model, _create_idea_agent_config())
 
             messages = [create_user_msg("Research goal: Improve AI reasoning")]
+            # pylint: disable=W0212
             prompt = agent._process_input(messages, enable_idea_critic=True)
 
             assert "Research Goal" in prompt
@@ -226,6 +234,7 @@ class TestIdeaAgentInternalMethods:
                 "messages": [Mock(content="Idea 1: Something\nIdea 2: Something else")]
             }
 
+            # pylint: disable=W0212
             result = agent._process_output(final_state)
 
             assert result["role"] == "assistant"
@@ -238,6 +247,7 @@ class TestIdeaAgentInternalMethods:
 
             final_state = {"messages": []}
 
+            # pylint: disable=W0212
             result = agent._process_output(final_state)
 
             assert result["role"] == "assistant"

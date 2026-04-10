@@ -50,49 +50,49 @@ class TestExperimentWorkflowRun:
         """Test workflow.run without critic enabled - full workflow execution."""
         config = VibeScienceConfig._parse_config_data(mock_full_config)
         workflow = ExperimentWorkflow(config=config, enable_critic=False)
-        
+
         plan_call_count = [0]
         plan_responses = [
             {"role": "assistant", "content": "I'll execute a test command\n<execute>print('test')</execute>"},
             {"role": "assistant", "content": "Task completed successfully\n<solution>Test solution result</solution>"}
         ]
-        
+
         async def mock_plan_execute(messages):
             response = plan_responses[plan_call_count[0]]
             plan_call_count[0] += 1
             return response
-        
+
         workflow.plan_agent.execute = AsyncMock(side_effect=mock_plan_execute)
         workflow.execute_agent.execute = AsyncMock(
             return_value={"role": "assistant", "content": "Command executed successfully"}
         )
-        
-        result = await workflow.run("Test task")    
+
+        result = await workflow.run("Test task")
         solution = re.search(r"<solution>(.*?)</solution>", result, re.DOTALL | re.IGNORECASE).group(1)
-        
+
         assert solution == "Test solution result"
         assert workflow.plan_agent.execute.call_count == 2
         assert workflow.execute_agent.execute.call_count == 1
-    
+
     @pytest.mark.integration
     @pytest.mark.asyncio
     async def test_run_with_critic(self, mock_full_config):
         """Test workflow.run with critic enabled - full workflow execution."""
         config = VibeScienceConfig._parse_config_data(mock_full_config)
         workflow = ExperimentWorkflow(config=config, enable_critic=True, test_time_scale_round=1)
-        
+
         plan_call_count = [0]
         plan_responses = [
             {"role": "assistant", "content": " <think> Let me think about this</think> \n"},
             {"role": "assistant", "content": "Now I'll execute\n<execute>print('test')</execute>"},
             {"role": "assistant", "content": "Final solution\n<solution>Test solution with critic</solution>"}
         ]
-        
+
         async def mock_plan_execute(messages):
             response = plan_responses[plan_call_count[0]]
             plan_call_count[0] += 1
             return response
-        
+
         workflow.plan_agent.execute = AsyncMock(side_effect=mock_plan_execute)
         workflow.critic_agent.execute = AsyncMock(
             return_value={"role": "assistant", "content": "The plan looks good, proceed"}
@@ -100,10 +100,10 @@ class TestExperimentWorkflowRun:
         workflow.execute_agent.execute = AsyncMock(
             return_value={"role": "assistant", "content": "Execution completed"}
         )
-        
+
         result = await workflow.run("Test task")
         solution = re.search(r"<solution>(.*?)</solution>", result, re.DOTALL | re.IGNORECASE).group(1)
-        
+
         assert solution == "Test solution with critic"
         assert workflow.plan_agent.execute.call_count == 3
         assert workflow.critic_agent.execute.call_count == 1

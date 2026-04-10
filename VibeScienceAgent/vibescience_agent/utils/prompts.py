@@ -13,10 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""Prompt generation utilities for VibeScienceAgent agents."""
-import os
-
-from vibescience_agent.tools.env_desc import library_content_dict
+"""Prompt utilities for VibeScienceAgent."""
 
 def textify_api_dict(api_dict):
     """Convert a nested API dictionary to a nicely formatted string."""
@@ -55,6 +52,7 @@ def textify_api_dict(api_dict):
 
     return "\n".join(lines)
 
+
 def format_item_with_description(name, description):
     """Format an item with its description in a readable way."""
     # Handle None or empty descriptions
@@ -92,101 +90,17 @@ def format_item_with_description(name, description):
 
     return f"{name}: {description}"
 
+
 def generate_prompt(
     base_prompt,
     tool_desc=None,
-    library_content_list=None,
     use_tool_retriever=False,
-    custom_tools=None,
-    custom_data=None,
-    custom_software=None,
     survey_results=None,
     skill_path: str = "",
     skills=None
 ):
     """Generate a system prompt for plan and execute agent based on provided context."""
     prompt_modifier = base_prompt
-    # Separate custom and default resources
-    default_library_content_list = []
-
-    # Filter out custom items from default lists
-    custom_software_names = set()
-
-    if custom_software:
-        custom_software_names = {item.get("name") if isinstance(item, dict) else item for item in custom_software}
-
-    # Separate default library items
-    if library_content_list:
-        for lib in library_content_list:
-            if isinstance(lib, dict):
-                name = lib.get("name", "")
-                if name not in custom_software_names:
-                    default_library_content_list.append(lib)
-            elif lib not in custom_software_names:
-                default_library_content_list.append(lib)
-
-        # Format default library content
-        if isinstance(default_library_content_list, list) and all(
-            isinstance(item, str) for item in default_library_content_list
-        ):
-            if (
-                len(default_library_content_list) > 0
-                and isinstance(default_library_content_list[0], str)
-                and "," not in default_library_content_list[0]
-            ):
-                # Simple list of strings
-                libraries_formatted = []
-                for lib in default_library_content_list:
-                    description = library_content_dict.get(lib, f"Software library: {lib}")
-                    libraries_formatted.append(format_item_with_description(lib, description))
-            else:
-                # Already formatted string
-                libraries_formatted = default_library_content_list
-        else:
-            # List with descriptions
-            libraries_formatted = []
-            for lib in default_library_content_list:
-                if isinstance(lib, dict):
-                    name = lib.get("name", "")
-                    description = library_content_dict.get(name, f"Software library: {name}")
-                    libraries_formatted.append(format_item_with_description(name, description))
-                else:
-                    description = library_content_dict.get(lib, f"Software library: {lib}")
-                    libraries_formatted.append(format_item_with_description(lib, description))
-
-    # Format custom resources with highlighting
-    custom_tools_formatted = []
-    if custom_tools:
-        for tool in custom_tools:
-            if isinstance(tool, dict):
-                name = tool.get("name", "Unknown")
-                desc = tool.get("description", "")
-                module = tool.get("module", "custom_tools")
-                custom_tools_formatted.append(f"🔧 {name} (from {module}): {desc}")
-            else:
-                custom_tools_formatted.append(f"🔧 {str(tool)}")
-
-    custom_data_formatted = []
-    if custom_data:
-        for item in custom_data:
-            if isinstance(item, dict):
-                name = item.get("name", "Unknown")
-                desc = item.get("description", "")
-                custom_data_formatted.append(f"📊 {format_item_with_description(name, desc)}")
-            else:
-                desc = f"Custom data: {item}"
-                custom_data_formatted.append(f"📊 {format_item_with_description(item, desc)}")
-
-    custom_software_formatted = []
-    if custom_software:
-        for item in custom_software:
-            if isinstance(item, dict):
-                name = item.get("name", "Unknown")
-                desc = item.get("description", "")
-                custom_software_formatted.append(f"⚙️  {format_item_with_description(name, desc)}")
-            else:
-                desc = library_content_dict.get(item, f"Custom software: {item}")
-                custom_software_formatted.append(f"⚙️ {format_item_with_description(item, desc)}")
 
     survey_results_formatted = []
     if survey_results:
@@ -212,46 +126,12 @@ def generate_prompt(
     skill_desc_formatted = []
     if skills:
         for skill in skills:
-            name = skill["name"]
-            description = skill["description"]
-            skill_info = f'- **{skill["name"]}**: {skill["description"]}\n  -> Read `{skill["path"]}` for full instructions'
+            skill_info = (
+                f'- **{skill["name"]}**: {skill["description"]}\n'
+                f'  -> Read `{skill["path"]}` for full instructions'
+            )
             skill_desc_formatted.append(skill_info)
 
-    # Add custom resources section first (highlighted)
-    has_custom_resources = any(
-        [custom_tools_formatted, custom_data_formatted, custom_software_formatted]
-    )
-
-    if has_custom_resources:
-        prompt_modifier += """
-PRIORITY CUSTOM RESOURCES
-===============================
-IMPORTANT: The following custom resources have been specifically added for planning use.
-    PRIORITIZE using these resources as they are directly relevant to task planning.
-    Always consider these FIRST and in the meantime using default resources.
-
-"""
-        if custom_tools_formatted:
-            prompt_modifier += """
-🔧 CUSTOM TOOLS (USE THESE FIRST):
-{custom_tools}
-
-"""
-        if custom_data_formatted:
-            prompt_modifier += """
-📊 CUSTOM DATA (PRIORITIZE THESE DATASETS):
-{custom_data}
-
-"""
-        if custom_software_formatted:
-            prompt_modifier += """
-⚙️  CUSTOM SOFTWARE (USE THESE LIBRARIES):
-{custom_software}
-
-"""
-
-        prompt_modifier += """===============================
-"""
     if survey_results_formatted:
         prompt_modifier += """
 📄 SURVEY RESULTS (RELEVANT LITERATURE):
@@ -263,7 +143,7 @@ IMPORTANT: These papers have been collected through literature survey and are di
 """
 
     # Add environment resources
-    if skill_desc_formatted or tool_desc or library_content_list:
+    if skill_desc_formatted or tool_desc:
         prompt_modifier += """
 
 Environment Resources:
@@ -314,26 +194,12 @@ Remember: Skills make you more capable and consistent. When in doubt, check if a
 ---
 {import_instruction}
 """
-    if library_content_list:
-        prompt_modifier += """
-- Software Library:
-{library_intro}
-Each library is listed with its description to help you understand its functionality.
-----
-{library_content_formatted}
-----
-
-"""
 
     # Set appropriate text based on whether this is initial configuration or after retrieval
     if use_tool_retriever:
         function_intro = (
             "Based on your query, I've identified the following most relevant functions "
             "that you can use in your code:"
-        )
-        library_intro = (
-            "Based on your query, I've identified the following most relevant libraries "
-            "that you can use:"
         )
         import_instruction = (
             "IMPORTANT: When using any function, you MUST first import it from its module. "
@@ -344,10 +210,6 @@ Each library is listed with its description to help you understand its functiona
             "In your code, you will need to import the function location using the following "
             "dictionary of functions:"
         )
-        library_intro = (
-            "The environment supports a list of libraries that can be directly used. "
-            "Do not forget the import statement:"
-        )
         import_instruction = ""
 
     # Format the prompt with appropriate values
@@ -357,24 +219,11 @@ Each library is listed with its description to help you understand its functiona
         format_dict["tool_desc"] = textify_api_dict(tool_desc) if isinstance(tool_desc, dict) else tool_desc
         format_dict["function_intro"] = function_intro
         format_dict["import_instruction"] = import_instruction
-    if library_content_list:
-        # Format the content consistently
-        library_content_formatted = "\n".join(libraries_formatted)
-        format_dict["library_content_formatted"] = library_content_formatted
-        format_dict["library_intro"] = library_intro
     if survey_results_formatted:
         format_dict["survey_results"] = "\n".join(survey_results_formatted)
     if skill_desc_formatted:
         format_dict["skill_desc"] = "\n".join(skill_desc_formatted)
         format_dict["skill_path"] = skill_path
-
-    # Add custom resources to format dict
-    if custom_tools_formatted:
-        format_dict["custom_tools"] = "\n".join(custom_tools_formatted)
-    if custom_data_formatted:
-        format_dict["custom_data"] = "\n".join(custom_data_formatted)
-    if custom_software_formatted:
-        format_dict["custom_software"] = "\n".join(custom_software_formatted)
 
     formatted_prompt = prompt_modifier.format(**format_dict)
 

@@ -25,7 +25,7 @@ The module includes:
 - BaseAgent: Abstract base class with template methods for agent operations
 - AgentExecutionError: Custom exception for agent-specific failures
 - Common utilities for model calls and retry logic
-- Tool / library context and **per-agent tool retriever** (run_tool_retrieval_once_if_enabled,
+- Skill / Tool context and **per-agent tool retriever** (run_tool_retrieval_once_if_enabled,
   etc.); see section after :class:`BaseAgent`.
 """
 from __future__ import annotations
@@ -48,12 +48,8 @@ except ImportError as e:
 from vibescience_agent.model.base_model import BaseModel
 from vibescience_agent.tools.tool_registry import ToolRegistry
 from vibescience_agent.tools.tool_retriever import ToolRetriever
-from vibescience_agent.tools.env_desc import library_content_dict
 from vibescience_agent.utils.utils import (
     read_module2api,
-    subset_module2api,
-    build_tool_desc,
-    library_names_for_prompt,
     extract_skill_description
 )
 from vibescience_agent.utils import logger
@@ -107,7 +103,7 @@ class BaseAgent(abc.ABC):
         self._compiled_subgraph = None
 
     def _build_deep_agent(self):
-        """Build a DeepAgent instance for tool execution."""
+        """Build a DeepAgent instance."""
         chat_model = self.model.to_chat_openai()
 
         python_skill_tool = Tool(
@@ -125,7 +121,7 @@ class BaseAgent(abc.ABC):
             chat_model,
             backend=backend,
             tools=[python_skill_tool],
-            skills=self.skill_path
+            skills=[self.skill_path]
         )
         return execute_node
 
@@ -145,6 +141,8 @@ class BaseAgent(abc.ABC):
     @abc.abstractmethod
     async def execute(self, messages, **params) -> Dict[str, Any]:
         """Execute the agent's primary task (must be implemented by subclasses)."""
+        raise NotImplementedError("Subclasses must implement the execute method.")
+
     async def _call_model(self,
                         prompt: str | list,
                         system_prompt: Optional[str] = None,
@@ -186,9 +184,8 @@ class BaseAgent(abc.ABC):
 
     def _build_agent_tool_context(
         self,
-        class_tool_modules: frozenset[str] | None,
     ) -> dict[str, Any]:
-        """Assemble the resource bundle PlanAgent / ExecuteAgent store on self."""
+        """Build the skill and tool context for the agent."""
         skills = []
         if self.skill_path and os.path.exists(self.skill_path):
             for root, _, files in os.walk(self.skill_path):
@@ -202,19 +199,13 @@ class BaseAgent(abc.ABC):
                             continue
                         skills.append({"name": name, "description": description, "path": markdown_path})
 
-        subset = subset_module2api(self.module2api, class_tool_modules)
         return {
             "skills": skills,
-            "tool_desc": build_tool_desc(subset),
-            "library_content_list": library_names_for_prompt(),
-            # Currently not supported
-            "custom_tools": [],
-            "custom_data": [],
-            "custom_software": [],
+            "tool_desc": self.module2api
         }
 
     def _update_selected_resources(self, selected_resources: Optional[Dict[str, Any]]) -> None:
-        """Apply tool-retriever output (tools / sciencedata / libraries keys)."""
+        """Apply tool-retriever output (skills / tools keys)."""
         # Extract tool descriptions for the selected tools
         tool_desc = {}
         for tool in selected_resources["tools"]:
@@ -271,32 +262,16 @@ class BaseAgent(abc.ABC):
 
         self.ctx["skills"] = selected_resources["skills"]
         self.ctx["tool_desc"] = tool_desc
-        self.ctx["library_content_list"] = selected_resources["libraries"]
 
     def _prepare_resources_for_retrieval(self, prompt: str) -> Optional[Dict[str, Any]]:
         """Prepare resources for retrieval and return selected resource names."""
-        # Gather all available resources
-
-        # 1. Tools from the registry
+        # Tools from the registry
         all_tools = self.tool_registry.tools if hasattr(self, "tool_registry") else []
-
-        # 2. Libraries with descriptions - use library_content_dict directly
-        library_descriptions = []
-        for lib_name, lib_desc in library_content_dict.items():
-            library_descriptions.append({"name": lib_name, "description": lib_desc})
-
-        # Add custom software items to retrieval if they exist
-        if self.ctx.get("custom_software", None):
-            for name, info in self.ctx["custom_software"].items():
-                # Check if it's not already in the library descriptions to avoid duplicates
-                if not any(lib["name"] == name for lib in library_descriptions):
-                    library_descriptions.append({"name": name, "description": info["description"]})
 
         # Use retrieval to get relevant resources
         resources = {
             "skills": self.ctx.get("skills", []),
             "tools": all_tools,
-            "libraries": library_descriptions,
         }
 
         # Use prompt-based retrieval with the agent's LLM
@@ -310,7 +285,6 @@ class BaseAgent(abc.ABC):
         selected_resources_names = {
             "skills": selected_resources["skills"],
             "tools": selected_resources["tools"],
-            "libraries": [lib["name"] if isinstance(lib, dict) else lib for lib in selected_resources["libraries"]],
         }
 
         # Print summary of what was retrieved
@@ -320,7 +294,6 @@ class BaseAgent(abc.ABC):
         if self.ctx.get("skills", []):
             logger.info(f"  🧠 Skills: {len(selected_resources_names['skills'])} selected")
         logger.info(f"  🔧 Tools: {len(selected_resources_names['tools'])} selected")
-        logger.info(f"  ⚙️ Libraries: {len(selected_resources_names['libraries'])} selected")
         logger.info("=" * 60)
 
         return selected_resources_names

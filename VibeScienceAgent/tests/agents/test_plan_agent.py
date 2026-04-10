@@ -89,7 +89,7 @@ class TestPlanAgentToolRetrieverToggle:
         agent = PlanAgent(mock_base_model, _create_plan_config(use_tool_retriever=True))
         agent.retriever = mock_tool_retriever
         mock_tool_retriever.prompt_based_retrieval = Mock(return_value={
-            "skills": [], "tools": [], "libraries": []
+            "skills": [], "tools": []
         })
 
         messages = [create_user_msg("Test task")]

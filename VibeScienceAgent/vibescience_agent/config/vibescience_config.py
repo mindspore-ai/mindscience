@@ -31,7 +31,8 @@ PROJECT_ROOT = Path(__file__).parent.parent.parent
 
 class VibeScienceConfig(BaseConfig):
     """
-    Main configuration class for VibeScienceAgent that aggregates all sub-configurations and provides initialization from YAML file.
+    Main configuration class for VibeScienceAgent that aggregates all
+    sub-configurations and provides initialization from YAML file.
 
     Args:
         model_defaults (Optional[ModelConfig], optional): Default model settings. Defaults to None.

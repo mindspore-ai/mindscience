@@ -71,25 +71,14 @@ class RankingAgent(BaseAgent):
     Outputs:
         - Dict containing the selected best idea with justification.
     """
-
     def __init__(self, model, config: AgentConfig,
                  tool_config: Dict[str, ToolConfig] = None):
-        """Initialize RankingAgent with model and config."""
         super().__init__(model, config, tool_config)
         self.system_prompt = _RANKING_SYSTEM_PROMPT
         logger.debug("RankingAgent initialized with system prompt")
 
     async def execute(self, messages, **params) -> Dict[str, Any]:
-        """
-        Execute the idea ranking and selection task.
-
-        Args:
-            messages: List of message dicts containing conversation history
-            **params: Additional parameters including
-
-        Returns:
-            Dict containing the selected best idea with justification
-        """
+        """ Execute the idea ranking and selection task. """
         if not messages:
             raise AgentExecutionError("RankingAgent requires non-empty message history")
 

@@ -45,6 +45,7 @@ class BaseWorkflow:
         self.model_factory = ModelFactory()     # pylint: disable=W0201
 
     def _print_message(self, result, process):
+        """Print message to logger."""
         if result['role'] == "user":
             msg_type = " User Message "
         elif result['role'] == "assistant":
@@ -73,4 +74,5 @@ class BaseWorkflow:
     # Extension Points
     # =========================================================================
     def _create_workflow(self):
+        """Create workflow graph with nodes and edges. Must be implemented by subclass."""
         raise NotImplementedError
