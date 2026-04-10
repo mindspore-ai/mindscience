@@ -12,10 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
+"""Simple context implementation for VibeScienceAgent."""
 from vibescience_agent.context.base_context import BaseContext
 
 
 class SimpleContext(BaseContext):
+    """
+    Simple context implementation for storing messages and survey results.
+
+    Args:
+        **kwargs: Additional context parameters.
+    """
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.context = {
@@ -24,13 +31,16 @@ class SimpleContext(BaseContext):
         }
 
     def _asdict(self):
+        """Convert context to dictionary format."""
         return {"context": self.context}
 
     def add_context(self, name, value):
+        """Add context value by name."""
         if name == "messages":
             self.context[name].append(value)
         else:
             self.context[name] = value
 
     def get_context(self, name):
+        """Get context value by name."""
         return self.context[name]

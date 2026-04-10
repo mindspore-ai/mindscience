@@ -33,6 +33,7 @@ from vibescience_agent.utils import logger
 from vibescience_agent.utils.message import create_assistant_msg
 from vibescience_agent.utils.prompts import generate_prompt
 
+
 class _IdeaSubgraphState(TypedDict):
     messages: list
 

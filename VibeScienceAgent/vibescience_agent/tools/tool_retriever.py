@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
+"""Tool retriever for selecting relevant resources based on queries."""
 import contextlib
 import re
 import asyncio
@@ -25,24 +26,13 @@ from vibescience_agent.utils import logger
 
 
 class ToolRetriever:
-    """Retrieve tools from the tool registry."""
-
+    """Retrieve relevant tools and resources for queries using LLM-based selection."""
     def __init__(self):
+        """Initialize tool retriever."""
         pass
 
     def prompt_based_retrieval(self, query: str, resources: dict, llm=None) -> dict:
-        """Use a prompt-based approach to retrieve the most relevant resources for a query.
-
-        Args:
-            query: The user's query
-            resources: A dictionary with keys 'tools', and 'libraries',
-                      each containing a list of available resources
-            llm: Optional LLM instance to use for retrieval (if None, will create a new one)
-
-        Returns:
-            A dictionary with the same keys, but containing only the most relevant resources
-
-        """
+        """Use prompt-based approach to retrieve most relevant resources for a query."""
         skills = resources.get("skills") or []
         tools_r = resources.get("tools") or []
         libraries_r = resources.get("libraries") or []
@@ -89,7 +79,6 @@ IMPORTANT GUIDELINES:
 7. Don't exclude resources just because they're not explicitly mentioned in the query
 8. When in doubt about a database tool or molecular biology tool, include it rather than exclude it
 """
-
         prompt = "\n".join(prompt_sections) + response_format
 
         if llm is None:
@@ -165,7 +154,6 @@ IMPORTANT GUIDELINES:
 
     def _parse_llm_response(self, response) -> dict:
         """Parse the LLM response to extract the selected indices.
-
         Accepts either a plain string or a Responses API-style list of content blocks.
         """
         if isinstance(response, list):

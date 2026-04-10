@@ -19,7 +19,6 @@ Base workflow for VibeScienceAgent.
 Contains shared initialization and runtime utilities that can be reused by
 different workflow implementations.
 """
-
 from vibescience_agent.config.vibescience_config import VibeScienceConfig
 from vibescience_agent.agents.agent_factory import AgentFactory
 from vibescience_agent.model.model_factory import ModelFactory
@@ -41,7 +40,6 @@ class BaseWorkflow:
     # =========================================================================
     # Initialization
     # =========================================================================
-
     def _init_model(self):
         """Initialize shared model factory for agent construction."""
         self.model_factory = ModelFactory()     # pylint: disable=W0201
@@ -60,7 +58,6 @@ class BaseWorkflow:
     # =========================================================================
     # Agent Creation (unified via AgentFactory)
     # =========================================================================
-
     def _create_agents(self):
         """Create all agents via AgentFactory."""
         for agent_type in self.AGENT_TYPES:
@@ -75,6 +72,5 @@ class BaseWorkflow:
     # =========================================================================
     # Extension Points
     # =========================================================================
-
     def _create_workflow(self):
         raise NotImplementedError

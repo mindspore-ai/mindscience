@@ -6,7 +6,6 @@ Usage:
     python analyze_xrd.py --input CONTCAR --output xrd_pattern.png
     python analyze_xrd.py --input1 pure.cif --input2 doped.cif --compare
 """
-
 import argparse
 import matplotlib.pyplot as plt
 import numpy as np

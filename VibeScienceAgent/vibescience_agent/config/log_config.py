@@ -18,6 +18,14 @@ from vibescience_agent.utils import logger
 
 
 class LogConfig(BaseConfig):
+    """
+    Manages logging configuration parameters, primarily log level, with dynamic attribute support.
+
+    Args:
+        level (str, optional): Logging level for the application. Defaults to "INFO".
+            Valid values: "DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL".
+        **kwargs: Additional keyword arguments passed to `update_attrs` for dynamic configuration.
+    """
     def __init__(
         self,
         level: str = "INFO",

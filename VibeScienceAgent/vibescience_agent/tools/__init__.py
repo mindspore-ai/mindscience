@@ -13,7 +13,6 @@
 # limitations under the License.
 # ============================================================================
 """Tool modules and registries for VibeScienceAgent."""
-
 from vibescience_agent.tools.tool_registry import ToolRegistry
 from vibescience_agent.tools.tool_retriever import ToolRetriever
 from vibescience_agent.tools.paper_survey import PaperSurvey

@@ -13,7 +13,6 @@
 # limitations under the License.
 # ============================================================================
 """Logging utilities for VibeScienceAgent."""
-
 import os
 import sys
 import time
@@ -34,36 +33,21 @@ LOG_LEVEL_MAP = {
     "ERROR": logging.ERROR
 }
 
-
 def _get_logger():
-    """
-    Get logger instance.
-
-    Returns:
-        Logger, a logger.
-    """
+    """Get logger instance."""
     if GLOBAL_LOGGER:
         return GLOBAL_LOGGER
 
     raise ValueError("logger is not initialized, please call init_logger(logging_config) first to initialize it.")
 
-
 def _get_stack_info(frame):
-    """
-    Get the stack information.
-
-    Args:
-        frame(frame): the frame requiring information.
-
-    Returns:
-        str, the string of the stack information.
-    """
+    """Get stack information."""
     stack_prefix = 'Stack (most recent call last):\n'
     sinfo = stack_prefix + "".join(traceback.format_stack(frame))
     return sinfo
 
-
 def _find_caller(stack_info=False, stacklevel=1):   # pylint: disable=W0613
+    """Find caller information from stack frames."""
     f = sys._getframe(3)    # pylint: disable=W0212
     sinfo = None
     # log_file is used to check caller stack frame
@@ -82,18 +66,11 @@ def _find_caller(stack_info=False, stacklevel=1):   # pylint: disable=W0613
         break
     return rv
 
-
 def _get_formatter():
-    """
-    Get the string of log formatter.
-
-    Returns:
-        str, the string of log formatter.
-    """
+    """Get string of log formatter."""
     formatter = '[%(levelname)s] %(asctime)s ' \
                 '[%(filepath)s:%(lineno)d] %(message)s'
     return formatter
-
 
 def _clear_handler(logger):
     """Clear the handlers that has been set, avoid repeated loading"""
@@ -102,28 +79,18 @@ def _clear_handler(logger):
 
 
 class _DataFormatter(logging.Formatter):
-    """Log formatter"""
+    """Log formatter with custom timestamp format.
 
+    Args:
+        fmt (str, optional): Specified format pattern. Defaults to None.
+        **kwargs: Additional formatter parameters.
+    """
     def __init__(self, fmt=None, **kwargs):
-        """
-        Initialization of logFormatter.
-
-        Args:
-            fmt (str): Specified format pattern. Default: ``None``.
-        """
+        """Initialize log formatter."""
         super().__init__(fmt=fmt, **kwargs)
 
     def formatTime(self, record, datefmt=None):
-        """
-        Override formatTime for uniform format %Y-%m-%d-%H:%M:%S.SSS.SSS
-
-        Args:
-            record (str): Log record.
-            datefmt (str): Date format.
-
-        Returns:
-            str, formatted timestamp.
-        """
+        """Override formatTime for uniform timestamp format."""
         created_time = self.converter(record.created)
         if datefmt:
             return time.strftime(datefmt, created_time)
@@ -134,15 +101,7 @@ class _DataFormatter(logging.Formatter):
         return f'{timestamp}.{msecs[:3]}.{msecs[3:]}'
 
     def format(self, record):
-        """
-        Apply log format with specified pattern.
-
-        Args:
-            record (str): Format pattern.
-
-        Returns:
-            str, formatted log content according to format pattern.
-        """
+        """Apply log format with specified pattern."""
         # NOTICE: when the Installation directory of mindspore changed,
         # ms_home_path must be changed
         va_install_home_path = 'vibescience_agent'
@@ -154,8 +113,8 @@ class _DataFormatter(logging.Formatter):
             record.filepath = record.pathname
         return super().format(record)
 
-
 def init_logger(config):
+    """Init logger"""
     # The name of Submodule
     sub_module = 'VIBESCIENCE'
     # The name of Base log file
@@ -196,18 +155,18 @@ def init_logger(config):
         _setup_logger_lock.release()
     return GLOBAL_LOGGER
 
-
 def debug(msg, *args, **kwargs):
+    """Debug level log."""
     _get_logger().debug(msg, *args, **kwargs)
 
-
 def info(msg, *args, **kwargs):
+    """Info level log."""
     _get_logger().info(msg, *args, **kwargs)
 
-
 def warning(msg, *args, **kwargs):
+    """Warning level log."""
     _get_logger().warning(msg, *args, **kwargs)
 
-
 def error(msg, *args, **kwargs):
+    """Error level log."""
     _get_logger().error(msg, *args, **kwargs)

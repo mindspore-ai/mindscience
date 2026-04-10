@@ -13,7 +13,6 @@
 # limitations under the License.
 # ============================================================================
 """Context management for VibeScienceAgent."""
-
 from vibescience_agent.context.base_context import BaseContext
 from vibescience_agent.context.simple_context import SimpleContext
 

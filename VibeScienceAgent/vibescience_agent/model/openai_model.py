@@ -13,12 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""
-OpenAI Model Adapter for VibeScienceAgent
-
-Implements the BaseModel interface for OpenAI models.
-"""
-
+"""OpenAI model adapter implementing BaseModel interface for VibeScienceAgent."""
 from typing import Dict, List, Optional, Any
 
 import json
@@ -32,22 +27,12 @@ from vibescience_agent.utils import logger
 
 
 class OpenAIModel(BaseModel):
-    """OpenAI implementation of the BaseModel interface."""
+    """OpenAI implementation of BaseModel interface.
 
+    Args:
+        config: Model configuration instance.
+    """
     def __init__(self, config):
-        """
-        Initialize the OpenAI model adapter.
-
-        Args:
-            api_key: OpenAI API key from YAML configuration
-            model_name: Model identifier to use (e.g., "gpt-4o")
-            max_tokens: Maximum tokens to generate by default
-            temperature: Default temperature setting (0 to 1)
-            timeout: Timeout in seconds for API calls
-            max_retries: LangChain ChatOpenAI HTTP-layer retries (deep agent path);
-                distinct from ``agents.*.max_retries`` on ``BaseAgent``.
-            max_connections: httpx async pool size (reduces PoolTimeout under concurrency)
-        """
         super().__init__(config)
         self.api_key = config.api_key
         self.base_url = config.base_url
@@ -76,27 +61,13 @@ class OpenAIModel(BaseModel):
         )
 
     async def generate(self,
-                      prompt: str | list,
-                      system_prompt: Optional[str] = None,
-                      temperature: Optional[float] = None,
-                      max_tokens: Optional[int] = None,
-                      stop_sequences: Optional[List[str]] = None,
-                      **kwargs) -> str:
-        """
-        Generate text based on the provided prompt using OpenAI API.
-
-        Args:
-            prompt: The user prompt to send to the model
-            system_prompt: Optional system prompt to guide the model
-            temperature: Controls randomness (0 to 1)
-            max_tokens: Maximum number of tokens to generate
-            stop_sequences: List of sequences at which to stop generation
-            **kwargs: Additional model-specific parameters
-
-        Returns:
-            Generated text response from the model
-        """
-
+                       prompt: str | list,
+                       system_prompt: Optional[str] = None,
+                       temperature: Optional[float] = None,
+                       max_tokens: Optional[int] = None,
+                       stop_sequences: Optional[List[str]] = None,
+                       **kwargs) -> str:
+        """Generate text based on provided prompt using OpenAI API."""
         messages = []
 
         if system_prompt:
@@ -127,20 +98,7 @@ class OpenAIModel(BaseModel):
                                        system_prompt: Optional[str] = None,
                                        temperature: Optional[float] = None,
                                        **kwargs) -> Dict[str, Any]:
-        """
-        Generate a response formatted as JSON according to the provided schema.
-
-        Args:
-            prompt: The user prompt to send to the model
-            json_schema: JSON schema defining the expected response structure
-            system_prompt: Optional system prompt to guide the model
-            temperature: Controls randomness (0 to 1)
-            **kwargs: Additional model-specific parameters
-
-        Returns:
-            JSON response matching the provided schema
-        """
-
+        """Generate a response formatted as JSON according to the provided schema."""
         if system_prompt:
             enhanced_system_prompt = (
                 f"{system_prompt}\n\n"
@@ -169,7 +127,6 @@ class OpenAIModel(BaseModel):
             )
 
             result_text = response.choices[0].message.content
-
             try:
                 result_dict = json.loads(result_text)
             except json.JSONDecodeError as exc:
@@ -200,23 +157,7 @@ class OpenAIModel(BaseModel):
                           temperature: Optional[float] = None,
                           default: Optional[Dict[str, Any]] = None,
                           **kwargs) -> Dict[str, Any]:
-        """
-        Generate JSON output from the model.
-
-        Args:
-            prompt: User prompt to generate from
-            schema: JSON schema that the output should conform to
-            system_prompt: System prompt (instructions for the model)
-            temperature: Sampling temperature (0.0 to 1.0)
-            default: Default JSON to return if generation fails
-            **kwargs: Additional model-specific parameters
-
-        Returns:
-            JSON output as a Python dictionary
-
-        Raises:
-            ModelError: If generation fails and no default is provided
-        """
+        """Generate JSON output from the model."""
         try:
             return await self.generate_with_json_output(
                 prompt=prompt,
@@ -233,12 +174,7 @@ class OpenAIModel(BaseModel):
             raise
 
     def to_chat_openai(self):
-        """Return LangChain ``ChatOpenAI`` with the same api_key, base_url, and model id as this adapter.
-
-        Deepagents (and similar stacks) expect a LangChain chat model, not ``BaseModel``/``AsyncOpenAI``.
-        Uses a dedicated httpx async client with a larger connection pool than defaults to mitigate
-        ``PoolTimeout`` when the execute subgraph issues many parallel calls.
-        """
+        """Return LangChain ChatOpenAI with the same api_key, base_url, and model id as this adapter."""
         kwargs: Dict[str, Any] = {
             "api_key": self.api_key,
             "base_url": self.base_url,

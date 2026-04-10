@@ -13,7 +13,6 @@
 # limitations under the License.
 # ============================================================================
 """Agent implementations for VibeScienceAgent multi-agent system."""
-
 from vibescience_agent.agents.base_agent import BaseAgent
 from vibescience_agent.agents.agent_factory import AgentFactory
 from vibescience_agent.agents.plan_agent import PlanAgent

@@ -33,10 +33,7 @@ _captured_plots = []
 
 
 def run_python_repl(command: str) -> str:
-    """Executes the provided Python command in a persistent environment and returns the output.
-    Variables defined in one execution will be available in subsequent executions.
-    """
-
+    """Execute Python command in persistent environment and return output."""
     def execute_in_repl(command: str) -> str:
         """Helper function to execute the command in the persistent environment."""
         old_stdout = sys.stdout
@@ -55,7 +52,6 @@ def run_python_repl(command: str) -> str:
 
             # Capture any matplotlib plots that were generated
             # _capture_matplotlib_plots()
-
         except Exception as e:
             output = f"Error: {str(e)}"
         finally:
@@ -67,7 +63,7 @@ def run_python_repl(command: str) -> str:
 
 
 def _capture_matplotlib_plots():
-    """Capture any matplotlib plots that might have been generated during execution."""
+    """Capture any matplotlib plots generated during execution."""
     global _captured_plots  # pylint: disable=W0602
     try:
         # Check if there are any active figures
@@ -99,7 +95,7 @@ def _capture_matplotlib_plots():
 
 
 def _apply_matplotlib_patches():
-    """Apply simple monkey patches to matplotlib functions to automatically capture plots."""
+    """Apply monkey patches to matplotlib functions to automatically capture plots."""
     try:
         # Only patch if matplotlib is available and not already patched
         if hasattr(plt, "vibescience_patched"):
@@ -157,17 +153,7 @@ def clear_captured_plots():
 
 
 def read_function_source_code(function_name: str) -> str:
-    """Read the source code of a function from any module path.
-
-    Parameters
-    ----------
-        function_name (str): Fully qualified function name (e.g., 'bioagentos.tool.support_tools.write_python_code')
-
-    Returns
-    -------
-        str: The source code of the function
-
-    """
+    """Read source code of a function from any module path."""
     # Split the function name into module path and function name
     parts = function_name.split(".")
     module_path = ".".join(parts[:-1])
@@ -196,73 +182,7 @@ def download_synapse_data(
     timeout: int = 300,
     entity_type: str = "dataset",
 ):
-    """Download data from Synapse using entity IDs.
-
-    Uses the synapse CLI to download files, folders, or projects from Synapse.
-    Requires SYNAPSE_AUTH_TOKEN environment variable for authentication.
-    Automatically installs synapseclient if not available.
-
-    CRITICAL: Always check entity type from query_synapse() search results or
-    user hints and pass the correct entity_type!
-    The default entity_type="dataset" may not be appropriate for your entity.
-
-    IMPORTANT: Multiple entity IDs are only supported for entity_type="file".
-    For datasets, folders, and projects, only a single entity_id is supported.
-
-    Parameters
-    ----------
-    entity_ids : str or list of str
-        Synapse entity ID(s) to download.
-        - For files: Can be a single ID string or list of ID strings
-        - For datasets/folders/projects: Must be a single ID string only
-    download_location : str, default "."
-        Directory where files will be downloaded (current directory by default)
-    follow_link : bool, default False
-        Whether to follow links to download the linked entity
-    recursive : bool, default False
-        Whether to recursively download folders and their contents
-        ONLY valid for entity_type="folder" - ignored for other types
-    timeout : int, default 300
-        Timeout in seconds for each download operation
-    entity_type : str, default "dataset"
-        Type of Synapse entity ("dataset", "file", "folder", "project")
-        MUST match the actual entity type from search results or user hints!
-        The default "dataset" should only be used for actual datasets.
-        Check the 'node_type' field in search results to determine correct type.
-
-    Returns
-    -------
-    dict
-        Dictionary containing download results and any errors
-
-    Notes
-    -----
-    Requires SYNAPSE_AUTH_TOKEN environment variable with your Synapse personal
-    access token for authentication.
-
-    AGENT USAGE GUIDANCE:
-    1. Always check the 'node_type' field from query_synapse() search results or user hints
-    2. Pass the correct entity_type parameter matching the node_type
-    3. Do NOT rely on the default entity_type="dataset" unless confirmed
-    4. For multiple downloads, ensure all entities are of type "file"
-    5. Only use recursive=True with entity_type="folder"
-
-    Examples
-    --------
-    # After searching with query_synapse(), check node_type and use appropriate entity_type:
-
-    # If search result shows 'node_type': 'dataset'
-    download_synapse_data("syn123456", entity_type="dataset")
-
-    # If search result shows 'node_type': 'file'
-    download_synapse_data("syn654321", entity_type="file")
-
-    # If search result shows 'node_type': 'folder'
-    download_synapse_data("syn789012", entity_type="folder", recursive=True)
-
-    # Multiple files (only if all are 'node_type': 'file')
-    download_synapse_data(["syn111", "syn222"], entity_type="file")
-    """
+    """Download data from Synapse using entity IDs."""
     # Check for required authentication token
     synapse_token = os.environ.get("SYNAPSE_AUTH_TOKEN")
     if not synapse_token:

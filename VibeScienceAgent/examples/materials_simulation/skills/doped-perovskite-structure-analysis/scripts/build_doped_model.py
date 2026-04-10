@@ -5,7 +5,6 @@ Build supercell and create doping model.
 Usage:
     python build_doped_model.py --input STO.cif --supercell 2x2x2 --dopant Ba --site Sr --output Ba_STO.cif
 """
-
 import argparse
 import numpy as np
 from pymatgen.core import Structure

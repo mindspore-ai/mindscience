@@ -14,7 +14,6 @@
 # limitations under the License.
 # ============================================================================
 """Literature search and paper survey utilities for VibeScienceAgent."""
-
 import os
 import re
 from dataclasses import dataclass
@@ -36,7 +35,6 @@ _ARXIV_SORT_RELEVANCE = "relevance"
 @dataclass
 class PaperMetadata:
     """Data class for paper metadata."""
-
     title: str
     authors: List[str]
     abstract: str
@@ -64,6 +62,7 @@ class PaperMetadata:
 
 # Search tools
 def fetch_semantic_papers(keyword, max_results=20, api_key: Optional[str] = None):
+    """Fetch papers from Semantic Scholar based on keyword."""
     search_url = "https://api.semanticscholar.org/graph/v1/paper/search"
     query_params = {
         'query': keyword,
@@ -99,17 +98,7 @@ def fetch_semantic_papers(keyword, max_results=20, api_key: Optional[str] = None
     return []
 
 def fetch_pubmed_papers(query: str, max_results: int = 20, sort: str = "relevance") -> list:
-    """
-    Fetch papers from PubMed based on the query.
-
-    Args:
-        query: Search query
-        max_results: Maximum number of results (default: 20)
-        sort: Sort order ("relevance" or "date")
-
-    Returns:
-        List of paper metadata in JSON format
-    """
+    """Fetch papers from PubMed based on the query."""
     logger.debug(f"Searching PubMed for: {query}")
 
     base_url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils"
@@ -160,18 +149,7 @@ def fetch_pubmed_papers(query: str, max_results: int = 20, sort: str = "relevanc
 
 
 def fetch_arxiv_papers(query: str, max_results: int = 20, sort: str = "relevance", categories: list = None) -> list:
-    """
-    Fetch papers from arXiv based on the query.
-
-    Args:
-        query: Search query
-        max_results: Maximum number of results (default: 20)
-        sort: Sort order ("relevance" or "date")
-        categories: List of arXiv categories to search (default: None)
-
-    Returns:
-        List of paper metadata in JSON format
-    """
+    """Fetch papers from arXiv based on the query."""
     logger.debug(f"Searching arXiv for: {query}")
 
     # arXiv API URL
@@ -211,6 +189,7 @@ def fetch_arxiv_papers(query: str, max_results: int = 20, sort: str = "relevance
         return []
 
 def select_papers(paper_bank, max_papers, rag_read_depth):
+    """Select papers for deep reading based on scores and availability."""
     selected_for_deep_read = []
     count = 0
     for paper in sorted(paper_bank, key=lambda x: x['score'], reverse=True):
@@ -237,7 +216,7 @@ def select_papers(paper_bank, max_papers, rag_read_depth):
     return selected_for_deep_read
 
 def parse_arxiv_xml(xml_data: str) -> list:
-
+    """Parse arXiv XML response to extract paper metadata."""
     papers = []
     soup = BeautifulSoup(xml_data, "xml")
 
@@ -299,7 +278,7 @@ def parse_arxiv_xml(xml_data: str) -> list:
 
 
 def parse_pubmed_xml(xml_data: str) -> list:
-
+    """Parse PubMed XML response to extract paper metadata."""
     papers = []
     soup = BeautifulSoup(xml_data, "xml")
 
@@ -380,8 +359,8 @@ def parse_pubmed_xml(xml_data: str) -> list:
     return papers
 
 # IO tools
-
 def parse_io_description(output):
+    """Parse input and output descriptions from string."""
     match_input = re.match(r'Input\("([^"]+)"\)', output)
     input_description = match_input.group(1) if match_input else None
     match_output = re.match(r'.*Output\("([^"]+)"\)', output)
@@ -400,8 +379,8 @@ def format_papers_for_printing_next_query(paper_lst: list) -> str:
     return "\n".join(parts)
 
 
-
 def download_pdf(pdf_url, save_folder="pdfs"):
+    """Download PDF file from URL and save to specified folder."""
     logger.debug(f"downloading pdf from {pdf_url}")
 
     if not pdf_url:
@@ -432,6 +411,7 @@ def download_pdf(pdf_url, save_folder="pdfs"):
 
 
 def download_pdf_by_doi(doi: str, download_dir: str = "downloaded_papers") -> str | None:
+    """Download PDF paper by DOI from publisher page."""
     doi = doi.strip()
     if doi.lower().startswith("doi:"):
         doi = doi[4:].strip()
@@ -484,6 +464,7 @@ def download_pdf_by_doi(doi: str, download_dir: str = "downloaded_papers") -> st
 
 
 def extract_text_from_pdf(pdf_path: str) -> str | None:
+    """Extract text content from PDF file."""
     try:
         with pdfplumber.open(pdf_path) as pdf:
             text = ""
@@ -496,6 +477,7 @@ def extract_text_from_pdf(pdf_path: str) -> str | None:
 
 
 def paper_query(paper_id, api_key: Optional[str] = None):
+    """Query paper recommendations by paper ID."""
     query_params = {
         'paperId': paper_id,
         'limit': 20,
@@ -512,7 +494,7 @@ def paper_query(paper_id, api_key: Optional[str] = None):
 def paper_details(paper_id, fields=(
     'title,year,abstract,authors,citationCount,venue,citations,references,tldr'
 ), api_key: Optional[str] = None):
-
+    """Get paper details based on paper ID."""
     ## get paper details based on paper id
     paper_data_query_params = {'fields': fields}
     headers = {'x-api-key': api_key}
@@ -525,7 +507,7 @@ def paper_details(paper_id, fields=(
 
 
 def get_abstract(paper_id, api_key: Optional[str] = None):
-    ## get the abstract of a paper based on paper id
+    """Get the abstract of a paper based on paper ID."""
     details = paper_details(paper_id, api_key=api_key)
 
     if details is not None:
@@ -535,7 +517,7 @@ def get_abstract(paper_id, api_key: Optional[str] = None):
 
 
 def get_citation_count(paper_id, api_key: Optional[str] = None):
-    ## get the citation count of a paper based on paper id
+    """Get the citation count of a paper based on paper ID."""
     details = paper_details(paper_id, api_key=api_key)
 
     if details is not None:
@@ -545,7 +527,7 @@ def get_citation_count(paper_id, api_key: Optional[str] = None):
 
 
 def get_citations(paper_id, api_key: Optional[str] = None):
-    ## get the citation list of a paper based on paper id
+    """Get the citation list of a paper based on paper ID."""
     details = paper_details(paper_id, api_key=api_key)
 
     if details is not None:
@@ -555,7 +537,7 @@ def get_citations(paper_id, api_key: Optional[str] = None):
 
 
 def get_references(paper_id, api_key: Optional[str] = None):
-    ## get the reference list of a paper based on paper id
+    """Get the reference list of a paper based on paper ID."""
     details = paper_details(paper_id, api_key=api_key)
     if details is None:
         return None
@@ -573,6 +555,7 @@ def get_references(paper_id, api_key: Optional[str] = None):
 
 
 def is_valid_paper(paper):
+    """Check if paper is valid based on heuristics."""
     # Check for specific keywords indicating non-research papers
     title = paper.get("title", "").lower() if paper.get("title") else ""
     abstract = paper.get("abstract", "").lower() if paper.get("abstract") else ""
@@ -588,13 +571,7 @@ def is_valid_paper(paper):
     return True
 
 def paper_filter(paper_lst):
-    """
-    Filter out papers based on some basic heuristics.
-    Args:
-        paper_lst (dict): A dictionary where keys are sources (e.g., 'pubmed', 'arxiv') and values are lists of papers.
-    Returns:
-        dict: A dictionary with the same structure as input, but with filtered papers.
-    """
+    """Filter out papers based on basic heuristics."""
     filtered_paper_lst = {}
 
     for source, papers in paper_lst.items():
@@ -614,7 +591,7 @@ def multi_source_search(
     semantic_scholar_key: Optional[str] = None,
     **kwargs,
 ) -> dict[str, list[dict]]:
-
+    """Search papers across multiple sources."""
     if not sources:
         sources = ["pubmed", "arxiv", "semantic_scholar"]
 
@@ -636,31 +613,29 @@ def multi_source_search(
 
 
 class PaperSurvey:
-    """Routes literature queries to search and Semantic Scholar helper APIs.
-
-    ``tools.paper_survey`` supplies and ``max_results``. arXiv uses relevance sort only.
-    """
-
+    """Routes literature queries to search and Semantic Scholar helper APIs."""
     def __init__(
         self,
         config,
     ):
+        """Initialize PaperSurvey with configuration."""
         self.max_results = config.max_results
         self.sources = config.sources
 
     def query_route(self, query):
+        """Route query to appropriate parsing and execution function."""
         return parse_and_execute(
             query,
             self.max_results,
             self.sources,
         )
 
-
 def parse_and_execute(
     output,
     max_results,
     sources: Optional[List[str]] = None,
 ):
+    """Parse output string and execute corresponding API function."""
     semantic_scholar_key = os.environ.get("S2_API_KEY", None)
     if not semantic_scholar_key:
         raise ValueError(

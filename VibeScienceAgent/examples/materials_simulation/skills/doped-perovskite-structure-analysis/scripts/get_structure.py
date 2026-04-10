@@ -5,7 +5,6 @@ Download crystal structure from Materials Project and save as CIF file.
 Usage:
     python get_structure.py --mp-id mp-5229 --api-key YOUR_API_KEY --output STO.cif
 """
-
 import argparse
 from pymatgen.ext.matproj import MPRester
 from pymatgen.core import Structure

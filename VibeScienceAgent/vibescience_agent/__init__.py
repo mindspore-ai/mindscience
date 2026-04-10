@@ -13,7 +13,6 @@
 # limitations under the License.
 # ============================================================================
 """VibeScienceAgent - AI-driven scientific research agent system."""
-
 from vibescience_agent.config import VibeScienceConfig
 from vibescience_agent.agents import AgentFactory
 from vibescience_agent.model import ModelFactory

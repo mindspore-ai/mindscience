@@ -22,7 +22,6 @@ relevant academic papers from multiple sources, scores papers based on relevance
 and performs deep reading analysis to extract methodological details from top papers.
 This agent supports automated, iterative literature review with query refinement.
 """
-
 import os
 from typing import Any, Dict
 
@@ -53,27 +52,19 @@ class SurveyAgent(BaseAgent):
     """
     Survey Agent conducts comprehensive literature surveys for research topics.
 
-    This agent performs intelligent literature search by:
-    - Generating context-aware search queries based on research topics
-    - Retrieving papers from multiple academic sources (Semantic Scholar, arXiv, PubMed)
-    - Iteratively refining search queries to expand paper coverage
-    - Scoring papers based on relevance, novelty, and methodological quality
-    - Performing deep reading analysis on top-ranked papers to extract methodological details
+    Args:
+        model: Language model to use
+        config: Configuration dictionary
+        tool_config: Tool configuration dictionary
 
-    The agent employs an iterative search strategy that starts with keyword queries
-    and progressively diversifies using paper similarity and reference-based queries
-    to build a comprehensive literature bank.
+    Inputs:  
+        - messages (list): Conversation history; the user task is taken from messages[0].
+        - params (Dict[str, Any]): Unused; reserved for extensions.
+            
+    Outputs:    
+        - Dict[str, Any]: List of papers with metadata, scores, and deep reading analysis.
     """
-
-    def __init__(self, model, config: SurveyAgentConfig,
-                 tool_config: Dict[str, ToolConfig] = None):
-        """
-        Initialize the survey agent.
-
-        Args:
-            model: Language model to use
-            config: Configuration dictionary
-        """
+    def __init__(self, model, config: SurveyAgentConfig, tool_config: Dict[str, ToolConfig] = None):     
         super().__init__(model, config, tool_config)
 
         # Load agent-specific configuration
@@ -86,14 +77,14 @@ class SurveyAgent(BaseAgent):
         logger.debug("SurveyAgent system prompt for preparing process:\n" + self.prepare_system_prompt)
 
     async def execute(self, messages, **params) -> Dict[str, Any]:
-        """
-        """
+        """Prepare description/domain, then conduct advanced paper survey."""
         description, domain = await self.prepare_description_domain(messages)
         papers = await self.advanced_query_paper(description, domain)
 
         return papers
 
     async def prepare_description_domain(self, messages):
+        """Extract problem description and domain from user query using structured output."""
         problem = messages[0]["content"]
 
         logger.debug("SurveyAgent preparing call model inputs:\n" + problem)
@@ -127,7 +118,7 @@ class SurveyAgent(BaseAgent):
         return description, domain
 
     async def advanced_query_paper(self, goal_description, domain) -> Dict[str, Any]:
-
+        """Conduct iterative paper survey: query generation, retrieval, scoring, and deep reading."""
         search_queries = []
 
         output_schema_paper_score={

@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
+"""Utility functions for VibeScienceAgent."""
 import importlib
 import re
 import os
@@ -20,12 +21,11 @@ from typing import Any
 
 from vibescience_agent.tools.env_desc import library_content_dict
 
-
 TOOL_MODULE_PREFIX = "vibescience_agent.tools."
 _EXCLUDED_FROM_PROMPTS = frozenset({"run_python_repl"})
 
-
 def read_module2api():
+    """Read module API descriptions from tool_description modules."""
     fields = [
         "literature",
         "support_tools",
@@ -38,8 +38,8 @@ def read_module2api():
         module2api[f"vibescience_agent.tools.{field}"] = module.description
     return module2api
 
-
 def extract_between_regex(text, start_keyword, end_keyword):
+    """Extract text between two keywords using regex."""
     keyword_1 = re.escape(start_keyword)
     keyword_2 = re.escape(end_keyword)
     pattern = f'({keyword_1}.*?{keyword_2})'
@@ -48,17 +48,13 @@ def extract_between_regex(text, start_keyword, end_keyword):
 
 
 def serialize_agent_messages(messages: list) -> str:
-    """Serialize messages to string representation.
-
-    Supports both langchain message objects and dict-based Message format.
-    """
+    """Serialize messages to string representation."""
     chunks: list[str] = []
     for msg in messages:
         role = "[User]" if msg.get("role") == "user" else "[Assistant]"
         content = msg.get("content", "")
         chunks.append(f"{role}: {content}")
     return "\n----------------\n".join(chunks)
-
 
 def subset_module2api(
     module2api: dict[str, Any],
@@ -70,16 +66,15 @@ def subset_module2api(
     wanted = {f"{TOOL_MODULE_PREFIX}{m}" for m in description_modules}
     return {k: v for k, v in module2api.items() if k in wanted}
 
-
 def build_tool_desc(module2api: dict[str, Any]) -> dict[str, Any]:
-    """Structured tool specs for ``generate_prompt`` (drops REPL from text)."""
+    """Build structured tool specs for generate_prompt (drops REPL from text)."""
     return {
         mod: [t for t in tools if t.get("name") not in _EXCLUDED_FROM_PROMPTS]
         for mod, tools in module2api.items()
     }
 
-
 def normalize_custom_tools(raw: Any) -> list[dict[str, Any]]:
+    """Normalize custom tools input to consistent format."""
     if not raw:
         return []
     if isinstance(raw, list):
@@ -98,8 +93,8 @@ def normalize_custom_tools(raw: Any) -> list[dict[str, Any]]:
         return out
     return []
 
-
 def normalize_named_items(raw: Any) -> list[dict[str, str]]:
+    """Normalize named items input to consistent format."""
     if not raw:
         return []
     if isinstance(raw, list):
@@ -111,9 +106,8 @@ def normalize_named_items(raw: Any) -> list[dict[str, str]]:
         ]
     return []
 
-
 def library_names_for_prompt() -> list[str]:
-    """Built-in env library keys plus extra names declared under ``custom_software``."""
+    """Built-in env library keys plus extra names declared under custom_software."""
     names = list(library_content_dict.keys())
     custom_software = []  # Currently not supported
     for item in custom_software:
@@ -122,13 +116,8 @@ def library_names_for_prompt() -> list[str]:
             names.append(n)
     return names
 
-
 def load_env(env_path: str = ".env") -> None:
-    """Read .env file and set environment variables.
-
-    Args:
-        env_path: Path to the .env file. Defaults to ".env" in current directory.
-    """
+    """Read .env file and set environment variables."""
     env_file = Path(env_path)
 
     with open(env_file, "r", encoding="utf-8") as f:
@@ -153,8 +142,8 @@ def load_env(env_path: str = ".env") -> None:
 
                 os.environ[key] = value
 
-
 def extract_skill_description(markdown_path):
+    """Extract skill description."""
     with open(markdown_path, 'r', encoding='utf-8') as file:
         content = file.read()
 

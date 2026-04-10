@@ -13,11 +13,9 @@
 # limitations under the License.
 # ============================================================================
 """Execute Agent — Execute subagent (adapted from end_to_end generate node).
-
-Uses deepagents + ``Tool``/``PythonREPL`` + ``StateGraph`` like the original stack,
-while inheriting ``BaseAgent`` and bridging ``OpenAIModel`` → ``ChatOpenAI``.
+Uses deepagents + Tool/PythonREPL + StateGraph like the original stack,
+while inheriting BaseAgent and bridging OpenAIModel → ChatOpenAI.
 """
-
 from __future__ import annotations
 
 from typing import TypedDict, Dict
@@ -68,8 +66,22 @@ When calling the `python_executor` tool, your internal thought process should lo
 
 
 class ExecuteAgent(BaseAgent):
-    """Execute code, run ``python_executor`` (PythonREPL), return ``<execute>``/``<observation>`` messages."""
+    """
+    Execute Agent runs planner <execute>code via python_executorinside a deep agent subgraph and returns the result wrapped in <observation>.
 
+    Args:
+        model (BaseModel): Typically :class:~vibescience_agent.model.openai_model.OpenAIModel(needs to_chat_openai).
+        config (Dict[str, Any]): Agent config; must include _global_configwith logging.
+        tool_config (Dict[str, ToolConfig]): Tool configuration dict.
+        kwargs (Any, optional): May include sciencedata_pathand sciencedata_with_desc.
+
+    Inputs:
+        - messages (list): Full history; last message contentmust include <execute>...</execute>.
+        - params (Dict[str, Any]): Unused; reserved for extensions.
+
+    Outputs:
+        - Dict[str, Any]: Assistant message with <observation>...</observation>, or {"messages": []}after retries exhausted.
+    """
     TOOL_DESCRIPTION_MODULES: frozenset[str] | None = None
 
     def __init__(self, model, config: AgentConfig, tool_config: Dict[str, ToolConfig] = None):
@@ -81,6 +93,7 @@ class ExecuteAgent(BaseAgent):
         self.ctx["skills"] = []     # skills slready passed to deep agent
 
     def _build_execute_subgraph(self):
+        """Build a single-node LangGraph: START → deep agent with python_executor and skills."""
         deep_agent = self._build_deep_agent()
         workflow = StateGraph(_ExecuteSubgraphState)
         workflow.add_node("execute_agent", deep_agent)
@@ -88,6 +101,7 @@ class ExecuteAgent(BaseAgent):
         return workflow.compile()
 
     async def execute(self, messages, **params):
+        """Run the subgraph on code extracted from the last message; return an observation assistant turn."""
         user_query = messages[0]["content"]
         self._build_system_prompt(user_query)
 
@@ -121,6 +135,7 @@ class ExecuteAgent(BaseAgent):
         return self._process_output(final_state)
 
     def _collect_executor_outputs(self, final_state: dict) -> list[str]:
+        """Collect string contents of python_executor tool messages from final state."""
         outputs: list[str] = []
         for msg in final_state.get("messages", []):
             if isinstance(msg, ToolMessage):
@@ -135,17 +150,14 @@ class ExecuteAgent(BaseAgent):
         return outputs
 
     def _process_output(self, final_state: dict) -> dict:
-        """Return ``<execute>``/``<observation>`` pairs, or ``None`` if there were no tool calls.
-
-        Raises:
-            AgentExecutionError: If tool call and tool result counts mismatch (non-legacy error).
-        """
+        """Wrap the last python_executor output (or a fallback string) as an assistant message."""
         outputs = self._collect_executor_outputs(final_state)
         if len(outputs) > 0:
             return create_assistant_msg("\n<observation>" + outputs[-1].strip() + "</observation>")
         return create_assistant_msg("\n<observation>ExecuteAgent returned with no results</observation>")
 
     def _process_input(self, query: list) -> list[tuple[str, str]]:
+        """Extract inner text between <execute> and </execute> from the last message."""
         input_msg: list[tuple[str, str]] = []
         msg_content = query[-1]["content"]
         if "<execute>" in msg_content and "</execute>" in msg_content:
@@ -159,6 +171,7 @@ class ExecuteAgent(BaseAgent):
         )
 
     def _build_system_prompt(self, user_query: str):
+        """Set :attr:~vibescience_agent.agents.base_agent.BaseAgent.system_prompt once (tool retrieval + env block)."""
         if self.system_prompt:
             return
         self.run_tool_retrieval_if_enabled(user_query)

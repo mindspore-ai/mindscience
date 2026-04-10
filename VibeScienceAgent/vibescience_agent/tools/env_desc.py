@@ -15,7 +15,6 @@
 # ============================================================================
 
 # Software libraries and CLI tools available in the environment
-
 library_content_dict = {
     # Core Bioinformatics Libraries
     "biopython": "[Python Package] A set of tools for biological computation including parsers for bioinformatics files, access to online services, and interfaces to common bioinformatics programs.",

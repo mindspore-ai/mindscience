@@ -12,26 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""
-Custom message types for VibeScienceAgent.
-"""
-
+"""Custom message types for VibeScienceAgent."""
 from typing import TypedDict
 
 
 class Message(TypedDict):
-    """Simple dict-based message format for storing messages in context.
-
-    This avoids frequent transforms between langchain message objects.
-    """
+    """Simple dict-based message format for storing messages in context."""
     role: str  # "user" or "assistant"
     content: str
-
 
 def create_user_msg(content: str) -> Message:
     """Create a user message."""
     return Message(role="user", content=content)
-
 
 def create_assistant_msg(content: str) -> Message:
     """Create an assistant message."""
