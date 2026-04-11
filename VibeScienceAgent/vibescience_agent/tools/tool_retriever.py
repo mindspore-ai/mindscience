@@ -20,18 +20,14 @@ import asyncio
 import threading
 
 from langchain_core.messages import HumanMessage
-from langchain_openai import ChatOpenAI
 
 from vibescience_agent.utils import logger
 
 
 class ToolRetriever:
     """Retrieve relevant tools and resources for queries using LLM-based selection."""
-    def __init__(self):
-        """Initialize tool retriever."""
-        pass
 
-    def prompt_based_retrieval(self, query: str, resources: dict, llm=None) -> dict:
+    def prompt_based_retrieval(self, query: str, resources: dict, llm) -> dict:
         """Use prompt-based approach to retrieve most relevant resources for a query."""
         skills = resources.get("skills") or []
         tools_r = resources.get("tools") or []
@@ -73,9 +69,6 @@ IMPORTANT GUIDELINES:
 8. When in doubt about a database tool or molecular biology tool, include it rather than exclude it
 """
         prompt = "\n".join(prompt_sections) + response_format
-
-        if llm is None:
-            llm = ChatOpenAI(model="gpt-4o")
 
         logger.debug(f"tool retriever prompt: {prompt}")
 

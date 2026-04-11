@@ -21,9 +21,10 @@ by analyzing academic papers and identifying research gaps. It performs thorough
 literature review and generates comprehensive ideas with detailed technical solutions.
 """
 
-from typing import Dict, Any, TypedDict
+from typing import Dict, TypedDict
 
 from langchain_core.globals import set_debug
+from langchain_core.messages import AIMessage
 from langgraph.graph import START, StateGraph
 
 from vibescience_agent.config.agent_config import IdeaAgentConfig
@@ -79,7 +80,8 @@ class IdeaAgent(BaseAgent):
         - params: Additional parameters including
 
     Outputs:
-        - Dict containing the generated ideas in a structured format, ready for further analysis and refinement.
+        - List of messages containing the generated ideas in a structured format,
+          ready for further analysis and refinement.
     """
     def __init__(self, model, config: IdeaAgentConfig,
                  tool_config: Dict[str, ToolConfig] = None):
@@ -99,7 +101,7 @@ class IdeaAgent(BaseAgent):
         workflow.add_edge(START, "idea_agent")
         return workflow.compile()
 
-    async def execute(self, messages, **params) -> Dict[str, Any]:
+    async def execute(self, messages, **params) -> list:
         """ Execute the idea generation task. """
         if not messages:
             raise AgentExecutionError("IdeaAgent requires non-empty message history")
@@ -175,9 +177,13 @@ class IdeaAgent(BaseAgent):
 
         return prompt
 
-    def _process_output(self, final_state: dict) -> dict:
+    def _process_output(self, final_state: dict) -> list:
         """ Extract and format the generated ideas from the final state. """
         messages = final_state.get("messages", [])
         if len(messages) > 0:
-            return create_assistant_msg(str(messages[-1].content).strip())
-        return create_assistant_msg("No ideas were generated.")
+            outputs = []
+            for message in messages:
+                if isinstance(message, AIMessage) and message.content.strip():
+                    outputs.append(create_assistant_msg(message.content))
+            return outputs
+        return [create_assistant_msg("No ideas were generated.")]

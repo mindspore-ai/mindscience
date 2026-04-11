@@ -21,6 +21,8 @@ Tests:: initialization and execute.
 from unittest.mock import Mock, AsyncMock, patch
 import pytest
 
+from langchain_core.messages import AIMessage
+
 from vibescience_agent.agents.idea_agent import IdeaAgent
 from vibescience_agent.config import ModelConfig
 from vibescience_agent.config.agent_config import IdeaAgentConfig
@@ -75,8 +77,7 @@ class TestIdeaAgentExecute:
     async def test_execute_basic(self, mock_base_model):
         """Test IdeaAgent execute method with basic input."""
         # Mock the _invoke_subgraph method to return a state with messages
-        mock_message = Mock()
-        mock_message.content = "Here are some novel scientific ideas..."
+        mock_message = AIMessage(content="Here are some novel scientific ideas...")
 
         mock_base_model.generate = AsyncMock(
             return_value="Generated scientific ideas about the research topic."
@@ -89,15 +90,16 @@ class TestIdeaAgentExecute:
             with patch.object(agent, '_invoke_subgraph', return_value={"messages": [mock_message]}):
                 result = await agent.execute(messages)
 
-            assert result["role"] == "assistant"
-            assert "content" in result
+            assert isinstance(result, list)
+            assert len(result) > 0
+            assert result[0]["role"] == "assistant"
+            assert "content" in result[0]
 
     @pytest.mark.unit
     @pytest.mark.asyncio
     async def test_execute_with_survey_results(self, mock_base_model):
         """Test IdeaAgent execute with survey results."""
-        mock_message = Mock()
-        mock_message.content = "Based on literature review..."
+        mock_message = AIMessage(content="Based on literature review...")
 
         with patch('vibescience_agent.agents.idea_agent.IdeaAgent._build_idea_subgraph'):
             agent = IdeaAgent(mock_base_model, _create_idea_agent_config())
@@ -108,7 +110,8 @@ class TestIdeaAgentExecute:
             with patch.object(agent, '_invoke_subgraph', return_value={"messages": [mock_message]}):
                 result = await agent.execute(messages, survey_results=survey_results)
 
-            assert result["role"] == "assistant"
+            assert isinstance(result, list)
+            assert result[0]["role"] == "assistant"
 
     @pytest.mark.unit
     @pytest.mark.asyncio
@@ -124,8 +127,7 @@ class TestIdeaAgentExecute:
     @pytest.mark.asyncio
     async def test_execute_with_idea_critic_enabled(self, mock_base_model):
         """Test IdeaAgent execute with idea critic enabled."""
-        mock_message = Mock()
-        mock_message.content = "Revised ideas based on critic feedback..."
+        mock_message = AIMessage(content="Revised ideas based on critic feedback...")
 
         with patch('vibescience_agent.agents.idea_agent.IdeaAgent._build_idea_subgraph'):
             agent = IdeaAgent(mock_base_model, _create_idea_agent_config())
@@ -135,7 +137,8 @@ class TestIdeaAgentExecute:
             with patch.object(agent, '_invoke_subgraph', return_value={"messages": [mock_message]}):
                 result = await agent.execute(messages, enable_idea_critic=True)
 
-            assert result["role"] == "assistant"
+            assert isinstance(result, list)
+            assert result[0]["role"] == "assistant"
 
     @pytest.mark.unit
     @pytest.mark.asyncio
@@ -148,8 +151,7 @@ class TestIdeaAgentExecute:
             call_count += 1
             if call_count < 2:
                 raise Exception("Simulated error")  # pylint: disable=W0719
-            mock_message = Mock()
-            mock_message.content = "Success after retry"
+            mock_message = AIMessage(content="Success after retry")
             return {"messages": [mock_message]}
 
         with patch('vibescience_agent.agents.idea_agent.IdeaAgent._build_idea_subgraph'):
@@ -161,7 +163,8 @@ class TestIdeaAgentExecute:
                 result = await agent.execute(messages)
 
             assert call_count == 2
-            assert result["role"] == "assistant"
+            assert isinstance(result, list)
+            assert result[0]["role"] == "assistant"
 
 
 # =============================================================================
@@ -227,17 +230,20 @@ class TestIdeaAgentInternalMethods:
     @pytest.mark.unit
     def test_process_output_with_messages(self, mock_base_model):
         """Test IdeaAgent output processing with valid messages."""
+
         with patch('vibescience_agent.agents.idea_agent.IdeaAgent._build_idea_subgraph'):
             agent = IdeaAgent(mock_base_model, _create_idea_agent_config())
 
             final_state = {
-                "messages": [Mock(content="Idea 1: Something\nIdea 2: Something else")]
+                "messages": [AIMessage(content="Idea 1: Something\nIdea 2: Something else")]
             }
 
             # pylint: disable=W0212
             result = agent._process_output(final_state)
 
-            assert result["role"] == "assistant"
+            assert isinstance(result, list)
+            assert len(result) > 0
+            assert result[0]["role"] == "assistant"
 
     @pytest.mark.unit
     def test_process_output_empty_messages(self, mock_base_model):
@@ -250,5 +256,6 @@ class TestIdeaAgentInternalMethods:
             # pylint: disable=W0212
             result = agent._process_output(final_state)
 
-            assert result["role"] == "assistant"
-            assert "No ideas were generated" in result["content"]
+            assert isinstance(result, list)
+            assert result[0]["role"] == "assistant"
+            assert "No ideas were generated" in result[0]["content"]
