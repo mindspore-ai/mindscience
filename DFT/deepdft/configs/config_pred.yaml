@@ -1,0 +1,17 @@
+# predict
+model_dir: ./checkpoints/nmc_painn/        # Path to the pretrained model
+atoms_file: ./data/predict/glucose.xyz     # Path to the ASE compatible atoms xyz-file
+output_dir: ./results/model_prediction 
+device_target: Ascend
+device_id: 2
+mode: Pynative  
+# parameters
+grid_step: 0.05    # Step size in Ångstrøm
+vacuum: 1.0        # Pad simulation box with vacuum (only used when boundary conditions are not periodic)
+probe_count: 5000  # How many probe points to compute per iteration
+# properties
+iri: True          # Also compute interaction region indicator (IRI)
+dori: True         # Also compute density overlap region indicator (DORI)
+hessian_eig: True  # Also compute eigenvalues of density Hessian
+ignore_pbc: False  # If flag is given, disable periodic boundary conditions (force to False) in atoms data
+force_pbc: False   # If flag is given, force periodic boundary conditions to True in atoms data

@@ -1,0 +1,12 @@
+prop: heat_ref
+num_targets: 1
+niggli: true
+primitive: false
+graph_method: crystalnn
+lattice_scale_method: scale_length
+preprocess_workers: 24
+readout: mean
+max_atoms: 20
+otf_graph: false
+eval_model_name: perovskite
+batch_size: 128

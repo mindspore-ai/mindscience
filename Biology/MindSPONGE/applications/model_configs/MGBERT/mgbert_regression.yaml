@@ -1,0 +1,29 @@
+device: 'Ascend'
+task_name: 'regression'
+use_jit: True
+is_train: True
+is_test: False
+is_val: False
+smiles_field: 'SMILES'
+label_field: 'Label'
+max_len: 100
+normalize: True
+task: 'logS'
+pretraining: 0
+trained_epoch: 100
+vocab_size: 17
+addH: True
+batch: 64
+model_task: small
+small:
+  num_layers: 3
+  num_heads: 4
+  d_model: 128
+medium:
+  num_layers: 6
+  num_heads: 8
+  d_model: 256
+large:
+  num_layers: 12
+  num_heads: 12
+  d_model: 576

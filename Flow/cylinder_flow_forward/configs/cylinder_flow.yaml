@@ -1,0 +1,34 @@
+geometry:
+  coord_dim: 2
+  time_dim: 1
+  coord_min: [1.0, -2.0]
+  coord_max: [8.0, 2.0]
+  time_min: 0.0
+  time_max: 7.0
+data:
+  domain:
+    size: 8192
+    random_sampling: true
+    sampler: "uniform"
+  time:
+    size: 8192
+    random_sampling: true
+    sampler: "uniform"
+  root_dir: "./dataset"
+  batch_size: 8192
+model:
+  name: MLP_with_Residual
+  in_channels: 3
+  out_channels: 3
+  activation: "sin"
+  num_layers: 10
+  hidden_channels: 128
+  residual: false
+optimizer:
+  learning_rate: 0.001
+  epochs: 12000
+summary:
+  ckpt_dir: "./checkpoints/ns_cylinder_flow_12000.ckpt"
+  test_interval: 100
+  summary_dir: "./summary"
+  save_ckpt_interval: 50

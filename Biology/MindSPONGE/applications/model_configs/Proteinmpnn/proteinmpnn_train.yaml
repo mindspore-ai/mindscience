@@ -1,0 +1,14 @@
+is_training: True
+use_jit: True
+fixed_size: True
+seq_length: 256
+num_letters: 21
+node_features: 128
+edge_features: 128
+hidden_dim: 128
+num_encoder_layers: 3
+num_decoder_layers: 3
+vocab: 21
+k_neighbors: 64
+augment_eps: 0.05
+dropout: 0.1

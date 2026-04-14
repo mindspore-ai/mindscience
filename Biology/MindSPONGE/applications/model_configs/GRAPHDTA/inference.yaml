@@ -1,0 +1,17 @@
+lr: 0.0005
+weight_decay: 0.001
+train: False
+use_jit: False
+n_output: 1
+n_filters: 32
+embed_dim: 128
+num_features_xd: 78
+num_features_xt: 25
+output_dim: 128
+dropout: 0.2
+atom_num: 144
+edge_num: 320
+batch_size: 1
+sequence: 1000
+checkpoint_url: None
+data_path: None

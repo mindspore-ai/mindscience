@@ -1,0 +1,13 @@
+is_training: False
+use_jit: True
+# one or some of datasets can be used as train_files to train the model once
+# train_files: ['ArchiveII', 'bpnew', 'TS0', 'TS1', 'TS2', 'TS3']
+train_files: ['TS3']
+# test_file can be chosen from 'ArchiveII', 'bpnew', 'TS0', 'TS1', 'TS2', 'TS3'
+test_file: 'TS3'
+# test_ckpt can be chosen from 'ArchiveII', 'bpnew', 'TS0', 'TS1', 'TS2', 'TS3' and 'All'
+# test_file and test_ckpt should keep same unless test_ckpt is 'All'
+test_ckpt: 'All'
+# nc can be chosen from [0, 1]
+nc: 0
+batch_size_stage_1: 1

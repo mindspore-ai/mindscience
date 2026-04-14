@@ -1,0 +1,37 @@
+dataset:
+  data_name: 'carbon_24'
+  train:
+    path: './dataset/carbon_24/train.csv'
+    save_path: './dataset/carbon_24/train.npy'
+  val:
+    path: './dataset/carbon_24/val.csv'
+    save_path: './dataset/carbon_24/val.npy'
+  test:
+    path: './dataset/carbon_24/test.csv'
+    save_path: './dataset/carbon_24/test.npy'
+
+model:
+  # For dataset carbon, mp, mpts
+  hidden_dim: 512
+  num_layers: 6
+  num_freqs: 128
+
+train:
+  ckpt_dir: "./ckpt/carbon_24"
+  # 3500, 4000, 1000, 1000 epochs for Perov-5, Carbon-24, MP-20 and MPTS-52 respectively.
+  epoch_size: 4000
+  # 512, 512, 128, 128 for Perov-5, Carbon-24, MP-20 and MPTS-52 respectively.
+  batch_size: 512
+  seed: 1234
+
+checkpoint:
+  last_path: "./ckpt/carbon_24/last.ckpt"
+
+test:
+  # 1024 for perov, 512 for carbon and mp, 256 for mpts
+  batch_size: 512
+  num_eval: 1
+  # 1e-5 for mp and mpts, 5e-7 for perov, 5e-6 for carbon num_eval=1 and 5e-7 for carbon num_eval=20
+  step_lr: 5e-6
+  eval_save_path: './ckpt/carbon_24/predict_crys.pkl'
+  metric_dir: './ckpt/carbon_24/'

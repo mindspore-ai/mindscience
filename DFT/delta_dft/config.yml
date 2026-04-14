@@ -1,0 +1,23 @@
+ensem_params:
+  charges : [1, 1, 8] # [6, 6, 6, 6, 6, 6, 1, 1, 1, 1, 1, 8, 1]
+  data_dir : './Dataset/'
+  workspace_dir : './water/'
+  train_dir : 'water_102/'
+  test_dir : 'water_102/'
+  n_trainings : [80]
+  n_test : 22
+  gaussian_width : 0.60
+  spacing : 0.33
+  energy_types : ['diff']
+  metric : ['L-1', 1]
+  verbose : 0
+  density_kernel_type : 'rbf'
+  energy_kernel_type : 'rbf'
+  invariance: False
+
+train_params:
+  opt_type : 'adam'
+
+norm_params:
+  mean_std_density : [0.0, 1.0] # [0.001893, 44.3538] # 
+  mean_std_energy : [-13786.6220, 22.9914] # [-142429.3332, 1.1881] # 

@@ -1,0 +1,7 @@
+# download Genecorpus-30M datasets from https://huggingface.co/datasets/ctheodoris/Genecorpus-30M/blob/main/example_input_files/gene_classification/dosage_sensitive_tfs/dosage_sensitivity_TFs.pickle and example_input_files/gene_classification/dosage_sensitive_tfs/gc-30M_sample50k.dataset
+gene_class_dict_path: "../dosage_sensitivity_TFs.pickle"
+dataset_path: "../gc-30M_sample50k.dataset"
+output_prefix: "tf_dosage_sens_test"
+output_dir: "../output_dir"
+data_output: "../output_data"
+model_output: "../output_model"

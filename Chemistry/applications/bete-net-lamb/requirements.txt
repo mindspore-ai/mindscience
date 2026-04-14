@@ -1,0 +1,6 @@
+ase==3.22.0
+notebook==6.4.5
+pip==21.3.1
+plotly==5.3.1
+mindspore==2.5.0
+mindchemsitry==0.2.0

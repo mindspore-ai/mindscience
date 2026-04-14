@@ -1,0 +1,28 @@
+data_image0
+_chemical_formula_structural       LaHg2
+_chemical_formula_sum              "La1 Hg2"
+_cell_length_a       4.99777
+_cell_length_b       4.99822
+_cell_length_c       3.48391
+_cell_angle_alpha    90
+_cell_angle_beta     90.0006
+_cell_angle_gamma    120.002
+
+_space_group_name_H-M_alt    "P 1"
+_space_group_IT_number       1
+
+loop_
+  _space_group_symop_operation_xyz
+  'x, y, z'
+
+loop_
+  _atom_site_type_symbol
+  _atom_site_label
+  _atom_site_symmetry_multiplicity
+  _atom_site_fract_x
+  _atom_site_fract_y
+  _atom_site_fract_z
+  _atom_site_occupancy
+  La  La1       1.0  0.00000  0.00000  0.00000  1.0000
+  Hg  Hg1       1.0  0.66666  0.33333  0.50026  1.0000
+  Hg  Hg2       1.0  0.33334  0.66667  0.49974  1.0000
