@@ -18,7 +18,7 @@ from mindscience_agent.config.base_config import BaseConfig
 from mindscience_agent.config.model_config import ModelConfig
 from mindscience_agent.utils import logger
 
-SUPPORTED_AGENT_LIST = ["survey", "plan", "critic", "execute", "ranking", "idea", "idea_critic"]
+SUPPORTED_AGENT_LIST = ["plan", "critic", "execute", "ranking", "idea", "idea_critic"]
 TOOL_RETRIEVER_SUPPORTED_AGENTS = ["plan", "execute", "idea"]
 SKILL_SUPPORTED_AGENTS = ["plan", "execute", "idea"]
 
@@ -27,7 +27,7 @@ class AgentConfig(BaseConfig):
     """Configuration class for agent settings and model integration.
 
     Args:
-        agent_type (str): Type of agent (survey, plan, critic, execute).
+        agent_type (str): Type of agent (plan, critic, execute, ranking, idea, idea_critic).
         model_config (ModelConfig): Model configuration for the agent.
         max_retries (int, optional): Maximum number of retry attempts. Defaults to 2.
         use_tool_retriever (bool, optional): Whether to use tool retriever. Defaults to False.
@@ -96,30 +96,6 @@ def validate_skill_path(config_instance: AgentConfig, skill_path):
         logger.warning(f"{config_instance.agent_type} agent does not support skills.")
         return ""
     return skill_path
-
-
-class SurveyAgentConfig(AgentConfig):
-    """Configuration class for survey agent with paper search settings.
-
-    Args:
-        max_papers (int, optional): Maximum number of papers to return. Defaults to 5.
-    """
-    def __init__(
-        self,
-        max_papers = 5,
-        **kwargs,
-    ):
-        super().__init__(agent_type="survey", **kwargs)
-
-        self.max_papers = max_papers
-
-
-@SurveyAgentConfig.validator("max_papers")
-def validate_max_papers(config_instance: SurveyAgentConfig, max_papers):  # pylint: disable=W0613
-    """Validate max_papers."""
-    validator.check_type("max_papers", value=max_papers, expected_type=int)
-    validator.check_number_range("max_papers", value=max_papers, min_value=1)
-    return max_papers
 
 
 class IdeaAgentConfig(AgentConfig):

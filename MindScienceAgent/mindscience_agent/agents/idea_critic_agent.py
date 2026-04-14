@@ -1,5 +1,4 @@
 # Copyright 2026 Huawei Technologies Co., Ltd
-# Copyright 2025 InternAgent
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -60,7 +59,7 @@ class IdeaCriticAgent(BaseAgent):
     scientific rigor, logical consistency, alignment with research goals, and feasibility.
 
     Args:
-        model (BaseModel): Language model for idea analysis and enhancement.
+        model (Model): Language model for idea analysis and enhancement.
         config (AgentConfig): Agent configuration.
         tool_config (Dict[str, ToolConfig], optional): Tool configurations for the agent.
 

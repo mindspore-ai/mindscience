@@ -14,15 +14,15 @@
 # ============================================================================
 """MindScienceAgent - AI-driven scientific research agent system."""
 from mindscience_agent.config import MindScienceConfig
-from mindscience_agent.agents import AgentFactory
-from mindscience_agent.model import ModelFactory
+from mindscience_agent.agents import AgentManager
+from mindscience_agent.model import Model
 from mindscience_agent.workflow import BaseWorkflow, ExperimentWorkflow
 from mindscience_agent.utils import init_logger
 
 __all__ = [
     "MindScienceConfig",
-    "AgentFactory",
-    "ModelFactory",
+    "AgentManager",
+    "Model",
     "BaseWorkflow",
     "ExperimentWorkflow",
     "init_logger",

@@ -20,7 +20,6 @@ import os
 from mindscience_agent.config.mindscience_config import MindScienceConfig
 from mindscience_agent.config.model_config import ModelConfig
 from mindscience_agent.config.agent_config import AgentConfig
-from mindscience_agent.config.tool_config import PaperSurveyConfig
 from mindscience_agent.config.log_config import LogConfig
 
 
@@ -55,21 +54,16 @@ class TestMindScienceConfig:
                 "base_url": "https://api.openai.com/v1",
             },
             "agents": {
-                "survey": {
+                "plan": {
                     "model": {
                         "model_name": "gpt-3.5-turbo",
-                        "api_key": "survey-key",
+                        "api_key": "plan-key",
                         "base_url": "https://api.openai.com/v1",
                         "temperature": 0.3,
                     },
                     "agent": {
                         "max_papers": 10,
                     }
-                }
-            },
-            "tools": {
-                "paper_survey": {
-                    "max_results": 15,
                 }
             },
             "logging": {
@@ -80,9 +74,9 @@ class TestMindScienceConfig:
 
         assert config.model_defaults is not None
         assert config.model_defaults.model_name == "gpt-4"
-        assert "survey" in config.agents
-        assert config.agents["survey"].model_config.model_name == "gpt-3.5-turbo"
-        assert config.tools["paper_survey"].max_results == 15
+        assert "plan" in config.agents
+        assert config.agents["plan"].model_config.model_name == "gpt-3.5-turbo"
+        assert config.tools == {}
         assert config.logging_config is not None
         assert config.logging_config.level == "DEBUG"
 
@@ -147,24 +141,12 @@ class TestMindScienceConfig:
             }
         }
         agent_config = MindScienceConfig._parse_agent_config(
-            "survey", agent_data, model_defaults
+            "plan", agent_data, model_defaults
         )
 
         assert agent_config.model_config.model_name == "gpt-3.5-turbo"
         assert agent_config.model_config.api_key == "agent-key"
         assert agent_config.max_retries == 10
-
-    def test_parse_tool_config_paper_survey(self):
-        """Test parsing paper_survey tool configuration."""
-        data = {
-            "max_results": 10,
-            "sources": ["pubmed", "arxiv"],
-        }
-        tool_config = MindScienceConfig._parse_tool_config("paper_survey", data)
-
-        assert isinstance(tool_config, PaperSurveyConfig)
-        assert tool_config.max_results == 10
-        assert tool_config.sources == ["pubmed", "arxiv"]
 
     def test_parse_tool_config_unknown(self):
         """Test parsing unknown tool configuration."""
@@ -193,12 +175,12 @@ class TestMindScienceConfig:
             base_url="https://api.openai.com/v1",
         )
         agent_config = AgentConfig(
-            agent_type="survey",
+            agent_type="plan",
             model_config=model_config,
         )
-        config = MindScienceConfig(agents={"survey": agent_config})
+        config = MindScienceConfig(agents={"plan": agent_config})
 
-        result = config.get_agent_config("survey")
+        result = config.get_agent_config("plan")
         assert result == agent_config
 
     def test_get_agent_config_nonexistent(self):
@@ -215,15 +197,12 @@ model_defaults:
   api_key: "test-key"
   base_url: "https://api.openai.com/v1"
 agents:
-  survey:
+  plan:
     model:
       model_name: null
       base_url: null
       api_key: null
       temperature: 0.2
-tools:
-  paper_survey:
-    max_results: 10
 logging:
   level: "INFO"
 """
@@ -237,8 +216,8 @@ logging:
             config = MindScienceConfig.init_config_from_yaml(yaml_path)
             assert config.model_defaults is not None
             assert config.model_defaults.model_name == "gpt-4"
-            assert "survey" in config.agents
-            assert "paper_survey" in config.tools
+            assert "plan" in config.agents
+            assert config.tools == {}
             assert config.logging_config is not None
         finally:
             os.unlink(yaml_path)

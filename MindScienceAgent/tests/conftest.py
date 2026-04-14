@@ -34,7 +34,6 @@ def mock_base_model():
     """Create a mock base model for testing."""
     model = Mock()
     model.generate = AsyncMock(return_value="Test response")
-    model.generate_json = AsyncMock(return_value={"result": "test"})
 
     # Add methods needed by agents
     model.to_chat_openai = Mock(return_value="openai:gpt-4o-mini")
@@ -87,22 +86,6 @@ def mock_full_config():
                     "max_retries": 10,
                 }
             },
-            "survey": {
-                "model": {
-                    "provider": "openai",
-                    "api_key": "test-api-key",
-                    "model_name": "gpt-4o-mini",
-                },
-                "agent": {
-                    "max_papers": 10,
-                }
-            },
-        },
-        "tools": {
-            "paper_survey": {
-                "sources": ["pubmed", "arxiv", "semantic_scholar"],
-                "max_results": 10,
-            }
         },
         "logging": {
             "level": "INFO",

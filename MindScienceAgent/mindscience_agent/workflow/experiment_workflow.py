@@ -1,5 +1,4 @@
 # Copyright 2026 Huawei Technologies Co., Ltd
-# Copyright 2025 Biomni
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,11 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
+# MODIFICATION NOTICE:
+# This file contains code from Biomni, which is licensed under the Apache License, Version 2.0 (the "License").
+# This file was modified by MindSpore Science Team on 2026.
+# Changes include: 
+# 1. remove science datalake.
+# 2. plan goes to critic when <think> tag is present, instead of when <solution> tag is present.
+# ============================================================================
 """
 Experiment workflow for MindScienceAgent
 
 Orchestrates the multi-agent pipeline: plan -> [critic] -> execute.
-All agents are created through AgentFactory with unified configuration from MindScienceConfig.
+All agents are created through AgentManager with unified configuration from MindScienceConfig.
 """
 import re
 import uuid
@@ -45,7 +51,7 @@ class ExperimentWorkflow(BaseWorkflow):
     Orchestrator for the MindScienceAgent experiment pipeline.
 
     This workflow manages the multi-agent pipeline: plan -> [critic] -> execute.
-    All agents are created through AgentFactory with unified configuration from MindScienceConfig.
+    All agents are created through AgentManager with unified configuration from MindScienceConfig.
 
     Args:
         config (MindScienceConfig): Unified configuration instance for the entire workflow.
@@ -75,7 +81,6 @@ class ExperimentWorkflow(BaseWorkflow):
         if self.enable_critic:
             self.critic_count = 0
 
-        self._init_model()
         self._create_agents()
         self._create_workflow()
 

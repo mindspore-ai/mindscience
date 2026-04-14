@@ -16,7 +16,7 @@
 import pytest
 
 from mindscience_agent.config.model_config import ModelConfig
-from mindscience_agent.config.agent_config import AgentConfig, SurveyAgentConfig, IdeaAgentConfig
+from mindscience_agent.config.agent_config import AgentConfig, IdeaAgentConfig
 
 
 class TestAgentConfig:
@@ -34,10 +34,10 @@ class TestAgentConfig:
         """Test creating AgentConfig with default values."""
         model_config = self._create_model_config()
         config = AgentConfig(
-            agent_type="survey",
+            agent_type="plan",
             model_config=model_config,
         )
-        assert config.agent_type == "survey"
+        assert config.agent_type == "plan"
         assert config.model_config == model_config
         assert config.max_retries == 2
         assert config.use_tool_retriever is False
@@ -61,8 +61,8 @@ class TestAgentConfig:
     def test_validate_agent_type_valid(self):
         """Test agent_type validation with valid value."""
         model_config = self._create_model_config()
-        config = AgentConfig(agent_type="survey", model_config=model_config)
-        assert config.agent_type == "survey"
+        config = AgentConfig(agent_type="plan", model_config=model_config)
+        assert config.agent_type == "plan"
 
     def test_validate_agent_type_invalid(self):
         """Test agent_type validation with invalid value."""
@@ -73,41 +73,41 @@ class TestAgentConfig:
     def test_validate_model_config_valid(self):
         """Test model_config validation with valid config."""
         model_config = self._create_model_config()
-        config = AgentConfig(agent_type="survey", model_config=model_config)
+        config = AgentConfig(agent_type="plan", model_config=model_config)
         assert config.model_config is not None
 
     def test_validate_max_retries_valid(self):
         """Test max_retries validation with valid value."""
         model_config = self._create_model_config()
-        config = AgentConfig(agent_type="survey", model_config=model_config)
+        config = AgentConfig(agent_type="plan", model_config=model_config)
         config.max_retries = 5
         assert config.max_retries == 5
 
     def test_validate_max_retries_above_max(self):
         """Test max_retries validation with value above maximum."""
         model_config = self._create_model_config()
-        config = AgentConfig(agent_type="survey", model_config=model_config)
+        config = AgentConfig(agent_type="plan", model_config=model_config)
         with pytest.raises(ValueError, match="is above maximum allowed value"):
             config.max_retries = 20
 
     def test_validate_max_retries_below_min(self):
         """Test max_retries validation with value below minimum."""
         model_config = self._create_model_config()
-        config = AgentConfig(agent_type="survey", model_config=model_config)
+        config = AgentConfig(agent_type="plan", model_config=model_config)
         with pytest.raises(ValueError, match="is below minimum allowed value"):
             config.max_retries = -1
 
     def test_validate_use_tool_retriever_invalid_type(self):
         """Test use_tool_retriever validation with invalid type."""
         model_config = self._create_model_config()
-        config = AgentConfig(agent_type="survey", model_config=model_config)
+        config = AgentConfig(agent_type="plan", model_config=model_config)
         with pytest.raises(ValueError, match="is not an instance of"):
             config.use_tool_retriever = "true"
 
     def test_validate_skill_path_invalid_type(self):
         """Test skill_path validation with invalid type."""
         model_config = self._create_model_config()
-        config = AgentConfig(agent_type="survey", model_config=model_config)
+        config = AgentConfig(agent_type="plan", model_config=model_config)
         with pytest.raises(ValueError, match="is not an instance of"):
             config.skill_path = True
 
@@ -119,7 +119,7 @@ class TestAgentConfig:
             base_url="https://api.openai.com/v1",
         )
         with pytest.raises(ValueError, match="model_name"):
-            AgentConfig(agent_type="survey", model_config=model_config)
+            AgentConfig(agent_type="plan", model_config=model_config)
 
     def test_validate_model_config_missing_base_url(self):
         """Test model_config validation raises when base_url is None."""
@@ -129,7 +129,7 @@ class TestAgentConfig:
             base_url=None,
         )
         with pytest.raises(ValueError, match="base_url"):
-            AgentConfig(agent_type="survey", model_config=model_config)
+            AgentConfig(agent_type="plan", model_config=model_config)
 
     def test_validate_model_config_missing_api_key(self):
         """Test model_config validation raises when api_key is None."""
@@ -139,57 +139,7 @@ class TestAgentConfig:
             base_url="https://api.openai.com/v1",
         )
         with pytest.raises(ValueError, match="api_key"):
-            AgentConfig(agent_type="survey", model_config=model_config)
-
-
-class TestSurveyAgentConfig:
-    """Test cases for SurveyAgentConfig."""
-
-    def _create_model_config(self):
-        """Helper to create a ModelConfig for testing."""
-        return ModelConfig(
-            model_name="gpt-4",
-            api_key="test-key",
-            base_url="https://api.openai.com/v1",
-        )
-
-    def test_creation_with_defaults(self):
-        """Test creating SurveyAgentConfig with default values."""
-        model_config = self._create_model_config()
-        config = SurveyAgentConfig(
-            model_config=model_config,
-        )
-        assert config.max_papers == 5
-
-    def test_creation_with_custom_values(self):
-        """Test creating SurveyAgentConfig with custom values."""
-        model_config = self._create_model_config()
-        config = SurveyAgentConfig(
-            model_config=model_config,
-            max_papers=10,
-        )
-        assert config.max_papers == 10
-
-    def test_validate_max_papers_valid(self):
-        """Test max_papers validation with valid value."""
-        model_config = self._create_model_config()
-        config = SurveyAgentConfig(model_config=model_config)
-        config.max_papers = 8
-        assert config.max_papers == 8
-
-    def test_validate_max_papers_below_min(self):
-        """Test max_papers validation with value below minimum."""
-        model_config = self._create_model_config()
-        config = SurveyAgentConfig(model_config=model_config)
-        with pytest.raises(ValueError, match="is below minimum allowed value"):
-            config.max_papers = 0
-
-    def test_validate_max_papers_invalid_type(self):
-        """Test max_papers validation with invalid type."""
-        model_config = self._create_model_config()
-        config = SurveyAgentConfig(model_config=model_config)
-        with pytest.raises(ValueError, match="is not an instance of"):
-            config.max_papers = "5"
+            AgentConfig(agent_type="plan", model_config=model_config)
 
 
 class TestIdeaAgentConfig:

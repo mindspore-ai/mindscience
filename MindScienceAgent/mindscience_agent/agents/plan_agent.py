@@ -75,7 +75,7 @@ class PlanAgent(BaseAgent):
     responses with <execute>or <solution>tags to guide subsequent execution steps.
 
     Args:
-        model (BaseModel): LLM backend.
+        model (Model): LLM backend.
         config (Dict[str, Any]): Agent section from unified config.
         tool_config (Dict[str, ToolConfig]): Tool configuration dict.
 

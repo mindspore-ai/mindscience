@@ -14,7 +14,7 @@
 # ============================================================================
 """Execute Agent — Execute subagent (adapted from end_to_end generate node).
 Uses deepagents + Tool/PythonREPL + StateGraph like the original stack,
-while inheriting BaseAgent and bridging OpenAIModel → ChatOpenAI.
+while inheriting BaseAgent and bridging Model → ChatOpenAI.
 """
 from __future__ import annotations
 
@@ -73,7 +73,7 @@ class ExecuteAgent(BaseAgent):
     inside a deep agent subgraph and returns the result wrapped in <observation>.
 
     Args:
-        model (BaseModel): LLM model.
+        model (Model): LLM model.
         config (Dict[str, Any]): Agent config.
         tool_config (Dict[str, ToolConfig]): Tool configuration dict.
 

@@ -1,5 +1,4 @@
 # Copyright 2026 Huawei Technologies Co., Ltd
-# Copyright 2025 InternAgent
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""OpenAI model adapter implementing BaseModel interface for MindScienceAgent."""
+"""Model interface for MindScienceAgent."""
 from typing import Dict, List, Optional, Any
 
 import json
@@ -22,18 +21,16 @@ from json_repair import repair_json
 from langchain_openai import ChatOpenAI
 from openai import AsyncOpenAI
 
-from mindscience_agent.model.base_model import BaseModel
 from mindscience_agent.utils import logger
 
 
-class OpenAIModel(BaseModel):
-    """OpenAI implementation of BaseModel interface.
+class Model:
+    """Implementation of Model interface.
 
     Args:
         config: Model configuration instance.
     """
     def __init__(self, config):
-        super().__init__(config)
         self.api_key = config.api_key
         self.base_url = config.base_url
         self.model_name = config.model_name
@@ -148,29 +145,6 @@ class OpenAIModel(BaseModel):
             raise ValueError(f"Model did not return valid JSON: {e}") from e
         except Exception as e:
             logger.error(f"Error generating JSON response from OpenAI: {e}")
-            raise
-
-    async def generate_json(self,
-                          prompt: str | list,
-                          schema: Dict[str, Any],
-                          system_prompt: Optional[str] = None,
-                          temperature: Optional[float] = None,
-                          default: Optional[Dict[str, Any]] = None,
-                          **kwargs) -> Dict[str, Any]:
-        """Generate JSON output from the model."""
-        try:
-            return await self.generate_with_json_output(
-                prompt=prompt,
-                json_schema=schema,
-                system_prompt=system_prompt,
-                temperature=temperature,
-                **kwargs
-            )
-        except Exception as e:
-            logger.error(f"Error in generate_json: {e}")
-            if default is not None:
-                logger.warning(f"Returning default JSON due to error: {e}")
-                return default
             raise
 
     def to_chat_openai(self):

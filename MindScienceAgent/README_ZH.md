@@ -26,31 +26,27 @@ MindScienceAgent是一个面向科研全流程的开源科研智能体，通过�
 - [许可证](#许可证)
 
 
-
-
-
 ## 整体设计
 
 MindScienceAgent是科研智能体系统MindSpore Science Agent的核心模块之一。MindScienceAgent由多个sub-agent和workflow组成：
 
-- sub-agent负责科研流程中的单点任务，如文献调研、假设生成、实验设计、自我修改、实验执行等；
+- sub-agent负责科研流程中的单点任务，如假设生成、实验设计、自我修改、实验执行等；
 
 - workflow支持将sub-agent能力串接成工作流，完成复杂科研任务。
 
-我们参考集成了业界开源(e.g.,[InternAgent](https://github.com/InternScience/InternAgent)、[Biomni](https://github.com/snap-stanford/Biomni) )中的文献调研、假设生成、实验设计、实验执行等sub-agent，并基于多智能体架构，实现科学实验全流程workflow编排。
+我们参考集成了业界开源(e.g.,[InternAgent](https://github.com/InternScience/InternAgent)、[Biomni](https://github.com/snap-stanford/Biomni) )中的假设生成、实验设计、实验执行等sub-agent，并基于多智能体架构，实现科学实验全流程workflow编排。
 
 <div align=center>
   <img src="../docs/images/mindspore_science_agent.png" alt="MindSpore Science Agent Architecture" width="600"/>
 </div>
 
-MindScienceAgent采用多Agent协作架构，包含以下七个核心sub-agent：
+MindScienceAgent采用多Agent协作架构，包含以下六个核心sub-agent：
 
 | sub-agent | 功能描述 |
 |-------|----------|
 | **Plan Agent** | 计划Agent，负责任务分析和计划生成，任务分解并生成带检查点的步骤列表，与Execute Agent交互执行代码，识别失败步骤并调整计划，最终输出答案。 |
 | **Execute Agent** | 执行Agent，是代码执行专家，从标签中提取Python代码执行，调试并修复错误，输出执行结果。 |
 | **Critic Agent** | 批评Agent，负责对计划提供建设性反馈，审查对话历史并严格批判分析不足之处，提供改进建议并识别缺失要素，迭代优化直到任务完成。 |
-| **Survey Agent** | 文献调研Agent，负责全面文献调研，生成搜索查询并从多个学术来源检索论文，迭代优化搜索策略，对论文评分并进行深度阅读分析。 |
 | **Idea Agent** | 假设生成Agent，负责生成创新性研究假设，基于研究目标生成多个假设候选，可配置创意水平并保证假设多样性，结合迭代反馈优化并输出结构化假设结果。 |
 | **Ranking Agent** | 评估Agent，负责对假设进行多标准加权评分和排序，基于多个评估维度对假设进行0-10分评分，输出排序后的假设列表及评分理由。 |
 | **Idea Critic Agent** | 假设批评Agent，负责对假设和方法进行关键评判，多维度评估逻辑一致性、科学可行性、可测试性、新颖性，提供可操作的改进建议。 |
@@ -92,7 +88,7 @@ MindScienceAgent 提供了信息搜索、文献调研等工具能力，部分工
 | 环境变量 | 说明 | 获取方式 |
 |---------|------|----------|
 | `DASHSCOPE_API_KEY`（可选）| `advanced_web_search_qwen`工具通过调用`qwen3.5-plus` API实现信息搜索与汇总，因此需要配置阿里云`DashScope API Key` | 登录 [DashScope 控制台](https://dashscope.console.aliyun.com/)，在"API-KEY管理"中创建并获取 |
-| `S2_API_KEY`（可选）| `Semantic Scholar API Key`，Survey Agent需使用，若不调用`Survey Agent`可忽略 | 登录 [Semantic Scholar](https://www.semanticscholar.org/)，在账户设置中申请 API Key |
+| `S2_API_KEY`（可选）| `Semantic Scholar API Key`，query_semantic_scholar工具需使用 | 登录 [Semantic Scholar](https://www.semanticscholar.org/)，在账户设置中申请 API Key |
 
 ### 3. 配置文件
 
