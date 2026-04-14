@@ -10,7 +10,7 @@ MindScienceSkills 是一个专为通用科学研究打造的开源智能体技�
 
 本仓库目前已内置了 300+ 专业科研技能（Skills），涵盖了参数配置繁琐的领域专用软件、各领域前沿 AI4S 模型、各学科专用的 Python 数据分析与处理工具库等，覆盖绝大部分日常科学分析、仿真与实验场景中的基础工具需求，降低 AI 跨学科调用的技术门槛。
 
-MindScienceSkills 可以与 Hermes Agent、OpenClaw、Claude Code、JiuwenClaw等智能体无缝集成，也支持直接接入您专属的 AI 科研助手中。
+MindScienceSkills可以与 Hermes Agent、OpenClaw、Claude Code、JiuwenClaw等智能体无缝集成，也支持直接接入您专属的 AI 科研助手中。
 
 ## 📑 目录
   - [💡 主要特性](#-主要特性)
@@ -66,8 +66,8 @@ MindScienceSkills 可以与 Hermes Agent、OpenClaw、Claude Code、JiuwenClaw�
 * 💻 **软件类技能的场景化指导：** 对于典型的计算软件（以 VASP 为例），我们不再只提供简单的输入模板。针对不同的使用场景和物质性质，我们在技能中内置了对应的查询方式与详细的参数调整指导。同时，我们还补充了运行结果的分析方法与后续的优化建议。这不仅能帮助大模型把软件成功运行起来，还能指导它根据结果做出合理的科学调整。
 
 
-### 3. 多硬件生态兼容
-我们在技能库中分别集成了适用于 GPU 生态和 NPU 生态的AI4S模型，您的科研助手可以在GPU/NPU上无缝调用相应的模型技能，实现科研计算任务的灵活、高效部署。
+### 3. 多生态兼容
+MindScienceSkills可以与 Hermes Agent、OpenClaw、Claude Code、JiuwenClaw等智能体框架无缝集成，也支持直接接入您专属的 AI 科研助手中。针对不同硬件，我们在技能库中分别集成了适用于 GPU 生态和 NPU 生态的AI4S模型，您的科研助手可以在GPU/NPU上无缝调用相应的模型技能，实现科研计算任务的灵活、高效部署。
 
 ---
 
