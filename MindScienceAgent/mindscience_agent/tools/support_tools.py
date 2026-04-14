@@ -19,143 +19,22 @@
 # ============================================================================
 """Support tools for MindScienceAgent providing various utility functions."""
 
-import base64
-import io
-import sys
-import os
-import subprocess
 import importlib
 import inspect
-from io import StringIO
-import matplotlib.pyplot as plt
+import os
+import random
+import re
+import time
+from io import BytesIO
+
+import arxiv
+import PyPDF2
+import requests
+from bs4 import BeautifulSoup
+from openai import OpenAI
+from pymed import PubMed
 
 from mindscience_agent.utils import logger
-
-# Create a persistent namespace that will be shared across all executions
-_persistent_namespace = {}
-
-# Global list to store captured plots
-_captured_plots = []
-
-
-def run_python_repl(command: str) -> str:
-    """Execute Python command in persistent environment and return output."""
-    def execute_in_repl(command: str) -> str:
-        """Helper function to execute the command in the persistent environment."""
-        old_stdout = sys.stdout
-        sys.stdout = mystdout = StringIO()
-
-        # Use the persistent namespace
-        global _persistent_namespace    # pylint: disable=W0602
-
-        try:
-            # Apply matplotlib monkey patches before execution
-            _apply_matplotlib_patches()
-
-            # Execute the command in the persistent namespace
-            exec(command, _persistent_namespace)    # pylint: disable=W0122
-            output = mystdout.getvalue()
-
-            # Capture any matplotlib plots that were generated
-            # _capture_matplotlib_plots()
-        except Exception as e:
-            output = f"Error: {str(e)}"
-        finally:
-            sys.stdout = old_stdout
-        return output
-
-    command = command.strip("```").strip()
-    return execute_in_repl(command)
-
-
-def _capture_matplotlib_plots():
-    """Capture any matplotlib plots generated during execution."""
-    global _captured_plots  # pylint: disable=W0602
-    try:
-        # Check if there are any active figures
-        if plt.get_fignums():
-            for fig_num in plt.get_fignums():
-                fig = plt.figure(fig_num)
-
-                # Save figure to base64
-                buffer = io.BytesIO()
-                fig.savefig(buffer, format="png", dpi=150, bbox_inches="tight")
-                buffer.seek(0)
-
-                # Convert to base64
-                image_data = base64.b64encode(buffer.getvalue()).decode("utf-8")
-                plot_data = f"data:image/png;base64,{image_data}"
-
-                # Add to captured plots if not already there
-                if plot_data not in _captured_plots:
-                    _captured_plots.append(plot_data)
-
-                # Close the figure to free memory
-                plt.close(fig)
-
-    except ImportError:
-        # matplotlib not available
-        pass
-    except Exception as e:
-        logger.debug(f"Warning: Could not capture matplotlib plots: {e}")
-
-
-def _apply_matplotlib_patches():
-    """Apply monkey patches to matplotlib functions to automatically capture plots."""
-    try:
-        # Only patch if matplotlib is available and not already patched
-        if hasattr(plt, "mindscience_patched"):
-            return
-
-        # Store original functions
-        original_show = plt.show
-        original_savefig = plt.savefig
-
-        def show_with_capture(*args, **kwargs):
-            """Enhanced show function that captures plots before displaying them."""
-            # Capture any plots before showing
-            _capture_matplotlib_plots()
-            # Print a message to indicate plot was generated
-            logger.debug("Plot generated and displayed")
-            # Call the original show function
-            return original_show(*args, **kwargs)
-
-        def savefig_with_capture(*args, **kwargs):
-            """Enhanced savefig function that captures plots after saving them."""
-            # Get the filename from args if provided
-            filename = args[0] if args else kwargs.get("fname", "unknown")
-            # Call the original savefig function
-            result = original_savefig(*args, **kwargs)
-            # Capture the plot after saving
-            _capture_matplotlib_plots()
-            # Print a message to indicate plot was saved
-            logger.debug(f"Plot saved to: {filename}")
-            return result
-
-        # Replace functions with enhanced versions
-        plt.show = show_with_capture
-        plt.savefig = savefig_with_capture
-
-        # Mark as patched to avoid double-patching
-        plt.mindscience_patched = True
-
-    except ImportError:
-        # matplotlib not available
-        pass
-    except Exception as e:
-        logger.warning(f"Could not apply matplotlib patches: {e}")
-
-
-def get_captured_plots():
-    """Get all captured matplotlib plots."""
-    global _captured_plots  # pylint: disable=W0602
-    return _captured_plots.copy()
-
-
-def clear_captured_plots():
-    """Clear all captured matplotlib plots."""
-    global _captured_plots  # pylint: disable=W0603
-    _captured_plots = []
 
 
 def read_function_source_code(function_name: str) -> str:
@@ -180,125 +59,279 @@ def read_function_source_code(function_name: str) -> str:
         return f"Error: Could not find function '{function_name}'. Details: {str(e)}"
 
 
-def download_synapse_data(
-    entity_ids: str | list[str],
-    download_location: str = ".",
-    follow_link: bool = False,
-    recursive: bool = False,
-    timeout: int = 300,
-    entity_type: str = "dataset",
-):
-    """Download data from Synapse using entity IDs."""
-    # Check for required authentication token
-    synapse_token = os.environ.get("SYNAPSE_AUTH_TOKEN")
-    if not synapse_token:
-        return {
-            "success": False,
-            "error": "SYNAPSE_AUTH_TOKEN environment variable is required for downloading",
-            "suggestion": "Set SYNAPSE_AUTH_TOKEN with your Synapse personal access token",
-        }
-
-    # Check if synapse CLI is available
+def query_arxiv(query: str, max_papers: int = 10) -> str:
+    """Query arXiv for papers based on the provided search query."""
     try:
-        subprocess.run(["synapse", "--version"], capture_output=True, check=True)
-    except (subprocess.CalledProcessError, FileNotFoundError):
+        client = arxiv.Client()
+        search_res = arxiv.Search(query=query, max_results=max_papers, sort_by=arxiv.SortCriterion.Relevance)
+        results = "\n\n".join([
+            f"Title: {paper.title}\nSummary: {paper.summary}" for paper in client.results(search_res)
+        ])
+        return results if results else "No papers found on arXiv."
+    except Exception as e:
+        return f"Error querying arXiv: {e}"
+
+
+def query_pubmed(query: str, max_papers: int = 10, max_retries: int = 3) -> str:
+    """Query PubMed for papers based on the provided search query."""
+    try:
+        pubmed = PubMed(tool="MyTool", email="your-email@example.com")  # Update with a valid email address
+
+        # Initial attempt
+        papers = list(pubmed.query(query, max_results=max_papers))
+
+        # Retry with modified queries if no results
+        retries = 0
+        while not papers and retries < max_retries:
+            retries += 1
+            # Simplify query with each retry by removing the last word
+            simplified_query = " ".join(query.split()[:-retries]) if len(query.split()) > retries else query
+            time.sleep(1)  # Add delay between requests
+            papers = list(pubmed.query(simplified_query, max_results=max_papers))
+
+        if papers:
+            results = "\n\n".join(
+                [f"Title: {paper.title}\nAbstract: {paper.abstract}\nJournal: {paper.journal}" for paper in papers]
+            )
+            return results
+
+        return "No papers found on PubMed after multiple query attempts."
+    except Exception as e:
+        return f"Error querying PubMed: {e}"
+
+
+def advanced_web_search_qwen(
+    query: str,
+    max_retries: int = 3,
+    base_url: str = "https://dashscope.aliyuncs.com/api/v2/apps/protocols/compatible-mode/v1",
+    model: str = "qwen3.5-plus",
+    enable_thinking: bool = True,
+    timeout: int = 60,
+) -> str:
+    """Advanced web search using Qwen API with built-in web_search tool."""
+    if not query or not query.strip():
+        raise ValueError("Query cannot be empty")
+
+    api_key = os.getenv("DASHSCOPE_API_KEY")
+
+    if not api_key:
+        raise ValueError("DASHSCOPE_API_KEY key must be set in environment variables.")
+
+    client = OpenAI(api_key=api_key, base_url=base_url, timeout=timeout)
+
+    delay = random.randint(1, 10)
+    last_error = None
+
+    for attempt in range(1, max_retries + 1):
         try:
-            # Try to install synapseclient
-            logger.debug("Installing synapseclient...")
-            subprocess.run(["pip", "install", "synapseclient"], check=True)
-            logger.debug("✓ synapseclient installed successfully")
-        except subprocess.CalledProcessError as e:
-            return {
-                "success": False,
-                "error": f"Failed to install synapseclient: {e}",
-                "suggestion": "Please install manually: pip install synapseclient",
-            }
+            logger.debug(f"Attempt {attempt}/{max_retries}: Processing query '{query[:50]}...'")
 
-    # Ensure entity_ids is a list
-    if isinstance(entity_ids, str):
-        entity_ids = [entity_ids]
-
-    # Validate that multiple IDs are only used with file entity type
-    if len(entity_ids) > 1 and entity_type != "file":
-        return {
-            "success": False,
-            "error": f"Multiple entity IDs are only supported for entity_type='file'. "
-            f"For entity_type='{entity_type}', only a single entity_id is supported.",
-            "suggestion": "Use a single entity_id string instead of a list, or change entity_type to 'file'",
-        }
-
-    # Validate that recursive is only used with folder entity type
-    if recursive and entity_type != "folder":
-        return {
-            "success": False,
-            "error": f"recursive=True is only valid for entity_type='folder'. "
-            f"For entity_type='{entity_type}', recursive should be False.",
-            "suggestion": "Set recursive=False, or change entity_type to 'folder' if appropriate",
-        }
-
-    # Create download directory if it doesn't exist
-    os.makedirs(download_location, exist_ok=True)
-
-    results = []
-    errors = []
-
-    for entity_id in entity_ids:
-        try:
-            # Build synapse download command with authentication
-            if entity_type == "dataset":
-                # For datasets, use query syntax to download the actual files
-                cmd = [
-                    "synapse",
-                    "-p",
-                    synapse_token,
-                    "get",
-                    "-q",
-                    f"select * from {entity_id}",
-                    "--downloadLocation",
-                    download_location,
-                ]
-            else:
-                # For files, folders, projects, use direct ID
-                cmd = ["synapse", "-p", synapse_token, "get", entity_id, "--downloadLocation", download_location]
-
-            # Add recursive flag only for folders (validation above ensures recursive is only True for folders)
-            if entity_type == "folder" and recursive:
-                cmd.append("-r")
-
-            if follow_link:
-                cmd.append("--followLink")
-
-            # Execute download
-            result = subprocess.run(cmd, capture_output=True, text=True, check=True, timeout=timeout)
-
-            results.append(
-                {
-                    "entity_id": entity_id,
-                    "success": True,
-                    "stdout": result.stdout,
-                    "download_location": download_location,
-                }
+            response = client.responses.create(
+                model=model,
+                input=query,
+                tools=[
+                    {"type": "web_search"},
+                    {"type": "web_extractor"},
+                ],
+                extra_body={"enable_thinking": enable_thinking}
             )
 
-        except subprocess.CalledProcessError as e:
-            error_msg = f"Failed to download {entity_id}: {e.stderr if e.stderr else str(e)}"
-            errors.append(error_msg)
-            results.append({"entity_id": entity_id, "success": False, "error": error_msg})
-        except subprocess.TimeoutExpired:
-            error_msg = f"Download timeout for {entity_id} (>{timeout} seconds)"
-            errors.append(error_msg)
-            results.append({"entity_id": entity_id, "success": False, "error": error_msg})
+            formatted_response = ""
+            citations = []
 
-    # Summary
-    successful_downloads = [r for r in results if r["success"]]
-    failed_downloads = [r for r in results if not r["success"]]
+            for item in response.output:
+                if item.type == "message":
+                    for content in item.content:
+                        if content.type == "output_text":
+                            formatted_response += content.text
 
-    return {
-        "success": len(failed_downloads) == 0,
-        "total_requested": len(entity_ids),
-        "successful": len(successful_downloads),
-        "failed": len(failed_downloads),
-        "download_location": download_location,
-        "results": results,
-        "errors": errors if errors else None,
-    }
+                elif item.type == "web_search_call":
+                    if hasattr(item, 'action') and hasattr(item.action, 'sources'):
+                        for source in item.action.sources:
+                            if source.type == "url":
+                                citations.append({"url": source.url})
+
+                elif item.type == "web_extractor_call":
+                    if hasattr(item, 'urls'):
+                        for url in item.urls:
+                            citations.append({"url": url})
+
+            if citations:
+                formatted_response += "\n\nSources:\n"
+                unique_urls = list({cite["url"] for cite in citations})
+                for i, url in enumerate(unique_urls, 1):
+                    formatted_response += f"{i}. {url}\n"
+
+            logger.debug(f"Successfully processed query. Found {len(citations)} citations.")
+            return formatted_response
+
+        except Exception as e:
+            last_error = e
+            logger.warning(f"Attempt {attempt}/{max_retries} failed: {str(e)}")
+
+            if attempt < max_retries:
+                sleep_time = delay * (2 ** (attempt - 1))
+                logger.debug(f"Retrying in {sleep_time} seconds...")
+                time.sleep(sleep_time)
+            else:
+                logger.error(f"All {max_retries} attempts failed for query: {query[:50]}...")
+                return f"Error performing web search after {max_retries} attempts: {str(e)}"
+
+    return f"Error performing web search after {max_retries} attempts: {str(last_error)}"
+
+
+def extract_url_content(url: str) -> str:
+    """Extract the text content of a webpage using requests and BeautifulSoup."""
+    response = requests.get(url, headers={"User-Agent": "Mozilla/5.0"}, timeout=30)
+
+    # Check if the response is in text format
+    if "text/plain" in response.headers.get("Content-Type", "") or "application/json" in response.headers.get(
+        "Content-Type", ""
+    ):
+        return response.text.strip()  # Return plain text or JSON response directly
+
+    # If it's HTML, use BeautifulSoup to parse
+    soup = BeautifulSoup(response.text, "html.parser")
+
+    # Try to find main content first, fallback to body
+    content = soup.find("main") or soup.find("article") or soup.body
+
+    # Remove unwanted elements
+    for element in content(["script", "style", "nav", "header", "footer", "aside", "iframe"]):
+        element.decompose()
+
+    # Extract text with better formatting
+    paragraphs = content.find_all(["p", "h1", "h2", "h3", "h4", "h5", "h6"])
+    cleaned_text = []
+
+    for p in paragraphs:
+        text = p.get_text().strip()
+        if text:  # Only add non-empty paragraphs
+            cleaned_text.append(text)
+
+    return "\n\n".join(cleaned_text)
+
+
+def extract_pdf_content(url: str) -> str:
+    """Extract text content of a PDF file given its URL."""
+    try:
+        # Check if the URL ends with .pdf
+        if not url.lower().endswith(".pdf"):
+            # If not, try to find a PDF link on the page
+            response = requests.get(url, timeout=30)
+            if response.status_code == 200:
+                # Look for PDF links in the HTML content
+                pdf_links = re.findall(r'href=[\'"]([^\'"]+\.pdf)[\'"]', response.text)
+                if pdf_links:
+                    # Use the first PDF link found
+                    if not pdf_links[0].startswith("http"):
+                        # Handle relative URLs
+                        base_url = "/".join(url.split("/")[:3])
+                        url = base_url + pdf_links[0] if pdf_links[0].startswith("/") else base_url + "/" + pdf_links[0]
+                    else:
+                        url = pdf_links[0]
+                else:
+                    return f"No PDF file found at {url}. Please provide a direct link to a PDF file."
+
+        # Download the PDF
+        response = requests.get(url, timeout=30)
+
+        # Check if we actually got a PDF file (by checking content type or magic bytes)
+        content_type = response.headers.get("Content-Type", "").lower()
+        if "application/pdf" not in content_type and not response.content.startswith(b"%PDF"):
+            return f"The URL did not return a valid PDF file. Content type: {content_type}"
+
+        pdf_file = BytesIO(response.content)
+
+        # Try with PyPDF2 first
+        try:
+            text = ""
+            pdf_reader = PyPDF2.PdfReader(pdf_file)
+            for page in pdf_reader.pages:
+                text += page.extract_text() + "\n\n"
+        except Exception as e:
+            logger.warning(f"Error extracting text from PDF: {str(e)}")
+
+        # Clean up the text
+        text = re.sub(r"\s+", " ", text).strip()
+
+        if not text:
+            return "The PDF file did not contain any extractable text. It may be an image-based PDF requiring OCR."
+
+        return text
+
+    except requests.exceptions.RequestException as e:
+        return f"Error downloading PDF: {str(e)}"
+    except Exception as e:
+        return f"Error extracting text from PDF: {str(e)}"
+
+
+def query_semantic_scholar(
+    query: str,
+    max_papers: int = 10,
+    fields_of_study: str = "",
+    year: str = ""
+) -> str:
+    """Query Semantic Scholar for academic papers and research articles."""
+    try:
+        semantic_scholar_key = os.environ.get("S2_API_KEY", None)
+        if not semantic_scholar_key:
+            raise ValueError(
+                "Semantic Scholar API key not found. Please set the S2_API_KEY environment variable."
+            )
+
+        headers = {'x-api-key': semantic_scholar_key}
+
+        search_url = "https://api.semanticscholar.org/graph/v1/paper/search"
+
+        query_params = {
+            'query': query,
+            'limit': max_papers,
+            'fields': 'title,year,citationCount,abstract,tldr,isOpenAccess,openAccessPdf,authors'
+        }
+
+        if fields_of_study:
+            query_params['fields'] += ',fieldsOfStudy'
+
+        if year:
+            query_params['year'] = year
+
+        response = requests.get(search_url, params=query_params, headers=headers, timeout=30)
+
+        if response.status_code == 200:
+            searched_data = response.json().get('data', [])
+
+            if not searched_data:
+                return "No papers found on Semantic Scholar."
+
+            results = []
+            for paper in searched_data:
+                title = paper.get('title', 'N/A')
+                year_pub = paper.get('year', 'N/A')
+                citation_count = paper.get('citationCount', 'N/A')
+                abstract = paper.get('abstract', paper.get('tldr', 'N/A'))
+                is_open_access = paper.get('isOpenAccess', False)
+                pdf_url = paper.get('openAccessPdf', 'N/A')
+                authors = paper.get('authors', [])
+
+                author_list = ', '.join([a.get('name', 'N/A') for a in authors]) if authors else 'N/A'
+
+                result_text = f"Title: {title}\n"
+                result_text += f"Authors: {author_list}\n"
+                result_text += f"Year: {year_pub}\n"
+                result_text += f"Citation Count: {citation_count}\n"
+                result_text += f"Open Access: {'Yes' if is_open_access else 'No'}\n"
+
+                if pdf_url != 'N/A':
+                    result_text += f"PDF URL: {pdf_url}\n"
+
+                result_text += f"Abstract: {abstract}\n"
+
+                results.append(result_text)
+
+            return "\n\n---\n\n".join(results)
+
+        return f"Error querying Semantic Scholar: HTTP {response.status_code} - {response.text}"
+
+    except Exception as e:
+        return f"Error querying Semantic Scholar: {str(e)}"

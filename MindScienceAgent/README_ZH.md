@@ -82,7 +82,6 @@ pip install -r requirements.txt
 ```
 
 
-
 ### 2. 配置文件
 
 编辑 `mindscience_agent.yaml` 配置参数，配置您的模型API Key等信息：
@@ -93,9 +92,9 @@ model_defaults:                                     # 默认模型配置
   model_name: "your-model-id"                       # 使用的模型名称
   provider: "openai"                                # 模型提供商，目前仅支持openai接口
   base_url: "https://your-api-endpoint.example/v1"  # API 端点
-  api_key: "YOUR_API_KEY"                           # 从环境变量读取
+  api_key: "YOUR_API_KEY"                           # 模型API Key
 
-# 每个Agent可独立配置 model和agent 两类配置项model
+# 每个Agent可独立配置 model和agent 两类配置项
 # model配置项用于指定某个agent的模型参数，会覆盖 model_defaults 中的默认配置
 # agent 配置项用于指定该Agent特有的行为参数
 agents:                                             # Agent级别配置（可选）
@@ -123,30 +122,29 @@ MindScienceAgent 提供了信息搜索、文献调研等工具能力，部分工
 
 | 环境变量 | 说明 | 获取方式 |
 |---------|------|----------|
-| `DASHSCOPE_API_KEY`| `advanced_web_search_qwen`工具通过调用`qwen3.5-plus` API实现信息搜索与汇总，因此需要配置阿里云`DashScope API Key` | 登录 [DashScope 控制台](https://dashscope.console.aliyun.com/)，在"API-KEY管理"中创建并获取 |
-| `S2_API_KEY`| `Semantic Scholar API Key`，Survey Agent需使用，若不调用`Survey Agent`可忽略 | 登录 [Semantic Scholar](https://www.semanticscholar.org/)，在账户设置中申请 API Key |
+| `DASHSCOPE_API_KEY` | `advanced_web_search_qwen`工具通过调用`qwen3.5-plus` API实现信息搜索与汇总，因此需要配置阿里云`DashScope API Key` | 登录 [DashScope 控制台](https://dashscope.console.aliyun.com/)，在"API-KEY管理"中创建并获取 |
+| `S2_API_KEY` | `Semantic Scholar API Key`，query_semantic_scholar工具需使用 | 登录 [Semantic Scholar](https://www.semanticscholar.org/)，在账户设置中申请 API Key |
+
+
 ### 4. 运行 Experiment Workflow
 
 ```bash
-python main.py
+python run_workflow.py --prompt 'Please help me analyse the molecular weight of the following drug molecule: Aspirin (acetylsalicylic acid) SMILES: CC(=O)OC1=CC=CC=C1C(=O)O'
 ```
 
 支持以下参数：
+- `--prompt`: （必填）传入 prompt 内容
 - `--config-path`: 配置文件路径（默认 `./mindscience_agent.yaml`）
 - `--enable-critic`: 启用 critic agent 进行迭代优化
 - `--test-time-scale-round`: critic 迭代轮数（默认 1）
-- `--prompt`: 直接传入 prompt 内容（可选，若不传入则使用内置默认 prompt）
 
 示例：
 ```bash
 # 传入配置文件（请替换为实际的配置文件路径）
-python main.py --config-path ./mindscience_agent.yaml
+python run_workflow.py --prompt 'Please help me analyse the molecular weight of the following drug molecule: Aspirin (acetylsalicylic acid) SMILES: CC(=O)OC1=CC=CC=C1C(=O)O' --config-path ./mindscience_agent.yaml
 
 # 启用 critic 模式
-python main.py --enable-critic --test-time-scale-round 3
-
-# 直接传入 prompt 内容
-python main.py --prompt 'Chlorine perchlorate (Cl2O4) is an interesting oxide of chlorine. The chlorine atoms have different oxidation states. What is the product of their oxidation states (e.g. If the oxidation states are +3 and +5, provide "15" as your answer)?'
+python run_workflow.py --prompt 'Please help me analyse the molecular weight of the following drug molecule: Aspirin (acetylsalicylic acid) SMILES: CC(=O)OC1=CC=CC=C1C(=O)O' --enable-critic --test-time-scale-round 3
 ```
 
 ## MindScienceAgent应用案例
@@ -180,6 +178,31 @@ MindScienceAgent在FrontierScience基准测试中准确率达到**74.68%**，超
 One equivalent of <INCHI>InChI=1S/C10H18O4/c1-5(7(3)9(11)12)6(2)8(4)10(13)14/h5-8H,1-4H3,(H,11,12)(H,13,14)/p-2</INCHI>, <SMILES>CC(C(C)C(C)C([O-])=O)C(C)C([O-])=O</SMILES>, <IUPAC>2,3,4,5-tetramethyl-hexanedioate</IUPAC> undergoes electrolysis, reacting with itself to give the major symmetric product X. Identify molecule X.
 ```
 详细代码与步骤请参阅示例Notebook：[olympiad-chemistry.ipynb](examples/frontierscience/olympiad-chemistry.ipynb)
+
+#### Benchmark测试代码
+
+测试脚本为 eval/eval_frontierscience.py，该脚本使用 MindScienceAgent 目录下的 run_workflow.py 及 mindscience_agent.yaml 来执行 Benchmark 测试。
+
+数据准备：
+- 下载数据集：https://huggingface.co/datasets/openai/frontierscience/raw/main/olympiad/test.jsonl
+- 或使用命令：wget https://huggingface.co/datasets/openai/frontierscience/resolve/main/olympiad/test.jsonl
+
+运行命令：
+```bash
+export PYTHONPATH=/path/to/MindScienceAgent/
+python eval/eval_frontierscience.py --data_path <data_file> [--options]
+```
+
+参数说明：
+- `--data_path` (必填) 数据文件路径，JSONL格式
+- `--log_dir` (可选) 日志保存目录，默认 "frontierscience_results"
+- `--concurrent_processes` (可选) 最大并发进程数，默认 8
+- `--n` (可选) 每个问题运行次数，默认 8
+
+示例：
+```bash
+python eval/eval_frontierscience.py --data_path test.jsonl --log_dir results --concurrent_processes 4 --n 4
+```
 
 
 ### 二、计算仿真类任务：化学材料计算仿真

@@ -20,6 +20,8 @@ import logging
 import traceback
 import threading
 
+from mindscience_agent.config.log_config import LogConfig
+
 __all__ = ['init_logger']
 
 _setup_logger_lock = threading.Lock()
@@ -39,7 +41,13 @@ def _get_logger():
     if GLOBAL_LOGGER:
         return GLOBAL_LOGGER
 
-    raise ValueError("logger is not initialized, please call init_logger(logging_config) first to initialize it.")
+    config = LogConfig(level="INFO")
+    log = init_logger(config)
+    warning(
+        "logger is not initialized, using default config: level=INFO. "
+        "Please call init_logger(logging_config) first to initialize it with your desired config."
+    )
+    return log
 
 
 def _get_stack_info(frame):

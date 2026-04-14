@@ -13,6 +13,7 @@
 # limitations under the License.
 # ============================================================================
 """MindScienceAgent configuration management."""
+import os
 from pathlib import Path
 from typing import Dict, Optional
 
@@ -69,6 +70,9 @@ class MindScienceConfig(BaseConfig):
             config_data = yaml.safe_load(f)
 
         config = cls._parse_config_data(config_data)
+
+        # Validate required environment variables
+        cls._validate_env_vars()
 
         config.print_config()
 
@@ -180,6 +184,30 @@ class MindScienceConfig(BaseConfig):
             else:
                 lines.append(f"{prefix}{connector}{key}: {value}")
         return lines
+
+    @classmethod
+    def _validate_env_vars(cls):
+        """Validate that required environment variables are set."""
+        # Define environment variables that need validation
+        env_var_requirements = {
+            "DASHSCOPE_API_KEY": {
+                "tools": ["advanced_web_search_qwen"],
+                "get_from": "https://dashscope.console.aliyun.com/ (API-KEY management)",
+            },
+            "S2_API_KEY": {
+                "tools": ["query_semantic_scholar"],
+                "get_from": "https://www.semanticscholar.org/ (Account Settings > API Key)",
+            },
+        }
+
+        for env_var, info in env_var_requirements.items():
+            if env_var not in os.environ or not os.environ[env_var]:
+                tools_str = ", ".join(info["tools"])
+                logger.warning(
+                    f"Environment variable '{env_var}' is not set. "
+                    f"It may be used by tools: {tools_str}. "
+                    f"Get it from: {info['get_from']}"
+                )
 
     def _get_config_dict(self, obj, depth: int = 0, max_depth: int = 3) -> dict:
         """Recursively get config object's attributes as dictionary."""

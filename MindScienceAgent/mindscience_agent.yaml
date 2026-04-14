@@ -1,10 +1,11 @@
+# default model configurations for all agents; each agent can override these settings
 model_defaults:
-  model_name: "your-model-id"
+  model_name: null    # Your Model Name Here (e.g., "glm-5")
   provider: "openai"
-  base_url: "https://your-api-endpoint.example/v1"
-  api_key: "YOUR_API_KEY"
-  temperature: 0.2
-  max_tokens: 4096
+  base_url: null      # Your API Base URL Here (e.g., "https://api.openai.com/v1")
+  api_key: null       # Your API Key Here (e.g., "sk-...")
+  temperature: 0.7
+  max_tokens: 8192
   timeout: 60
   max_retries: 2
   max_connections: 8
@@ -19,7 +20,7 @@ agents:
       base_url: null
       api_key: null
       temperature: 0.7
-      max_tokens: 4096
+      max_tokens: 8192
       timeout: 60
       max_retries: 2
       max_connections: 8
@@ -37,7 +38,7 @@ agents:
       base_url: null
       api_key: null
       temperature: 0.7
-      max_tokens: 4096
+      max_tokens: 8192
       timeout: 60
       max_retries: 2
       max_connections: 8
@@ -53,7 +54,7 @@ agents:
       base_url: null
       api_key: null
       temperature: 0.7
-      max_tokens: 4096
+      max_tokens: 8192
       timeout: 60
       max_retries: 2
       max_connections: 8

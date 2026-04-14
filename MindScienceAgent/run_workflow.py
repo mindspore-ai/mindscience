@@ -15,25 +15,32 @@
 """Run MindScienceAgent from the command line.
 This module lives next to ``mindscience_agent.yaml`` at the repository root. Run from the
 ``MindScienceAgent`` root directory or set PYTHONPATH:
-    python main.py
-    python main.py --config-path mindscience_agent.yaml
-    python main.py --enable-critic  # Enable critic agent for idea evaluation
-    python main.py --prompt "Your custom prompt here"  # Run with custom prompt
-    python main.py --enable-critic --test-time-scale-round 3 # Enable critic and set 3 test rounds
+    python run_workflow.py --prompt "Your custom prompt here"
+    python run_workflow.py --prompt "Your custom prompt here" --config-path mindscience_agent.yaml
+    python run_workflow.py --prompt "Your custom prompt here" --enable-critic --test-time-scale-round 3
 """
 from __future__ import annotations
 
-import os
-import argparse
+import sys
+
 import asyncio
+import argparse
+import os
 from mindscience_agent.utils import load_env, set_ssl_cert_file_path
 from mindscience_agent.workflow import ExperimentWorkflow
 from mindscience_agent.config import MindScienceConfig
 
 
 async def main() -> None:
+    """Main function to run MindScienceAgent from command line."""
     # read args
     parser = argparse.ArgumentParser(description="MindScienceAgent command-line entry.")
+    parser.add_argument(
+        "--prompt",
+        type=str,
+        default="",
+        help="Prompt to pass to the agent.",
+    )
     parser.add_argument(
         "--config-path",
         type=str,
@@ -47,23 +54,29 @@ async def main() -> None:
         default=1,
         help="",
     )
-    parser.add_argument(
-        "--prompt",
-        type=str,
-        default=None,
-        help="Prompt to pass to the agent. If provided, overrides the default prompt.",
-    )
     args = parser.parse_args()
 
-    # create and validate config
-    config = MindScienceConfig.init_config_from_yaml(args.config_path)
+    if not args.prompt.strip():
+        print("="*55, flush=True)
+        print("Please provide a science-related question as --prompt", flush=True)
+        print("="*55, flush=True)
+        print("Example:", flush=True)
+        print(
+            'python run_workflow.py --prompt "Please help me analyse the molecular weight of '
+            'the following drug molecule: Aspirin (acetylsalicylic acid) '
+            'SMILES: CC(=O)OC1=CC=CC=C1C(=O)O"',
+            flush=True
+        )
+        sys.exit(0)
 
     # set env variables
     if os.path.exists(".env"):
         load_env(".env")
-	
-    set_ssl_cert_file_path()
 
+    # create and validate config
+    config = MindScienceConfig.init_config_from_yaml(args.config_path)
+
+    set_ssl_cert_file_path()
 
     # init workflow
     agent = ExperimentWorkflow(
@@ -72,13 +85,8 @@ async def main() -> None:
         test_time_scale_round=args.test_time_scale_round
     )
 
-    # set a prompt
-    default_prompt = 'Chlorine perchlorate (Cl2O4) is an interesting oxide of chlorine. The chlorine atoms have different oxidation states. What is the product of their oxidation states (e.g. If the oxidation states are +3 and +5, provide "15" as your answer)?'
-
-    prompt = args.prompt if args.prompt else default_prompt
-
     # run workflow
-    await agent.run(prompt)
+    await agent.run(args.prompt)
 
 
 if __name__ == "__main__":

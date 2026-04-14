@@ -14,7 +14,6 @@
 # ============================================================================
 """Model configuration classes for MindScienceAgent."""
 from mindscience_agent.config.base_config import BaseConfig
-from mindscience_agent.utils import logger
 from mindscience_agent.config import validator
 
 SUPPORTED_PROVIDERS = ["openai"]
@@ -28,8 +27,8 @@ class ModelConfig(BaseConfig):
         provider (str, optional): Model provider name. Defaults to "openai".
         base_url (str, optional): Base URL for API. Defaults to None.
         api_key (str, optional): API key for authentication. Defaults to None.
-        temperature (float, optional): Temperature for generation. Defaults to 0.2.
-        max_tokens (int, optional): Maximum tokens per request. Defaults to 4096.
+        temperature (float, optional): Temperature for generation. Defaults to 0.7.
+        max_tokens (int, optional): Maximum tokens per request. Defaults to 8192.
         timeout (int, optional): Request timeout in seconds. Defaults to 60.
         max_retries (int, optional): Maximum retry attempts. Defaults to 2.
         max_connections (int, optional): Maximum concurrent connections. Defaults to 8.
@@ -41,8 +40,8 @@ class ModelConfig(BaseConfig):
         provider: str = "openai",
         base_url: str = None,
         api_key: str = None,
-        temperature: float = 0.2,
-        max_tokens: int = 4096,
+        temperature: float = 0.7,
+        max_tokens: int = 8192,
         timeout: int = 60,
         max_retries: int = 2,
         max_connections: int = 8,

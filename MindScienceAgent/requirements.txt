@@ -36,5 +36,6 @@ pymed>=0.8.9
 # 3. Utilities, testing, and visualization
 # ---------------------------------------------------------------------------
 pandas>=2.0.0
+psutil>=5.9.0
 matplotlib>=3.8.0
 pytest-asyncio>=0.20.0

@@ -15,7 +15,7 @@
 # MODIFICATION NOTICE:
 # This file contains code from Biomni, which is licensed under the Apache License, Version 2.0 (the "License").
 # This file was modified by MindSpore Science Team on 2026.
-# Changes include: 
+# Changes include:
 # 1. remove library, custom resources.
 # 2. add skills.
 # ============================================================================
@@ -44,12 +44,7 @@ from typing import Any, Dict, Optional, Union
 from langchain_core.tools import Tool
 from deepagents import create_deep_agent
 from deepagents.backends import FilesystemBackend
-try:
-    from langchain_experimental.utilities import PythonREPL
-    python_repl_func = PythonREPL().run
-except ImportError as e:
-    from mindscience_agent.tools.support_tools import run_python_repl
-    python_repl_func = run_python_repl
+from langchain_experimental.utilities import PythonREPL
 
 from mindscience_agent.tools.tool_registry import ToolRegistry
 from mindscience_agent.tools.tool_retriever import ToolRetriever
@@ -114,7 +109,7 @@ class BaseAgent(abc.ABC):
 
         python_skill_tool = Tool(
             name="python_executor",
-            func=python_repl_func,
+            func=PythonREPL().run,
             description=(
                 "Execute Python code to process data, analyze results, or perform computations. "
                 "Input should be a valid Python code snippet. Use this tool for tasks that require "
