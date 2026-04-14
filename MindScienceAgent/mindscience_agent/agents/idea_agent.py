@@ -1,5 +1,4 @@
 # Copyright 2026 Huawei Technologies Co., Ltd
-# Copyright 2025 InternAgent
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -71,7 +70,7 @@ class IdeaAgent(BaseAgent):
     survey results. It propose testable hypotheses that address specific research goals.
 
     Args:
-        model (BaseModel): Language model for generating ideas.
+        model (Model): Language model for generating ideas.
         config (IdeaAgentConfig): Agent configuration containing parameters like minimal_ideas.
         tool_config (Dict[str, ToolConfig], optional): Tool configurations for the agent.
 

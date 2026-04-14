@@ -13,12 +13,7 @@
 # limitations under the License.
 # ============================================================================
 """Tool configuration classes for MindScienceAgent."""
-from typing import List
-
 from mindscience_agent.config.base_config import BaseConfig
-from mindscience_agent.config import validator
-
-SUPPORTED_PAPER_SOURCES = ["pubmed", "arxiv", "semantic_scholar"]
 
 
 class ToolConfig(BaseConfig):
@@ -44,43 +39,6 @@ class ToolConfig(BaseConfig):
         return self._tool_name
 
 
-class PaperSurveyConfig(ToolConfig):
-    """Configuration class for paper survey tool settings.
-
-    Args:
-        max_results (int, optional): Maximum number of results. Defaults to 10.
-        sources (List[str], optional): List of paper sources. Defaults to ["pubmed", "arxiv", "semantic_scholar"].
-        **kwargs: Additional configuration parameters.
-    """
-    def __init__(   # pylint: disable=W0102
-        self,
-        max_results: int = 10,
-        sources: List[str] = SUPPORTED_PAPER_SOURCES,
-        **kwargs,
-    ):
-        super().__init__(tool_name="paper_survey", **kwargs)
-
-        self.max_results = max_results
-        self.sources = sources
-
-
-@PaperSurveyConfig.validator("max_results")
-def validate_max_results(config_instance: PaperSurveyConfig, max_results):  # pylint: disable=W0613
-    """Validate max_results."""
-    validator.check_type("max_results", value=max_results, expected_type=int)
-    validator.check_number_range("max_results", value=max_results, min_value=0, max_value=20)
-    return max_results
-
-
-@PaperSurveyConfig.validator("sources")
-def validate_sources(config_instance: PaperSurveyConfig, sources):  # pylint: disable=W0613
-    """Validate sources."""
-    validator.check_type("sources", value=sources, expected_type=list)
-    validator.check_list_subset("sources", sources, SUPPORTED_PAPER_SOURCES)
-    return sources
-
-
 # Tool config class registry for extensibility
 TOOL_CONFIG_CLASSES = {
-    "paper_survey": PaperSurveyConfig,
 }

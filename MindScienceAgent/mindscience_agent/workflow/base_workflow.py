@@ -1,5 +1,4 @@
 # Copyright 2026 Huawei Technologies Co., Ltd
-# Copyright 2025 Biomni
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,8 +19,7 @@ Contains shared initialization and runtime utilities that can be reused by
 different workflow implementations.
 """
 from mindscience_agent.config.mindscience_config import MindScienceConfig
-from mindscience_agent.agents.agent_factory import AgentFactory
-from mindscience_agent.model.model_factory import ModelFactory
+from mindscience_agent.agents.agent_manager import AgentManager
 from mindscience_agent.utils import logger
 
 
@@ -40,10 +38,6 @@ class BaseWorkflow:
     # =========================================================================
     # Initialization
     # =========================================================================
-    def _init_model(self):
-        """Initialize shared model factory for agent construction."""
-        self.model_factory = ModelFactory()     # pylint: disable=W0201
-
     def _print_message(self, result, process):
         """Print message to logger."""
         if result['role'] == "user":
@@ -57,16 +51,15 @@ class BaseWorkflow:
         logger.info(f"message added to context from {process}:\n" + msg_title + result['content'] + msg_ending)
 
     # =========================================================================
-    # Agent Creation (unified via AgentFactory)
+    # Agent Creation (unified via AgentManager)
     # =========================================================================
     def _create_agents(self):
-        """Create all agents via AgentFactory."""
+        """Create all agents via AgentManager."""
         for agent_type in self.AGENT_TYPES:
-            agent = AgentFactory.create_agent(
+            agent = AgentManager.create_agent(
                 agent_type=agent_type,
                 config=self.config.get_agent_config(agent_type),
                 tool_config=self.config.tools,
-                model_factory=self.model_factory,
             )
             setattr(self, f"{agent_type}_agent", agent)
 

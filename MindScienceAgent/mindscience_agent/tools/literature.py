@@ -1,5 +1,4 @@
 # Copyright 2026 Huawei Technologies Co., Ltd
-# Copyright 2025 Biomni
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,6 +11,14 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+# ============================================================================
+# MODIFICATION NOTICE:
+# This file contains code from Biomni, which is licensed under the Apache License, Version 2.0 (the "License").
+# This file was modified by MindSpore Science Team on 2026.
+# Changes include: 
+# 1. change advanced_web_search_claude to advanced_web_search_qwen.
+# 2. add query_semantic_scholar function.
+# 3. remove unused code snippets.
 # ============================================================================
 """Literature search and web scraping utilities for academic papers."""
 import os

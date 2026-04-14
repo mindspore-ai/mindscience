@@ -14,9 +14,10 @@
 # ============================================================================
 """Model configuration classes for MindScienceAgent."""
 from mindscience_agent.config.base_config import BaseConfig
-from mindscience_agent.model.model_factory import ModelFactory
 from mindscience_agent.utils import logger
 from mindscience_agent.config import validator
+
+SUPPORTED_PROVIDERS = ["openai"]
 
 
 class ModelConfig(BaseConfig):
@@ -65,9 +66,8 @@ class ModelConfig(BaseConfig):
 @ModelConfig.validator("provider")
 def validate_provider(config_instance: ModelConfig, provider):  # pylint: disable=W0613
     """Validate provider."""
-    supported_providers = ModelFactory.get_available_models().keys()
-    if provider not in supported_providers:
-        logger.warning(f"{provider} provider is not supported, supported providers are {supported_providers}")
+    if provider not in SUPPORTED_PROVIDERS:
+        raise ValueError(f"{provider} provider is not supported, supported providers are {SUPPORTED_PROVIDERS}")
     return provider
 
 

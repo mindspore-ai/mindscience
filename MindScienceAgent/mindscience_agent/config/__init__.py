@@ -15,8 +15,8 @@
 """Configuration management for MindScienceAgent."""
 from mindscience_agent.config.base_config import BaseConfig
 from mindscience_agent.config.model_config import ModelConfig
-from mindscience_agent.config.agent_config import AgentConfig, SurveyAgentConfig, IdeaAgentConfig
-from mindscience_agent.config.tool_config import ToolConfig, PaperSurveyConfig
+from mindscience_agent.config.agent_config import AgentConfig, IdeaAgentConfig
+from mindscience_agent.config.tool_config import ToolConfig
 from mindscience_agent.config.log_config import LogConfig
 from mindscience_agent.config.mindscience_config import MindScienceConfig
 
@@ -24,10 +24,8 @@ __all__ = [
     "BaseConfig",
     "ModelConfig",
     "AgentConfig",
-    "SurveyAgentConfig",
     "IdeaAgentConfig",
     "ToolConfig",
-    "PaperSurveyConfig",
     "LogConfig",
     "MindScienceConfig",
 ]

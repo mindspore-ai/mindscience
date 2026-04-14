@@ -1,5 +1,4 @@
 # Copyright 2026 Huawei Technologies Co., Ltd
-# Copyright 2025 InternAgent
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,22 +17,21 @@ import importlib
 
 from typing import Dict, Type
 
-from mindscience_agent.model.model_factory import ModelFactory
+from mindscience_agent.model.model import Model
 from mindscience_agent.agents.base_agent import BaseAgent
 from mindscience_agent.utils import logger
 from mindscience_agent.config.agent_config import AgentConfig
 from mindscience_agent.config.tool_config import ToolConfig
 
 
-class AgentFactory:
+class AgentManager:
     """Factory for creating agent instances based on configuration.
 
     Args:
         agent_type (str): Type identifier (e.g. "plan", "execute").
         config (AgentConfig): Agent configuration dict.
         tool_config (Dict[str, ToolConfig]): Tool configuration dict.
-        model_factory (Optional[ModelFactory]): Optional ModelFactory for creating models.
-        model (Optional[BaseModel]): Optional pre-prebuilt model instance.
+        model (Optional[Model]): Optional pre-built model instance.
     """
     @classmethod
     def create_agent(
@@ -41,17 +39,12 @@ class AgentFactory:
         agent_type: str,
         config: AgentConfig,
         tool_config: Dict[str, ToolConfig] = None,
-        model_factory: "ModelFactory" = None,
-        model = None,
+        model: Model = None,
         **kwargs
     ) -> BaseAgent:
         """Create an agent instance of the specified type."""
-        if model is None and model_factory is not None:
-            model = model_factory.create_model(config.model_config)
-        elif model is None:
-            raise ValueError(
-                f"Either model or model_factory must be provided for agent {agent_type}"
-            )
+        if model is None:
+            model = Model(config.model_config)
 
         agent_class = cls._import_agent_class(agent_type)
 

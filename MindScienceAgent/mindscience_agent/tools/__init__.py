@@ -15,10 +15,8 @@
 """Tool modules and registries for MindScienceAgent."""
 from mindscience_agent.tools.tool_registry import ToolRegistry
 from mindscience_agent.tools.tool_retriever import ToolRetriever
-from mindscience_agent.tools.paper_survey import PaperSurvey
 
 __all__ = [
     "ToolRegistry",
     "ToolRetriever",
-    "PaperSurvey",
 ]

@@ -15,11 +15,7 @@
 """Tests for tool_config module."""
 import pytest
 
-from mindscience_agent.config.tool_config import (
-    ToolConfig,
-    PaperSurveyConfig,
-    SUPPORTED_PAPER_SOURCES,
-)
+from mindscience_agent.config.tool_config import ToolConfig
 
 
 class TestToolConfig:
@@ -36,67 +32,3 @@ class TestToolConfig:
         config = ToolConfig(tool_name="test_tool", param1="value1", param2=42)
         assert config.param1 == "value1"
         assert config.param2 == 42
-
-
-class TestPaperSurveyConfig:
-    """Test cases for PaperSurveyConfig."""
-
-    def test_creation_with_defaults(self):
-        """Test creating PaperSurveyConfig with default values."""
-        config = PaperSurveyConfig()
-        assert config.get_tool_name() == "paper_survey"
-        assert config.max_results == 10
-        assert config.sources == SUPPORTED_PAPER_SOURCES
-
-    def test_creation_with_custom_values(self):
-        """Test creating PaperSurveyConfig with custom values."""
-        config = PaperSurveyConfig(
-            max_results=15,
-            sources=["pubmed", "arxiv"],
-        )
-        assert config.max_results == 15
-        assert config.sources == ["pubmed", "arxiv"]
-
-    def test_validate_max_results_valid(self):
-        """Test max_results validation with valid value."""
-        config = PaperSurveyConfig()
-        config.max_results = 15
-        assert config.max_results == 15
-
-    def test_validate_max_results_boundary(self):
-        """Test max_results validation with boundary values."""
-        config = PaperSurveyConfig()
-        config.max_results = 0
-        assert config.max_results == 0
-        config.max_results = 20
-        assert config.max_results == 20
-
-    def test_validate_max_results_below_min(self):
-        """Test max_results validation with value below minimum."""
-        config = PaperSurveyConfig()
-        with pytest.raises(ValueError, match="is below minimum allowed value"):
-            config.max_results = -1
-
-    def test_validate_max_results_above_max(self):
-        """Test max_results validation with value above maximum."""
-        config = PaperSurveyConfig()
-        with pytest.raises(ValueError, match="is above maximum allowed value"):
-            config.max_results = 21
-
-    def test_validate_max_results_invalid_type(self):
-        """Test max_results validation with invalid type."""
-        config = PaperSurveyConfig()
-        with pytest.raises(ValueError, match="is not an instance of"):
-            config.max_results = "10"
-
-    def test_validate_sources_invalid(self):
-        """Test sources validation with invalid source."""
-        config = PaperSurveyConfig()
-        with pytest.raises(ValueError, match="contains elements not in allowed list"):
-            config.sources = ["pubmed", "invalid_source"]
-
-    def test_validate_sources_invalid_type(self):
-        """Test sources validation with invalid type."""
-        config = PaperSurveyConfig()
-        with pytest.raises(ValueError, match="is not an instance of"):
-            config.sources = "pubmed"

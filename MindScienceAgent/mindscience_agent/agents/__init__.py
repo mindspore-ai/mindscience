@@ -14,9 +14,8 @@
 # ============================================================================
 """Agent implementations for MindScienceAgent multi-agent system."""
 from mindscience_agent.agents.base_agent import BaseAgent
-from mindscience_agent.agents.agent_factory import AgentFactory
+from mindscience_agent.agents.agent_manager import AgentManager
 from mindscience_agent.agents.plan_agent import PlanAgent
-from mindscience_agent.agents.survey_agent import SurveyAgent
 from mindscience_agent.agents.critic_agent import CriticAgent
 from mindscience_agent.agents.execute_agent import ExecuteAgent
 from mindscience_agent.agents.ranking_agent import RankingAgent
@@ -26,9 +25,8 @@ from mindscience_agent.agents.idea_critic_agent import IdeaCriticAgent
 
 __all__ = [
     "BaseAgent",
-    "AgentFactory",
+    "AgentManager",
     "PlanAgent",
-    "SurveyAgent",
     "CriticAgent",
     "ExecuteAgent",
     "RankingAgent",

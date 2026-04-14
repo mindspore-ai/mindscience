@@ -32,7 +32,7 @@ class CriticAgent(BaseAgent):
     Critic Agent simulates a demanding end-user to force the system evolving towards a more robust solution.
 
     Args:
-        model (BaseModel): Critic LLM.
+        model (Model): Critic LLM.
         config (Dict[str, Any]): Agent configuration dict.
         tool_config (Dict[str, ToolConfig]): Tool configuration dict.
 

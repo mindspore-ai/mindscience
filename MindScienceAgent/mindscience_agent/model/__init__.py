@@ -13,12 +13,8 @@
 # limitations under the License.
 # ============================================================================
 """Model providers and adapters for MindScienceAgent."""
-from mindscience_agent.model.base_model import BaseModel
-from mindscience_agent.model.model_factory import ModelFactory
-from mindscience_agent.model.openai_model import OpenAIModel
+from mindscience_agent.model.model import Model
 
 __all__ = [
-    "BaseModel",
-    "ModelFactory",
-    "OpenAIModel",
+    "Model",
 ]

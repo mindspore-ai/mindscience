@@ -1,6 +1,4 @@
 # Copyright 2026 Huawei Technologies Co., Ltd
-# Copyright 2025 AI-Researcher
-# Copyright 2025 InternAgent
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -60,7 +58,7 @@ class RankingAgent(BaseAgent):
     including technical innovation, potential impact, feasibility, and completeness.
 
     Args:
-        model (BaseModel): Language model for idea evaluation.
+        model (Model): Language model for idea evaluation.
         config (AgentConfig): Agent configuration.
         tool_config (Dict[str, ToolConfig], optional): Tool configurations for the agent.
 

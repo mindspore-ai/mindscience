@@ -1,5 +1,4 @@
 # Copyright 2026 Huawei Technologies Co., Ltd
-# Copyright 2025 InternAgent
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,6 +11,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+# ============================================================================
+# MODIFICATION NOTICE:
+# This file contains code from Biomni, which is licensed under the Apache License, Version 2.0 (the "License").
+# This file was modified by MindSpore Science Team on 2026.
+# Changes include: 
+# 1. remove library, custom resources.
+# 2. add skills.
 # ============================================================================
 """
 Base Agent Interface for MindScienceAgent Multi-Agent System
@@ -45,7 +51,6 @@ except ImportError as e:
     from mindscience_agent.tools.support_tools import run_python_repl
     python_repl_func = run_python_repl
 
-from mindscience_agent.model.base_model import BaseModel
 from mindscience_agent.tools.tool_registry import ToolRegistry
 from mindscience_agent.tools.tool_retriever import ToolRetriever
 from mindscience_agent.utils.utils import (
@@ -56,6 +61,7 @@ from mindscience_agent.utils import logger
 from mindscience_agent.config.agent_config import AgentConfig
 from mindscience_agent.config.tool_config import ToolConfig
 from mindscience_agent.config.mindscience_config import PROJECT_ROOT
+from mindscience_agent.model.model import Model
 
 
 class AgentExecutionError(Exception):
@@ -73,7 +79,7 @@ class BaseAgent(abc.ABC):
     Abstract base class defining the interface and common functionality for all agents.
 
     Args:
-        model (BaseModel): Language model instance for text generation.
+        model (Model): Language model instance for text generation.
         config (AgentConfig): Configuration object containing agent-specific settings.
         tool_config (Dict[str, ToolConfig], optional): Tool configuration dictionary.
 
@@ -84,7 +90,7 @@ class BaseAgent(abc.ABC):
     Outputs:
         - Dict[str, Any]: Execution results in a standardized dictionary format.
     """
-    def __init__(self, model: BaseModel, config: AgentConfig,
+    def __init__(self, model: Model, config: AgentConfig,
                  tool_config: Dict[str, ToolConfig] = None):
         self.model = model
         self.config = config
@@ -144,10 +150,9 @@ class BaseAgent(abc.ABC):
         raise NotImplementedError("Subclasses must implement the execute method.")
 
     async def _call_model(self,
-                        prompt: str | list,
-                        system_prompt: Optional[str] = None,
-                        schema: Optional[Dict[str, Any]] = None,
-                        temperature: Optional[float] = None) -> Union[str, Dict[str, Any]]:
+                          prompt: str | list,
+                          system_prompt: Optional[str] = None,
+                          temperature: Optional[float] = None) -> Union[str, Dict[str, Any]]:
         """Protected method to call the language model with automatic retry logic."""
         if system_prompt is None:
             system_prompt = self.system_prompt
@@ -155,13 +160,6 @@ class BaseAgent(abc.ABC):
 
         while True:
             try:
-                if schema:
-                    return await self.model.generate_json(
-                        prompt=prompt,
-                        schema=schema,
-                        system_prompt=system_prompt,
-                        temperature=temperature
-                    )
                 return await self.model.generate(
                     prompt=prompt,
                     system_prompt=system_prompt,
