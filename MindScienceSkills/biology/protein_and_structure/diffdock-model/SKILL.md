@@ -4,6 +4,7 @@ description: diffdock-model is a deep learning model for molecular docking that 
 license: MIT
 metadata:
     skill-author: MindSpore Science Team
+    hardware-requirements: Ascend
 ---
 
 # DiffDock
@@ -15,6 +16,24 @@ DiffDock is a molecular docking model that uses diffusion-based generative model
 ---
 
 ## When to Use
+
+### Hardware Requirements
+
+This model requires Ascend hardware. Before running, please verify that your device is Ascend:
+
+```python
+import subprocess
+
+def check_npu_device():
+    try:
+        result = subprocess.run(["npu-smi", "info"], capture_output=True, text=True)
+        if result.returncode != 0:
+            raise RuntimeError("Ascend not detected. This model requires Ascend hardware.")
+    except FileNotFoundError:
+        raise RuntimeError("npu-smi command not found. Please ensure Ascend driver is installed.")
+
+check_npu_device()
+```
 
 - **Scenario 1**: Small-molecule docking — predict poses of drug-like ligands against a protein structure.
 - **Scenario 2**: Virtual screening follow-up — generate 3D poses for hits from screening.

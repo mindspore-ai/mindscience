@@ -7,6 +7,7 @@ metadata:
     model-source: NVIDIA PhysicsNeMo
     github: https://github.com/NVIDIA/physicsnemo/tree/main/examples/cfd/navier_stokes_dpot
     paper: https://arxiv.org/abs/2403.03542
+    hardware-requirements: GPU
 ---
 
 # NVIDIA PhysicsNeMo DPOT (Denoising Pre-trained Operator Transformer)
@@ -26,6 +27,24 @@ DPOT is particularly effective for surrogate modeling in CFD applications, enabl
 ---
 
 ## When to Use
+
+### Hardware Requirements
+
+This model requires NVIDIA GPU hardware. Before running, please verify that your device is NVIDIA GPU:
+
+```python
+import subprocess
+
+def check_gpu_device():
+    try:
+        result = subprocess.run(["nvidia-smi"], capture_output=True, text=True)
+        if result.returncode != 0:
+            raise RuntimeError("NVIDIA GPU not detected. This model requires NVIDIA GPU hardware.")
+    except FileNotFoundError:
+        raise RuntimeError("nvidia-smi command not found. Please ensure NVIDIA GPU driver is installed.")
+
+check_gpu_device()
+```
 
 - **CFD Surrogate Modeling**: Replace expensive CFD simulations with fast neural network inference for Navier-Stokes equations
 - **Spatio-Temporal PDE Solving**: Solve time-dependent partial differential equations with neural operators

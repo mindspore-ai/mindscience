@@ -4,6 +4,7 @@ description: megaprotein is a comprehensive protein structure prediction toolkit
 license: Apache License 2.0
 metadata:
     skill-author: MindSpore Science Team
+    hardware-requirements: Ascend
 
 ---
 
@@ -24,6 +25,24 @@ This skill provides inference capabilities adapted for Ascend NPU, enabling user
 ---
 
 ## When to Use
+
+### Hardware Requirements
+
+This model requires Ascend hardware. Before running, please verify that your device is Ascend:
+
+```python
+import subprocess
+
+def check_npu_device():
+    try:
+        result = subprocess.run(["npu-smi", "info"], capture_output=True, text=True)
+        if result.returncode != 0:
+            raise RuntimeError("Ascend not detected. This model requires Ascend hardware.")
+    except FileNotFoundError:
+        raise RuntimeError("npu-smi command not found. Please ensure Ascend driver is installed.")
+
+check_npu_device()
+```
 
 - **Protein structure prediction**: Predict 3D protein structures from amino acid sequences
 - **MSA generation**: Generate multiple sequence alignments for proteins with limited or no MSA data (orphan sequences, highly variable sequences, designed proteins)

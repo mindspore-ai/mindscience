@@ -4,6 +4,7 @@ description: geneformer is a context-aware, attention-based deep learning model 
 license: MIT
 metadata:
     skill-author: MindSpore Science Team
+    hardware-requirements: Ascend
 ---
 
 # Geneformer
@@ -19,6 +20,24 @@ This skill provides inference capabilities adapted for Ascend NPU using MindSpor
 ---
 
 ## When to Use
+
+### Hardware Requirements
+
+This model requires Ascend hardware. Before running, please verify that your device is Ascend:
+
+```python
+import subprocess
+
+def check_npu_device():
+    try:
+        result = subprocess.run(["npu-smi", "info"], capture_output=True, text=True)
+        if result.returncode != 0:
+            raise RuntimeError("Ascend not detected. This model requires Ascend hardware.")
+    except FileNotFoundError:
+        raise RuntimeError("npu-smi command not found. Please ensure Ascend driver is installed.")
+
+check_npu_device()
+```
 
 - **Gene classification**: Classify genes based on transcriptomic context, such as identifying dosage-sensitive transcription factors
 - **Network biology prediction**: Predict gene network dynamics and identify key regulatory factors

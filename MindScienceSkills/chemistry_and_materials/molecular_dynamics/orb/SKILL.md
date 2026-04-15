@@ -4,6 +4,7 @@ description: orb is a machine learning force field (MLFF) based on graph neural 
 license: Apache License 2.0
 metadata:
     skill-author: MindSpore Science Team
+    hardware-requirements: Ascend
 
 ---
 
@@ -20,6 +21,24 @@ This skill provides inference capabilities for the Orb model on Ascend NPU using
 ---
 
 ## When to Use
+
+### Hardware Requirements
+
+This model requires Ascend hardware. Before running, please verify that your device is Ascend:
+
+```python
+import subprocess
+
+def check_npu_device():
+    try:
+        result = subprocess.run(["npu-smi", "info"], capture_output=True, text=True)
+        if result.returncode != 0:
+            raise RuntimeError("Ascend not detected. This model requires Ascend hardware.")
+    except FileNotFoundError:
+        raise RuntimeError("npu-smi command not found. Please ensure Ascend driver is installed.")
+
+check_npu_device()
+```
 
 - **Materials property prediction**: Predict energy, forces, and stress for crystalline materials and molecules
 - **Molecular dynamics simulations**: Run stable MD simulations for inorganic systems

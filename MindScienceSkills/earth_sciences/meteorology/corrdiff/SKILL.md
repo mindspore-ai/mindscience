@@ -4,6 +4,7 @@ description: corrdiff (Correction Diffusion) is a generative correction diffusio
 license: NVIDIA AI Enterprise
 metadata:
     skill-author: MindSpore Science Team
+    hardware-requirements: GPU
 ---
 
 # CorrDiff (Correction Diffusion)
@@ -25,6 +26,24 @@ CorrDiff (Correction Diffusion) is a generative correction diffusion model for k
 ---
 
 ## When to Use
+
+### Hardware Requirements
+
+This model requires NVIDIA GPU hardware. Before running, please verify that your device is NVIDIA GPU:
+
+```python
+import subprocess
+
+def check_gpu_device():
+    try:
+        result = subprocess.run(["nvidia-smi"], capture_output=True, text=True)
+        if result.returncode != 0:
+            raise RuntimeError("NVIDIA GPU not detected. This model requires NVIDIA GPU hardware.")
+    except FileNotFoundError:
+        raise RuntimeError("nvidia-smi command not found. Please ensure NVIDIA GPU driver is installed.")
+
+check_gpu_device()
+```
 
 This module details the primary application scenarios and typical use cases of the model, helping you determine whether the model suits their task requirements.
 
