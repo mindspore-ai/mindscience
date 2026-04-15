@@ -1,0 +1,13 @@
+mode: train
+task_name: "deeploc"  # "hhblits" or "deeploc"
+t5_config_path: "prot_t5_xl_uniref50_ms"    # T5 base模型；包含yaml，ckpt，tokenizor model的目录
+checkpoint_path: null
+
+train:
+  lr: 0.001   # learning rate; 默认使用Cosine decay learning rate
+  epochs: 4
+  batch_size: 16
+  train_data_path: "./deeploc_our_train_set.csv"
+  eval_data_path: "./deeploc_test_set.csv"
+  checkpoint_save_path: null
+  cate_name: "membrane"  # 两个任务，通过cate_name区分： membrane和loc; hhblits任务不需要

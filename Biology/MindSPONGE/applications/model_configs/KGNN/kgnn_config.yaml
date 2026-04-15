@@ -1,0 +1,16 @@
+neighborsize: 4
+dataset: "kegg"
+DATA_DIR: "/data6/yhding/1216/kgnn_output_dataset/"
+num_parallel_workers: 8
+is_training: False
+rank_size: 1
+rank_id: 0
+batch_size: 2048
+neighbor_sample_size: 4
+embed_dim: 32
+n_depth: 2
+l2_weight: 0.0000001
+lr: 0.0005
+aggregator_type: "concat"
+optimizer: "adam"
+use_jit: True

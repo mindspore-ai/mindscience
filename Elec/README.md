@@ -1,0 +1,3 @@
+# 电磁仿真套件
+model_sciai共16个案例
+mindelec共6个案例

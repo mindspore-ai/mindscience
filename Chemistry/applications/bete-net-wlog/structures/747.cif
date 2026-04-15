@@ -1,0 +1,30 @@
+data_image0
+_chemical_formula_structural       AlCo2Si2
+_chemical_formula_sum              "Al1 Co2 Si2"
+_cell_length_a       3.89899
+_cell_length_b       3.89898
+_cell_length_c       4.59194
+_cell_angle_alpha    90
+_cell_angle_beta     90
+_cell_angle_gamma    120
+
+_space_group_name_H-M_alt    "P 1"
+_space_group_IT_number       1
+
+loop_
+  _space_group_symop_operation_xyz
+  'x, y, z'
+
+loop_
+  _atom_site_type_symbol
+  _atom_site_label
+  _atom_site_symmetry_multiplicity
+  _atom_site_fract_x
+  _atom_site_fract_y
+  _atom_site_fract_z
+  _atom_site_occupancy
+  Al  Al1       1.0  0.00000  0.00000  0.00000  1.0000
+  Co  Co1       1.0  0.33333  0.66667  0.83866  1.0000
+  Co  Co2       1.0  0.66667  0.33333  0.16134  1.0000
+  Si  Si1       1.0  0.66667  0.33333  0.65213  1.0000
+  Si  Si2       1.0  0.33333  0.66667  0.34787  1.0000

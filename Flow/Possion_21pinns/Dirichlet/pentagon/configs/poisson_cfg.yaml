@@ -1,0 +1,57 @@
+data:
+    name: possion
+    train:
+        batch_size: 5000
+    domain:
+        random_sampling: True
+        size: 1000000
+        sampler: "uniform"
+    BC:
+        random_sampling: True
+        size: 1000000
+        sampler: "uniform"
+        BC_type: "dirichlet"
+geometry:
+    interval:
+        coord_min: 0.2
+        coord_max: 0.8
+    rectangle:
+        coord_min: [0., 0.]
+        coord_max: [1., 1.]
+    disk:
+        center: [.5, .5]
+        radius: 0.5
+    triangle:
+        vertices: [[.23, 0.], [1., 1.], [0., .92]]
+    pentagon:
+        vertices: [[0., .1], [1., 0.], [.9, .9], [.5, .6], [.1, .8]]
+    polygon:
+        vertices: [[0.1, 0.1], [0.1, 1.],[.5, 1.], [.5, .5], [1., .5], [1., 0.1]]
+    tetrahedron:
+        vertices: [[.23, 0., 0.1], [1., 1., 0.], [0., .92, 0.], [.5, .5, 1.]]
+    cylinder:
+        centre: [0., 0.]
+        radius: .5
+        h_min: 0.
+        h_max: 1.
+        h_axis: 2
+    cone:
+        centre: [0., 0.]
+        radius: .5
+        h_min: 0.
+        h_max: 1.
+        h_axis: 2
+model:
+    1d:
+        input_size: 1
+        base_neurons: 50
+    2d:
+        input_size: 2
+        base_neurons: 100
+    3d:
+        input_size: 3
+        base_neurons: 200
+optimizer:
+    lr_max: 5.e-4
+    pct_start: .15
+keep_checkpoint_max: 2

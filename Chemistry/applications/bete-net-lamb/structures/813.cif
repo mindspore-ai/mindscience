@@ -1,0 +1,33 @@
+data_image0
+_chemical_formula_structural       B6Mo2
+_chemical_formula_sum              "B6 Mo2"
+_cell_length_a       4.30692
+_cell_length_b       4.30692
+_cell_length_c       4.30692
+_cell_angle_alpha    74.2915
+_cell_angle_beta     74.2914
+_cell_angle_gamma    74.2915
+
+_space_group_name_H-M_alt    "P 1"
+_space_group_IT_number       1
+
+loop_
+  _space_group_symop_operation_xyz
+  'x, y, z'
+
+loop_
+  _atom_site_type_symbol
+  _atom_site_label
+  _atom_site_symmetry_multiplicity
+  _atom_site_fract_x
+  _atom_site_fract_y
+  _atom_site_fract_z
+  _atom_site_occupancy
+  B   B1        1.0  0.66493  0.33507  1.00000  1.0000
+  B   B2        1.0  0.33507  0.00000  0.66493  1.0000
+  B   B3        1.0  1.00000  0.66493  0.33507  1.0000
+  B   B4        1.0  0.66493  0.00000  0.33507  1.0000
+  B   B5        1.0  1.00000  0.33507  0.66493  1.0000
+  B   B6        1.0  0.33507  0.66493  1.00000  1.0000
+  Mo  Mo1       1.0  0.83508  0.83508  0.83508  1.0000
+  Mo  Mo2       1.0  0.16492  0.16492  0.16492  1.0000

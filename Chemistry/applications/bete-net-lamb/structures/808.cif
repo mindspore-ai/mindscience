@@ -1,0 +1,29 @@
+data_image0
+_chemical_formula_structural       ZrTiC2
+_chemical_formula_sum              "Zr1 Ti1 C2"
+_cell_length_a       5.48911
+_cell_length_b       5.48911
+_cell_length_c       5.48911
+_cell_angle_alpha    33.7313
+_cell_angle_beta     33.7314
+_cell_angle_gamma    33.7313
+
+_space_group_name_H-M_alt    "P 1"
+_space_group_IT_number       1
+
+loop_
+  _space_group_symop_operation_xyz
+  'x, y, z'
+
+loop_
+  _atom_site_type_symbol
+  _atom_site_label
+  _atom_site_symmetry_multiplicity
+  _atom_site_fract_x
+  _atom_site_fract_y
+  _atom_site_fract_z
+  _atom_site_occupancy
+  Zr  Zr1       1.0  0.00000  0.00000  0.00000  1.0000
+  Ti  Ti1       1.0  0.50000  0.50000  0.50000  1.0000
+  C   C1        1.0  0.24445  0.24445  0.24445  1.0000
+  C   C2        1.0  0.75555  0.75555  0.75554  1.0000

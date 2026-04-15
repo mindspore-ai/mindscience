@@ -1,0 +1,258 @@
+{
+    "session_and_graph_id_10_9": {
+        "graph_fusion": {
+            "RefreshInt64ToInt32FusionPass": {
+                "effect_times": "1",
+                "match_times": "1"
+            }
+        }
+    },
+    "session_and_graph_id_11_10": {
+        "graph_fusion": {
+            "RefreshInt64ToInt32FusionPass": {
+                "effect_times": "1",
+                "match_times": "1"
+            }
+        }
+    },
+    "session_and_graph_id_12_11": {
+        "graph_fusion": {
+            "RefreshInt64ToInt32FusionPass": {
+                "effect_times": "1",
+                "match_times": "1"
+            }
+        }
+    },
+    "session_and_graph_id_13_12": {
+        "graph_fusion": {
+            "RandomDsaFusionPass": {
+                "effect_times": "0",
+                "match_times": "1"
+            },
+            "RefreshInt64ToInt32FusionPass": {
+                "effect_times": "1",
+                "match_times": "1"
+            }
+        }
+    },
+    "session_and_graph_id_14_13": {
+        "graph_fusion": {
+            "ConstToAttrGatherV2Fusion": {
+                "effect_times": "0",
+                "match_times": "1"
+            },
+            "RefreshInt64ToInt32FusionPass": {
+                "effect_times": "1",
+                "match_times": "1"
+            }
+        }
+    },
+    "session_and_graph_id_15_14": {
+        "graph_fusion": {
+            "RefreshInt64ToInt32FusionPass": {
+                "effect_times": "1",
+                "match_times": "1"
+            },
+            "TensorScatterAddFusionPass": {
+                "effect_times": "1",
+                "match_times": "1"
+            }
+        }
+    },
+    "session_and_graph_id_16_15": {
+        "graph_fusion": {
+            "RefreshInt64ToInt32FusionPass": {
+                "effect_times": "1",
+                "match_times": "1"
+            },
+            "TensorScatterAddFusionPass": {
+                "effect_times": "1",
+                "match_times": "1"
+            }
+        }
+    },
+    "session_and_graph_id_17_16": {
+        "graph_fusion": {
+            "RefreshInt64ToInt32FusionPass": {
+                "effect_times": "1",
+                "match_times": "1"
+            }
+        }
+    },
+    "session_and_graph_id_18_17": {
+        "graph_fusion": {
+            "RefreshInt64ToInt32FusionPass": {
+                "effect_times": "1",
+                "match_times": "1"
+            }
+        }
+    },
+    "session_and_graph_id_19_18": {
+        "graph_fusion": {
+            "RefreshInt64ToInt32FusionPass": {
+                "effect_times": "1",
+                "match_times": "1"
+            },
+            "TensorScatterUpdateFusionPass": {
+                "effect_times": "1",
+                "match_times": "1"
+            }
+        }
+    },
+    "session_and_graph_id_1_0": {
+        "graph_fusion": {
+            "RandomDsaFusionPass": {
+                "effect_times": "0",
+                "match_times": "1"
+            },
+            "RefreshInt64ToInt32FusionPass": {
+                "effect_times": "1",
+                "match_times": "1"
+            }
+        }
+    },
+    "session_and_graph_id_20_19": {
+        "graph_fusion": {
+            "RefreshInt64ToInt32FusionPass": {
+                "effect_times": "1",
+                "match_times": "1"
+            },
+            "TensorScatterAddFusionPass": {
+                "effect_times": "1",
+                "match_times": "1"
+            }
+        }
+    },
+    "session_and_graph_id_21_20": {
+        "graph_fusion": {
+            "RefreshInt64ToInt32FusionPass": {
+                "effect_times": "1",
+                "match_times": "1"
+            },
+            "TensorScatterAddFusionPass": {
+                "effect_times": "1",
+                "match_times": "1"
+            }
+        }
+    },
+    "session_and_graph_id_22_21": {
+        "graph_fusion": {
+            "RefreshInt64ToInt32FusionPass": {
+                "effect_times": "1",
+                "match_times": "1"
+            },
+            "TensorScatterAddFusionPass": {
+                "effect_times": "1",
+                "match_times": "1"
+            }
+        }
+    },
+    "session_and_graph_id_23_22": {
+        "graph_fusion": {
+            "RefreshInt64ToInt32FusionPass": {
+                "effect_times": "1",
+                "match_times": "1"
+            }
+        }
+    },
+    "session_and_graph_id_24_23": {
+        "graph_fusion": {
+            "ConstToAttrGatherV2Fusion": {
+                "effect_times": "0",
+                "match_times": "1"
+            },
+            "RefreshInt64ToInt32FusionPass": {
+                "effect_times": "1",
+                "match_times": "1"
+            }
+        }
+    },
+    "session_and_graph_id_25_24": {
+        "graph_fusion": {
+            "RefreshInt64ToInt32FusionPass": {
+                "effect_times": "1",
+                "match_times": "1"
+            }
+        }
+    },
+    "session_and_graph_id_2_1": {
+        "graph_fusion": {
+            "AReduceMeanFusionPass": {
+                "effect_times": "0",
+                "match_times": "1"
+            },
+            "ConstToAttrPass": {
+                "effect_times": "0",
+                "match_times": "1"
+            },
+            "RefreshInt64ToInt32FusionPass": {
+                "effect_times": "1",
+                "match_times": "1"
+            }
+        }
+    },
+    "session_and_graph_id_3_2": {
+        "graph_fusion": {
+            "AReduceSumFusionPass": {
+                "effect_times": "0",
+                "match_times": "1"
+            },
+            "ConstToAttrReduceSumFusion": {
+                "effect_times": "0",
+                "match_times": "1"
+            },
+            "RefreshInt64ToInt32FusionPass": {
+                "effect_times": "1",
+                "match_times": "1"
+            }
+        }
+    },
+    "session_and_graph_id_4_3": {
+        "graph_fusion": {
+            "RefreshInt64ToInt32FusionPass": {
+                "effect_times": "1",
+                "match_times": "1"
+            }
+        }
+    },
+    "session_and_graph_id_5_4": {
+        "graph_fusion": {
+            "RefreshInt64ToInt32FusionPass": {
+                "effect_times": "1",
+                "match_times": "1"
+            }
+        }
+    },
+    "session_and_graph_id_6_5": {
+        "graph_fusion": {
+            "RefreshInt64ToInt32FusionPass": {
+                "effect_times": "1",
+                "match_times": "1"
+            }
+        }
+    },
+    "session_and_graph_id_7_6": {
+        "graph_fusion": {
+            "RefreshInt64ToInt32FusionPass": {
+                "effect_times": "1",
+                "match_times": "1"
+            }
+        }
+    },
+    "session_and_graph_id_8_7": {
+        "graph_fusion": {
+            "RefreshInt64ToInt32FusionPass": {
+                "effect_times": "1",
+                "match_times": "1"
+            }
+        }
+    },
+    "session_and_graph_id_9_8": {
+        "graph_fusion": {
+            "RefreshInt64ToInt32FusionPass": {
+                "effect_times": "1",
+                "match_times": "1"
+            }
+        }
+    }
+}

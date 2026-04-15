@@ -1,0 +1,102 @@
+# Builtin Configurations(DO NOT CHANGE THESE CONFIGURATIONS unlesee you know exactly what you are doing)
+parser_name: pretrain
+use_jit: False
+enable_modelarts: False
+# Url for modelarts
+data_url: ""
+multi_data_url: ""
+train_url: ""
+ckpt_url: ""
+result_url: ""
+# path for local
+data_dir: "/cache/data"
+train_dir: "/cache/train"
+result_dir: "/cache/output"
+ckpt_dir: "/cache/checkpoint.ckpt"
+device_target: "CPU"
+
+# path for pretrain
+features_scaling: False
+dataset_type: "classification"
+data_path_pretrain: "/data1/lijunbin/grover/grover_local/exampledata/pretrain/"
+data_file_pretrain: "tryout"
+
+# path for finetune
+data_path_finetune: "./exampledata/finetune"
+data_file_finetune: "bbbp"
+
+# path for eval
+data_path_eval: "./exampledata/finetune"
+data_file_eval: "bbbp"
+
+# path for fp
+data_path_fp: "./exampledata/finetune"
+data_file_fp: "bbbp"
+atom_vocab_path: "/data1/lijunbin/grover/grover_local/exampledata/pretrain/tryout_atom_vocab.pkl"
+bond_vocab_path: "/data1/lijunbin/grover/grover_local/exampledata/pretrain/tryout_bond_vocab.pkl"
+
+# ======================================================================================
+# distributed related
+run_distribute: False
+rank: 0
+device_num: 1
+is_save_on_master: 1
+
+# ======================================================================================
+# network related
+pretrained_backbone: "gtrans"
+resume_grover: "./convert_grover_base.ckpt"
+
+# Training options
+is_training: True
+mixed: False
+loss_scale_value: 1.0
+
+batch_size: 32
+epochs: 100
+warmup_epochs: 2
+init_lr: 0.0002
+max_lr: 0.0004
+final_lr: 0.0001
+weight_decay: 0.0000001
+
+# model related
+bias: False
+dropout: 0.1
+depth: 5
+num_mt_block: 1
+num_attn_head: 4
+hidden_size: 800
+activation: "ReLU"
+embedding_output_type: "both"
+dist_coff: 0.1
+undirected: False
+dense: False
+
+# process data related
+bond_drop_rate: 0
+no_cache: True
+
+# finetune related
+features_only: False
+ffn_hidden_size: 200
+ffn_num_layers: 2
+self_attention: False
+attn_hidden: 4
+attn_out: 128
+
+#log related
+save_dir: "./ckpt"
+
+# Eval option
+pretrained: "./ckpt/bbbp/grover_100.ckpt"
+eval_dir: "./outputs"
+metrics: "auc"
+
+# fingerprints option
+fingerprint_source: "atom"
+
+# export options
+file_name: "GROVER"
+file_format: "MINDIR" # ["AIR", "ONNX", "MINDIR"]
+result_path: "./preprocess_Result/"

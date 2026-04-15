@@ -1,0 +1,28 @@
+data_image0
+_chemical_formula_structural       MgP2
+_chemical_formula_sum              "Mg1 P2"
+_cell_length_a       3.29145
+_cell_length_b       4.24578
+_cell_length_c       4.37482
+_cell_angle_alpha    82.5952
+_cell_angle_beta     89.9893
+_cell_angle_gamma    67.1997
+
+_space_group_name_H-M_alt    "P 1"
+_space_group_IT_number       1
+
+loop_
+  _space_group_symop_operation_xyz
+  'x, y, z'
+
+loop_
+  _atom_site_type_symbol
+  _atom_site_label
+  _atom_site_symmetry_multiplicity
+  _atom_site_fract_x
+  _atom_site_fract_y
+  _atom_site_fract_z
+  _atom_site_occupancy
+  Mg  Mg1       1.0  0.50000  0.50000  0.50000  1.0000
+  P   P1        1.0  0.24601  0.00803  0.82698  1.0000
+  P   P2        1.0  0.75399  0.99197  0.17302  1.0000

@@ -1,0 +1,31 @@
+# train electron density
+
+## dataset
+datapath: ./data/trainset_np.pkl
+testpath: ./data/testset_np.pkl
+ckpt_dir: ./checkpoints
+ckpt_path: ./checkpoints/best_model.ckpt
+output_dir: ./results
+split: [100, 20]
+
+## training
+is_train: False # False # True
+epochs: 251
+batch: 4
+device: Ascend
+device_id: 3
+
+## network
+irreps_in: 5x0e
+irreps_hidden: [125,40,25,15] # [200,67,40,29]
+irreps_out: 14x0e + 5x1o + 5x2e + 2x3o + 1x4e
+irreps_node_attr: None
+irreps_edge_attr: 3
+layers: 3
+max_radius: 3.5
+num_neighbors: 12.666666
+number_of_basis: 10
+radial_layers: 1
+radial_neurons: 128
+num_nodes: 24
+reduce_output: False

@@ -1,0 +1,13 @@
+model: 'esm2'
+is_training: False
+use_jit: True
+
+encoder_layers: 33
+encoder_embed_dim: 1280
+encoder_attention_heads: 20
+token_dropout: True
+return_contacts: True
+need_head_weights: False
+alphabet: 'ESM-1b'
+
+batch_size: 4

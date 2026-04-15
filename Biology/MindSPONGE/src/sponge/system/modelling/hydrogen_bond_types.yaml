@@ -1,0 +1,1537 @@
+ACE:
+  CH3:
+  - ch3
+  - C
+  - O
+ALA:
+  CA:
+  - cc3
+  - CB
+  - C
+  CB:
+  - ch3
+  - CA
+  - C
+  N:
+  - dihedral
+  - CA
+  - CB
+ARG:
+  CA:
+  - cc3
+  - CB
+  - C
+  CB:
+  - c2h2
+  - CA
+  - CG
+  CD:
+  - c2h2
+  - CG
+  - NE
+  CG:
+  - c2h2
+  - CB
+  - CD
+  N:
+  - dihedral
+  - CA
+  - CB
+  NE:
+  - c6
+  - CD
+  - CZ
+  NH1:
+  - - dihedral
+    - CZ
+    - NH2
+  - - dihedral
+    - CZ
+    - NE
+  NH2:
+  - - dihedral
+    - CZ
+    - NH1
+  - - dihedral
+    - CZ
+    - NE
+ASN:
+  CA:
+  - cc3
+  - CB
+  - C
+  CB:
+  - c2h2
+  - CA
+  - CG
+  N:
+  - dihedral
+  - CA
+  - CB
+  ND2:
+  - c2h4
+  - CG
+  - OD1
+ASP:
+  CA:
+  - cc3
+  - CB
+  - C
+  CB:
+  - c2h2
+  - CA
+  - CG
+  N:
+  - dihedral
+  - CA
+  - CB
+CALA:
+  C:
+  - dihedral
+  - CA
+  - N
+  CA:
+  - cc3
+  - CB
+  - C
+  CB:
+  - ch3
+  - CA
+  - C
+  N:
+  - dihedral
+  - CA
+  - CB
+CARG:
+  C:
+  - dihedral
+  - CA
+  - N
+  CA:
+  - cc3
+  - CB
+  - C
+  CB:
+  - c2h2
+  - CA
+  - CG
+  CD:
+  - c2h2
+  - CG
+  - NE
+  CG:
+  - c2h2
+  - CB
+  - CD
+  N:
+  - dihedral
+  - CA
+  - C
+  NE:
+  - dihedral
+  - CZ
+  - NH1
+  NH1:
+  - - dihedral
+    - CZ
+    - NH2
+  - - dihedral
+    - CZ
+    - NE
+  NH2:
+  - - dihedral
+    - CZ
+    - NH1
+  - - dihedral
+    - CZ
+    - NE
+CASN:
+  C:
+  - dihedral
+  - CA
+  - N
+  CA:
+  - cc3
+  - CB
+  - C
+  CB:
+  - c2h2
+  - CA
+  - CG
+  N:
+  - dihedral
+  - CA
+  - C
+  ND2:
+  - c2h4
+  - CG
+  - OD1
+CASP:
+  C:
+  - dihedral
+  - CA
+  - N
+  CA:
+  - cc3
+  - CB
+  - C
+  CB:
+  - c2h2
+  - CA
+  - CG
+  N:
+  - dihedral
+  - CA
+  - C
+CCYS:
+  C:
+  - dihedral
+  - CA
+  - N
+  CA:
+  - cc3
+  - CB
+  - C
+  CB:
+  - c2h2
+  - CA
+  - SG
+  N:
+  - dihedral
+  - CA
+  - C
+  SG:
+  - dihedral
+  - CB
+  - CA
+CGLN:
+  C:
+  - dihedral
+  - CA
+  - N
+  CA:
+  - cc3
+  - CB
+  - C
+  CB:
+  - c2h2
+  - CA
+  - CG
+  CG:
+  - c2h2
+  - CB
+  - CD
+  N:
+  - dihedral
+  - CA
+  - C
+  NE2:
+  - c2h4
+  - CD
+  - OE1
+CGLU:
+  C:
+  - dihedral
+  - CA
+  - N
+  CA:
+  - cc3
+  - CB
+  - C
+  CB:
+  - c2h2
+  - CA
+  - CG
+  CG:
+  - c2h2
+  - CB
+  - CD
+  N:
+  - dihedral
+  - CA
+  - C
+CGLY:
+  C:
+  - dihedral
+  - CA
+  - N
+  CA:
+  - c2h2
+  - N
+  - C
+  N:
+  - dihedral
+  - CA
+  - C
+CHID:
+  C:
+  - dihedral
+  - CA
+  - N
+  CA:
+  - cc3
+  - CB
+  - C
+  CB:
+  - c2h2
+  - CA
+  - CG
+  CD2:
+  - c6
+  - CG
+  - NE2
+  CE1:
+  - c6
+  - ND1
+  - NE2
+  N:
+  - dihedral
+  - CA
+  - C
+  ND1:
+  - c6
+  - CG
+  - CE1
+CHIS:
+  C:
+  - dihedral
+  - CA
+  - N
+  CA:
+  - cc3
+  - CB
+  - C
+  CB:
+  - c2h2
+  - CA
+  - CG
+  CD2:
+  - c6
+  - CG
+  - NE2
+  CE1:
+  - c6
+  - ND1
+  - NE2
+  N:
+  - dihedral
+  - CA
+  - C
+  NE2:
+  - c6
+  - CD2
+  - CE1
+CILE:
+  C:
+  - dihedral
+  - CA
+  - N
+  CA:
+  - cc3
+  - CB
+  - C
+  CB:
+  - cc3
+  - CG1
+  - CA
+  CD1:
+  - ch3
+  - CG1
+  - CB
+  CG1:
+  - c2h2
+  - CB
+  - CD1
+  CG2:
+  - ch3
+  - CB
+  - CA
+  N:
+  - dihedral
+  - CA
+  - C
+CLEU:
+  C:
+  - dihedral
+  - CA
+  - N
+  CA:
+  - cc3
+  - CB
+  - C
+  CB:
+  - c2h2
+  - CA
+  - CG
+  CD1:
+  - ch3
+  - CG
+  - CB
+  CD2:
+  - ch3
+  - CG
+  - CD1
+  CG:
+  - cc3
+  - CD2
+  - CB
+  N:
+  - dihedral
+  - CA
+  - C
+CLYS:
+  C:
+  - dihedral
+  - CA
+  - N
+  CA:
+  - cc3
+  - CB
+  - C
+  CB:
+  - c2h2
+  - CA
+  - CG
+  CD:
+  - c2h2
+  - CG
+  - CE
+  CE:
+  - c2h2
+  - CD
+  - NZ
+  CG:
+  - c2h2
+  - CB
+  - CD
+  N:
+  - dihedral
+  - CA
+  - C
+  NZ:
+  - ch3
+  - CE
+  - CD
+CMET:
+  C:
+  - dihedral
+  - CA
+  - N
+  CA:
+  - cc3
+  - CB
+  - C
+  CB:
+  - c2h2
+  - CA
+  - CG
+  CE:
+  - ch3
+  - SD
+  - CG
+  CG:
+  - c2h2
+  - CB
+  - SD
+  N:
+  - dihedral
+  - CA
+  - C
+CPHE:
+  C:
+  - dihedral
+  - CA
+  - N
+  CA:
+  - cc3
+  - CB
+  - C
+  CB:
+  - c2h2
+  - CA
+  - CG
+  CD1:
+  - c6
+  - CG
+  - CE1
+  CD2:
+  - c6
+  - CG
+  - CE2
+  CE1:
+  - c6
+  - CD1
+  - CZ
+  CE2:
+  - c6
+  - CD2
+  - CZ
+  CZ:
+  - c6
+  - CE2
+  - CE1
+  N:
+  - dihedral
+  - CA
+  - C
+CPRO:
+  C:
+  - dihedral
+  - CA
+  - N
+  CA:
+  - cc3
+  - CB
+  - C
+  CB:
+  - c2h2
+  - CA
+  - CG
+  CD:
+  - c2h2
+  - CG
+  - N
+  CG:
+  - c2h2
+  - CB
+  - CD
+CSER:
+  C:
+  - dihedral
+  - CA
+  - N
+  CA:
+  - cc3
+  - CB
+  - C
+  CB:
+  - c2h2
+  - CA
+  - OG
+  N:
+  - dihedral
+  - CA
+  - C
+  OG:
+  - dihedral
+  - CB
+  - CA
+CTHR:
+  C:
+  - dihedral
+  - CA
+  - N
+  CA:
+  - cc3
+  - CB
+  - C
+  CB:
+  - cc3
+  - CG2
+  - OG1
+  CG2:
+  - ch3
+  - CB
+  - CA
+  N:
+  - dihedral
+  - CA
+  - C
+  OG1:
+  - dihedral
+  - CB
+  - CA
+CTRP:
+  C:
+  - dihedral
+  - CA
+  - N
+  CA:
+  - cc3
+  - CB
+  - C
+  CB:
+  - c2h2
+  - CA
+  - CG
+  CD1:
+  - c6
+  - CG
+  - NE1
+  CE3:
+  - c6
+  - CD2
+  - CZ3
+  CH2:
+  - c6
+  - CZ2
+  - CZ3
+  CZ2:
+  - c6
+  - CE2
+  - CH2
+  CZ3:
+  - c6
+  - CH2
+  - CE3
+  N:
+  - dihedral
+  - CA
+  - C
+  NE1:
+  - c6
+  - CD1
+  - CE2
+CTYR:
+  C:
+  - dihedral
+  - CA
+  - N
+  CA:
+  - cc3
+  - CB
+  - C
+  CB:
+  - c2h2
+  - CA
+  - CG
+  CD1:
+  - c6
+  - CG
+  - CE1
+  CD2:
+  - c6
+  - CG
+  - CE2
+  CE1:
+  - c6
+  - CD1
+  - CZ
+  CE2:
+  - c6
+  - CD2
+  - CZ
+  N:
+  - dihedral
+  - CA
+  - C
+  OH:
+  - dihedral
+  - CZ
+  - CE2
+CVAL:
+  C:
+  - dihedral
+  - CA
+  - N
+  CA:
+  - cc3
+  - CB
+  - C
+  CB:
+  - cc3
+  - CG2
+  - CA
+  CG1:
+  - ch3
+  - CB
+  - CA
+  CG2:
+  - ch3
+  - CB
+  - CA
+  N:
+  - dihedral
+  - CA
+  - C
+CYS:
+  CA:
+  - cc3
+  - CB
+  - C
+  CB:
+  - c2h2
+  - CA
+  - SG
+  N:
+  - dihedral
+  - CA
+  - C
+  SG:
+  - dihedral
+  - CB
+  - CA
+GLN:
+  CA:
+  - cc3
+  - CB
+  - C
+  CB:
+  - c2h2
+  - CA
+  - CG
+  CG:
+  - c2h2
+  - CB
+  - CD
+  N:
+  - dihedral
+  - CA
+  - C
+  NE2:
+  - c2h4
+  - CD
+  - OE1
+GLU:
+  CA:
+  - cc3
+  - CB
+  - C
+  CB:
+  - c2h2
+  - CA
+  - CG
+  CG:
+  - c2h2
+  - CB
+  - CD
+  N:
+  - dihedral
+  - CA
+  - C
+GLY:
+  CA:
+  - c2h2
+  - N
+  - C
+  N:
+  - dihedral
+  - CA
+  - C
+HID:
+  CA:
+  - cc3
+  - CB
+  - C
+  CB:
+  - c2h2
+  - CA
+  - CG
+  CD2:
+  - c6
+  - CG
+  - NE2
+  CE1:
+  - c6
+  - ND1
+  - NE2
+  N:
+  - dihedral
+  - CA
+  - C
+  ND1:
+  - c6
+  - CG
+  - CE1
+HIS:
+  CA:
+  - cc3
+  - CB
+  - C
+  CB:
+  - c2h2
+  - CA
+  - CG
+  CD2:
+  - c6
+  - CG
+  - NE2
+  CE1:
+  - c6
+  - ND1
+  - NE2
+  N:
+  - dihedral
+  - CA
+  - C
+  NE2:
+  - c6
+  - CD2
+  - CE1
+HOH:
+  O:
+  - wat
+  - O
+  - O
+ILE:
+  CA:
+  - cc3
+  - CB
+  - C
+  CB:
+  - cc3
+  - CG1
+  - CA
+  CD1:
+  - ch3
+  - CG1
+  - CB
+  CG1:
+  - c2h2
+  - CB
+  - CD1
+  CG2:
+  - ch3
+  - CB
+  - CA
+  N:
+  - dihedral
+  - CA
+  - C
+LEU:
+  CA:
+  - cc3
+  - CB
+  - C
+  CB:
+  - c2h2
+  - CA
+  - CG
+  CD1:
+  - ch3
+  - CG
+  - CB
+  CD2:
+  - ch3
+  - CG
+  - CD1
+  CG:
+  - cc3
+  - CD2
+  - CB
+  N:
+  - dihedral
+  - CA
+  - C
+LYS:
+  CA:
+  - cc3
+  - CB
+  - C
+  CB:
+  - c2h2
+  - CA
+  - CG
+  CD:
+  - c2h2
+  - CG
+  - CE
+  CE:
+  - c2h2
+  - CD
+  - NZ
+  CG:
+  - c2h2
+  - CB
+  - CD
+  N:
+  - dihedral
+  - CA
+  - C
+  NZ:
+  - ch3
+  - CE
+  - CD
+MET:
+  CA:
+  - cc3
+  - CB
+  - C
+  CB:
+  - c2h2
+  - CA
+  - CG
+  CE:
+  - ch3
+  - SD
+  - CG
+  CG:
+  - c2h2
+  - CB
+  - SD
+  N:
+  - dihedral
+  - CA
+  - C
+NALA:
+  CA:
+  - cc3
+  - CB
+  - C
+  CB:
+  - ch3
+  - CA
+  - C
+  N:
+  - ch3
+  - CA
+  - CB
+NARG:
+  CA:
+  - cc3
+  - CB
+  - C
+  CB:
+  - c2h2
+  - CA
+  - CG
+  CD:
+  - c2h2
+  - CG
+  - NE
+  CG:
+  - c2h2
+  - CB
+  - CD
+  N:
+  - ch3
+  - CA
+  - C
+  NE:
+  - dihedral
+  - CZ
+  - NH1
+  NH1:
+  - - dihedral
+    - CZ
+    - NH2
+  - - dihedral
+    - CZ
+    - NE
+  NH2:
+  - - dihedral
+    - CZ
+    - NH1
+  - - dihedral
+    - CZ
+    - NE
+NASN:
+  CA:
+  - cc3
+  - CB
+  - C
+  CB:
+  - c2h2
+  - CA
+  - CG
+  N:
+  - ch3
+  - CA
+  - C
+  ND2:
+  - c2h4
+  - CG
+  - OD1
+NASP:
+  CA:
+  - cc3
+  - CB
+  - C
+  CB:
+  - c2h2
+  - CA
+  - CG
+  N:
+  - ch3
+  - CA
+  - C
+NCYS:
+  CA:
+  - cc3
+  - CB
+  - C
+  CB:
+  - c2h2
+  - CA
+  - SG
+  N:
+  - ch3
+  - CA
+  - C
+  SG:
+  - dihedral
+  - CB
+  - CA
+NGLN:
+  CA:
+  - cc3
+  - CB
+  - C
+  CB:
+  - c2h2
+  - CA
+  - CG
+  CG:
+  - c2h2
+  - CB
+  - CD
+  N:
+  - ch3
+  - CA
+  - C
+  NE2:
+  - c2h4
+  - CD
+  - OE1
+NGLU:
+  CA:
+  - cc3
+  - CB
+  - C
+  CB:
+  - c2h2
+  - CA
+  - CG
+  CG:
+  - c2h2
+  - CB
+  - CD
+  N:
+  - ch3
+  - CA
+  - C
+NGLY:
+  CA:
+  - c2h2
+  - N
+  - C
+  N:
+  - ch3
+  - CA
+  - C
+NHID:
+  CA:
+  - cc3
+  - CB
+  - C
+  CB:
+  - c2h2
+  - CA
+  - CG
+  CD2:
+  - c6
+  - CG
+  - NE2
+  CE1:
+  - c6
+  - ND1
+  - NE2
+  N:
+  - ch3
+  - CA
+  - C
+  ND1:
+  - c6
+  - CG
+  - CE1
+NHIS:
+  CA:
+  - cc3
+  - CB
+  - C
+  CB:
+  - c2h2
+  - CA
+  - CG
+  CD2:
+  - c6
+  - CG
+  - NE2
+  CE1:
+  - c6
+  - ND1
+  - NE2
+  N:
+  - ch3
+  - CA
+  - C
+  NE2:
+  - c6
+  - CD2
+  - CE1
+NILE:
+  CA:
+  - cc3
+  - CB
+  - C
+  CB:
+  - cc3
+  - CG1
+  - CA
+  CD1:
+  - ch3
+  - CG1
+  - CB
+  CG1:
+  - c2h2
+  - CB
+  - CD1
+  CG2:
+  - ch3
+  - CB
+  - CA
+  N:
+  - ch3
+  - CA
+  - C
+NLEU:
+  CA:
+  - cc3
+  - CB
+  - C
+  CB:
+  - c2h2
+  - CA
+  - CG
+  CD1:
+  - ch3
+  - CG
+  - CB
+  CD2:
+  - ch3
+  - CG
+  - CD1
+  CG:
+  - cc3
+  - CD2
+  - CB
+  N:
+  - ch3
+  - CA
+  - C
+NLYS:
+  CA:
+  - cc3
+  - CB
+  - C
+  CB:
+  - c2h2
+  - CA
+  - CG
+  CD:
+  - c2h2
+  - CG
+  - CE
+  CE:
+  - c2h2
+  - CD
+  - NZ
+  CG:
+  - c2h2
+  - CB
+  - CD
+  N:
+  - ch3
+  - CA
+  - C
+  NZ:
+  - ch3
+  - CE
+  - CD
+NME:
+  CH3:
+  - ch3
+  - N
+  - C
+  N:
+  - c6
+  - CH3
+  - C
+NMET:
+  CA:
+  - cc3
+  - CB
+  - C
+  CB:
+  - c2h2
+  - CA
+  - CG
+  CE:
+  - ch3
+  - SD
+  - CG
+  CG:
+  - c2h2
+  - CB
+  - SD
+  N:
+  - ch3
+  - CA
+  - C
+NPHE:
+  CA:
+  - cc3
+  - CB
+  - C
+  CB:
+  - c2h2
+  - CA
+  - CG
+  CD1:
+  - c6
+  - CG
+  - CE1
+  CD2:
+  - c6
+  - CG
+  - CE2
+  CE1:
+  - c6
+  - CD1
+  - CZ
+  CE2:
+  - c6
+  - CD2
+  - CZ
+  CZ:
+  - c6
+  - CE2
+  - CE1
+  N:
+  - ch3
+  - CA
+  - C
+NPRO:
+  CA:
+  - cc3
+  - CB
+  - C
+  CB:
+  - c2h2
+  - CA
+  - CG
+  CD:
+  - c2h2
+  - CG
+  - N
+  CG:
+  - c2h2
+  - CB
+  - CD
+  N:
+  - c2h2
+  - CA
+  - CD
+NSER:
+  CA:
+  - cc3
+  - CB
+  - C
+  CB:
+  - c2h2
+  - CA
+  - OG
+  N:
+  - ch3
+  - CA
+  - C
+  OG:
+  - dihedral
+  - CB
+  - CA
+NTHR:
+  CA:
+  - cc3
+  - CB
+  - C
+  CB:
+  - cc3
+  - CG2
+  - OG1
+  CG2:
+  - ch3
+  - CB
+  - CA
+  N:
+  - ch3
+  - CA
+  - C
+  OG1:
+  - dihedral
+  - CB
+  - CA
+NTRP:
+  CA:
+  - cc3
+  - CB
+  - C
+  CB:
+  - c2h2
+  - CA
+  - CG
+  CD1:
+  - c6
+  - CG
+  - NE1
+  CE3:
+  - c6
+  - CD2
+  - CZ3
+  CH2:
+  - c6
+  - CZ2
+  - CZ3
+  CZ2:
+  - c6
+  - CE2
+  - CH2
+  CZ3:
+  - c6
+  - CH2
+  - CE3
+  N:
+  - ch3
+  - CA
+  - C
+  NE1:
+  - c6
+  - CD1
+  - CE2
+NTYR:
+  CA:
+  - cc3
+  - CB
+  - C
+  CB:
+  - c2h2
+  - CA
+  - CG
+  CD1:
+  - c6
+  - CG
+  - CE1
+  CD2:
+  - c6
+  - CG
+  - CE2
+  CE1:
+  - c6
+  - CD1
+  - CZ
+  CE2:
+  - c6
+  - CD2
+  - CZ
+  N:
+  - ch3
+  - CA
+  - C
+  OH:
+  - dihedral
+  - CZ
+  - CE2
+NVAL:
+  CA:
+  - cc3
+  - CB
+  - C
+  CB:
+  - cc3
+  - CG2
+  - CA
+  CG1:
+  - ch3
+  - CB
+  - CA
+  CG2:
+  - ch3
+  - CB
+  - CA
+  N:
+  - ch3
+  - CA
+  - C
+PHE:
+  CA:
+  - cc3
+  - CB
+  - C
+  CB:
+  - c2h2
+  - CA
+  - CG
+  CD1:
+  - c6
+  - CG
+  - CE1
+  CD2:
+  - c6
+  - CG
+  - CE2
+  CE1:
+  - c6
+  - CD1
+  - CZ
+  CE2:
+  - c6
+  - CD2
+  - CZ
+  CZ:
+  - c6
+  - CE2
+  - CE1
+  N:
+  - dihedral
+  - CA
+  - C
+PRO:
+  CA:
+  - cc3
+  - CB
+  - C
+  CB:
+  - c2h2
+  - CA
+  - CG
+  CD:
+  - c2h2
+  - CG
+  - N
+  CG:
+  - c2h2
+  - CB
+  - CD
+SER:
+  CA:
+  - cc3
+  - CB
+  - C
+  CB:
+  - c2h2
+  - CA
+  - OG
+  N:
+  - dihedral
+  - CA
+  - C
+  OG:
+  - dihedral
+  - CB
+  - CA
+THR:
+  CA:
+  - cc3
+  - CB
+  - C
+  CB:
+  - cc3
+  - CG2
+  - OG1
+  CG2:
+  - ch3
+  - CB
+  - CA
+  N:
+  - dihedral
+  - CA
+  - C
+  OG1:
+  - dihedral
+  - CB
+  - CA
+TRP:
+  CA:
+  - cc3
+  - CB
+  - C
+  CB:
+  - c2h2
+  - CA
+  - CG
+  CD1:
+  - c6
+  - CG
+  - NE1
+  CE3:
+  - c6
+  - CD2
+  - CZ3
+  CH2:
+  - c6
+  - CZ2
+  - CZ3
+  CZ2:
+  - c6
+  - CE2
+  - CH2
+  CZ3:
+  - c6
+  - CH2
+  - CE3
+  N:
+  - dihedral
+  - CA
+  - C
+  NE1:
+  - c6
+  - CD1
+  - CE2
+TYR:
+  CA:
+  - cc3
+  - CB
+  - C
+  CB:
+  - c2h2
+  - CA
+  - CG
+  CD1:
+  - c6
+  - CG
+  - CE1
+  CD2:
+  - c6
+  - CG
+  - CE2
+  CE1:
+  - c6
+  - CD1
+  - CZ
+  CE2:
+  - c6
+  - CD2
+  - CZ
+  N:
+  - dihedral
+  - CA
+  - C
+  OH:
+  - dihedral
+  - CZ
+  - CE2
+VAL:
+  CA:
+  - cc3
+  - CB
+  - C
+  CB:
+  - cc3
+  - CG2
+  - CA
+  CG1:
+  - ch3
+  - CB
+  - CA
+  CG2:
+  - ch3
+  - CB
+  - CA
+  N:
+  - dihedral
+  - CA
+  - C
+WAT:
+  O:
+  - wat
+  - O
+  - O

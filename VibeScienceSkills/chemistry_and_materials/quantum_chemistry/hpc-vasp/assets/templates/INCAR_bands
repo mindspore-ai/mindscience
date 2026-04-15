@@ -1,9 +1,0 @@
-SYSTEM = generic_bands
-PREC   = Accurate
-ENCUT  = 520
-EDIFF  = 1E-6
-ISMEAR = 0
-SIGMA  = 0.05
-IBRION = -1
-NSW    = 0
-ICHARG = 11

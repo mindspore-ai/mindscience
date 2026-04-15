@@ -1,0 +1,40 @@
+# Evaluating Configuration
+mode: "PYNATIVE"
+device_target: "Ascend"
+device_id: 0
+# Dataset config
+val_data_path: dataset/val_mptrj_ase.db
+num_workers: 8
+batch_size: 64
+checkpoint_path: orb_ckpts/orb-ft-checkpoint_epoch99.ckpt
+random_seed: 1234
+output_dir: results/
+
+# Model Configuration
+model:
+  # Energy Head Configuration
+  energy_head:
+    latent_dim: 256
+    num_mlp_layers: 1
+    mlp_hidden_dim: 256
+    target: "energy"
+    node_aggregation: "mean"
+    reference_energy_name: "vasp-shifted"
+    train_reference: true
+    predict_atom_avg: true
+
+  # Node Head Configuration
+  node_head:
+    latent_dim: 256
+    num_mlp_layers: 1
+    mlp_hidden_dim: 256
+    target: "forces"
+    remove_mean: true
+
+  # Stress Head Configuration
+  stress_head:
+    latent_dim: 256
+    num_mlp_layers: 1
+    mlp_hidden_dim: 256
+    target: "stress"
+    compute_stress: true

@@ -1,0 +1,28 @@
+data_image0
+_chemical_formula_structural       AlRe2
+_chemical_formula_sum              "Al1 Re2"
+_cell_length_a       2.97359
+_cell_length_b       2.97359
+_cell_length_c       5.23508
+_cell_angle_alpha    106.505
+_cell_angle_beta     106.505
+_cell_angle_gamma    89.9788
+
+_space_group_name_H-M_alt    "P 1"
+_space_group_IT_number       1
+
+loop_
+  _space_group_symop_operation_xyz
+  'x, y, z'
+
+loop_
+  _atom_site_type_symbol
+  _atom_site_label
+  _atom_site_symmetry_multiplicity
+  _atom_site_fract_x
+  _atom_site_fract_y
+  _atom_site_fract_z
+  _atom_site_occupancy
+  Al  Al1       1.0  0.00000  0.00000  0.00000  1.0000
+  Re  Re1       1.0  0.33109  0.33109  0.66219  1.0000
+  Re  Re2       1.0  0.66891  0.66891  0.33781  1.0000

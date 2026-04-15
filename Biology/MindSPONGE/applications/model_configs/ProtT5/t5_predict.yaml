@@ -1,0 +1,16 @@
+mode: "eval"  # eval或者train
+parallel: False   # 是否使用并行
+t5_config_path: "prot_t5_xl_uniref50_ms/"   # T5 base模型；包含yaml，ckpt，tokenizor model的目录
+load_model_path: null
+
+# 训练相关参数
+train:
+  train_data_path: ''
+  lr: 2.0e-5
+  warmup_steps: 0
+  batch_size: 32
+  epochs: 1
+  save_steps: 20000
+  save_ckpt_path: "output/"
+  use_clip_grad: True
+  max_grad_norm: 1
