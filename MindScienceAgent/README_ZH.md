@@ -13,8 +13,8 @@ MindScienceAgent是一个面向科研全流程的开源科研智能体，通过�
 - [整体设计](#整体设计)
 - [快速开始](#快速开始)
   - [1. 安装依赖](#1-安装依赖)
-  - [2. 设置 API Key](#2-设置-api-key)
-  - [3. 配置文件](#3-配置文件)
+  - [2. 配置文件](#2-配置文件)
+  - [3. 设置工具API Key（可选）](#3-设置工具api-key可选)
   - [4. 运行 Experiment Workflow](#4-运行-experiment-workflow)
 - [MindScienceAgent应用案例](#MindScienceAgent应用案例)
   - [一、调研分析类任务：FrontierScience Benchmark](#一调研分析类任务frontierscience-benchmark)
@@ -24,6 +24,8 @@ MindScienceAgent是一个面向科研全流程的开源科研智能体，通过�
 - [Roadmap](#roadmap)
 - [社区](#社区)
 - [许可证](#许可证)
+
+
 
 
 ## 整体设计
@@ -79,20 +81,11 @@ cd mindscience/MindScienceAgent
 pip install -r requirements.txt
 ```
 
-### 2. 设置 API Key
 
-MindScienceAgent 提供了信息搜索、文献调研等工具能力，部分工具（如`advanced_web_search_qwen`、`Semantic Scholar` 学术搜索）需要通过 API Key 进行认证访问。因此需要在 `.env` 文件中配置相应的 API Key，以便工具能够正常使用。
 
-在.env文件中填入所需API Key：
+### 2. 配置文件
 
-| 环境变量 | 说明 | 获取方式 |
-|---------|------|----------|
-| `DASHSCOPE_API_KEY`（可选）| `advanced_web_search_qwen`工具通过调用`qwen3.5-plus` API实现信息搜索与汇总，因此需要配置阿里云`DashScope API Key` | 登录 [DashScope 控制台](https://dashscope.console.aliyun.com/)，在"API-KEY管理"中创建并获取 |
-| `S2_API_KEY`（可选）| `Semantic Scholar API Key`，query_semantic_scholar工具需使用 | 登录 [Semantic Scholar](https://www.semanticscholar.org/)，在账户设置中申请 API Key |
-
-### 3. 配置文件
-
-编辑 `mindscience_agent.yaml` 配置参数：
+编辑 `mindscience_agent.yaml` 配置参数，配置您的模型API Key等信息：
 
 
 ```yaml
@@ -121,6 +114,17 @@ logging:                                            # 日志配置项
   level: "INFO"                                     # 设置日志等级，INFO级日志打印所有Agent的输出，DEBUG级日志打印所有Agent的执行中间结果
 ```
 
+
+### 3. 设置工具API Key（可选）
+
+MindScienceAgent 提供了信息搜索、文献调研等工具能力，部分工具（如`advanced_web_search_qwen`、`Semantic Scholar` 学术搜索）需要通过 API Key 进行认证访问。因此需要在 `.env` 文件中配置相应的 API Key，以便工具能够正常使用。
+
+在.env文件中填入所需API Key：
+
+| 环境变量 | 说明 | 获取方式 |
+|---------|------|----------|
+| `DASHSCOPE_API_KEY`| `advanced_web_search_qwen`工具通过调用`qwen3.5-plus` API实现信息搜索与汇总，因此需要配置阿里云`DashScope API Key` | 登录 [DashScope 控制台](https://dashscope.console.aliyun.com/)，在"API-KEY管理"中创建并获取 |
+| `S2_API_KEY`| `Semantic Scholar API Key`，Survey Agent需使用，若不调用`Survey Agent`可忽略 | 登录 [Semantic Scholar](https://www.semanticscholar.org/)，在账户设置中申请 API Key |
 ### 4. 运行 Experiment Workflow
 
 ```bash
