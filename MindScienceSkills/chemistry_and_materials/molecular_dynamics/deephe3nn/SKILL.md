@@ -4,6 +4,7 @@ description: deephe3nn is an E(3)-equivariant neural network for accurately pred
 license: Apache License 2.0
 metadata:
     skill-author: MindSpore Science Team
+    hardware-requirements: Ascend
 
 ---
 
@@ -18,6 +19,24 @@ This skill provides inference capabilities for predicting electronic Hamiltonian
 ---
 
 ## When to Use
+
+### Hardware Requirements
+
+This model requires Ascend hardware. Before running, please verify that your device is Ascend:
+
+```python
+import subprocess
+
+def check_npu_device():
+    try:
+        result = subprocess.run(["npu-smi", "info"], capture_output=True, text=True)
+        if result.returncode != 0:
+            raise RuntimeError("Ascend not detected. This model requires Ascend hardware.")
+    except FileNotFoundError:
+        raise RuntimeError("npu-smi command not found. Please ensure Ascend driver is installed.")
+
+check_npu_device()
+```
 
 - **Electronic Hamiltonian prediction**: Predict electronic Hamiltonians from crystal structures for materials discovery
 - **Band structure calculations**: Use predicted Hamiltonians for band structure computations

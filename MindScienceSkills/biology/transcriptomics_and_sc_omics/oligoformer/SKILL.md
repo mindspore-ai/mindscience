@@ -4,6 +4,7 @@ description: oligoformer is a transformer-based deep learning model for siRNA ef
 license: Non-commercial (Academic/Research)
 metadata:
     skill-author: MindSpore Science Team
+    hardware-requirements: Ascend
 ---
 
 # OligoFormer
@@ -17,6 +18,24 @@ The model was developed by Tsinghua University and supports both inter-dataset a
 ---
 
 ## When to Use
+
+### Hardware Requirements
+
+This model requires Ascend hardware. Before running, please verify that your device is Ascend:
+
+```python
+import subprocess
+
+def check_npu_device():
+    try:
+        result = subprocess.run(["npu-smi", "info"], capture_output=True, text=True)
+        if result.returncode != 0:
+            raise RuntimeError("Ascend not detected. This model requires Ascend hardware.")
+    except FileNotFoundError:
+        raise RuntimeError("npu-smi command not found. Please ensure Ascend driver is installed.")
+
+check_npu_device()
+```
 
 This module details the primary application scenarios and typical use cases of the model, helping users determine whether the model suits their task requirements.
 

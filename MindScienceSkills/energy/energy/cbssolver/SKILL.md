@@ -4,6 +4,7 @@ description: cbssolver (Convergent Born Series Solver) is a computational solver
 license: Apache License 2.0
 metadata:
     skill-author: MindSpore Science Team
+    hardware-requirements: Ascend
 
 ---
 
@@ -18,6 +19,24 @@ The solver takes velocity field and source information as input parameters and o
 ---
 
 ## When to Use
+
+### Hardware Requirements
+
+This model requires Ascend hardware. Before running, please verify that your device is Ascend:
+
+```python
+import subprocess
+
+def check_npu_device():
+    try:
+        result = subprocess.run(["npu-smi", "info"], capture_output=True, text=True)
+        if result.returncode != 0:
+            raise RuntimeError("Ascend not detected. This model requires Ascend hardware.")
+    except FileNotFoundError:
+        raise RuntimeError("npu-smi command not found. Please ensure Ascend driver is installed.")
+
+check_npu_device()
+```
 
 - **Medical ultrasound imaging**: Simulate acoustic wave propagation for ultrasound imaging applications
 - **Geological exploration**: Solve acoustic wave equations for seismic imaging and subsurface characterization

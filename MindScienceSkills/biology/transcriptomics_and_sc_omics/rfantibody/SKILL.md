@@ -4,6 +4,7 @@ description: rfantibody is a structure-based de novo antibody and nanobody desig
 license: MIT
 metadata:
     skill-author: MindSpore Science Team
+    hardware-requirements: Ascend
 ---
 
 # RFantibody
@@ -25,6 +26,24 @@ RFantibody supports **PyTorch Geometric (PyG)** as a graph backend, including As
 ---
 
 ## When to Use
+
+### Hardware Requirements
+
+This model requires Ascend hardware. Before running, please verify that your device is Ascend:
+
+```python
+import subprocess
+
+def check_npu_device():
+    try:
+        result = subprocess.run(["npu-smi", "info"], capture_output=True, text=True)
+        if result.returncode != 0:
+            raise RuntimeError("Ascend not detected. This model requires Ascend hardware.")
+    except FileNotFoundError:
+        raise RuntimeError("npu-smi command not found. Please ensure Ascend driver is installed.")
+
+check_npu_device()
+```
 
 - **Scenario 1**: Generate antibody–target docks and CDR backbones with hotspot-conditioned RFdiffusion.
 - **Scenario 2**: Assign CDR sequences to docked frameworks with ProteinMPNN.

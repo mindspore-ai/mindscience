@@ -4,6 +4,7 @@ description: openfold2 is a PyTorch reimplementation of AlphaFold 2 for protein 
 license: Apache License 2.0
 metadata:
     skill-author: MindSpore Science Team
+    hardware-requirements: Ascend
 ---
 
 # OpenFold
@@ -15,6 +16,24 @@ OpenFold is a PyTorch reimplementation and extension of AlphaFold 2. It predicts
 ---
 
 ## When to Use
+
+### Hardware Requirements
+
+This model requires Ascend hardware. Before running, please verify that your device is Ascend:
+
+```python
+import subprocess
+
+def check_npu_device():
+    try:
+        result = subprocess.run(["npu-smi", "info"], capture_output=True, text=True)
+        if result.returncode != 0:
+            raise RuntimeError("Ascend not detected. This model requires Ascend hardware.")
+    except FileNotFoundError:
+        raise RuntimeError("npu-smi command not found. Please ensure Ascend driver is installed.")
+
+check_npu_device()
+```
 
 - **Scenario 1**: Train OpenFold on Ascend NPUs using the ModelZoo scripts and PDB alignment data from the public OpenFold S3 layout.
 - **Scenario 2**: Validate trained checkpoints with the bundled 8-device validation script.

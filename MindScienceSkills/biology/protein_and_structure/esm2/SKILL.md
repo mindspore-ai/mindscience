@@ -4,6 +4,7 @@ description: esm2 (Evolutionary Scale Modeling 2) is a large-scale protein langu
 license: MIT
 metadata:
     skill-author: MindSpore Science Team
+    hardware-requirements: Ascend
 
 ---
 
@@ -20,6 +21,24 @@ This skill provides inference capabilities for ESM2 on Ascend NPU using MindSpor
 ---
 
 ## When to Use
+
+### Hardware Requirements
+
+This model requires Ascend hardware. Before running, please verify that your device is Ascend:
+
+```python
+import subprocess
+
+def check_npu_device():
+    try:
+        result = subprocess.run(["npu-smi", "info"], capture_output=True, text=True)
+        if result.returncode != 0:
+            raise RuntimeError("Ascend not detected. This model requires Ascend hardware.")
+    except FileNotFoundError:
+        raise RuntimeError("npu-smi command not found. Please ensure Ascend driver is installed.")
+
+check_npu_device()
+```
 
 - **Protein structure prediction**: Extract contact maps and structural features from protein sequences
 - **Protein embedding extraction**: Generate dense vector representations of protein sequences for downstream tasks

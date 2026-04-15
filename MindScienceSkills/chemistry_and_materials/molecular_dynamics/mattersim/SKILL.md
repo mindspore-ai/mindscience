@@ -4,6 +4,7 @@ description: mattersim is a deep learning model for materials simulation develop
 license: MIT
 metadata:
     skill-author: MindSpore Science Team
+    hardware-requirements: Ascend
 ---
 
 # MatterSim
@@ -24,6 +25,24 @@ MatterSim supports a wide range of elements and can handle crystalline materials
 ---
 
 ## When to Use
+
+### Hardware Requirements
+
+This model requires Ascend hardware. Before running, please verify that your device is Ascend:
+
+```python
+import subprocess
+
+def check_npu_device():
+    try:
+        result = subprocess.run(["npu-smi", "info"], capture_output=True, text=True)
+        if result.returncode != 0:
+            raise RuntimeError("Ascend not detected. This model requires Ascend hardware.")
+    except FileNotFoundError:
+        raise RuntimeError("npu-smi command not found. Please ensure Ascend driver is installed.")
+
+check_npu_device()
+```
 
 This module details the primary application scenarios and typical use cases of the model, helping users determine whether the model suits their task requirements.
 

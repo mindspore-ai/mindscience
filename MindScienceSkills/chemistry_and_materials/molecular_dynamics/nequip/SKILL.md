@@ -4,6 +4,7 @@ description: nequip (Neural Equivariant Interatomic Potential) is a molecular po
 license: MIT
 metadata:
     skill-author: MindSpore Science Team
+    hardware-requirements: Ascend
 
 ---
 
@@ -18,6 +19,24 @@ This skill provides inference capabilities for predicting molecular energies and
 ---
 
 ## When to Use
+
+### Hardware Requirements
+
+This model requires Ascend hardware. Before running, please verify that your device is Ascend:
+
+```python
+import subprocess
+
+def check_npu_device():
+    try:
+        result = subprocess.run(["npu-smi", "info"], capture_output=True, text=True)
+        if result.returncode != 0:
+            raise RuntimeError("Ascend not detected. This model requires Ascend hardware.")
+    except FileNotFoundError:
+        raise RuntimeError("npu-smi command not found. Please ensure Ascend driver is installed.")
+
+check_npu_device()
+```
 
 - **Molecular potential energy surface modeling**: Predict potential energies for molecular configurations
 - **Atomic force prediction**: Calculate atomic forces for molecular dynamics simulations

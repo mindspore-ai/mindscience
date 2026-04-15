@@ -4,6 +4,7 @@ description: ProteinMPNN is a deep learning method for protein sequence design g
 license: MIT License (original), Apache License 2.0 (MindSpore implementation)
 metadata:
     skill-author: MindSpore Science Team
+    hardware-requirements: Ascend
 ---
 
 # ProteinMPNN
@@ -24,6 +25,24 @@ Key capabilities:
 ---
 
 ## When to Use
+
+### Hardware Requirements
+
+This model requires Ascend hardware. Before running, please verify that your device is Ascend:
+
+```python
+import subprocess
+
+def check_npu_device():
+    try:
+        result = subprocess.run(["npu-smi", "info"], capture_output=True, text=True)
+        if result.returncode != 0:
+            raise RuntimeError("Ascend not detected. This model requires Ascend hardware.")
+    except FileNotFoundError:
+        raise RuntimeError("npu-smi command not found. Please ensure Ascend driver is installed.")
+
+check_npu_device()
+```
 
 - **Monomer Design**: Design sequences for single-chain protein structures
 - **Complex Design**: Design sequences for multi-chain protein complexes with optional fixed chains

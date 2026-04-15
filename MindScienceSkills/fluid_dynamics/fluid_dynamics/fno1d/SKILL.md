@@ -4,6 +4,7 @@ description: fno1d (Fourier Neural Operator for 1D) is a deep learning model tha
 license: Apache License 2.0
 metadata:
     skill-author: MindSpore Science Team
+    hardware-requirements: Ascend
 
 ---
 
@@ -23,6 +24,24 @@ This skill provides inference capabilities for running FNO1D on Huawei Ascend NP
 ---
 
 ## When to Use
+
+### Hardware Requirements
+
+This model requires Ascend hardware. Before running, please verify that your device is Ascend:
+
+```python
+import subprocess
+
+def check_npu_device():
+    try:
+        result = subprocess.run(["npu-smi", "info"], capture_output=True, text=True)
+        if result.returncode != 0:
+            raise RuntimeError("Ascend not detected. This model requires Ascend hardware.")
+    except FileNotFoundError:
+        raise RuntimeError("npu-smi command not found. Please ensure Ascend driver is installed.")
+
+check_npu_device()
+```
 
 - **1D PDE solving**: Solve 1-dimensional partial differential equations, particularly the Burgers equation
 - **Computational fluid dynamics**: Fast prediction of fluid flow behavior without traditional numerical methods
