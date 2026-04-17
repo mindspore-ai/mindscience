@@ -127,7 +127,10 @@ class ExecuteAgent(BaseAgent):
                     if self.debug:
                         set_debug(False)
 
-                    return {"messages": []}
+                    return create_assistant_msg(
+                        f"\n<observation>ExecuteAgent failed after max retries. Error: {e}. "
+                        "Rewrite your code and try again.</observation>"
+                    )
 
         if self.debug:
             set_debug(False)
@@ -153,8 +156,13 @@ class ExecuteAgent(BaseAgent):
         """Wrap the last python_executor output (or a fallback string) as an assistant message."""
         outputs = self._collect_executor_outputs(final_state)
         if len(outputs) > 0:
-            return create_assistant_msg("\n<observation>" + outputs[-1].strip() + "</observation>")
-        return create_assistant_msg("\n<observation>ExecuteAgent returned with no results</observation>")
+            msg = outputs[-1].strip()
+            if msg:
+                return create_assistant_msg("\n<observation>" + msg + "</observation>")
+        return create_assistant_msg(
+            "\n<observation>ExecuteAgent returned with no results. "
+            "Remember to use `print()` function to output your results.</observation>"
+        )
 
     def _process_input(self, query: list) -> list[tuple[str, str]]:
         """Extract inner text between <execute> and </execute> from the last message."""

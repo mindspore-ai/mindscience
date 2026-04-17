@@ -15,9 +15,7 @@
 """Model interface for MindScienceAgent."""
 from typing import Dict, List, Optional, Any
 
-import json
 import httpx
-from json_repair import repair_json
 from langchain_openai import ChatOpenAI
 from openai import AsyncOpenAI
 
@@ -88,64 +86,6 @@ class Model:
         )
         content = response.choices[0].message.content
         return content
-
-    async def generate_with_json_output(self,
-                                       prompt: str | list,
-                                       json_schema: Dict[str, Any],
-                                       system_prompt: Optional[str] = None,
-                                       temperature: Optional[float] = None,
-                                       **kwargs) -> Dict[str, Any]:
-        """Generate a response formatted as JSON according to the provided schema."""
-        if system_prompt:
-            enhanced_system_prompt = (
-                f"{system_prompt}\n\n"
-                f"Respond with JSON that matches this schema: {json.dumps(json_schema)}"
-            )
-        else:
-            enhanced_system_prompt = (
-                f"Respond with JSON that matches this schema: {json.dumps(json_schema)}"
-            )
-
-        try:
-            req_messages = [
-                {"role": "system", "content": enhanced_system_prompt},
-            ]
-            if isinstance(prompt, list):
-                req_messages += prompt
-            else:
-                req_messages.append({"role": "user", "content": prompt})
-
-            response = await self.client.chat.completions.create(
-                model=self.model_name,
-                messages=req_messages,
-                temperature=temperature if temperature is not None else self.temperature,
-                response_format={"type": "json_object"},
-                **kwargs
-            )
-
-            result_text = response.choices[0].message.content
-            try:
-                result_dict = json.loads(result_text)
-            except json.JSONDecodeError as exc:
-                logger.error(f"Model returned invalid JSON: {result_text}")
-                result_text_repair = repair_json(result_text)
-                if result_text_repair:
-                    try:
-                        result_dict = json.loads(result_text_repair)
-                    except json.JSONDecodeError as ex:
-                        logger.error(f"Repaired JSON still invalid: {result_text_repair}")
-                        raise ValueError("Model did not return valid JSON after repair") from ex
-                else:
-                    logger.error("Failed to repair JSON response")
-                raise ValueError("Model did not return valid JSON") from exc
-            return result_dict
-
-        except json.JSONDecodeError as e:
-            logger.error(f"Failed to decode JSON response: {e}")
-            raise ValueError(f"Model did not return valid JSON: {e}") from e
-        except Exception as e:
-            logger.error(f"Error generating JSON response from OpenAI: {e}")
-            raise
 
     def to_chat_openai(self):
         """Return LangChain ChatOpenAI with the same api_key, base_url, and model id as this adapter."""

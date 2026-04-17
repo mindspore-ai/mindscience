@@ -17,20 +17,17 @@ import importlib
 import re
 import os
 from pathlib import Path
-from typing import Any
 import sys
 import certifi
 
 
 TOOL_MODULE_PREFIX = "mindscience_agent.tools."
-_EXCLUDED_FROM_PROMPTS = frozenset({"run_python_repl"})
 
 
 def read_module2api():
     """Read module API descriptions from tool_description modules."""
     fields = [
-        "literature",
-        "support_tools",
+        "support_tools"
     ]
 
     module2api = {}
@@ -58,49 +55,6 @@ def serialize_agent_messages(messages: list) -> str:
         content = msg.get("content", "")
         chunks.append(f"{role}: {content}")
     return "\n----------------\n".join(chunks)
-
-
-def build_tool_desc(module2api: dict[str, Any]) -> dict[str, Any]:
-    """Build structured tool specs for generate_prompt (drops REPL from text)."""
-    return {
-        mod: [t for t in tools if t.get("name") not in _EXCLUDED_FROM_PROMPTS]
-        for mod, tools in module2api.items()
-    }
-
-
-def normalize_custom_tools(raw: Any) -> list[dict[str, Any]]:
-    """Normalize custom tools input to consistent format."""
-    if not raw:
-        return []
-    if isinstance(raw, list):
-        return list(raw)
-    if isinstance(raw, dict):
-        out: list[dict[str, Any]] = []
-        for name, info in raw.items():
-            if isinstance(info, dict):
-                out.append({
-                    "name": name,
-                    "description": info.get("description", ""),
-                    "module": info.get("module", "custom_tools"),
-                })
-            else:
-                out.append({"name": name, "description": str(info), "module": "custom_tools"})
-        return out
-    return []
-
-
-def normalize_named_items(raw: Any) -> list[dict[str, str]]:
-    """Normalize named items input to consistent format."""
-    if not raw:
-        return []
-    if isinstance(raw, list):
-        return [x for x in raw if isinstance(x, dict)]
-    if isinstance(raw, dict):
-        return [
-            {"name": name, "description": (info or {}).get("description", "") if isinstance(info, dict) else str(info)}
-            for name, info in raw.items()
-        ]
-    return []
 
 
 def load_env(env_path: str = ".env") -> None:

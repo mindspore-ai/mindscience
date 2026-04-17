@@ -20,19 +20,6 @@
 """Descriptions for support tools used by agents."""
 description = [
     {
-        "description": "Executes the provided Python command in the notebook environment and returns the output.",
-        "name": "run_python_repl",
-        "optional_parameters": [],
-        "required_parameters": [
-            {
-                "default": None,
-                "description": "Python command to execute in the notebook environment",
-                "name": "command",
-                "type": "str",
-            }
-        ],
-    },
-    {
         "description": "Read the source code of a function from any module path.",
         "name": "read_function_source_code",
         "optional_parameters": [],
@@ -48,46 +35,150 @@ description = [
         ],
     },
     {
-        "description": "Download data from Synapse using entity IDs. Requires SYNAPSE_AUTH_TOKEN environment variable for authentication. CRITICAL: Always specify entity_type parameter based on what you're downloading (file, dataset, folder, project). Check user hints like 'files' or search results to determine correct type. Multiple IDs only work with entity_type='file'. Recursive only works with entity_type='folder'.",
-        "name": "download_synapse_data",
+        "description": "Query arXiv for papers based on provided search query.",
+        "name": "query_arxiv",
         "optional_parameters": [
             {
-                "name": "download_location",
-                "type": "str",
-                "description": "Directory where files will be downloaded",
-                "default": ".",
-            },
-            {
-                "name": "follow_link",
-                "type": "bool",
-                "description": "Whether to follow links to download the linked entity",
-                "default": False,
-            },
-            {
-                "name": "recursive",
-                "type": "bool",
-                "description": "Whether to recursively download folders and their contents. ONLY valid with entity_type='folder'",
-                "default": False,
-            },
-            {
-                "name": "timeout",
+                "default": 10,
+                "description": "The maximum number of papers to retrieve.",
+                "name": "max_papers",
                 "type": "int",
-                "description": "Timeout in seconds for each download operation",
-                "default": 300,
+            }
+        ],
+        "required_parameters": [
+            {
+                "default": None,
+                "description": "The search query string.",
+                "name": "query",
+                "type": "str",
+            }
+        ],
+    },
+    {
+        "description": "Query PubMed for papers based on the provided search query.",
+        "name": "query_pubmed",
+        "optional_parameters": [
+            {
+                "default": 10,
+                "description": "The maximum number of papers to retrieve.",
+                "name": "max_papers",
+                "type": "int",
             },
             {
-                "name": "entity_type",
-                "type": "str",
-                "description": "Type of Synapse entity: 'file', 'dataset', 'folder', or 'project'. MUST match actual entity type! Check user hints (e.g., 'files' means entity_type='file') or search results ('node_type' field). Default 'dataset' should only be used for actual datasets.",
-                "default": "dataset",
+                "default": 3,
+                "description": "Maximum number of retry attempts with modified queries.",
+                "name": "max_retries",
+                "type": "int",
             },
         ],
         "required_parameters": [
             {
-                "name": "entity_ids",
-                "type": "str|list[str]",
-                "description": "Synapse entity ID(s) to download. For files: single ID or list of IDs. For datasets/folders/projects: single ID only",
                 "default": None,
+                "description": "The search query string.",
+                "name": "query",
+                "type": "str",
+            }
+        ],
+    },
+    {
+        "description": "Extract the text content of a webpage using requests and BeautifulSoup.",
+        "name": "extract_url_content",
+        "optional_parameters": [],
+        "required_parameters": [
+            {
+                "default": None,
+                "description": "Webpage URL to extract content from",
+                "name": "url",
+                "type": "str",
+            }
+        ],
+    },
+    {
+        "description": "Extract the text content of a PDF file given its URL.",
+        "name": "extract_pdf_content",
+        "optional_parameters": [],
+        "required_parameters": [
+            {
+                "default": None,
+                "description": "URL of the PDF file to extract text from",
+                "name": "url",
+                "type": "str",
+            }
+        ],
+    },
+    {
+        "description": "Perform advanced web search using Qwen's built-in web search and extraction capabilities. This tool is ideal for finding current information, recent news, latest research, and up-to-date facts that may not be in the training data. Use this when you need information about recent events, current trends, latest scientific discoveries, or any time-sensitive information.",
+        "name": "advanced_web_search_qwen",
+        "optional_parameters": [
+            {
+                "default": 3,
+                "description": "Maximum number of retry attempts with exponential backoff.",
+                "name": "max_retries",
+                "type": "int",
+            },
+            {
+                "default": "https://dashscope.aliyuncs.com/api/v2/apps/protocols/compatible-mode/v1",
+                "description": "DashScope API base URL for Responses API.",
+                "name": "base_url",
+                "type": "str",
+            },
+            {
+                "default": "qwen3.5-plus",
+                "description": "Qwen model to use for search and synthesis.",
+                "name": "model",
+                "type": "str",
+            },
+            {
+                "default": True,
+                "description": "Enable thinking mode for better reasoning and analysis.",
+                "name": "enable_thinking",
+                "type": "bool",
+            },
+            {
+                "default": 60,
+                "description": "Request timeout in seconds.",
+                "name": "timeout",
+                "type": "int",
+            },
+        ],
+        "required_parameters": [
+            {
+                "default": None,
+                "description": "The search query or question you want to find information about. Be specific and detailed for better results.",
+                "name": "query",
+                "type": "str",
+            }
+        ],
+    },
+    {
+        "description": "Query Semantic Scholar for academic papers and research articles. Semantic Scholar provides free, AI-powered search for scientific literature across all fields of study. Requires S2_API_KEY environment variable. Get your API key from https://www.semanticscholar.org/product/api. Use this when you need to find academic papers, research articles, or scholarly information.",
+        "name": "query_semantic_scholar",
+        "optional_parameters": [
+            {
+                "default": 10,
+                "description": "Maximum number of papers to retrieve (default: 10).",
+                "name": "max_papers",
+                "type": "int",
+            },
+            {
+                "default": "",
+                "description": "Filter results by field of study (e.g., 'Medicine', 'Biology', 'Computer Science').",
+                "name": "fields_of_study",
+                "type": "str",
+            },
+            {
+                "default": "",
+                "description": "Filter results by year (e.g., '2024' for papers from 2024).",
+                "name": "year",
+                "type": "str",
+            },
+        ],
+        "required_parameters": [
+            {
+                "default": None,
+                "description": "The search query for academic papers or research topics.",
+                "name": "query",
+                "type": "str",
             }
         ],
     },
