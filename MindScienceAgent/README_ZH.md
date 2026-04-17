@@ -165,11 +165,9 @@ python run_workflow.py --prompt 'Please help me analyse the molecular weight of 
 
 MindSpore Science Agent采用OpenAI发布的FrontierScience中的国际化学奥赛题集进行评测，基于GLM-5模型，在avg N=8上的答题准确率达到77.88%，超过GLM-5模型（67.63%）以及斯坦福大学研究团队发布的 [Biomni](https://github.com/snap-stanford/Biomni)平台（70.51%）。
 
-| 智能体 | 平均正确率(avg N=8) |
-|------|------------|
-| GLM-5 | 67.63% |
-| Biomni (Stanford) | 70.51% |
-| **MindSpore Science Agent** | **77.88%** |
+<div align=center>
+  <img src="../docs/images/benchmark.png" alt="benchmark" width="600"/>
+</div>
 
 
 #### 样例测试代码
