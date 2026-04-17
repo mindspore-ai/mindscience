@@ -1,4 +1,4 @@
-# MindScienceSkills: 面向通用科学分析、仿真与实验的专业技能库
+# MindSpore Science Skills: 面向通用科学分析、仿真与实验的专业技能库
 
 [![Skills](https://img.shields.io/badge/skills-300+-blue?style=flat-square)](skills/)
 [![Hardware: GPU & NPU](https://img.shields.io/badge/Hardware-GPU%20%7C%20NPU-lightgrey)](#)
@@ -6,11 +6,11 @@
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](#参与贡献)
 [![License](https://img.shields.io/badge/license-MIT-lightgrey?style=flat-square)](LICENSE)
 
-MindScienceSkills 是一个专为通用科学研究打造的开源智能体技能库，全面覆盖生物医药、化学材料、流体、地球科学、电磁等核心科学领域。
+MindSpore Science Skills 是一个专为通用科学研究打造的开源智能体技能库，全面覆盖生物医药、化学材料、流体、地球科学、电磁等核心科学领域。
 
 本仓库目前已内置了 300+ 专业科研技能（Skills），涵盖了参数配置繁琐的领域专用软件、各领域前沿 AI4S 模型、各学科专用的 Python 数据分析与处理工具库等，覆盖绝大部分日常科学分析、仿真与实验场景中的基础工具需求，降低 AI 跨学科调用的技术门槛。
 
-MindScienceSkills可以与 Hermes Agent、OpenClaw、Claude Code、JiuwenClaw等智能体无缝集成，也支持直接接入您专属的 AI 科研助手中。
+MindSpore Science Skills可以与 Hermes Agent、OpenClaw、Claude Code、JiuwenClaw等智能体无缝集成，也支持直接接入您专属的 AI 科研助手中。
 
 ## 📑 目录
   - [💡 主要特性](#-主要特性)
@@ -67,7 +67,7 @@ MindScienceSkills可以与 Hermes Agent、OpenClaw、Claude Code、JiuwenClaw等
 
 
 ### 3. 多生态兼容
-MindScienceSkills可以与 Hermes Agent、OpenClaw、Claude Code、JiuwenClaw等智能体框架无缝集成，也支持直接接入您专属的 AI 科研助手中。针对不同硬件，我们在技能库中分别集成了适用于 GPU 生态和 NPU 生态的AI4S模型，您的科研助手可以在GPU/NPU上无缝调用相应的模型技能，实现科研计算任务的灵活、高效部署。
+MindSpore Science Skills可以与 Hermes Agent、OpenClaw、Claude Code、JiuwenClaw等智能体框架无缝集成，也支持直接接入您专属的 AI 科研助手中。针对不同硬件，我们在技能库中分别集成了适用于 GPU 生态和 NPU 生态的AI4S模型，您的科研助手可以在GPU/NPU上无缝调用相应的模型技能，实现科研计算任务的灵活、高效部署。
 
 ---
 
@@ -543,15 +543,15 @@ MindScienceSkills可以与 Hermes Agent、OpenClaw、Claude Code、JiuwenClaw等
 
 
 ## ⚙️ 快速开始与集成
-MindScienceSkills 可以与 Hermes Agent、OpenClaw、Claude Code、JiuwenClaw等智能体无缝集成，也支持直接接入您专属的 AI 科研助手中。
+MindSpore Science Skills 可以与 Hermes Agent、OpenClaw、Claude Code、JiuwenClaw等智能体无缝集成，也支持直接接入您专属的 AI 科研助手中。
 
 ### 🔌 以 OpenClaw 为例
 
 #### 方式一：我是Agent
 
 ```
-请先检查是否已下载MindScienceSkills仓，若未安装，请克隆https://gitcode.com/mindspore-lab/mindscience.git
-， 并将MindScienceSkills对应领域目录下的所有文件夹拷贝至你的工作空间的skills目录下。
+请先检查是否已下载MindSpore Science Skills仓，若未安装，请克隆https://gitcode.com/mindspore-lab/mindscience.git
+， 并将MindScienceSkills目录下对应的领域目录下的所有文件夹拷贝至你的工作空间的skills目录下。
 ```
 
 #### 方式二：我是Human
@@ -625,7 +625,7 @@ cp -r MindScienceSkills/<领域>/<子领域>/* ~/.openclaw/workspace/skills
 
 ## 🤝 参与贡献
 
-我们非常欢迎各位开发者、科研人员以及领域专家参与共建，共同打造更强大、更可靠的MindScienceSkills！您可以为我们贡献您的Skill，或者优化我们已有的Skill。
+我们非常欢迎各位开发者、科研人员以及领域专家参与共建，共同打造更强大、更可靠的MindSpore Science Skills！您可以为我们贡献您的Skill，或者优化我们已有的Skill。
 
 我们采用标准的 GitHub Pull Request 工作流。请按照以下步骤提交您的代码：
 
@@ -635,4 +635,4 @@ cp -r MindScienceSkills/<领域>/<子领域>/* ~/.openclaw/workspace/skills
 4. 将您的分支推送到远程仓库 (`git push origin feature/Add-Your-Amazing-Skill`)。
 5. 在本仓库新建一个 **Pull Request (PR)**，我们将尽快进行代码审查（Code Review）并与您交流探讨。
 
-再次感谢您对 MindScienceSkills 的关注与贡献！
+再次感谢您对 MindSpore Science Skills 的关注与贡献！

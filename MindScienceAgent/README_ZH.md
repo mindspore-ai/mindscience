@@ -1,13 +1,13 @@
-# 科研智能体MindScienceAgent-preview：搭建你的专属AI科研助手
+# 科研智能体MindSpore Science Agent preview：搭建你的专属AI科研助手
 
-MindScienceAgent是一个面向科研全流程的开源科研智能体，通过将耗时且繁琐的科学全流程（文献阅读、假设提出、代码编写、实验试错和调优等）Agent化，消除了科研环节之间的“人工衔接成本”，大幅压缩科研周期。
+MindSpore Science Agent是一个面向科研全流程的开源科研智能体，通过将耗时且繁琐的科学全流程（文献阅读、假设提出、代码编写、实验试错和调优等）Agent化，消除了科研环节之间的“人工衔接成本”，大幅压缩科研周期。
 
 
 ## 🔥🔥News
 
 🚀🚀**coming soon**：中国科学技术大学智能科学家团队发布并上线ScienceClaw
 
-🚀🚀**2026.04.14**：科研智能体MindScienceAgent preview版本发布，覆盖端到端科研全流程
+🚀🚀**2026.04.17**：科研智能体MindSpore Science Agent preview版本发布，覆盖端到端科研全流程
 
 ## 目录
 - [整体设计](#整体设计)
@@ -16,7 +16,7 @@ MindScienceAgent是一个面向科研全流程的开源科研智能体，通过�
   - [2. 配置文件](#2-配置文件)
   - [3. 设置工具API Key（可选）](#3-设置工具api-key可选)
   - [4. 运行 Experiment Workflow](#4-运行-experiment-workflow)
-- [MindScienceAgent应用案例](#MindScienceAgent应用案例)
+- [应用案例](#应用案例)
   - [一、调研分析类任务：FrontierScience Benchmark](#一调研分析类任务frontierscience-benchmark)
   - [二、计算仿真类任务：化学材料计算仿真](#二计算仿真类任务化学材料计算仿真)
   - [三、湿实验类任务：聚苯胺薄膜合成实验方案设计](#三湿实验类任务聚苯胺薄膜合成实验方案设计)
@@ -30,7 +30,7 @@ MindScienceAgent是一个面向科研全流程的开源科研智能体，通过�
 
 ## 整体设计
 
-MindScienceAgent是科研智能体系统MindSpore Science Agent的核心模块之一。MindScienceAgent由多个sub-agent和workflow组成：
+MindSpore Science Agent是MindSpore Science科研智能体系统的核心组件。MindSpore Science Agent由多个sub-agent和workflow组成：
 
 - sub-agent负责科研流程中的单点任务，如假设生成、实验设计、自我修改、实验执行等；
 
@@ -42,7 +42,7 @@ MindScienceAgent是科研智能体系统MindSpore Science Agent的核心模块�
   <img src="../docs/images/mindspore_science_agent.png" alt="MindSpore Science Agent Architecture" width="600"/>
 </div>
 
-MindScienceAgent采用多Agent协作架构，包含以下六个核心sub-agent：
+MindSpore Science Agent采用多Agent协作架构，包含以下六个核心sub-agent：
 
 | sub-agent | 功能描述 |
 |-------|----------|
@@ -116,7 +116,7 @@ logging:                                            # 日志配置项
 
 ### 3. 设置工具API Key（可选）
 
-MindScienceAgent 提供了信息搜索、文献调研等工具能力，部分工具（如`advanced_web_search_qwen`、`Semantic Scholar` 学术搜索）需要通过 API Key 进行认证访问。因此需要在 `.env` 文件中配置相应的 API Key，以便工具能够正常使用。
+MindSpore Science Agent提供了信息搜索、文献调研等工具能力，部分工具（如`advanced_web_search_qwen`、`Semantic Scholar` 学术搜索）需要通过 API Key 进行认证访问。因此需要在 `.env` 文件中配置相应的 API Key，以便工具能够正常使用。
 
 在.env文件中填入所需API Key：
 
@@ -147,11 +147,10 @@ python run_workflow.py --prompt 'Please help me analyse the molecular weight of 
 python run_workflow.py --prompt 'Please help me analyse the molecular weight of the following drug molecule: Aspirin (acetylsalicylic acid) SMILES: CC(=O)OC1=CC=CC=C1C(=O)O' --enable-critic --test-time-scale-round 3
 ```
 
-## MindScienceAgent应用案例
+## 应用案例
+基于[MindSpore Science Skills](https://gitcode.com/mindspore-lab/mindscience/tree/master/MindScienceSkills)与MindSpore Science Agent，我们可以完成多种类型的复杂科学任务。下面我们以化学领域为例，分别构建科学分析、计算仿真与湿实验三类任务真实案例。
 
-基于[MindScienceSkills](https://gitcode.com/mindspore-lab/mindscience/tree/master/MindScienceSkills)与MindScienceAgent，我们可以完成多种类型的复杂科学任务。下面我们以化学领域为例，分别构建调研分析、计算仿真与湿实验三类任务真实案例。
-
-### 一、调研分析类任务：[FrontierScience](https://huggingface.co/datasets/openai/frontierscience) Benchmark
+### 一、科学分析类任务：[FrontierScience](https://huggingface.co/datasets/openai/frontierscience) Benchmark
 
 我们选取OpenAI开源的FrontierScience，这是一项用于测试物理、化学和生物领域推理能力的基准，旨在衡量模型、智能体在真实科学研究方面的水平。
 
@@ -164,12 +163,14 @@ python run_workflow.py --prompt 'Please help me analyse the molecular weight of 
 
 #### 实验结果
 
-MindScienceAgent在FrontierScience基准测试中准确率达到**74.68%**，超过斯坦福大学研究团队发布的 [Biomni](https://github.com/snap-stanford/Biomni) 平台（70.51%）：
+MindSpore Science Agent采用OpenAI发布的FrontierScience中的国际化学奥赛题集进行评测，基于GLM-5模型，在avg N=8上的答题准确率达到77.88%，超过GLM-5模型（67.63%）以及斯坦福大学研究团队发布的 [Biomni](https://github.com/snap-stanford/Biomni)平台（70.51%）。
 
 | 智能体 | 平均正确率(avg N=8) |
 |------|------------|
-| **MindScienceAgent** | **74.68%** |
+| GLM-5 | 67.63% |
 | Biomni (Stanford) | 70.51% |
+| **MindSpore Science Agent** | **77.88%** |
+
 
 #### 样例测试代码
 本案例以FrontierScience中的电解反应物分析问题为例：
@@ -207,7 +208,7 @@ python eval/eval_frontierscience.py --data_path test.jsonl --log_dir results --c
 
 ### 二、计算仿真类任务：化学材料计算仿真
 
-本案例展示了如何使用 MindScienceAgent 自动执行钙钛矿材料掺杂相关的仿真计算工作流。任务流程包括:
+本案例展示了如何使用 MindSpore Science Agent 自动执行钙钛矿材料掺杂相关的仿真计算工作流。任务流程包括:
 
 ```
 ┌────────────┐    ┌────────────┐    ┌────────────┐    ┌────────────┐
@@ -224,7 +225,7 @@ python eval/eval_frontierscience.py --data_path test.jsonl --log_dir results --c
 
 ### 三、湿实验类任务：聚苯胺薄膜合成实验方案设计
 
-本案例由 MindScienceAgent 与中国科大智能科学家团队合作开发，基于真实物理实验工作站进行化学实验方案的设计与执行。我们以聚苯胺薄膜的合成为例，依据工作站的skills生成实验方案，并下发至智能科学家平台执行。
+本案例由 MindSpore Science Agent 与中国科大智能科学家团队合作开发，基于真实物理实验工作站进行化学实验方案的设计与执行。我们以聚苯胺薄膜的合成为例，依据工作站的skills生成实验方案，并下发至智能科学家平台执行。
 
 生成的实验方案内容如下图所示：
 <div align=center>
@@ -236,7 +237,7 @@ python eval/eval_frontierscience.py --data_path test.jsonl --log_dir results --c
 ## 致谢
 本项目与中国科学技术大学智能科学家团队联合构建，感谢所有专家在专业领域的深度指导与合作！
 
-MindScienceAgent 的部分组件集成并优化了以下开源社区的优秀成果，对这些开源项目表达诚挚感谢：
+MindSpore Science Agent 的部分组件集成并优化了以下开源社区的优秀成果，对这些开源项目表达诚挚感谢：
 
 | 项目                        | 链接                                           |
 | -------------------------- | ---------------------------------------------- |
@@ -249,7 +250,7 @@ MindScienceAgent 的部分组件集成并优化了以下开源社区的优秀成
 
 ### 🚀 核心能力演进
 
-MindScienceAgent当前preview版本中，我们专注于优化实验设计与执行流程，未来我们将针对科研全流程进一步优化：
+MindSpore Science Agent当前preview版本中，我们专注于优化实验设计与执行流程，未来我们将针对科研全流程进一步优化：
 
 - 持续完善sub-agent和workflow易用性，实现用户自定义科研助手的分钟级搭建。
 
@@ -260,7 +261,7 @@ MindScienceAgent当前preview版本中，我们专注于优化实验设计与执
 
 ## 社区
 
-欢迎您通过以下方式，一起丰富MindScienceAgent能力。
+欢迎您通过以下方式，一起丰富MindSpore Science Agent能力。
 
 ### 贡献方式
 
