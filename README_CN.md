@@ -96,6 +96,23 @@ MindElec支持CSG模式的几何构建，如矩形、圆形等结构的交集、
 
 AI4Science高频模型套件SciAI，内置60+高频模型，覆盖物理感知（如PINNs、DeepRitz以及PFNN）和神经算子（如FNO、DeepONet）等主流模型，覆盖度全球第一；提供了高阶API，开发者和用户开箱即用。
 
+## MindSpore Science科研智能体系统
+
+### [MindScienceSkills](MindScienceSkills/)
+为科学计算提供开箱可用的SKILL集合，覆盖生物医药、化学材料、流体、PDE 方程、地球科学、电磁 等核心领域：
+- 接入领域工业软件：接入 VASP、OpenFOAM等配置复杂的工业级HPC软件及FitDock等SOTA工具。内置输入构建、参数调整、计算结果分析等流程；
+- 支持5+领域AI4S SOTA模型调用：覆盖生物、化学、流体、气象、能源等领域40+昇思、昇腾AI4S顶尖模型；
+- 湿实验设备接入：提供湿实验设备操作skill（e.g.,电催化场景湿实验设备skill），为湿实验的设计和执行提供参考实现；
+- 领域知识沉淀：联合中科大等顶尖实验室沉淀化学、生物等领域“隐形知识”（e.g.,掺杂材料第一性原理计算skill），将复杂的长链路科研任务固化为Know-How类skill，提升Agent解决复杂科研任务效率。
+- 科研搜索API、工具库集成：集成业界常用文献、数据搜索API以及领域专用Python数据分析与处理工具库；
+- 模型类Skill 自生成：提供模型类Skill自动构建能力，支持用户分钟级将自有模型封装为智能体skill，将AI4S模型快速转换为即插即用的生产力工具。
+- 业界Agent生态兼容：可以与Hermes Agent、OpenClaw、Claude Code、JiuwenClaw等智能体无缝集成，也支持直接接入用户专属的AI科研助手中。
+
+### [MindScienceAgent](MindScienceAgent/)
+通过sub-agent实现科学实验workflow编排，本次preview版本内置 6 个 sub-agent 与科学实验 workflow，并提供化学领域完整案例：
+- 全流程编排：构建假设生成、实验设计、实验执行等sub-agent，并基于多智能体架构，实现科学实验全流程workflow编排；自我纠错优化：
+- 重点优化实验相关sub-agent的prompt与skills，提升实验执行sub-agent自我纠错能力，减少报错信息带来的上下文污染。
+
 ## 典型模型支持
 
 <details>
