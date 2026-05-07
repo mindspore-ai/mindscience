@@ -5,9 +5,9 @@ MindSpore Science Agent是一个面向科研全流程的开源科研智能体，
 
 ## 🔥🔥News
 
-🚀🚀**coming soon**：中国科学技术大学智能科学家团队发布并上线ScienceClaw
+🚀🚀**2026.04.25**：[中国科学家发布“灵境造物”智能科研工具](https://www.news.cn/tech/20260425/b8e27c31cdca45d2912b520e23663a7e/c.html)
 
-🚀🚀**2026.04.17**：科研智能体MindSpore Science Agent preview版本发布，覆盖端到端科研全流程
+🚀🚀**2026.04.17**：[MindSpore Science科研智能体系统版本发布，覆盖端到端科研全流程](https://mp.weixin.qq.com/s/q-BHK8DW6tpGAQ9lfttjvg)
 
 ## 目录
 - [整体设计](#整体设计)
