@@ -1,0 +1,4 @@
+numpy>=1.26.0
+mindspore>=2.7.0
+h5py>=3.7.0
+pyyaml>=6.0
