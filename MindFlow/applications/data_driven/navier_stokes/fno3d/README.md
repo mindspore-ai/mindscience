@@ -80,9 +80,9 @@ predict total time: 5.692582845687866 s
 
 ## Performance
 
-| Parameter               | Ascend               |
+| Parameter               | Huawei Ascend               |
 |:----------------------:|:--------------------------:|
-| Hardware                | Ascend 32G           |
+| Hardware                | Huawei Ascend 32G           |
 | MindSpore version       | 2.7.0               |
 | dataset                 | [3D Navier-Stokes Equation Dataset](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/data_driven/navier_stokes_3d/)      |
 | Parameters              | 6.5e6                  |

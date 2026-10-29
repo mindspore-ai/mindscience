@@ -17,7 +17,7 @@
 
 将AI与科学计算相结合，即AI+科学计算，是指利用人工智能技术如机器学习、深度学习等，对科学难题进行实计算和分析。这种结合使得科学计算不再局限于传统的数学模型和算法，而是能够借助AI的强大计算能力，探索未知领域，提升计算效率和准确性。AI+科学计算的计算能力主要来源于大数据的支持和算法的优化，通过不断学习和优化，AI能够更好地应对复杂的科学计算问题。
 
-MindScience是基于MindSpore融合架构打造的高性能科学计算行业套件，提供了业界领先的数据集、SOTA模型、常用模型接口和前后处理工具，面向Ascend开展深度优化，加速科学行业应用开发。
+MindScience是基于MindSpore融合架构打造的高性能科学计算行业套件，提供了业界领先的数据集、SOTA模型、常用模型接口和前后处理工具，面向Huawei Ascend开展深度优化，加速科学行业应用开发。
 
 ## 架构图
 
@@ -31,7 +31,7 @@ MindScience-Core是MindScience的核心组件，为开发者提供易用性强�
 
 [常用模型接口](mindscience/models/):
 
-[图计算](mindscience/gnn/)：由于图的拓扑结构天然适配网格、分子结构等数据形态，AI4Science 领域的模型大量采用以 GNN（Graph Neural Network，图神经网络）为核心的架构。MindScience 为此提供了一套功能完备、与 Ascend 平台深度亲和的 GNN 接口，同时保持与业界主流框架接口的兼容性，有效提升了相关模型的开发效率。
+[图计算](mindscience/gnn/)：由于图的拓扑结构天然适配网格、分子结构等数据形态，AI4Science 领域的模型大量采用以 GNN（Graph Neural Network，图神经网络）为核心的架构。MindScience 为此提供了一套功能完备、与 Huawei Ascend 平台深度亲和的 GNN 接口，同时保持与业界主流框架接口的兼容性，有效提升了相关模型的开发效率。
 
 [等变计算](mindscience/e3nn)：等变计算库 e3nn 专为处理具有对称性的数据场景设计，尤其适配分子、晶体等包含旋转、平移等对称属性的结构。它提供了一套完整的等变神经网络构建工具，能精准捕捉数据的对称性特征，研究者可高效开发符合对称性原理的模型，显著提升分子模拟、材料科学等领域的任务表现。
 
@@ -39,7 +39,7 @@ MindScience-Core是MindScience的核心组件，为开发者提供易用性强�
 
 [可微分求解器](mindscience/solvers/)：可微分求解器是一类融合数值计算与自动微分能力的专用工具，核心用于高效求解常微分方程（ODE）、偏微分方程（PDE）等科学与工程问题。它能在输出数值解的同时，反向传播计算梯度信息，完美兼容 MindSpore 深度学习框架。借助这一特性，研究者可将物理方程的求解过程嵌入神经网络训练流程，为科学计算与深度学习的结合提供关键支撑，广泛应用于动力学模拟、控制策略优化等 AI4Science 场景。
 
-[科学计算算子](mindscience/sciops/)：科学计算算子是支撑 AI4Science 模型构建的核心基础组件，算子经过与 Ascend 结合的深度优化，实现复杂科学计算任务的高效执行。
+[科学计算算子](mindscience/sciops/)：科学计算算子是支撑 AI4Science 模型构建的核心基础组件，算子经过与 Huawei Ascend 结合的深度优化，实现复杂科学计算任务的高效执行。
 
 [分布式并行](mindscience/distributed)：分布式并行是应对 AI4Science 大规模任务的核心高效计算方案，通过将海量数据、复杂模型或计算任务拆分到多节点、多设备集群中协同处理，突破单设备的算力与内存瓶颈，为 AI4Science 向更复杂、更精细的研究方向拓展提供了关键算力保障。
 
@@ -182,7 +182,7 @@ AI4Science高频模型套件SciAI，内置60+高频模型，覆盖物理感知�
 
 | 硬件平台   | 操作系统            | 状态  |
 | ------ | --------------- | --- |
-| Ascend | EulerOS-aarch64 | √   |
+| Huawei Ascend | EulerOS-aarch64 | √   |
 |        | Ubuntu-aarch64  | √   |
 |        | Ubuntu-x86_64   | √   |
 |        | CentOS-aarch64  | √   |
@@ -195,7 +195,7 @@ AI4Science高频模型套件SciAI，内置60+高频模型，覆盖物理感知�
 - MindSpore == 2.7.0
 - CANN $\ge$ 8.2.rc1
 
-MindSpore安装教程请参考[MindSpore官网](https://www.mindspore.cn/install)，CANN安装请参考[Ascend官网](https://www.hiascend.com/document)。
+MindSpore安装教程请参考[MindSpore官网](https://www.mindspore.cn/install)，CANN安装请参考[Huawei Ascend官网](https://www.hiascend.com/document)。
 
 ### 安装步骤概览
 
@@ -206,7 +206,7 @@ MindSpore安装教程请参考[MindSpore官网](https://www.mindspore.cn/install
    source venv/bin/activate
    ```
 
-2. 按需安装 MindSpore（Ascend/CPU/GPU 版本）与匹配的 CANN。
+2. 按需安装 MindSpore（Huawei Ascend/CPU/GPU 版本）与匹配的 CANN。
 
 3. 克隆仓库并安装依赖：
 

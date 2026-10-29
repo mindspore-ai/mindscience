@@ -105,9 +105,9 @@ python train.py --config_file_path ./configs/fno2d.yaml --mode GRAPH --device_ta
 
 ### 性能
 
-| 参数               | Ascend               |
+| 参数               | Huawei Ascend               |
 |:----------------------:|:--------------------------:|
-| 硬件资源                | Ascend，显存32G            |
+| 硬件资源                | Huawei Ascend，显存32G            |
 | MindSpore版本           | 2.7.0                |
 | 数据集                  | [二维NS方程数据集](https://download-mindspore.osinfra.cn/mindscience/mindflow/dataset/applications/data_driven/navier_stokes/)      |
 | 参数量                  | 9e5                   | 9e5                   |

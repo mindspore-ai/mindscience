@@ -1,6 +1,6 @@
 # PowerFlowNet
 
-MindSpore 版 PowerFlowNet 的完整实现，支持 Ascend NPU 设备。
+MindSpore 版 PowerFlowNet 的完整实现，支持 Huawei Ascend NPU 设备。
 
 [English Version](README.md)
 
@@ -11,7 +11,7 @@ PowerFlowNet 利用消息传递图神经网络（GNN）进行高质量的电力�
 ## 项目特点
 
 - **完全自实现** - 零外部 GNN 库依赖（MessagePassing、TAGConv、degree 等）
-- **Ascend NPU 优化** - 针对华为 Ascend 硬件优化，支持 PYNATIVE_MODE 高效运行
+- **Huawei Ascend NPU 优化** - 针对 Huawei Ascend 硬件优化，支持 PYNATIVE_MODE 高效运行
 - **11 种模型架构** - MLP、GCN、MPN 及其 7 种变体
 - **双数据格式支持** - PowerFlowData（12D）和 PowerFlowDataV2（4D，推荐）
 - **经过验证** - 完整的对齐测试和数值稳定性验证
@@ -25,7 +25,7 @@ powerflownet/
 │   ├── __init__.py            # 包导出（MPN、PowerFlowData、PowerFlowDataV2）
 │   ├── argument_parser.py     # 参数解析（JSON 配置 + CLI）
 │   ├── gnn_ops.py             # GNN 操作（MessagePassing、TAGConv、degree）
-│   ├── cpu_npu_ops.py         # CPU/Ascend 兼容层
+│   ├── cpu_npu_ops.py         # CPU/Huawei Ascend 兼容层
 │   ├── data_utils.py          # 数据工具（Data、DataLoader、InMemoryDataset）
 │   ├── power_flow_data.py     # 电力潮流数据处理（5 个类，2 种格式）
 │   ├── mpn.py                 # 消息传递网络（9 个 MPN 变体）
@@ -116,7 +116,7 @@ python test.py --model mlp --run_id <run_id>
 
 ### V2 格式（推荐，4D 输入）
 
-最优化和推荐的格式，适合 Ascend NPU：
+最优化和推荐的格式，适合 Huawei Ascend NPU：
 
 ```text
 ├── node_features.npy      # (N_samples, N_nodes, 4) - 归一化功率
@@ -144,10 +144,10 @@ python test.py --model mlp --run_id <run_id>
 - **TAGConv**: 拓扑自适应图卷积，支持 k-hop 邻域聚合
 - **degree 函数**: 计算图节点度数，支持加权度数
 
-### 2. Ascend NPU 优化
+### 2. Huawei Ascend NPU 优化
 
-- PYNATIVE_MODE + JIT 级别 O0，确保 Ascend 兼容性
-- CPU/Ascend 兼容的操作层（gather、scatter、where）
+- PYNATIVE_MODE + JIT 级别 O0，确保 Huawei Ascend 兼容性
+- CPU/Huawei Ascend 兼容的操作层（gather、scatter、where）
 - 无分布式模式强制（RANK_TABLE_FILE 移除）
 
 ### 3. 数据处理管道
@@ -183,7 +183,7 @@ python test.py --model mlp --run_id <run_id>
 **主要改动**：
 
 - MindSpore 框架迁移
-- Ascend NPU 针对性优化
+- Huawei Ascend NPU 针对性优化
 - 数据处理管道重构和优化
 
 ## 引用
@@ -242,7 +242,7 @@ for epoch in range(20):
 
 ## 故障排查
 
-### 问题：Ascend 编译错误
+### 问题：Huawei Ascend 编译错误
 
 **症状**：`RuntimeError: Can not find kernel tensor for node`
 **解决**：确保在 config.py 中设置了正确的设备模式：

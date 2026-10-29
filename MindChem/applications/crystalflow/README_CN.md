@@ -8,7 +8,7 @@
 
 ### 硬件要求
 
-- 支持 `CPU`、`Ascend` 两种后端，运行时可通过 `--device_target` 指定，默认 `CPU`（见 `train.py`）。
+- 支持 `CPU`、`Huawei Ascend` 两种后端，运行时可通过 `--device_target` 指定，默认 `CPU`（见 `train.py`）。
 
 ### 版本依赖
 

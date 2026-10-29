@@ -51,7 +51,7 @@ git clone https://gitee.com/mindspore/mindscience.git
 cd mindscience/tests/sciops
 pytest test_asd_fft.py
 ```
-Appendix: Ascend FFT operator integration with MindSpore issue:
+Appendix: Huawei Ascend FFT operator integration with MindSpore issue:
 https://gitee.com/mindspore/mindscience/issues/ICX22I
 
 4. Set Environment Variables

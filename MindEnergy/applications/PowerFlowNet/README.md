@@ -1,6 +1,6 @@
 # PowerFlowNet
 
-A complete PowerFlowNet in MindSpore version, supporting Ascend NPU devices.
+A complete PowerFlowNet in MindSpore version, supporting Huawei Ascend NPU devices.
 
 [中文版本](README_CN.md)
 
@@ -11,7 +11,7 @@ PowerFlowNet leverages Message Passing Graph Neural Networks (GNNs) for high-qua
 ## Features
 
 - **Self-Implemented** - Zero external GNN library dependency (MessagePassing, TAGConv, degree)
-- **Ascend NPU Optimized** - Optimized for Huawei Ascend hardware, efficient PYNATIVE_MODE execution
+- **Huawei Ascend NPU Optimized** - Optimized for Huawei Ascend hardware, efficient PYNATIVE_MODE execution
 - **11 Model Architectures** - MLP, GCN, MPN and 8 variants
 - **Dual Data Format Support** - PowerFlowData (12D) and PowerFlowDataV2 (4D, recommended)
 - **Fully Verified** - Complete alignment tests and numerical stability verification
@@ -25,7 +25,7 @@ powerflownet/
 │   ├── __init__.py            # Package exports (MPN, PowerFlowData, PowerFlowDataV2)
 │   ├── argument_parser.py     # Argument parsing (JSON config + CLI)
 │   ├── gnn_ops.py             # GNN operations (MessagePassing, TAGConv, degree)
-│   ├── cpu_npu_ops.py         # CPU/Ascend compatibility layer
+│   ├── cpu_npu_ops.py         # CPU/Huawei Ascend compatibility layer
 │   ├── data_utils.py          # Data utilities (Data, DataLoader, InMemoryDataset)
 │   ├── power_flow_data.py     # Power flow data processing (5 classes, 2 formats)
 │   ├── mpn.py                 # Message Passing Networks (9 MPN variants)
@@ -116,7 +116,7 @@ python test.py --model mlp --run_id <run_id>
 
 ### V2 Format (Recommended, 4D input)
 
-Optimized and recommended format for Ascend NPU:
+Optimized and recommended format for Huawei Ascend NPU:
 
 ```text
 ├── node_features.npy      # (N_samples, N_nodes, 4) - Normalized power
@@ -144,10 +144,10 @@ Download datasets from: [Surf Drive Link](https://surfdrive.surf.nl/files/index.
 - **TAGConv**: Topology-aware graph convolution with k-hop neighborhood aggregation
 - **degree function**: Compute node degree in graphs, supports weighted degree
 
-### 2. Ascend NPU Optimization
+### 2. Huawei Ascend NPU Optimization
 
-- PYNATIVE_MODE + JIT level O0 for Ascend compatibility
-- CPU/Ascend compatible operation layer (gather, scatter, where)
+- PYNATIVE_MODE + JIT level O0 for Huawei Ascend compatibility
+- CPU/Huawei Ascend compatible operation layer (gather, scatter, where)
 - No forced distributed mode (RANK_TABLE_FILE removed)
 
 ### 3. Data Processing Pipeline
@@ -183,7 +183,7 @@ This project is licensed under the Apache 2.0 License. The code is derived from:
 **Major Changes**:
 
 - MindSpore framework migration
-- Ascend NPU targeted optimization
+- Huawei Ascend NPU targeted optimization
 - Data processing pipeline refactoring and optimization
 
 ## Citation
@@ -242,7 +242,7 @@ for epoch in range(20):
 
 ## Troubleshooting
 
-### Issue: Ascend Compilation Error
+### Issue: Huawei Ascend Compilation Error
 
 **Symptom**: `RuntimeError: Can not find kernel tensor for node`
 **Solution**: Ensure correct device mode in config.py:

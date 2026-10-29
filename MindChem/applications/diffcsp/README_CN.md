@@ -10,7 +10,7 @@ DiffCSP 是一种基于扩散模型的深度生成框架，用于解决晶体结
 
 ### 硬件要求
 
-- 支持 `Ascend` 后端，运行时可通过 `--device_target` 指定，默认 `Ascend`（见 `train.py`）。
+- 支持 `Huawei Ascend` 后端，运行时可通过 `--device_target` 指定，默认 `Ascend`（见 `train.py`）。
 
 ### 版本依赖
 

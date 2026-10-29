@@ -38,7 +38,7 @@ Protenix is currently the strongest open-source model in the field of biomolecul
 
 - Python >= 3.11
 - MindSpore >= 2.7.0
-- CANN >= 8.2.RC1 (for Ascend NPU)
+- CANN >= 8.2.RC1 (for Huawei Ascend NPU)
 - Other dependencies listed in `requirements.txt`
 
 ### Step 1: Clone Repository

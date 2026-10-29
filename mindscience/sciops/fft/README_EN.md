@@ -6,7 +6,7 @@
 
 FFT (Fast Fourier Transform) is an efficient implementation of the Discrete Fourier Transform (DFT). It reduces the computational complexity from O(N²) to O(NlogN) through a divide-and-conquer strategy, and is primarily used for converting signals between the time domain and frequency domain. Its inverse transform (IFFT) restores frequency-domain signals back to the time domain. In real-valued signal processing scenarios, RFFT (Real Fast Fourier Transform) and IRFFT (Inverse Real Fast Fourier Transform) leverage the conjugate symmetry of complex numbers to reduce computational and storage overhead.
 
-The asd_fft series of operators (asd_fftn/asd_ifftn/asd_rfftn/asd_irfftn) in mindscience.sciops are optimized for the Ascend hardware platform and fully compatible with the MindSpore framework, offering the following key advantages:
+The asd_fft series of operators (asd_fftn/asd_ifftn/asd_rfftn/asd_irfftn) in mindscience.sciops are optimized for the Huawei Ascend hardware platform and fully compatible with the MindSpore framework, offering the following key advantages:
 
 - **High precision**:The error between calculation results and NumPy's standard implementation is ≤1e-3, meeting the stringent precision requirements of scientific computing.
 - **High performance**: By decomposing high-dimensional FFT computation logic and fusing transpose and matrix multiplication operations, it significantly reduces memory access latency and improves computational efficiency.

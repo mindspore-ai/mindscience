@@ -73,9 +73,9 @@ python train.py --config_file_path ./configs/fno1d.yaml --device_target Ascend -
 
 ## 性能
 
-| 参数               | Ascend               |
+| 参数               | Huawei Ascend               |
 |:----------------------:|:--------------------------:|
-| 硬件资源                | Ascend, 显存32G            |
+| 硬件资源                | Huawei Ascend, 显存32G            |
 | MindSpore版本           | 2.7.0                 |               |
 | 数据集                  | [一维Burgers方程分辨率数据集](https://download-mindspore.osinfra.cn/mindscience/mindflow/dataset/applications/data_driven/burgers/)      |
 | 参数量                  | 5.57e5                   |

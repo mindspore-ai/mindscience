@@ -16,8 +16,8 @@
 
 ### 硬件要求
 
-- 训练脚本 `train.py` 当前在 `Ascend` 设备上验证通过，可通过 `--device_target` 和 `--device_id` 指定卡号（见 `train.py`）。
-- 推理脚本 `predict.py` 支持 `Ascend` 后端，可通过 `--device_target` 切换（见 `predict.py`）。
+- 训练脚本 `train.py` 当前在 `Huawei Ascend` 设备上验证通过，可通过 `--device_target` 和 `--device_id` 指定卡号（见 `train.py`）。
+- 推理脚本 `predict.py` 支持 `Huawei Ascend` 后端，可通过 `--device_target` 切换（见 `predict.py`）。
 
 ### 版本依赖
 

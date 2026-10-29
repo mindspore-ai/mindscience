@@ -16,7 +16,7 @@ energy per atom, bandgap, and lattice-related properties.
 
 ### Hardware Requirements
 
-- Scripts are currently configured to run on `Ascend` devices. The target
+- Scripts are currently configured to run on `Huawei Ascend` devices. The target
   device and `device_id` are specified in `config.yaml` under the `train`
   section and used in `train.py`.
 

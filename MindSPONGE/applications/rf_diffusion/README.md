@@ -29,7 +29,7 @@ Image: Ian C. Haydon / UW Institute for Protein Design
 
 ### Hardware Requirements
 
-- `Ascend` backend support.
+- `Huawei Ascend` backend support.
 
 ### Version Requirements
 

@@ -18,7 +18,7 @@
 ## 项目简介
 
 **项目背景**：
-AlphaFold3是DeepMind在2024年发布的革命性生物分子结构预测模型，能够预测蛋白质、DNA、RNA等生物大分子的三维结构。本项目基于Ascend NPU和MindSpore框架，实现了AlphaFold3的推理功能。
+AlphaFold3是DeepMind在2024年发布的革命性生物分子结构预测模型，能够预测蛋白质、DNA、RNA等生物大分子的三维结构。本项目基于Huawei Ascend NPU和MindSpore框架，实现了AlphaFold3的推理功能。
 
 AlphaFold3 的模型结构如下图所示：
 

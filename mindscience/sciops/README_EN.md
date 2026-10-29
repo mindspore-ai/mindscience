@@ -13,7 +13,7 @@ The sciops module is a high-performance scientific computing operator library in
 |算子|简介|硬件|
 |----|----|----|
 |[einsum](einsum)|einsum operator|NPU|
-|[evoformer_attention](evoformer_attention)|Ascend-friendly evoformer attention operator|NPU|
+|[evoformer_attention](evoformer_attention)|Huawei Ascend-friendly evoformer attention operator|NPU|
 |[dft](dft)|discrete fourier transform operator|NPU|
 |[fft](fft)|fast fourier transform operator|NPU|
 
