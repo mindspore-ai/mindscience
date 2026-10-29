@@ -23,7 +23,7 @@ design.
 
 ### Hardware Requirements
 
-- Supports the `Ascend` backend. The runtime device can be specified via
+- Supports the `Huawei Ascend` backend. The runtime device can be specified via
   `--device_target` and defaults to `Ascend` (see `train.py`).
 
 ### Version Requirements

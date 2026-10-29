@@ -74,9 +74,9 @@ You can run the training and validation code line by line using the Chinese or E
 
 ## Performance
 
-| Parameter               | Ascend               |
+| Parameter               | Huawei Ascend               |
 |:----------------------:|:--------------------------:|
-| Hardware                | Ascend, 32G            |
+| Hardware                | Huawei Ascend, 32G            |
 | MindSpore版本           | 2.7.0               |
 | Dataset                  | [1D Burgers Equation Resolution Dataset](https://download-mindspore.osinfra.cn/mindscience/mindflow/dataset/applications/data_driven/burgers/)      |
 | Parameters                  | 5.57e5                   |

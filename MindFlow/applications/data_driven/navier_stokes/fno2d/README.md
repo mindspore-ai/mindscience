@@ -108,9 +108,9 @@ Take 1 samples, and do 10 consecutive steps of prediction. Visualize the predict
 
 ### Performance
 
-| Parameter               | Ascend               |
+| Parameter               | Huawei Ascend               |
 |:----------------------:|:--------------------------:|
-| Hardware                | Ascend 32G           |
+| Hardware                | Huawei Ascend 32G           |
 | MindSpore version       | 2.7.0                |
 | dataset                 | [2D Navier-Stokes Equation Dataset](https://download-mindspore.osinfra.cn/mindscience/mindflow/dataset/applications/data_driven/navier_stokes/)      |
 | Parameters              | 9e5                  | 9e5                   |

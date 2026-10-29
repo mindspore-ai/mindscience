@@ -23,7 +23,7 @@ such as band structure and transport-property calculations.
 
 ### Hardware Requirements
 
-- The scripts are configured to run on `Ascend` devices by default. Use the
+- The scripts are configured to run on `Huawei Ascend` devices by default. Use the
   command-line argument `-device_id` to specify the device ID (see `train.py`
   and `predict.py`).
 

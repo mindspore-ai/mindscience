@@ -17,7 +17,7 @@
 ## Project Overview
 
 **Project Background**:
-AlphaFold3 is a revolutionary biomolecular structure prediction model released by DeepMind in 2024, capable of predicting the three-dimensional structures of proteins, DNA, RNA, and other biological macromolecules. This project implements AlphaFold3's inference functionality based on Ascend NPU and MindSpore framework.
+AlphaFold3 is a revolutionary biomolecular structure prediction model released by DeepMind in 2024, capable of predicting the three-dimensional structures of proteins, DNA, RNA, and other biological macromolecules. This project implements AlphaFold3's inference functionality based on Huawei Ascend NPU and MindSpore framework.
 
 The model architecture is shown below:
 

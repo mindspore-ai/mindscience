@@ -47,7 +47,7 @@ $$
 
 ### 硬件要求
 
-- 硬件：Ascend AI 处理器
+- 硬件：Huawei Ascend AI 处理器
 - 显存：> 16G
 
 ### MindSpore和MindScience版本关系
@@ -79,7 +79,7 @@ python exp_darcy.py --mode GRAPH --device_target Ascend --device_id 0 --epochs 5
 
 ## 实验结果
 
-我们在 Ascend NPU 上训练了 500 个 Epoch。下图展示了测试集中的一个样本，对比了模型预测值（Prediction）与真实值（Label）。可以看到，Transolver 能够精确地重建流场的细节。
+我们在 Huawei Ascend NPU 上训练了 500 个 Epoch。下图展示了测试集中的一个样本，对比了模型预测值（Prediction）与真实值（Label）。可以看到，Transolver 能够精确地重建流场的细节。
 
 ![Darcy Flow Prediction](./images/result_darcy_hd.png)
 
@@ -100,9 +100,9 @@ Epoch 500/500 Loss: 0.01488 Time: 3.17s
 
 ### 性能
 
-| 参数 | Ascend | 备注 |
+| 参数 | Huawei Ascend | 备注 |
 | :--- | :--- | :--- |
-| **硬件资源** | Ascend 910 | |
+| **硬件资源** | Huawei Ascend 910 | |
 | **MindSpore版本** | 2.x | |
 | **模型配置** | Layers=4, Hidden=64, Ref=8 | 符合论文轻量化配置 |
 | **训练参数** | batch_size=8, epochs=500 | |

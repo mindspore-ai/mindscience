@@ -46,7 +46,7 @@ $$
 
 ### 硬件与Mindspore版本
 
-硬件：Ascend NPU
+硬件：Huawei Ascend NPU
 
 Mindspore：>= 2.7.1
 
@@ -97,7 +97,7 @@ python exp_elas.py --eval 1 --save_name elas_transolver
 
 | 参数           | 内容                                         |
 | -------------- | -------------------------------------------- |
-| 硬件           | Ascend NPU                                   |
+| 硬件           | Huawei Ascend NPU                                   |
 | Mindspore版本  | 2.7.1                                        |
 | 数据集         | Elasticity                                   |
 | 参数量         | 714k                                         |

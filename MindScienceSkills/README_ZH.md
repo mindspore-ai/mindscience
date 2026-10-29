@@ -617,7 +617,7 @@ cp -r MindScienceSkills/<领域>/<子领域>/* ~/.openclaw/workspace/skills
 |     AbRSA         |        http://cao.labshare.cn/AbRSA       |    
 |     Abalign         |        http://cao.labshare.cn/abalign       |    
 |     AbCVista         |       https://github.com/JZongf/AbCVista       |    
-|Ascend AI4Science             | https://gitcode.com/AI4Science          |
+|Huawei Ascend AI4Science             | https://gitcode.com/AI4Science          |
 |  NVIDIA/biomeno                                |    https://github.com/NVIDIA/bionemo-framework                                                    |
 |  NVIDIA/physicsnemo                            |    https://github.com/NVIDIA/physicsnemo                                                 |
 

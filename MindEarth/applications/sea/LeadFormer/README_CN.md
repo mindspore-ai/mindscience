@@ -48,7 +48,7 @@ python main.py --device_id 0 --mode test
 
 |        Parameter         |        NPU              |
 |:----------------------:|:--------------------------:|
-|    硬件版本        |     Ascend， 64G     |
+|    硬件版本        |     Huawei Ascend， 64G     |
 |     mindspore版本   |        2.5.0             |
 |     数据集      |      极区图像             |
 |     训练参数    |        batch_size=1, steps_per_epoch=728, epochs=30            |

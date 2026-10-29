@@ -6,7 +6,7 @@
 
 FFT（Fast Fourier Transform，快速傅里叶变换）是离散傅里叶变换（DFT）的高效实现，通过分治策略将计算复杂度从O(N²)降至O(NlogN)，核心用于时域与频域信号转换，逆变换（IFFT）实现频域还原。实值场景下的RFFT/IRFFT利用共轭对称性，减少计算量与存储开销。
 
-Mindscience.sciops的asd_fft系列算子适配Ascend硬件平台，兼容MindSpore框架，优势如下：
+Mindscience.sciops的asd_fft系列算子适配Huawei Ascend硬件平台，兼容MindSpore框架，优势如下：
 
 - 高精度，与 NumPy 结果误差≤1e-3，满足科学计算需求；
 - 高性能，拆解高维 FFT，融合转置与矩阵乘，降低访存延迟；

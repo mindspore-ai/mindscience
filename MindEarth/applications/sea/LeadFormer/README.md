@@ -68,7 +68,7 @@ In the figure, the black outlines represent the topography, and the colored band
 
 | Parameter | NPU |
 |:----------------------:|:--------------------------:|
-| Hardware Version | Ascend, 64G |
+| Hardware Version | Huawei Ascend, 64G |
 | MindSpore Version | 2.5.0 |
 | Dataset | Polar Region Images |
 | Training Parameters | batch_size=1, steps_per_epoch=728, epochs=30 |

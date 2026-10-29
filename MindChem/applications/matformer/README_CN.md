@@ -11,7 +11,7 @@
 
 ### 硬件要求
 
-- 当前脚本默认在 `Ascend` 设备上运行，具体设备类型和 `device_id` 由 `config.yaml`
+- 当前脚本默认在 `Huawei Ascend` 设备上运行，具体设备类型和 `device_id` 由 `config.yaml`
   中 `train.device` 与 `train.device_id` 指定，并在 `train.py` 中读取。
 
 ### 版本依赖

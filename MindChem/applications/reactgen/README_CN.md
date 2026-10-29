@@ -18,7 +18,7 @@ NLP ──▶ Qwen2.5 embedding ┤────► Qwen2.5 Decoder
 
 ### 硬件要求
 
-- 支持 `Ascend` 后端，运行时可通过 `--device_target` 指定，默认 `Ascend`，可通过config配置。
+- 支持 `Huawei Ascend` 后端，运行时可通过 `--device_target` 指定，默认 `Ascend`，可通过config配置。
 
 ### 版本依赖
 

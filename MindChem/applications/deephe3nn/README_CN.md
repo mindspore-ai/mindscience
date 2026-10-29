@@ -10,7 +10,7 @@ DeephE3nn 是一个基于 E(3) 等变神经网络的模型，用于从晶体中�
 
 ### 硬件要求
 
-- 当前脚本默认在 `Ascend` 设备上运行，通过命令行参数 `-device_id` 指定卡号（见 `train.py` 与 `predict.py`）。
+- 当前脚本默认在 `Huawei Ascend` 设备上运行，通过命令行参数 `-device_id` 指定卡号（见 `train.py` 与 `predict.py`）。
 
 ### 版本依赖
 

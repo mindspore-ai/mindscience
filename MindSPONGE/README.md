@@ -10,7 +10,7 @@
 
 From precise drug design and protein structure prediction to personalized medicine, AI is reshaping the research paradigm in life sciences, greatly accelerating the process of scientific discovery. However, this integration also imposes higher demands on underlying computational tools: traditional simulation software struggles to meet the efficiency requirements for AI model training and large-scale biological data processing.
 
-MindSpore SPONGE (Simulation Package tOwards Next GEneration molecular modelling) is an AI computing biological suite based on Ascend MindSpore. It includes general model applications such as protein structure, sequence and function prediction, genomic structure, and language models. It aims to provide researchers, educators, and students with efficient and easy-to-use AI computational biology software.
+MindSpore SPONGE (Simulation Package tOwards Next GEneration molecular modelling) is an AI computing biological suite based on Huawei Ascend MindSpore. It includes general model applications such as protein structure, sequence and function prediction, genomic structure, and language models. It aims to provide researchers, educators, and students with efficient and easy-to-use AI computational biology software.
 
 ## Contents
 

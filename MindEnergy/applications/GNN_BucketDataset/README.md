@@ -44,7 +44,7 @@ Module responsibilities:
 
 | Hardware | Description |
 |----------|-------------|
-| Ascend processor | Recommended Ascend 910 series for distributed training |
+| Huawei Ascend processor | Recommended Huawei Ascend 910 series for distributed training |
 | CPU | Can be used for single-card testing and inference |
 
 ### Software
@@ -63,7 +63,7 @@ Module responsibilities:
 
 Select the appropriate MindSpore installation method for your target hardware platform. See the [MindSpore Official Installation Guide](https://www.mindspore.cn/install) for details.
 
-Ascend environment example:
+Huawei Ascend environment example:
 
 ```bash
 pip install mindspore==2.7.0

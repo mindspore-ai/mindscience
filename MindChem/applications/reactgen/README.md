@@ -18,7 +18,7 @@ After training, the model can be used for downstream tasks in the field of chemi
 
 ### Hardware Requirements
 
-- Supports the `Ascend` backend, which can be specified at runtime through `--device_target`. The default is `Ascend`, which can be configured through config file.
+- Supports the `Huawei Ascend` backend, which can be specified at runtime through `--device_target`. The default is `Ascend`, which can be configured through config file.
 
 ### Version Requirements
 

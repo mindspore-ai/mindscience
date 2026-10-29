@@ -16,8 +16,8 @@ Compared with traditional atomic potential models (e.g., Behler–Parrinello net
 
 ### Hardware Requirements
 
-- The training script `train.py` is currently verified on `Ascend` devices. Specify the device ID via `--device_target` and `--device_id` (see `train.py`).
-- The inference script `predict.py` supports `Ascend` and `GPU` backends, switchable via `--device_target` (see `predict.py`).
+- The training script `train.py` is currently verified on `Huawei Ascend` devices. Specify the device ID via `--device_target` and `--device_id` (see `train.py`).
+- The inference script `predict.py` supports `Huawei Ascend` and `GPU` backends, switchable via `--device_target` (see `predict.py`).
 
 ### Version Dependencies
 

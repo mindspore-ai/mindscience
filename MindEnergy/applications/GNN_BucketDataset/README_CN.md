@@ -44,7 +44,7 @@ GNN_BucketDataset/
 
 | 硬件 | 说明 |
 |------|------|
-| Ascend 处理器 | 推荐 Ascend 910 系列，用于分布式训练 |
+| Huawei Ascend 处理器 | 推荐 Huawei Ascend 910 系列，用于分布式训练 |
 | CPU | 可用于单卡测试与推理 |
 
 ### 软件环境
@@ -65,7 +65,7 @@ GNN_BucketDataset/
 
 请根据目标硬件平台选择对应的 MindSpore 安装方式，详见 [MindSpore 官方安装指南](https://www.mindspore.cn/install)。
 
-Ascend 环境示例：
+Huawei Ascend 环境示例：
 
 ```bash
 pip install mindspore==2.7.0

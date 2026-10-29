@@ -192,7 +192,7 @@ Below is an animated visualization of wave propagation over time at the X-Z cros
 
 | Parameter              | 2D              | 3D |
 |:----------------------:|:--------------------------:|:----------------------:|
-| Hardware                | Ascend NPU            | Ascend NPU |
+| Hardware                | Huawei Ascend NPU            | Huawei Ascend NPU |
 | MindSpore Version      | >=2.4.0                | >=2.4.0 |
 | Dataset                  | [Marmousi velocity model](https://en.wikipedia.org/wiki/Marmousi_model) slices, included in the `dataset/` path of the case | 3D SEAM Barrett model, included in the `dataset/` path of the case |
 | Number of Parameters     | No trainable parameters | No trainable parameters |
