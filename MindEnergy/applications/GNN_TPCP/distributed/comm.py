@@ -37,6 +37,12 @@ class GatherMode(Enum):
     SLICE = "slice"
 
 def _dim_of(x, g, dim):
+    if x.ndim == 0:
+        raise ValueError(f"cannot shard a 0-dim tensor along axis {dim}")
+
+    if not -x.ndim <= dim < x.ndim:
+        raise IndexError(f"axis {dim} out of range for tensor of shape {tuple(x.shape)}")
+
     dim = dim % x.ndim
     if x.shape[dim] % g.size:
         raise ValueError(f"axis {dim} of {tuple(x.shape)} not divisible by group size {g.size}")
@@ -52,7 +58,7 @@ def all_gather(x, g, dim=0):
     if g.size == 1:
         return x
     dim = _dim_of(x, g, dim)
-    y = mint.movedim(x, dim, 0).contiguous() if dim else x
+    y = mint.movedim(x, dim, 0).contiguous() if dim else x.contiguous()
     out, _ = comm_func.all_gather_into_tensor(y, group=g.name)
     return mint.movedim(out, 0, dim) if dim else out
 
@@ -67,7 +73,7 @@ def reduce_scatter(x, g, dim=0):
     if g.size == 1:
         return x
     dim = _dim_of(x, g, dim)
-    y = mint.movedim(x, dim, 0).contiguous() if dim else x
+    y = mint.movedim(x, dim, 0).contiguous() if dim else x.contiguous()
     out, _ = comm_func.reduce_scatter_tensor(y, group=g.name)
     return mint.movedim(out, 0, dim) if dim else out
 
