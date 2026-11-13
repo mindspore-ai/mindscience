@@ -1,0 +1,14 @@
+# Runtime dependencies of the distributed TP/CP library.
+#
+# Every other import in the package comes from the Python standard library
+# (functools, operator, enum, math, dataclasses), so there is nothing else to pin.
+# Notes
+# -----
+# - Ascend: install the wheel that matches your firmware from
+#   https://www.mindspore.cn/install . The PyPI wheel is a CPU build and ships
+#   without HCCL collectives, so `comm.init()` will fail on a multi-device host.
+# - numpy is required transitively by MindSpore; the package never imports it
+#   directly, so it is not pinned here.
+# - The verification scripts use `unittest` from the standard library; no extra
+#   test runner is needed.
+mindspore>=2.4.0
