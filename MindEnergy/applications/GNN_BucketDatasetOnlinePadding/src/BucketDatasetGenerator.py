@@ -27,6 +27,14 @@ except ImportError:  # imported as a flat module, the way tests/ do it
 
 
 BUCKET_BATCH_EXPANSION_COEFFICIENT = 1.15
+# ``dataset_batch_num`` is only a 1.15x estimate of the batches actually
+# emitted, so the bucket-drain sequence may be consumed faster than it was
+# generated. ``BUCKET_DRAIN_PROBABILITY`` and ``BUCKET_DRAIN_SHIFT`` shape the
+# binomial draw that picks which full bucket to drain next (values kept from
+# the legacy implementation); the sequence is read modulo its length in
+# ``__next__``, so an exhausted list cycles instead of raising IndexError.
+BUCKET_DRAIN_PROBABILITY = 0.55
+BUCKET_DRAIN_SHIFT = 2
 
 
 class BucketDatasetGenerator:
@@ -62,12 +70,13 @@ class BucketDatasetGenerator:
         rank_size: Number of parallel shards used in distributed training.
 
     Raises:
-        ValueError: If ``column_names`` does not match the padding schema.
+        ValueError: If ``column_names`` does not match the padding schema, if
+            ``batch_sizes`` and ``bucket_boundaries`` differ in length, or if
+            ``bucket_boundaries`` is not strictly increasing.
     """
 
     def __init__(self, dataset, sample_num_by_node, bucket_boundaries, batch_sizes, column_names,
                  pad_quantum=1, rank_size=1):
-        assert len(batch_sizes) == len(bucket_boundaries)
         self.dataset = dataset
         self.bucket_boundaries = bucket_boundaries
         self.batch_sizes = batch_sizes
@@ -160,8 +169,10 @@ class BucketDatasetGenerator:
         Uses a binomial distribution to create a weighted random sequence that
         determines which bucket to draw from at each iteration step.
         """
-        random_list = np.random.binomial(n=(self.num_buckets - 1), p=0.55, size=self.dataset_batch_num)
-        random_list = (random_list + 2) % self.num_buckets
+        random_list = np.random.binomial(n=(self.num_buckets - 1),
+                                         p=BUCKET_DRAIN_PROBABILITY,
+                                         size=self.dataset_batch_num)
+        random_list = (random_list + BUCKET_DRAIN_SHIFT) % self.num_buckets
         return random_list
 
     def _init_variables(self):
@@ -169,11 +180,10 @@ class BucketDatasetGenerator:
         Initialize or reset internal bucket state variables.
 
         Clears all bucket data buffers, resets the iteration counter, and
-        prepares the remaining data processing stage.
+        rewinds the iteration stage.
         """
         self.data_bucket = {i: [] for i in range(self.num_buckets)}
         self.iter = 0
-        self.remaining_data = []
         self.stage = 0
 
     def _get_bucket_index(self, x_input):
@@ -185,12 +195,17 @@ class BucketDatasetGenerator:
 
         Returns:
             The bucket index corresponding to the node count.
+
+        Raises:
+            ValueError: When the node count is beyond the maximum bucket
+                boundary, matching the validation done at construction time by
+                ``_calculate_total_batches``.
         """
         num_node = x_input.shape[0]
         for i, threshold in enumerate(self.bucket_boundaries):
             if num_node < threshold:
                 return i
-        return len(self.bucket_boundaries) - 1
+        raise ValueError(f"The number of nodes {num_node} is beyond the maximum bucket boundary {self.bucket_boundaries[-1]}")
 
     def _get_batch_size(self, bucket_index):
         """
@@ -223,7 +238,7 @@ class BucketDatasetGenerator:
             for key in self.data_bucket.keys():
                 data = self.data_bucket[key]
                 current_batch_size = self._get_batch_size(key)
-                if len(data) >= current_batch_size and self.random_list[self.iter] == key:
+                if len(data) >= current_batch_size and self.random_list[self.iter % len(self.random_list)] == key:
                     self.data_bucket[key] = self.data_bucket[key][current_batch_size:]
                     self.iter += 1
                     return self._package_data(data, current_batch_size)

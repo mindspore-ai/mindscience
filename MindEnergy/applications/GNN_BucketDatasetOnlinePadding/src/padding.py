@@ -29,7 +29,7 @@ The two axes are handled separately:
 """
 
 
-from typing import Dict, List, Sequence, Tuple
+from typing import Dict, List, Optional, Sequence, Tuple
 
 import numpy as np
 
@@ -92,12 +92,13 @@ def pad_to_max(sample: np.ndarray, max_node: int, fill: float = 0) -> np.ndarray
 
 
 def pad_nodes(arrays: Dict[str, List[np.ndarray]],
-              fills: Dict[str, float] = None,
-              max_node: int = None) -> Tuple[Dict[str, np.ndarray], int]:
+              fills: Optional[Dict[str, float]] = None,
+              max_node: Optional[int] = None) -> Tuple[Dict[str, np.ndarray], int]:
     """Pad and concatenate every node-level attribute of one batch.
 
     Args:
         arrays: ``{name: [per-sample array, ...]}``; all lists share one length.
+            The mapping is not modified: a new dict is returned.
         fills: ``{name: fill value}``; a name missing here is filled with 0.
         max_node: Override the padding target (defaults to the batch maximum).
 
@@ -113,13 +114,14 @@ def pad_nodes(arrays: Dict[str, List[np.ndarray]],
     fills = NODE_FILLS if fills is None else fills
     if max_node is None:
         max_node = batch_max_nodes(next(iter(arrays.values())))
+    padded = {}
     for name, samples in arrays.items():
         if any(int(sample.shape[0]) > max_node for sample in samples):
             raise ValueError(f"{name} has a sample longer than max_node={max_node}")
         fill = fills.get(name, 0)
-        arrays[name] = np.concatenate(
+        padded[name] = np.concatenate(
             [pad_to_max(sample, max_node, fill) for sample in samples], axis=0)
-    return arrays, max_node
+    return padded, max_node
 
 
 def edge_batch_ids(edge_counts: Sequence[int]) -> np.ndarray:
@@ -131,10 +133,8 @@ def edge_batch_ids(edge_counts: Sequence[int]) -> np.ndarray:
     Returns:
         ``(sum(edge_counts),)`` integer array.
     """
-    ids = []
-    for i, count in enumerate(edge_counts):
-        ids.extend([i] * int(count))
-    return np.array(ids)
+    counts = np.asarray(edge_counts, dtype=np.int64)
+    return np.repeat(np.arange(counts.shape[0], dtype=np.int64), counts)
 
 
 def round_up(max_node: int, quantum: int = 1) -> int:
