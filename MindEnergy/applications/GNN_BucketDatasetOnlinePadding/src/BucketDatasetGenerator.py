@@ -18,12 +18,17 @@
 import math
 import numpy as np
 
+try:  # imported as part of the ``src`` package, the way main.py does it
+    from .padding import NODE_FILLS, batch_max_nodes, pad_nodes
+except ImportError:  # imported as a flat module, the way tests/ do it
+    from padding import NODE_FILLS, batch_max_nodes, pad_nodes
+
 
 BUCKET_BATCH_EXPANSION_COEFFICIENT = 1.15
 
-# Edge-level columns share one edge count per sample; column 2 is the reference
-# column for that count. ``padding_indices`` lists node-level columns only.
-EDGE_REFERENCE_INDEX = 2
+# Edge-level columns share one edge count per sample; this is the reference
+# column for that count.
+EDGE_REFERENCE_NAME = "edge_fea1"
 
 
 class BucketDatasetGenerator:
@@ -35,6 +40,11 @@ class BucketDatasetGenerator:
     enables efficient padding and batching for graph neural network training
     where graph sizes vary significantly.
 
+    Batching is the only place where samples of different node counts meet, so
+    this class does no padding arithmetic of its own: it delegates to
+    ``src/padding.py``, which owns the declarative table of columns and is
+    the single place that decides how a batch is aligned.
+
     Args:
         dataset: The training dataset returned by get_dataset.
         sample_num_by_node: A dict mapping node count to sample count,
@@ -43,18 +53,21 @@ class BucketDatasetGenerator:
             e.g. [100, 200, 300]. Buckets are [0, b[0]), [b[0], b[1]), ...
         batch_sizes: List of batch sizes for each bucket,
             e.g. [16, 8, 4]. Length must match bucket_boundaries.
-        padding_indices: List of attribute indices that require padding
-            to the maximum node count within a batch.
+        column_names: Column names produced by the dataset, in the order the
+            batching function receives them. Every node-level name must be
+            registered in ``padding.NODE_FILLS``, which is what tells the
+            batching code that its leading axis is the node axis.
         rank_size: Number of parallel shards used in distributed training.
     """
 
-    def __init__(self, dataset, sample_num_by_node, bucket_boundaries, batch_sizes, padding_indices, rank_size):
+    def __init__(self, dataset, sample_num_by_node, bucket_boundaries, batch_sizes, column_names,
+                 rank_size):
         assert len(batch_sizes) == len(bucket_boundaries)
         self.dataset = dataset
         self.bucket_boundaries = bucket_boundaries
         self.batch_sizes = batch_sizes
         self.num_buckets = len(self.bucket_boundaries)
-        self.padding_indices = padding_indices
+        self.column_names = list(column_names)
         total_batches = self._calculate_total_batches(sample_num_by_node, bucket_boundaries, batch_sizes, rank_size)
         self.dataset_batch_num = math.ceil(BUCKET_BATCH_EXPANSION_COEFFICIENT * total_batches)
         self.random_list = self._generate_random_list()
@@ -217,29 +230,22 @@ class BucketDatasetGenerator:
             ``batch_size``.
         """
         samples = data[:batch_size]
-        columns = list(zip(*samples))
-        # Column 0 is `x0`, whose first axis is the node count.
-        max_node_num = max(int(sample[0].shape[0]) for sample in samples)
+        columns = dict(zip(self.column_names, zip(*samples)))
 
-        batch = []
-        for attr_index, column in enumerate(columns):
-            if attr_index in self.padding_indices:
-                padded = []
-                for sample in column:
-                    short = max_node_num - int(sample.shape[0])
-                    if short > 0:
-                        width = ((0, short),) + ((0, 0),) * (sample.ndim - 1)
-                        padded.append(np.pad(sample, width, mode='constant', constant_values=0))
-                    else:
-                        padded.append(sample)
-                batch.append(np.concatenate(padded, axis=0))
-            else:
-                batch.append(np.concatenate(column, axis=0))
+        # `x0` is column 0 and node-level, so its first axis is the node count.
+        max_node = batch_max_nodes([sample[0] for sample in samples])
+        padded, max_node = pad_nodes(
+            {name: list(columns[name]) for name in NODE_FILLS}, max_node=max_node)
 
-        edge_counts = [int(edge.shape[0]) for edge in columns[EDGE_REFERENCE_INDEX]]
+        edge_counts = [int(edge.shape[0]) for edge in columns[EDGE_REFERENCE_NAME]]
         batch_id = []
         for i, count in enumerate(edge_counts):
             batch_id.extend([i] * count)
+
+        batch = [
+            padded[name] if name in NODE_FILLS else np.concatenate(list(columns[name]), axis=0)
+            for name in self.column_names
+        ]
         return batch + [np.array(batch_id), batch_size]
 
     def _process_remaining_data(self):

@@ -101,6 +101,7 @@ def get_dataset(dataset_cfg: Dict[str, Any],
 
     print(f'Task: {generator.task}')
 
+    sample_columns = list(columns)
     columns = columns + ['batch_id']
 
     if task == 'train':
@@ -108,10 +109,14 @@ def get_dataset(dataset_cfg: Dict[str, Any],
         sample_num_by_node = dataset_cfg["sample_num_by_node"]
         bucket_boundaries = dataset_cfg["bucket_boundaries"]
         bucket_batch_size = dataset_cfg["bucket_batch_size"]
-        padding_indices = dataset_cfg["padding_indices"]
 
-        bucket_dataset = BucketDatasetGenerator(dataset, sample_num_by_node, bucket_boundaries, bucket_batch_size,
-                                                padding_indices, rank_size)
+        bucket_dataset = BucketDatasetGenerator(
+            dataset=dataset,
+            sample_num_by_node=sample_num_by_node,
+            bucket_boundaries=bucket_boundaries,
+            batch_sizes=bucket_batch_size,
+            column_names=sample_columns,
+            rank_size=rank_size)
         bucket_dataloader = ds.GeneratorDataset(bucket_dataset, column_names=columns, shuffle=False)
 
         print(
