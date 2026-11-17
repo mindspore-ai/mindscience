@@ -16,24 +16,21 @@
 # ==============================================================================
 """Main entry for bucket dataset generator"""
 
+import os
+
 import h5py
 import numpy as np
 import mindspore.dataset as ds
 from mindspore import set_seed
 from mindspore.communication import get_rank, get_group_size
-from typing import Dict, Optional, Any
+from typing import Dict, Any
 from src import BucketDatasetGenerator, DataGenerator
 from src.tools import load_yaml, load_npy
-
-set_seed(0)
-np.random.seed(0)
-
-CURRENT_MODE = 'TEST'
 
 
 def get_dataset(dataset_cfg: Dict[str, Any],
                 model_cfg: Dict[str, Any],
-                parameter_cfg: Optional[Dict[str, Any]] = None,
+                use_mock_data: bool = False,
                 parallel: bool = False,
                 prefetch_size: int = 256) -> ds.GeneratorDataset:
     """
@@ -45,7 +42,7 @@ def get_dataset(dataset_cfg: Dict[str, Any],
     Args:
         dataset_cfg: Configuration dictionary for the dataset.
         model_cfg: Model configuration dictionary.
-        parameter_cfg: Optional parameter configuration dictionary.
+        use_mock_data: Use in-memory random data instead of reading ``dataset_cfg["path"]``.
         parallel: Whether to use distributed parallel data loading. If True, data is
             sharded across ranks using MindSpore communication APIs.
         prefetch_size: Number of data items to prefetch for performance optimization.
@@ -66,7 +63,6 @@ def get_dataset(dataset_cfg: Dict[str, Any],
     dataset_extras = dataset_cfg.get("extras", {})
     x_features = model_cfg["x_features"]
     output_features = model_cfg["output"]
-    parameter_cfg = parameter_cfg or {}
 
     if parallel:
         rank_id = get_rank()
@@ -77,7 +73,7 @@ def get_dataset(dataset_cfg: Dict[str, Any],
 
     ds.config.set_prefetch_size(prefetch_size)
 
-    if CURRENT_MODE == 'TEST':
+    if use_mock_data:
         data = get_dict_data()
     else:
         data = load_data(file_path)
@@ -141,43 +137,50 @@ def get_dataset(dataset_cfg: Dict[str, Any],
 
 
 def load_data(file_path):
-    is_h5_file = file_path.endswith('.h5')
-    if is_h5_file:
-        file = h5py.File(file_path, 'r')
-    else:
-        file = load_npy(file_path)
+    """Read a whole dataset file into a ``{key: ndarray}`` dict.
 
-    return file
+    The h5 file is read eagerly and the handle closed: a live h5py handle is
+    not safe to share across data workers, and closing it also removes the
+    leaked-open-file of the previous implementation. ``load_npy`` already
+    returns eagerly loaded arrays, so both branches now agree.
+    """
+    if file_path.endswith('.h5'):
+        with h5py.File(file_path, 'r') as file:
+            return {key: np.asarray(file[key]) for key in file.keys()}
+    return load_npy(file_path)
 
 
 def get_dict_data():
     result = {}
     sample_shape = {5: 20, 11: 50, 15: 50, 25: 80}
-    result['x0'] = [np.random.random((samples, 7 * nodes)).tolist() for nodes, samples in sample_shape.items()]
-    result['node_feature1'] = [np.random.random((samples, nodes)).tolist() for nodes, samples in sample_shape.items()]
-    result['node_feature2'] = [np.random.random((samples, nodes)).tolist() for nodes, samples in sample_shape.items()]
-    result['node_feature3'] = [np.random.random((samples, nodes)).tolist() for nodes, samples in sample_shape.items()]
-    result['edge_feature1'] = [np.random.random((samples, nodes)).tolist() for nodes, samples in sample_shape.items()]
-    result['edge_feature2'] = [np.random.random((samples, nodes)).tolist() for nodes, samples in sample_shape.items()]
-    result['x_vd'] = [np.random.random((samples, 3 * nodes)).tolist() for nodes, samples in sample_shape.items()]
+    result['x0'] = [np.random.random((samples, 7 * nodes)) for nodes, samples in sample_shape.items()]
+    result['node_feature1'] = [np.random.random((samples, nodes)) for nodes, samples in sample_shape.items()]
+    result['node_feature2'] = [np.random.random((samples, nodes)) for nodes, samples in sample_shape.items()]
+    result['node_feature3'] = [np.random.random((samples, nodes)) for nodes, samples in sample_shape.items()]
+    result['edge_feature1'] = [np.random.random((samples, nodes)) for nodes, samples in sample_shape.items()]
+    result['edge_feature2'] = [np.random.random((samples, nodes)) for nodes, samples in sample_shape.items()]
+    result['x_vd'] = [np.random.random((samples, 3 * nodes)) for nodes, samples in sample_shape.items()]
 
     return result
 
 
 if __name__ == "__main__":
-    yaml_path = "./configs/config.yaml"
+    set_seed(0)
+    np.random.seed(0)
+
+    yaml_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "configs", "config.yaml")
     params = load_yaml(yaml_path)
 
     model_params = params['model']
-    parameter_params = params['parameter']
     train_ds_cfg = params['data']['train']
     test_ds_cfg = params['data']['test']
     infer_ds_cfgs = params['data']['infer']
 
+    use_mock_data = bool(params['data'].get('use_mock_data', False))
     train_dataset = get_dataset(
         train_ds_cfg,
         model_params,
-        parameter_params,
+        use_mock_data=use_mock_data,
         parallel=True
     )
 

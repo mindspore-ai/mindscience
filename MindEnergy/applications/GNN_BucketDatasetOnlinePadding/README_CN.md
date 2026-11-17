@@ -23,10 +23,15 @@ GNN_BucketDatasetOnlinePadding/
 │   ├── padding.py             # 批内对齐：声明式列登记表 + pad/拼接/边归属
 │   ├── DataGenerator.py       # 数据生成器，负责单样本读取与特征重组
 │   └── tools.py               # 工具函数：YAML 加载、NPY 目录加载
+├── tests/
+│   ├── test_padding.py               # padding 模块单测（纯 numpy）
+│   ├── test_package_data.py          # 批组包（_package_data）与列校验单测
+│   ├── test_bucket_state_machine.py  # 桶迭代状态机单测（stub 数据集，纯 numpy）
+│   └── test_tools.py                 # load_npy/load_yaml 单测（依赖 pyyaml）
 ├── main.py                    # 主入口：构建 MindSpore 分桶数据集主流程，可供后续训练集成
 ├── requirements.txt           # Python 依赖库及版本声明
-└── README_CN.md               # 项目中文说明文档
-└── README.md               # 项目英文说明文档
+├── README_CN.md               # 项目中文说明文档
+└── README.md                  # 项目英文说明文档
 ```
 
 各模块职责说明：
@@ -39,6 +44,7 @@ GNN_BucketDatasetOnlinePadding/
 | `src/padding.py` | 批内对齐的唯一实现：`NODE_FILLS`/`EDGE_ATTRS` 声明哪些列属于节点轴/边轴，`pad_nodes`/`edge_batch_ids` 完成对齐 |
 | `src/tools.py` | 提供 `load_yaml`（YAML 配置解析）、`load_npy`（NPY 目录批量加载）两个工具函数 |
 | `configs/config.yaml` | YAML 格式的统一配置文件，涵盖模型参数、训练/测试/推理数据集参数 |
+| `tests/` | 覆盖 padding、批组包、桶迭代状态机与 `tools` 的单元测试，见[单元测试](#单元测试) |
 
 ## 环境要求
 
@@ -106,6 +112,7 @@ model:
     output: 3               # 输出特征维度数
 
 data:
+    use_mock_data: True     # 使用内存随机数据构建数据集而非读取 `path`；接入真实数据时置为 False
     train:
         role: train
         path: "/home/data/train.h5"
@@ -159,6 +166,20 @@ python main.py
 
 测试与推理模式采用固定批次大小，分别调用 `test_collate` 与 `infer_collate` 进行数据拼接与 `edge_batch_id` 构建。
 
+## 单元测试
+
+在本应用目录下运行全部测试：
+
+```bash
+python -m unittest discover -s tests
+```
+
+| 测试文件 | 覆盖范围 | 依赖 |
+|----------|----------|------|
+| `tests/test_padding.py` | `pad_to_max` / `pad_nodes` / `edge_batch_ids` / `round_up` | numpy |
+| `tests/test_package_data.py` | `_package_data` 批布局与列校验 | numpy |
+| `tests/test_bucket_state_machine.py` | 桶迭代：样本恰消费一次、各桶批次大小、越界校验、实际批次数超过 1.15 倍估计值的回归 | numpy（基于 stub 数据集，无需 MindSpore） |
+| `tests/test_tools.py` | `load_npy` 键名解析、`load_yaml` | numpy + pyyaml |
 
 ## 许可证说明
 
