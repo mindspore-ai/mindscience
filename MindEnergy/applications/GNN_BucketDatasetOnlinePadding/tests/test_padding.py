@@ -96,7 +96,7 @@ class NodeAxisTest(unittest.TestCase):
 
 
 class EdgeAxisTest(unittest.TestCase):
-    """Two cases for ``edge_batch_ids``."""
+    """Three cases for ``edge_batch_ids`` / ``round_up``."""
 
     def test_edge_batch_ids_are_monotone(self):
         """One id per edge, grouped by sample, never decreasing."""
@@ -115,6 +115,16 @@ class EdgeAxisTest(unittest.TestCase):
         ids = padding.edge_batch_ids([2, 3])
         self.assertEqual(len(ids), 5)
         self.assertEqual(ids.tolist(), [0, 0, 1, 1, 1])
+
+    def test_round_up(self):
+        """``round_up`` never shrinks the target and rounds to the next multiple."""
+        self.assertEqual(padding.round_up(66, 1), 66)
+        self.assertEqual(padding.round_up(66, 8), 72)
+        self.assertEqual(padding.round_up(66, 32), 96)
+        self.assertEqual(padding.round_up(64, 8), 64)
+        self.assertEqual(padding.round_up(66, 0), 66)
+        for quantum in (1, 8, 32):
+            self.assertGreaterEqual(padding.round_up(67, quantum), 67)
 
 
 if __name__ == "__main__":

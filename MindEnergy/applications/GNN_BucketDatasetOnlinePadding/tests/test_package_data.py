@@ -21,15 +21,16 @@ from padding import EDGE_ATTRS, NODE_FILLS  # noqa: E402  pylint: disable=wrong-
 COLUMNS = ["x0", "node_fea1", "edge_fea1", "node_fea2", "edge_fea2", "node_fea3", "mean_edge", "labels"]
 
 
-def make_generator():
+def make_generator(column_names=None, **kwargs):
     """Build a generator with one bucket of batch size 2; no dataset is needed."""
     return bucket_module.BucketDatasetGenerator(
         dataset=None,
         sample_num_by_node={5: 4},
         bucket_boundaries=[10],
         batch_sizes=[2],
-        column_names=list(COLUMNS),
+        column_names=list(COLUMNS if column_names is None else column_names),
         rank_size=1,
+        **kwargs,
     )
 
 
@@ -58,17 +59,13 @@ class SchemaTest(unittest.TestCase):
         node.
         """
         with self.assertRaises(ValueError) as ctx:
-            bucket_module.BucketDatasetGenerator(
-                dataset=None, sample_num_by_node={5: 4}, bucket_boundaries=[10], batch_sizes=[2],
-                column_names=[name for name in COLUMNS if name != "labels"], rank_size=1)
+            make_generator([name for name in COLUMNS if name != "labels"])
         self.assertIn("labels", str(ctx.exception))
 
     def test_unknown_column_is_rejected(self):
         """A column with no declared axis cannot be batched."""
         with self.assertRaises(ValueError):
-            bucket_module.BucketDatasetGenerator(
-                dataset=None, sample_num_by_node={5: 4}, bucket_boundaries=[10], batch_sizes=[2],
-                column_names=COLUMNS + ["new_feature"], rank_size=1)
+            make_generator(COLUMNS + ["new_feature"])
 
     def test_schema_covers_all_eight_columns(self):
         """Guards the table itself: 5 node + 3 edge columns, no overlap."""
@@ -106,7 +103,7 @@ class PackageDataTest(unittest.TestCase):
         np.testing.assert_array_equal(by_name["labels"][5:8], np.full((3, 3), 2.0))
         np.testing.assert_array_equal(by_name["labels"][8:], np.zeros((2, 3)))
 
-        for name in ("edge_fea1", "edge_fea2", "mean_edge"):
+        for name in EDGE_ATTRS:
             self.assertEqual(by_name[name].shape, (4, 1), msg=name)
 
     def test_edge_batch_id_counts_edges_not_nodes(self):
@@ -159,6 +156,21 @@ class PackageDataTest(unittest.TestCase):
         with self.assertRaises(ValueError) as ctx:
             self.generator._package_data(samples, 2)
         self.assertIn("edge_fea2", str(ctx.exception))
+
+    def test_pad_quantum_rounds_the_target_up(self):
+        """``pad_quantum`` trades a little memory for far fewer distinct shapes.
+
+        The batch maximum is 5 nodes; with ``pad_quantum=8`` every sample still
+        owns 8 rows, so the shape stops changing with every new bucket. The edge
+        axis carries no padding, so ``pad_quantum`` must not touch it.
+        """
+        generator = make_generator(pad_quantum=8)
+        samples = [make_sample(5, 2, tag=1), make_sample(3, 2, tag=2)]
+        by_name = dict(zip(COLUMNS, generator._package_data(samples, 2)))
+
+        self.assertEqual(by_name["x0"].shape, (16, 7))
+        self.assertEqual(by_name["labels"].shape, (16, 3))
+        self.assertEqual(by_name["edge_fea1"].shape, (4, 1))
 
 
 if __name__ == "__main__":

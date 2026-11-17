@@ -17,6 +17,7 @@ data:
         sample_num_by_node: {5: 20, 11: 50, 15: 50, 25: 80}
         bucket_boundaries: [10, 20, 30]
         bucket_batch_size: [16, 8, 4]
+        pad_quantum: 1
     test:
         role: test
         path: "/home/data/test.h5"

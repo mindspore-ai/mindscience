@@ -135,3 +135,22 @@ def edge_batch_ids(edge_counts: Sequence[int]) -> np.ndarray:
     for i, count in enumerate(edge_counts):
         ids.extend([i] * int(count))
     return np.array(ids)
+
+
+def round_up(max_node: int, quantum: int = 1) -> int:
+    """Round the padding target up to a multiple of ``quantum``.
+
+    ``quantum == 1`` pads exactly to the batch maximum. A larger value trades a
+    little extra padding for far fewer distinct shapes, which keeps the graph
+    cache from recompiling once per step.
+
+    Args:
+        max_node: Exact batch maximum.
+        quantum: Multiples to round up to.
+
+    Returns:
+        The rounded target, never smaller than ``max_node``.
+    """
+    if quantum <= 1:
+        return max_node
+    return int(np.ceil(max_node / quantum) * quantum)

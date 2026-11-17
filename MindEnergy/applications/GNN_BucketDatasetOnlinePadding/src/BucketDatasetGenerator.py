@@ -19,9 +19,11 @@ import math
 import numpy as np
 
 try:  # imported as part of the ``src`` package, the way main.py does it
-    from .padding import EDGE_ATTRS, NODE_FILLS, batch_max_nodes, edge_batch_ids, pad_nodes
+    from .padding import (EDGE_ATTRS, NODE_FILLS, batch_max_nodes, edge_batch_ids,
+                          pad_nodes, round_up)
 except ImportError:  # imported as a flat module, the way tests/ do it
-    from padding import EDGE_ATTRS, NODE_FILLS, batch_max_nodes, edge_batch_ids, pad_nodes
+    from padding import (EDGE_ATTRS, NODE_FILLS, batch_max_nodes, edge_batch_ids,
+                         pad_nodes, round_up)
 
 
 BUCKET_BATCH_EXPANSION_COEFFICIENT = 1.15
@@ -38,8 +40,8 @@ class BucketDatasetGenerator:
 
     Batching is the only place where samples of different node counts meet, so
     this class does no padding arithmetic of its own: it delegates to
-    ``src/padding.py``, which owns the declarative table of columns and is
-    the single place that decides how a batch is aligned.
+    ``src/padding.py``, which owns the declarative table of columns and is the
+    single place that decides how a batch is aligned.
 
     Args:
         dataset: The training dataset returned by get_dataset.
@@ -53,6 +55,10 @@ class BucketDatasetGenerator:
             batching function receives them. Every name must be registered in
             ``padding.NODE_FILLS`` or ``padding.EDGE_ATTRS``, which is what
             tells the batching code which axis the column lives on.
+        pad_quantum: Pad the node axis to a multiple of this value instead of to
+            the exact batch maximum. 1 keeps the shapes as small as possible; a
+            larger value gives up a little memory for far fewer distinct shapes,
+            which stops the graph cache from recompiling once per step.
         rank_size: Number of parallel shards used in distributed training.
 
     Raises:
@@ -60,13 +66,14 @@ class BucketDatasetGenerator:
     """
 
     def __init__(self, dataset, sample_num_by_node, bucket_boundaries, batch_sizes, column_names,
-                 rank_size):
+                 pad_quantum=1, rank_size=1):
         assert len(batch_sizes) == len(bucket_boundaries)
         self.dataset = dataset
         self.bucket_boundaries = bucket_boundaries
         self.batch_sizes = batch_sizes
         self.num_buckets = len(self.bucket_boundaries)
         self.column_names = list(column_names)
+        self.pad_quantum = max(int(pad_quantum), 1)
         self._check_schema()
         total_batches = self._calculate_total_batches(sample_num_by_node, bucket_boundaries, batch_sizes, rank_size)
         self.dataset_batch_num = math.ceil(BUCKET_BATCH_EXPANSION_COEFFICIENT * total_batches)
@@ -251,7 +258,7 @@ class BucketDatasetGenerator:
         columns = dict(zip(self.column_names, zip(*samples)))
 
         # `x0` is column 0 and node-level, so its first axis is the node count.
-        max_node = batch_max_nodes([sample[0] for sample in samples])
+        max_node = round_up(batch_max_nodes([sample[0] for sample in samples]), self.pad_quantum)
         padded, max_node = pad_nodes(
             {name: list(columns[name]) for name in NODE_FILLS}, max_node=max_node)
 
