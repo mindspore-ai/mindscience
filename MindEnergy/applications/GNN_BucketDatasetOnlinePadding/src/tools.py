@@ -7,7 +7,7 @@
 # http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS IS" BASIS,
+# distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
@@ -20,7 +20,7 @@ from typing import Dict
 import numpy as np
 
 
-def load_yaml(file_path):
+def load_yaml(file_path: str) -> Dict:
     """
     Load and parse a YAML configuration file.
 
@@ -50,9 +50,12 @@ def load_npy(dataset_dir: str) -> Dict[str, np.ndarray]:
     """
     data_dict = {}
 
+    if not os.path.isdir(dataset_dir):
+        raise FileNotFoundError(f"dataset directory not found: {dataset_dir}")
+
     for filename in os.listdir(dataset_dir):
         if filename.endswith('.npy'):
-            key = filename.split('.')[0]
+            key = os.path.splitext(filename)[0]
             file_path = os.path.join(dataset_dir, filename)
             data_dict[key] = np.load(file_path)
 

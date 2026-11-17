@@ -1,16 +1,13 @@
 model:
     x_features: 7
     output: 3
-parameter:
-    supervision_weight: 1
-    unsupervision_weight: 0.3
 data:
+    use_mock_data: True
     train:
         role: train
         path: "/home/data/train.h5"
         batch_size: 8
         columns: ['x0', 'node_fea1', 'edge_fea1', 'node_fea2', 'edge_fea2', 'node_fea3', 'mean_edge', 'labels']
-        use_DC: True
         num_workers: 1
         shuffle: True
         drop_remainder: True
@@ -23,7 +20,6 @@ data:
         path: "/home/data/test.h5"
         batch_size: 8
         columns: ['x0', 'node_fea1', 'edge_fea1', 'node_fea2', 'edge_fea2', 'node_fea3', 'mean_edge', 'labels']
-        use_DC: True
         num_workers: 1
         shuffle: False
         drop_remainder: False
@@ -32,7 +28,6 @@ data:
         path: "/home/data/infer.h5"
         batch_size: 8
         columns: ['x0', 'node_fea1', 'edge_fea1', 'node_fea2', 'edge_fea2', 'node_fea3', 'mean_edge', 'labels']
-        use_DC: True
         num_workers: 1
         shuffle: False
         drop_remainder: False

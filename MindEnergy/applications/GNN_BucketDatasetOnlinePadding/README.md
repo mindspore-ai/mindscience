@@ -23,6 +23,11 @@ GNN_BucketDatasetOnlinePadding/
 │   ├── padding.py             # Batch-level alignment: declarative column tables + pad/concat/edge ownership
 │   ├── DataGenerator.py       # Data generator, responsible for per-sample reading and feature reorganization
 │   └── tools.py               # Utility functions: YAML loading, NPY directory loading
+├── tests/
+│   ├── test_padding.py               # Unit tests for the padding module (pure numpy)
+│   ├── test_package_data.py          # Unit tests for batch packaging (_package_data) and schema checks
+│   ├── test_bucket_state_machine.py  # Unit tests for the bucket iteration state machine (stub dataset, pure numpy)
+│   └── test_tools.py                 # Unit tests for load_npy/load_yaml (requires pyyaml)
 ├── main.py                    # Main entry: builds MindSpore bucket dataset pipeline for training integration
 ├── requirements.txt           # Python dependencies and version declarations
 ├── README_CN.md               # Chinese documentation
@@ -39,6 +44,7 @@ Module responsibilities:
 | `src/padding.py` | The single implementation of batch-level alignment: `NODE_FILLS`/`EDGE_ATTRS` declare which columns sit on the node/edge axis, `pad_nodes`/`edge_batch_ids` do the alignment |
 | `src/tools.py` | Provides `load_yaml` (YAML config parsing) and `load_npy` (NPY directory batch loading) utility functions |
 | `configs/config.yaml` | Unified YAML configuration file covering model parameters and train/test/infer dataset parameters |
+| `tests/` | Unit tests for padding, batch packaging, the bucket iteration state machine, and `tools`; see [Unit Tests](#unit-tests) |
 
 ## Environment Requirements
 
@@ -104,6 +110,7 @@ model:
     output: 3               # Number of output feature dimensions
 
 data:
+    use_mock_data: True     # Build from in-memory random data instead of reading `path`; set to False for real data
     train:
         role: train
         path: "/home/data/train.h5"
@@ -158,6 +165,21 @@ python main.py
 ```
 
 Test and inference modes use a fixed batch size, calling `test_collate` and `infer_collate` respectively for data concatenation and `edge_batch_id` construction.
+
+## Unit Tests
+
+Run the whole suite from the application directory:
+
+```bash
+python -m unittest discover -s tests
+```
+
+| Test file | Scope | Dependencies |
+|-----------|-------|--------------|
+| `tests/test_padding.py` | `pad_to_max` / `pad_nodes` / `edge_batch_ids` / `round_up` | numpy |
+| `tests/test_package_data.py` | `_package_data` batch layout and column-schema validation | numpy |
+| `tests/test_bucket_state_machine.py` | Bucket iteration: one-time sample consumption, per-bucket batch sizes, boundary validation, regression for batches exceeding the 1.15x estimate | numpy (runs against a stub dataset, no MindSpore) |
+| `tests/test_tools.py` | `load_npy` key derivation, `load_yaml` | numpy + pyyaml |
 
 ## License
 
