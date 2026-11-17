@@ -17,17 +17,16 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."
 import BucketDatasetGenerator as bucket_module  # noqa: E402  pylint: disable=wrong-import-position
 
 COLUMNS = ["x0", "node_fea1", "edge_fea1", "node_fea2", "edge_fea2", "node_fea3", "mean_edge", "labels"]
-NODE_COLUMN_INDICES = [0, 1, 3, 5, 7]
 
 
-def make_generator(padding_indices=None):
+def make_generator():
     """Build a generator with one bucket of batch size 2; no dataset is needed."""
     return bucket_module.BucketDatasetGenerator(
         dataset=None,
         sample_num_by_node={5: 4},
         bucket_boundaries=[10],
         batch_sizes=[2],
-        padding_indices=list(NODE_COLUMN_INDICES if padding_indices is None else padding_indices),
+        column_names=list(COLUMNS),
         rank_size=1,
     )
 
