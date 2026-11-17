@@ -116,6 +116,7 @@ def get_dataset(dataset_cfg: Dict[str, Any],
             bucket_boundaries=bucket_boundaries,
             batch_sizes=bucket_batch_size,
             column_names=sample_columns,
+            pad_quantum=dataset_cfg.get("pad_quantum", 1),
             rank_size=rank_size)
         bucket_dataloader = ds.GeneratorDataset(bucket_dataset, column_names=columns, shuffle=False)
 

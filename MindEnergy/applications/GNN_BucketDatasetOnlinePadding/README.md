@@ -14,12 +14,13 @@ Based on actual requirements, bucketing is currently provided only for the train
 ## Project Structure
 
 ```
-GNN_BucketDataset/
+GNN_BucketDatasetOnlinePadding/
 ├── configs/
 │   └── config.yaml            # Configuration for train/test/infer datasets and model parameters
 ├── src/
 │   ├── __init__.py            # Package initialization, exporting core classes and functions
 │   ├── BucketDatasetGenerator.py  # Bucket dataset iterator, implementing dynamic bucket batch generation
+│   ├── padding.py             # Batch-level alignment: declarative column tables + pad/concat/edge ownership
 │   ├── DataGenerator.py       # Data generator, responsible for per-sample reading and feature reorganization
 │   └── tools.py               # Utility functions: YAML loading, NPY directory loading
 ├── main.py                    # Main entry: builds MindSpore bucket dataset pipeline for training integration
@@ -35,6 +36,7 @@ Module responsibilities:
 | `main.py` | Program entry point; parses configuration and invokes the appropriate dataset construction flow based on task type (train/test/infer) |
 | `src/DataGenerator.py` | `DataGenerator` class; reads node/edge features per sample from HDF5 or NPY data sources and performs corresponding processing |
 | `src/BucketDatasetGenerator.py` | `BucketDatasetGenerator` class; buckets by node count, dynamically pads and concatenates batches, manages remaining data recovery |
+| `src/padding.py` | The single implementation of batch-level alignment: `NODE_FILLS`/`EDGE_ATTRS` declare which columns sit on the node/edge axis, `pad_nodes`/`edge_batch_ids` do the alignment |
 | `src/tools.py` | Provides `load_yaml` (YAML config parsing) and `load_npy` (NPY directory batch loading) utility functions |
 | `configs/config.yaml` | Unified YAML configuration file covering model parameters and train/test/infer dataset parameters |
 
@@ -109,7 +111,7 @@ data:
         bucket_boundaries: [10, 20, 30]   # Bucket upper boundary list
         bucket_batch_size: [16, 8, 4]     # Batch size per bucket
         sample_num_by_node: {5: 20, 11: 50, 15: 50, 25: 80}  # Node count to sample count mapping
-        padding_indices: [0, 1, 3, 5]     # Feature indices requiring padding alignment
+        pad_quantum: 1                    # Round the pad target up to a multiple of this value; 1 pads to the exact batch maximum
 ```
 
 ## Usage
@@ -124,9 +126,16 @@ The program reads `configs/config.yaml` and constructs a bucketed training datas
 
 1. Assigns each sample to the corresponding bucket based on node count
 2. Draws data from buckets that meet batch conditions according to the random selection list
-3. Zero-pads features that require alignment to the maximum node count within the bucket
-4. Applies cross-sample offsets to edge indices to avoid collision
+3. Pads node-level columns (`x0`, `node_fea1~3`, `labels`) to the batch maximum, so sample `i` always owns the slot starting at row `i * max_node`
+4. Concatenates edge-level columns (`edge_fea1`, `edge_fea2`, `mean_edge`) as they are, and records which sample each edge belongs to in `batch_id`
 5. Recovers remaining data after iteration completes
+
+Which columns are node-level and which are edge-level is declared by the `NODE_FILLS`
+and `EDGE_ATTRS` tables in `src/padding.py`, so registering a column there is the only
+step needed to batch it. A sample keeps its own node count until the batch is assembled:
+`_package_data` absorbs the spread, so the input data does not have to be padded to the
+bucket boundary in advance, and a `pad_quantum` above 1 trades a little memory for
+fewer graph compilations.
 
 Log example:
 ```
