@@ -3,9 +3,10 @@
 Pure numpy, no MindSpore and no NPU: ``python -m unittest discover -s tests``
 finishes in milliseconds, so this suite can run in the pre-commit hook.
 
-Node-axis failures show up as "shape right, one column wrong", which is why most
-of the cases below assert the pad region of *every* registered column rather
-than only the first one.
+The suite is split along the two axes the module handles. Node-axis failures
+show up as "shape right, one column wrong"; edge-axis failures show up as a
+``batch_id`` that is shorter than the edge array, which is invisible in the
+feature shapes and has to be caught by length assertions.
 """
 
 import os
@@ -92,6 +93,28 @@ class NodeAxisTest(unittest.TestCase):
             padding.pad_nodes({})
         with self.assertRaises(ValueError):
             padding.pad_nodes({"x0": [np.zeros((3, 2), dtype=np.float32)]}, max_node=2)
+
+
+class EdgeAxisTest(unittest.TestCase):
+    """Two cases for ``edge_batch_ids``."""
+
+    def test_edge_batch_ids_are_monotone(self):
+        """One id per edge, grouped by sample, never decreasing."""
+        ids = padding.edge_batch_ids([1, 2, 0, 3])
+        self.assertEqual(ids.tolist(), [0, 1, 1, 3, 3, 3])
+        self.assertTrue(np.all(np.diff(ids) >= 0))
+        self.assertEqual(len(ids), sum([1, 2, 0, 3]))
+
+    def test_edge_batch_ids_decouple_from_node_counts(self):
+        """Length follows the edge counts, not the node counts of the batch.
+
+        This is the shape a graph with 5 nodes and 2 edges produces; seeding the
+        array from a node-level column would tie the id count to the node count
+        and misalign every scatter.
+        """
+        ids = padding.edge_batch_ids([2, 3])
+        self.assertEqual(len(ids), 5)
+        self.assertEqual(ids.tolist(), [0, 0, 1, 1, 1])
 
 
 if __name__ == "__main__":

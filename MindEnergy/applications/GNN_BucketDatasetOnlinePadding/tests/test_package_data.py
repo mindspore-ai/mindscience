@@ -16,6 +16,8 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."
 
 import BucketDatasetGenerator as bucket_module  # noqa: E402  pylint: disable=wrong-import-position
 
+from padding import EDGE_ATTRS, NODE_FILLS  # noqa: E402  pylint: disable=wrong-import-position
+
 COLUMNS = ["x0", "node_fea1", "edge_fea1", "node_fea2", "edge_fea2", "node_fea3", "mean_edge", "labels"]
 
 
@@ -43,6 +45,35 @@ def make_sample(node_count, edge_count, tag=1):
         np.full((edge_count, 1), tag * 10, dtype=np.float32),                    # mean_edge
         np.full((node_count, 3), tag, dtype=np.float32),                         # labels
     )
+
+
+class SchemaTest(unittest.TestCase):
+    """The column list and the padding table must describe the same schema."""
+
+    def test_column_names_must_match_schema(self):
+        """Dropping a column is an error, not a silently unpadded column.
+
+        ``labels`` is node-level: left out of ``column_names`` it is never
+        padded, so every label row after the first sample points at the wrong
+        node.
+        """
+        with self.assertRaises(ValueError) as ctx:
+            bucket_module.BucketDatasetGenerator(
+                dataset=None, sample_num_by_node={5: 4}, bucket_boundaries=[10], batch_sizes=[2],
+                column_names=[name for name in COLUMNS if name != "labels"], rank_size=1)
+        self.assertIn("labels", str(ctx.exception))
+
+    def test_unknown_column_is_rejected(self):
+        """A column with no declared axis cannot be batched."""
+        with self.assertRaises(ValueError):
+            bucket_module.BucketDatasetGenerator(
+                dataset=None, sample_num_by_node={5: 4}, bucket_boundaries=[10], batch_sizes=[2],
+                column_names=COLUMNS + ["new_feature"], rank_size=1)
+
+    def test_schema_covers_all_eight_columns(self):
+        """Guards the table itself: 5 node + 3 edge columns, no overlap."""
+        self.assertEqual(len(NODE_FILLS) + len(EDGE_ATTRS), len(COLUMNS))
+        self.assertFalse(set(NODE_FILLS) & set(EDGE_ATTRS))
 
 
 class PackageDataTest(unittest.TestCase):
@@ -119,6 +150,15 @@ class PackageDataTest(unittest.TestCase):
                 np.testing.assert_array_equal(array, expected)
         for left, right in zip(first, second):
             np.testing.assert_array_equal(left, right)
+
+    def test_edge_count_mismatch_raises(self):
+        """Edge columns of one sample must agree on the edge count."""
+        samples = [make_sample(4, 2, tag=1), make_sample(4, 2, tag=2)]
+        samples[1] = list(samples[1])
+        samples[1][4] = np.zeros((3, 1), dtype=np.float32)  # edge_fea2 gains an edge
+        with self.assertRaises(ValueError) as ctx:
+            self.generator._package_data(samples, 2)
+        self.assertIn("edge_fea2", str(ctx.exception))
 
 
 if __name__ == "__main__":

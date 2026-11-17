@@ -19,8 +19,13 @@ module is the only place that knows how to align them. Attributes are declared
 in a table, so a column's axis is read from the table rather than from its
 position in a list.
 
-Node-level attributes are padded to the batch maximum, so sample ``i`` owns rows
-``[i * max_node, (i + 1) * max_node)`` of every such column.
+The two axes are handled separately:
+
+* node axis: node-level attributes are padded to the batch maximum, so sample
+  ``i`` owns rows ``[i * max_node, (i + 1) * max_node)`` of every such column;
+* edge axis: edge-level attributes are only concatenated, so their values are
+  left untouched. Which sample an edge belongs to is carried by
+  ``edge_batch_ids``.
 """
 
 
@@ -42,6 +47,10 @@ NODE_FILLS = {
     "node_fea3": 0.0,
     "labels": 0.0,
 }
+
+# Edge-level columns. They share one edge count per sample and are concatenated
+# as they are; ``EDGE_ATTRS[0]`` is the reference column for the count.
+EDGE_ATTRS = ("edge_fea1", "edge_fea2", "mean_edge")
 
 
 def batch_max_nodes(x: Sequence[np.ndarray]) -> int:
@@ -111,3 +120,18 @@ def pad_nodes(arrays: Dict[str, List[np.ndarray]],
         arrays[name] = np.concatenate(
             [pad_to_max(sample, max_node, fill) for sample in samples], axis=0)
     return arrays, max_node
+
+
+def edge_batch_ids(edge_counts: Sequence[int]) -> np.ndarray:
+    """Map every edge of the batch to the sample it came from.
+
+    Args:
+        edge_counts: Edge count of each sample, in batch order.
+
+    Returns:
+        ``(sum(edge_counts),)`` integer array.
+    """
+    ids = []
+    for i, count in enumerate(edge_counts):
+        ids.extend([i] * int(count))
+    return np.array(ids)

@@ -19,16 +19,12 @@ import math
 import numpy as np
 
 try:  # imported as part of the ``src`` package, the way main.py does it
-    from .padding import NODE_FILLS, batch_max_nodes, pad_nodes
+    from .padding import EDGE_ATTRS, NODE_FILLS, batch_max_nodes, edge_batch_ids, pad_nodes
 except ImportError:  # imported as a flat module, the way tests/ do it
-    from padding import NODE_FILLS, batch_max_nodes, pad_nodes
+    from padding import EDGE_ATTRS, NODE_FILLS, batch_max_nodes, edge_batch_ids, pad_nodes
 
 
 BUCKET_BATCH_EXPANSION_COEFFICIENT = 1.15
-
-# Edge-level columns share one edge count per sample; this is the reference
-# column for that count.
-EDGE_REFERENCE_NAME = "edge_fea1"
 
 
 class BucketDatasetGenerator:
@@ -54,10 +50,13 @@ class BucketDatasetGenerator:
         batch_sizes: List of batch sizes for each bucket,
             e.g. [16, 8, 4]. Length must match bucket_boundaries.
         column_names: Column names produced by the dataset, in the order the
-            batching function receives them. Every node-level name must be
-            registered in ``padding.NODE_FILLS``, which is what tells the
-            batching code that its leading axis is the node axis.
+            batching function receives them. Every name must be registered in
+            ``padding.NODE_FILLS`` or ``padding.EDGE_ATTRS``, which is what
+            tells the batching code which axis the column lives on.
         rank_size: Number of parallel shards used in distributed training.
+
+    Raises:
+        ValueError: If ``column_names`` does not match the padding schema.
     """
 
     def __init__(self, dataset, sample_num_by_node, bucket_boundaries, batch_sizes, column_names,
@@ -68,10 +67,29 @@ class BucketDatasetGenerator:
         self.batch_sizes = batch_sizes
         self.num_buckets = len(self.bucket_boundaries)
         self.column_names = list(column_names)
+        self._check_schema()
         total_batches = self._calculate_total_batches(sample_num_by_node, bucket_boundaries, batch_sizes, rank_size)
         self.dataset_batch_num = math.ceil(BUCKET_BATCH_EXPANSION_COEFFICIENT * total_batches)
         self.random_list = self._generate_random_list()
         self._init_variables()
+
+    def _check_schema(self):
+        """
+        Verify that every column has a declared padding axis.
+
+        A column that is neither in ``NODE_FILLS`` nor in ``EDGE_ATTRS`` has no
+        known axis, so batching it would silently concatenate it along the wrong
+        dimension. Fail at construction instead of at the first batch.
+
+        Raises:
+            ValueError: When the column names and the padding schema disagree.
+        """
+        declared = set(NODE_FILLS) | set(EDGE_ATTRS)
+        if len(self.column_names) != len(declared) or set(self.column_names) != declared:
+            raise ValueError(
+                f"column_names {sorted(self.column_names)} do not match the padding schema "
+                f"{sorted(declared)}; register a new column in NODE_FILLS (node axis) or "
+                f"EDGE_ATTRS (edge axis) of src/padding.py")
 
     def _calculate_total_batches(self, samples_by_node: dict[int, int], bucket_bounds: list[int], bucket_batch_sizes: list[int], rank_size: int) -> int:
         """
@@ -237,16 +255,19 @@ class BucketDatasetGenerator:
         padded, max_node = pad_nodes(
             {name: list(columns[name]) for name in NODE_FILLS}, max_node=max_node)
 
-        edge_counts = [int(edge.shape[0]) for edge in columns[EDGE_REFERENCE_NAME]]
-        batch_id = []
-        for i, count in enumerate(edge_counts):
-            batch_id.extend([i] * count)
+        edge_counts = [int(edge.shape[0]) for edge in columns[EDGE_ATTRS[0]]]
+        for name in EDGE_ATTRS[1:]:
+            for i, edge in enumerate(columns[name]):
+                if int(edge.shape[0]) != edge_counts[i]:
+                    raise ValueError(
+                        f"{name} of sample {i} has {edge.shape[0]} edges, expected "
+                        f"{edge_counts[i]} as counted from {EDGE_ATTRS[0]}")
 
         batch = [
             padded[name] if name in NODE_FILLS else np.concatenate(list(columns[name]), axis=0)
             for name in self.column_names
         ]
-        return batch + [np.array(batch_id), batch_size]
+        return batch + [edge_batch_ids(edge_counts), batch_size]
 
     def _process_remaining_data(self):
         """
