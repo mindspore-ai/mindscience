@@ -14,8 +14,6 @@
 # ==============================================================================
 
 
-
-
 """Gradient synchronisation plan for tensor parallelism.
 
 Three buckets, and the two questions they answer are *not* the same:
@@ -33,6 +31,7 @@ at every call site.
 
 
 
+import math
 from dataclasses import dataclass, field
 
 import mindspore as ms
@@ -51,13 +50,6 @@ class ReducePlan:
     buckets: list = field(default_factory=list)   # dtype-fused groups of `partial`
 
 
-def _numel(shape):
-    n = 1
-    for s in shape:
-        n *= s
-    return n
-
-
 def _build_buckets(params, idx):
     by_dtype = {}
     for i in idx:
@@ -65,7 +57,7 @@ def _build_buckets(params, idx):
     buckets = []
     for dtype in sorted(by_dtype):
         ids = by_dtype[dtype]
-        sizes = [_numel(params[i].shape) for i in ids]
+        sizes = [math.prod(params[i].shape) for i in ids]
         offsets, acc = [], 0
         for n in sizes:
             offsets.append(acc)
@@ -123,10 +115,23 @@ def global_norm(grads, plan=None, all_reduce=None):
     Only ``sharded`` parameters contribute a *partial* square sum, so only that
     part is reduced. Reducing the replicated ones would inflate the norm by
     ``size`` and silently shrink the effective clip coefficient.
+
+    Raises:
+        ValueError: When ``plan`` classifies parameters as ``sharded`` but no
+            ``all_reduce`` is supplied. Returning the unreduced norm would be
+            exactly the silent ``size``-fold drift this module exists to
+            prevent, so it fails loudly instead.
     """
     squares = [(g.astype(ms.float32) ** 2).sum() for g in grads]
     total = mint.stack(squares).sum()
-    if plan is None or all_reduce is None or not plan.sharded:
+    if plan is None:
+        return mint.sqrt(total)
+    if plan.sharded and all_reduce is None:
+        raise ValueError(
+            "plan has sharded parameters but all_reduce is None: the norm would come out "
+            "silently off by the shard factor; pass an all_reduce for the sharded bucket "
+            "or a plan without sharded parameters")
+    if not plan.sharded:
         return mint.sqrt(total)
     shard_sq = mint.stack([squares[i] for i in plan.sharded]).sum()
     return mint.sqrt(total - shard_sq + all_reduce(shard_sq))
