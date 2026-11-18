@@ -67,6 +67,7 @@ class GradTest(unittest.TestCase):
 
 
 class BuildPlanTest(GradTest):
+    """Classification into the three buckets, from tags and ``extra_partial``."""
 
     def test_three_bucket_classification(self):
         """Tags decide the bucket; untagged falls to the strict ``partial``."""
@@ -98,6 +99,7 @@ class BuildPlanTest(GradTest):
 
 
 class ReduceGradsTest(GradTest):
+    """Fused and per-parameter reduction under an identity all-reduce."""
 
     def test_identity_reduce_keeps_every_value_bit_identical(self):
         """With an identity all-reduce (the size==1 semantics) fusion is exact."""
@@ -131,6 +133,7 @@ class ReduceGradsTest(GradTest):
 
 
 class GlobalNormTest(GradTest):
+    """The shard-aware L2 norm and its explicit failure modes."""
 
     def test_no_plan_plain_norm(self):
         """Without a plan this is the ordinary L2 norm of the gradients."""
