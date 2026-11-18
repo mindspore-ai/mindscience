@@ -52,6 +52,10 @@ class FakeGroup:
 
 @unittest.skipUnless(_HAS_MS, "mindspore with working mint kernels is not available")
 class LayersTest(unittest.TestCase):
+    """Passthrough numerics, weight-init guards and the tag registry lifecycle.
+
+    The registry outlives the test parameters, so scrub it around each case.
+    """
 
     def setUp(self):
         layers_module._REGISTRY.clear()
