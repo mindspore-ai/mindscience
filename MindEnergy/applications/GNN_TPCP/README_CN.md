@@ -23,6 +23,10 @@ GNN_TPCP/
 │    ├── comm.py            # 通信原语与四个带反向的 _Function 包装
 │    ├── layers.py          # 列/行并行线性层、权重初始化、参数标记
 │    └── grad.py            # 梯度归约计划 ReducePlan、融合归约、全局范数
+├── tests/
+│    ├── test_layout.py     # 正交分组、Group 降级与参数校验（纯 Python，无需 MindSpore）
+│    ├── test_grad.py       # 三桶分类、融合归约、global_norm（需 MindSpore）
+│    └── test_layers.py     # size==1 透传、权重初始化校验、参数标记（需 MindSpore）
 ├── requirements.txt   # 运行期依赖声明
 ├── README_CN.md       # 项目中文说明文档
 └── README.md          # 项目英文说明文档
@@ -36,6 +40,7 @@ GNN_TPCP/
 | `comm.py` | `GatherMode` 枚举；`all_reduce`、`all_gather(dim)`、`reduce_scatter(dim)`、`take_shard(dim)` 四个原语；`CopyToAll` / `Reduce` / `Gather` / `ReduceScatter` 四个 autograd 包装 |
 | `layers.py` | `initialize_affine_weight`（全局形状初始化再切片）、`ColumnParallelLinear`、`RowParallelLinear`、`Shard`；参数标记 `mark_sharded` / `mark_grad_complete` 与查询 `tag_of` / `is_sharded` / `is_grad_complete` |
 | `grad.py` | `ReducePlan` 三桶结构、`build_plan` 分类、`reduce_grads` 按 dtype 融合归约、`global_norm` 分片感知的 L2 范数 |
+| `tests/` | 覆盖分组、梯度计划与并行层的单元测试，见[单元测试](#单元测试) |
 
 ## 环境要求
 
@@ -307,10 +312,25 @@ assert all_gather(x, group("tp")) is x      # 同一对象，无拷贝、无通�
 ## 已知限制
 
 - CP 目前只提供进程组与层间激活的切分能力，未包含 ring-attention；
-- 顶层 `__init__.py` 尚未导出函数式原语，`all_reduce` / `all_gather` / `take_shard` / `reduce_scatter` 需从 `distributed.comm` 导入，`tag_of` 需从 `distributed.layers` 导入；
 - 单卡路径下两个并行层内部持有一个原生 `Linear` 子 Cell，参数键名会多一层 `layer.` 前缀，加载既有 ckpt 时需要做键名映射；
 - `all_gather` / `reduce_scatter` 的任意维支持依赖 `mint.movedim`，在缺少该接口的版本上需退化为仅支持首维与末维；
-- 参数标记表持有参数的强引用且不自动清理，反复构造模型的长进程需要显式释放。
+- 参数标记表为防止 id 复用持有参数的强引用且不自动清理，反复构造模型的长进程在丢弃模型后应调用 `release_tag(param)` / `clear_tags()` 显式释放。
+
+## 单元测试
+
+在本应用目录下运行全部测试：
+
+```bash
+python -m unittest discover -s tests
+```
+
+| 测试文件 | 覆盖范围 | 依赖 |
+|----------|----------|------|
+| `tests/test_layout.py` | `_group_members` 分区（README 三个实测 `world=8` 配置）、`Group` 降级语义、`init_parallel` 参数校验 | 纯 Python，无需 MindSpore |
+| `tests/test_grad.py` | 三桶分类、按 dtype 融合归约回写、`global_norm` 各分支（含缺 `all_reduce` 必报错） | MindSpore |
+| `tests/test_layers.py` | `size == 1` 透传与原生 `Linear` 数值一致、权重初始化与 `num_groups` 校验、参数标记与清理 | MindSpore |
+
+依赖 MindSpore 的套件会先探测所需内核，无法执行的环境整体跳过而非报错；多卡数值等价验证仍按[验证要点](#验证要点)手动执行。
 
 ## 许可证说明
 

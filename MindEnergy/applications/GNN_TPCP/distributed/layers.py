@@ -30,9 +30,14 @@ has to know how the host model named it.
 
 import math
 
-import mindspore as ms
-from mindspore import nn, mint, ops, Parameter, _Function
-from mindspore.common.initializer import initializer, Uniform
+try:  # mint / _Function require mindspore >= 2.4
+    import mindspore as ms
+    from mindspore import nn, mint, ops, Parameter, _Function
+    from mindspore.common.initializer import initializer, Uniform
+except ImportError as e:
+    raise ImportError(
+        "distributed.layers needs mindspore >= 2.4: mint and _Function are required; "
+        "install an up-to-date MindSpore build") from e
 
 from .comm import CopyToAll, Gather, GatherMode, Reduce, ReduceScatter, all_gather, take_shard
 from .context import group as _group
@@ -61,6 +66,20 @@ def is_sharded(param):
 
 def is_grad_complete(param):
     return tag_of(param) == COMPLETE
+
+def release_tag(param):
+    """Drop one parameter's tag, releasing the registry's strong reference.
+
+    The registry holds the parameter on purpose (a dead id must not resolve to
+    a new object), so a long process that builds models repeatedly has to
+    release them explicitly once a model is discarded.
+    """
+    _REGISTRY.pop(id(param), None)
+    return param
+
+def clear_tags():
+    """Drop every tag at once; same use case as ``release_tag``, all models."""
+    _REGISTRY.clear()
 
 class Shard(_Function):
     """Slice the input along ``dim``; backward all-gathers (dual of ``Gather``)."""
@@ -115,6 +134,13 @@ class ColumnParallelLinear(nn.Cell):
             # Passthrough: identical module, identical kernel, identical numbers.
             self.layer = mint.nn.Linear(in_features, out_features, bias=bias,
                                         weight_init=weight_init or init_method)
+            # Expose the wrapped attributes so introspection (tag queries,
+            # hasattr-style checks) sees the same surface as the parallel path.
+            # The native Linear keeps its weight transposed ((out, in)) relative
+            # to the parallel path ((in, out)).
+            self.in_map, self.out_map = None, None
+            self.weight = self.layer.weight
+            self.bias = self.layer.bias if bias else None
             return
         self.layer = None
         self.in_map = Gather(dim=seq_dim, mode=GatherMode.REDUCE) if use_sequence_parallel else CopyToAll
@@ -148,6 +174,10 @@ class RowParallelLinear(nn.Cell):
         if self.g.size == 1:
             self.layer = mint.nn.Linear(in_features, out_features, bias=bias,
                                         weight_init=weight_init or init_method)
+            # Same aliases as the column layer; see the note there.
+            self.in_map, self.out_map = None, None
+            self.weight = self.layer.weight
+            self.bias = self.layer.bias if bias else None
             return
         self.layer = None
         self.in_map = None if input_is_parallel else Shard(dim=-1)
