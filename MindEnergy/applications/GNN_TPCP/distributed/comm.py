@@ -21,8 +21,13 @@ code path be both "parallel" and "bit-identical to the serial baseline".
 """
 from enum import Enum
 
-from mindspore import _Function, mint
-from mindspore.communication import comm_func
+try:  # mint / communication.comm_func / _Function all require mindspore >= 2.4
+    from mindspore import _Function, mint
+    from mindspore.communication import comm_func
+except ImportError as e:
+    raise ImportError(
+        "distributed.comm needs mindspore >= 2.4: mint, communication.comm_func and "
+        "_Function are all required; install an up-to-date MindSpore build") from e
 
 
 class GatherMode(Enum):

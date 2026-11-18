@@ -17,15 +17,16 @@
 """Parallel context: orthogonal process groups for tp / cp / dp / pp.
 
 Model-agnostic: knows nothing about tokens, heads, graphs or edges.
+
+This module is importable without MindSpore: the ``mindspore.communication``
+imports happen inside the functions that need them, so the pure grouping logic
+(``_group_members``, ``Group``) can be exercised on any Python.
 """
 from functools import reduce
 from operator import mul
 
-from mindspore import communication as comm
-from mindspore.communication import (create_group, get_group_size,
-                                     get_group_rank_from_world_rank, get_rank)
-
 KINDS = ("tp", "cp", "dp", "dp-cp")
+_AXES = ("tp", "cp", "dp", "pp")
 _GROUPS = {}
 
 class Group:
@@ -40,7 +41,10 @@ class Group:
 
     @property
     def rank(self):
-        return 0 if self._name is None else get_group_rank_from_world_rank(get_rank(), self._name)
+        if self._name is None:
+            return 0
+        from mindspore.communication import get_group_rank_from_world_rank, get_rank
+        return get_group_rank_from_world_rank(get_rank(), self._name)
 
     @property
     def name(self):
@@ -80,13 +84,34 @@ def _group_members(sizes, mask, world_size):
     return groups
 
 def init_parallel(tp=1, cp=1, pp=1, order="tp-cp-dp-pp"):
-    """Create the orthogonal groups, after ``mindspore.communication.init()``."""
-    if not comm._comm_helper._is_initialized():
+    """Create the orthogonal groups, after ``mindspore.communication.init()``.
+
+    Arguments are validated before any communication API is touched, so a bad
+    ``order`` fails identically on a machine without MindSpore.
+    """
+    axes = order.split("-")
+    if sorted(axes) != sorted(_AXES):
+        raise ValueError(
+            f"order must list each of {list(_AXES)} exactly once, joined by '-', got {order!r}")
+    try:
+        from mindspore import communication as comm
+        from mindspore.communication import create_group, get_group_size, get_rank
+    except ImportError as e:
+        raise RuntimeError(
+            "init_parallel needs mindspore.communication with collective support; install a "
+            "MindSpore build that matches your hardware") from e
+    try:
+        initialized = comm._comm_helper._is_initialized()
+    except AttributeError as e:
+        raise RuntimeError(
+            "cannot query the communication state; call mindspore.communication.init() before "
+            "init_parallel() and verify this MindSpore version still provides "
+            "communication._comm_helper") from e
+    if not initialized:
         raise RuntimeError("mindspore communication is not initialized")
     world_size = get_group_size()
     if world_size % (tp * cp * pp):
         raise RuntimeError(f"world_size {world_size} not divisible by tp*cp*pp={tp * cp * pp}")
-    axes = order.split("-")
     sizes = [{"tp": tp, "cp": cp, "dp": world_size // (tp * cp * pp), "pp": pp}[k] for k in axes]
 
     for kind in KINDS:
