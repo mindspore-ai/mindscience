@@ -23,6 +23,10 @@ GNN_TPCP/
 │    ├── comm.py            # collective primitives and the four _Function wrappers
 │    ├── layers.py          # column/row parallel linear layers, weight init, parameter tags
 │    └── grad.py            # ReducePlan, fused reduction, global norm
+├── tests/
+│    ├── test_layout.py     # orthogonal grouping, Group degradation, argument validation (pure Python, no MindSpore)
+│    ├── test_grad.py       # plan classification, fused reduction, global norm (needs MindSpore)
+│    └── test_layers.py     # size==1 passthrough, weight-init guards, parameter tags (needs MindSpore)
 ├── requirements.txt   # runtime dependencies
 ├── README_CN.md       # Chinese documentation
 └── README.md          # English documentation
@@ -36,6 +40,7 @@ Module responsibilities:
 | `comm.py` | `GatherMode`; the `all_reduce`, `all_gather(dim)`, `reduce_scatter(dim)` and `take_shard(dim)` primitives; the `CopyToAll` / `Reduce` / `Gather` / `ReduceScatter` autograd wrappers |
 | `layers.py` | `initialize_affine_weight` (build at global shape, then slice), `ColumnParallelLinear`, `RowParallelLinear`, `Shard`; tags `mark_sharded` / `mark_grad_complete` and queries `tag_of` / `is_sharded` / `is_grad_complete` |
 | `grad.py` | the `ReducePlan` three-bucket structure, `build_plan` classification, dtype-fused `reduce_grads`, and the shard-aware `global_norm` |
+| `tests/` | unit tests for the grouping, the gradient plan and the parallel layers; see [Unit Tests](#unit-tests) |
 
 ## Requirements
 
@@ -302,10 +307,25 @@ The `num_groups` check is `num_groups % group.size == 0`. Do not substitute "the
 ## Known limitations
 
 - CP currently provides the process group and inter-layer activation sharding only; ring-attention is not included;
-- the top-level `__init__.py` does not export the functional primitives yet, so `all_reduce` / `all_gather` / `take_shard` / `reduce_scatter` must be imported from `distributed.comm` and `tag_of` from `distributed.layers`;
 - on the single-device path each parallel layer holds a native `Linear` sub-cell, so parameter keys gain a `layer.` prefix and loading an existing checkpoint needs a key mapping;
 - arbitrary-axis `all_gather` / `reduce_scatter` depend on `mint.movedim`; on versions without it, fall back to first-axis and last-axis support only;
-- the parameter tag table holds strong references and never cleans up, so a long process that builds models repeatedly must release them explicitly.
+- the parameter tag table holds strong references so ids cannot be reused and never cleans up on its own; a long process that builds models repeatedly must call `release_tag(param)` / `clear_tags()` once a model is discarded.
+
+## Unit Tests
+
+Run the whole suite from the application directory:
+
+```bash
+python -m unittest discover -s tests
+```
+
+| Test file | Scope | Dependencies |
+|-----------|-------|--------------|
+| `tests/test_layout.py` | `_group_members` partitions (the three measured `world=8` configurations), `Group` degradation, `init_parallel` argument validation | pure Python, no MindSpore |
+| `tests/test_grad.py` | three-bucket classification, dtype-fused reduction round trip, `global_norm` branches (including the raise on a missing `all_reduce`) | MindSpore |
+| `tests/test_layers.py` | `size == 1` passthrough matching the native `Linear`, weight init and `num_groups` guards, parameter tags and cleanup | MindSpore |
+
+The MindSpore-dependent suites probe the kernels they need first and skip as a whole on environments that cannot execute them; multi-device equivalence checks stay manual, see [What to verify](#what-to-verify).
 
 ## License
 
